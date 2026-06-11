@@ -3,12 +3,12 @@
 import 'dart:developer';
 import 'dart:math' as math;
 
-import 'package:flutter_template/app/core/networking/model/model.dart';
-import 'package:flutter_template/app/core/networking/repository/coffee_repository.dart';
-import 'package:flutter_template/app/core/service/file_cache_service.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
+import 'package:the_usual/app/core/networking/model/model.dart';
+import 'package:the_usual/app/core/networking/repository/coffee_repository.dart';
+import 'package:the_usual/app/core/service/file_cache_service.dart';
 
 part 'coffee_bloc.freezed.dart';
 part 'coffee_bloc.g.dart';

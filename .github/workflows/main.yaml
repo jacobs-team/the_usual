@@ -1,4 +1,4 @@
-name: flutter_template
+name: the_usual
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -53,31 +53,34 @@ jobs:
         with:
           path: ./coverage/lcov.info
           min_coverage: 95
-      - name: Extract Coverage
-        id: coverage_data
-        run: |
-          ACTUAL_PERCENT=$(awk -F: '
-            /^LF:/ { total += $2 }
-            /^LH:/ { covered += $2 }
-            END {
-              if (total == 0) {
-                print "0"
-              } else {
-                printf "%.2f", (covered / total * 100)
-              }
-            }
-          ' coverage/lcov.info)
-          echo "percent=$ACTUAL_PERCENT" >> $GITHUB_OUTPUT # Use Output instead of Env for better scope
-        shell: bash
-
-      - name: Update Coverage Badge Gist
-        uses: schneegans/dynamic-badges-action@v1.7.0
-        with:
-          auth: ${{ secrets.GIST_TOKEN }}
-          gistID: ac78cd84ca1ae9a4bb0135c89100374a
-          filename: coverage.json
-          label: Coverage
-          message: ${{ steps.coverage_data.outputs.percent }}%
-          valColorRange: ${{ steps.coverage_data.outputs.percent }}
-          maxColorRange: 100
-          minColorRange: 0
+      # Coverage badge — disabled until this project has its own gist and
+      # GIST_TOKEN secret. Create a gist, set the secret, update gistID,
+      # then uncomment.
+      # - name: Extract Coverage
+      #   id: coverage_data
+      #   run: |
+      #     ACTUAL_PERCENT=$(awk -F: '
+      #       /^LF:/ { total += $2 }
+      #       /^LH:/ { covered += $2 }
+      #       END {
+      #         if (total == 0) {
+      #           print "0"
+      #         } else {
+      #           printf "%.2f", (covered / total * 100)
+      #         }
+      #       }
+      #     ' coverage/lcov.info)
+      #     echo "percent=$ACTUAL_PERCENT" >> $GITHUB_OUTPUT
+      #   shell: bash
+      #
+      # - name: Update Coverage Badge Gist
+      #   uses: schneegans/dynamic-badges-action@v1.7.0
+      #   with:
+      #     auth: ${{ secrets.GIST_TOKEN }}
+      #     gistID: <create-a-gist-for-this-project>
+      #     filename: coverage.json
+      #     label: Coverage
+      #     message: ${{ steps.coverage_data.outputs.percent }}%
+      #     valColorRange: ${{ steps.coverage_data.outputs.percent }}
+      #     maxColorRange: 100
+      #     minColorRange: 0

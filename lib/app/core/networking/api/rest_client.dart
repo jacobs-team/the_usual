@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_template/app/core/core.dart';
-import 'package:flutter_template/app/feature/feature.dart';
-import 'package:flutter_template/environment.dart';
 import 'package:injectable/injectable.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:the_usual/app/core/core.dart';
+import 'package:the_usual/app/feature/feature.dart';
+import 'package:the_usual/environment.dart';
 
 part 'interceptors/logging_interceptor.dart';
 

@@ -1,5 +1,5 @@
-import 'package:flutter_template/app/core/core.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:the_usual/app/core/core.dart';
 
 void main() {
   const key = 'key';

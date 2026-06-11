@@ -1,5 +1,5 @@
-import 'package:flutter_template/app/app.dart';
-import 'package:flutter_template/bootstrap.dart';
+import 'package:the_usual/app/app.dart';
+import 'package:the_usual/bootstrap.dart';
 
 Future<void> main() async {
   await bootstrap(() => const CoffeeApp());

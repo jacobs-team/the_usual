@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_template/app/app.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+import 'package:the_usual/app/app.dart';
 
 class MockAuthCubit extends MockCubit<AuthState> implements AuthCubit {}
 

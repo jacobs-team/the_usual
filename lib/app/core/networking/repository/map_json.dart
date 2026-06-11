@@ -1,4 +1,4 @@
-import 'package:flutter_template/app/core/core.dart';
+import 'package:the_usual/app/core/core.dart';
 
 /// Maps a [raw] dynamic value into a single object of type [T].
 ///

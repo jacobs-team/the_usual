@@ -1,6 +1,6 @@
-# Flutter Template
+# The Usual
 
-[![coverage][coverage_badge]](https://github.com/jcblol/flutter_template/actions)
+[![coverage][coverage_badge]](https://github.com/jacobs-team/the_usual/actions)
 [![style: very good analysis][very_good_analysis_badge]][very_good_analysis_link]
 [![License: MIT][license_badge]][license_link]
 
@@ -42,7 +42,7 @@ To run the build_runner once, run:
 fvm dart run build_runner build --delete-conflicting-outputs
 ```
 
-_Flutter Template works on iOS, Android, Web, and Windows._
+_The Usual works on iOS, Android, Web, and Windows._
 
 ## Running Tests 🧪
 
@@ -109,7 +109,7 @@ This project relies on [flutter_localizations][flutter_localizations_link] and f
 3. Use the new string
 
 ```dart
-import 'package:flutter_template/l10n/l10n.dart';
+import 'package:the_usual/l10n/l10n.dart';
 
 @override
 Widget build(BuildContext context) {

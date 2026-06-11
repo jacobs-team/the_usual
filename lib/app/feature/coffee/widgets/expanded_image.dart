@@ -2,10 +2,10 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_template/app/core/core.dart';
-import 'package:flutter_template/app/core/dependencies/dependencies.dart';
-import 'package:flutter_template/app/feature/coffee/bloc/coffee_bloc.dart';
-import 'package:flutter_template/l10n/l10n.dart';
+import 'package:the_usual/app/core/core.dart';
+import 'package:the_usual/app/core/dependencies/dependencies.dart';
+import 'package:the_usual/app/feature/coffee/bloc/coffee_bloc.dart';
+import 'package:the_usual/l10n/l10n.dart';
 
 /// {@template expanded_image}
 /// A view that displays a full-screen, interactive gallery of favorited images.

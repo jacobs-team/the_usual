@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_template/design_system/design_system.dart';
-import 'package:flutter_template/l10n/l10n.dart';
+import 'package:the_usual/design_system/design_system.dart';
+import 'package:the_usual/l10n/l10n.dart';
 
 /// {@template coffee_image}
 /// A stateful widget for coffee images that supports double-tap interactions.

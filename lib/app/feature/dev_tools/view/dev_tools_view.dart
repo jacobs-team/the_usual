@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_template/app/core/dependencies/dependencies.dart';
-import 'package:flutter_template/app/feature/feature.dart';
+import 'package:the_usual/app/core/dependencies/dependencies.dart';
+import 'package:the_usual/app/feature/feature.dart';
 
 /// {@template dev_tools_view}
 /// A view that provides a user interface for toggling developer settings.

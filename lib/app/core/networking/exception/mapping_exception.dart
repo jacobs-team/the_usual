@@ -1,4 +1,4 @@
-import 'package:flutter_template/app/app.dart';
+import 'package:the_usual/app/app.dart';
 
 /// {@template mapping_exception}
 /// An exception that indicates a problem mapping a dynamic value to
