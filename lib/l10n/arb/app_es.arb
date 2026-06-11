@@ -1,0 +1,65 @@
+{
+    "@@locale": "es",
+    "counterAppBarTitle": "Contador",
+    "@counterAppBarTitle": {
+        "description": "Texto mostrado en la AppBar de la página del contador"
+    },
+    "failedToToggleFavoriteImage": "Error al cambiar el estado de favorito de la imagen",
+    "@failedToToggleFavoriteImage": {
+        "description": "Mensaje de error mostrado cuando no se puede cambiar el estado de favorito de una imagen."
+    },
+    "failedToLoadImage": "Error al cargar la imagen",
+    "@failedToLoadImage": {
+        "description": "Mensaje de error mostrado cuando falla la carga de una imagen."
+    },
+    "noSavedImages": "No hay imágenes guardadas",
+    "@noSavedImages": {
+        "description": "Mensaje mostrado cuando el usuario no tiene imágenes guardadas."
+    },
+    "signIn": "Iniciar sesión",
+    "@signIn": {
+        "description": "Etiqueta del botón o acción que permite al usuario iniciar sesión."
+    },
+    "coffee": "Café",     "coffeeTitle": "Explore Coffee",
+
+    "@coffee": {
+        "description": "Etiqueta de la sección o pestaña «Café» en la aplicación."
+    },
+    "favorites": "Favoritos",        "favoritesTitle": "My Favorites",
+
+    "@favorites": {
+        "description": "Etiqueta de la sección o pestaña de imágenes favoritas."
+    },
+    "noConnection": "Sin conexión",
+    "@noConnection": {
+        "description": "Mensaje mostrado cuando no hay conexión a Internet."
+    },
+    "logoutTooltip": "Cerrar sesión",
+    "@logoutTooltip": {
+        "description": "Tooltip del botón para cerrar sesión en la barra superior"
+    },
+    "devToolsTooltip": "Herramientas de desarrollo",
+    "@devToolsTooltip": {
+        "description": "Tooltip del botón de herramientas de desarrollo en la barra superior"
+    },
+    "previousImageTooltip": "Imagen anterior",
+    "@previousImageTooltip": {
+        "description": "Tooltip del botón que desplaza a la imagen anterior"
+    },
+    "nextImageTooltip": "Siguiente imagen",
+    "@nextImageTooltip": {
+        "description": "Tooltip del botón que desplaza a la siguiente imagen"
+    },
+    "toggleFavoriteTooltip": "Alternar favorito",
+    "@toggleFavoriteTooltip": {
+        "description": "Tooltip del botón que marca o desmarca la imagen actual como favorita"
+    },
+    "removeFavoriteTooltip": "Quitar de favoritos",
+    "@removeFavoriteTooltip": {
+        "description": "Tooltip del botón que elimina una imagen guardada de favoritos"
+    },
+    "coffeePhotoLabel": "Foto de café",
+    "@coffeePhotoLabel": {
+        "description": "Etiqueta de accesibilidad para las imágenes de café"
+    }
+}

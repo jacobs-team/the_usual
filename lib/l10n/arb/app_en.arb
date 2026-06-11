@@ -1,0 +1,65 @@
+{
+    "@@locale": "en",
+    "counterAppBarTitle": "Counter",
+    "@counterAppBarTitle": {
+        "description": "Text shown in the AppBar of the Counter Page"
+    },
+    "failedToToggleFavoriteImage": "Failed to toggle favorite image",
+    "@failedToToggleFavoriteImage": {
+        "description": "Error message when the favorite status update fails"
+    },
+    "failedToLoadImage": "Failed to load image",
+    "@failedToLoadImage": {
+        "description": "Error message when an image fails to fetch or display"
+    },
+    "noSavedImages": "No saved images",
+    "@noSavedImages": {
+        "description": "Empty state message when the user has no saved images"
+    },
+    "signIn": "Sign In",
+    "@signIn": {
+        "description": "Label for the sign in button or screen title"
+    },
+    "coffee": "Coffee",
+    "@coffee": {
+        "description": "Label or category name for coffee"
+    },
+     "coffeeTitle": "Explore Coffee",
+    "favorites": "Favorites",
+        "favoritesTitle": "My Favorites",
+    "@favorites": {
+        "description": "Title for the favorites section or navigation item"
+    },
+    "noConnection": "No connection",
+    "@noConnection": {
+        "description": "Error message indicating a lack of internet connectivity"
+    },
+    "logoutTooltip": "Log out",
+    "@logoutTooltip": {
+        "description": "Tooltip for the logout button in the app bar"
+    },
+    "devToolsTooltip": "Dev tools",
+    "@devToolsTooltip": {
+        "description": "Tooltip for the developer tools button in the app bar"
+    },
+    "previousImageTooltip": "Previous image",
+    "@previousImageTooltip": {
+        "description": "Tooltip for the button that scrolls to the previous image"
+    },
+    "nextImageTooltip": "Next image",
+    "@nextImageTooltip": {
+        "description": "Tooltip for the button that scrolls to the next image"
+    },
+    "toggleFavoriteTooltip": "Toggle favorite",
+    "@toggleFavoriteTooltip": {
+        "description": "Tooltip for the button that favorites or unfavorites the current image"
+    },
+    "removeFavoriteTooltip": "Remove from favorites",
+    "@removeFavoriteTooltip": {
+        "description": "Tooltip for the button that removes a saved image from favorites"
+    },
+    "coffeePhotoLabel": "Coffee photo",
+    "@coffeePhotoLabel": {
+        "description": "Accessibility label for coffee images"
+    }
+}
