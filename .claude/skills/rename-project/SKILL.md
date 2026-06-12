@@ -59,7 +59,20 @@ Also record the old values for the find/replace sweep: package `flutter_template
    - `web/index.html` — `<title>` and meta description; `web/manifest.json` — `name`/`short_name` (if the rename CLI didn't already).
    - `.idea/` module files, if present.
    - Code comments or docs referencing the template name.
-3. The coverage badge step in `.github/workflows/main.yaml` uploads to a gist owned by the template repo (`gistID`). Ask the user whether to create a new gist for this project (then update `gistID`) or remove/comment out the badge steps for now.
+3. Set up the project's own coverage badge gist with the GitHub CLI (the template ships with the badge steps commented out and the README pointing at the template's gist):
+   1. Verify auth: `gh auth status`. The active account's token must include the `gist` scope (run `gh auth refresh -s gist` if missing). Note the account login (`<gist_owner>`) and the repo slug from `gh repo view --json nameWithOwner`.
+   2. Create a public gist with a placeholder badge file and record the gist ID from the returned URL:
+
+      ```
+      printf '{"schemaVersion":1,"label":"Coverage","message":"unknown","color":"lightgrey"}' > /tmp/coverage.json
+      gh gist create /tmp/coverage.json --public --desc "<project_name> coverage badge"
+      ```
+
+   3. Set the secret the workflow uses to update the gist: `gh auth token | gh secret set GIST_TOKEN --repo <owner/repo>`. Tell the user this stores their gh OAuth token as the secret; they can replace it with a dedicated PAT (`gist` scope only) whenever they like.
+   4. In `.github/workflows/main.yaml`, uncomment the `Extract Coverage` and `Update Coverage Badge Gist` steps, set `gistID:` to the new gist ID, and guard both steps with `if: github.ref == 'refs/heads/main'` so PR runs don't overwrite the badge.
+   5. In `README.md`, point the `[coverage_badge]` link at the new gist: `https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/<gist_owner>/<gist_id>/raw/coverage.json`.
+   6. The badge stays "unknown" until the first successful CI run on `main` updates the gist.
+
 4. Repeat the grep until it returns no hits outside `.git`.
 
 ## Step 4: Validate dynamic values in the diff
@@ -90,4 +103,4 @@ All must pass. If the user has a device/emulator handy, suggest a quick `fvm flu
 
 ## Step 6: Report
 
-Summarize: old → new values for package, bundle IDs (per flavor), display names (per flavor), the list of files touched in the sweep, the gist/badge decision, and the verify results.
+Summarize: old → new values for package, bundle IDs (per flavor), display names (per flavor), the list of files touched in the sweep, the new gist ID and `GIST_TOKEN` secret setup, and the verify results. Remind the user the badge updates after the first CI run on `main`.
