@@ -1,7 +1,7 @@
 // coverage:ignore-file
-// ignore_for_file: public_member_api_docs
 
 import 'package:freezed_annotation/freezed_annotation.dart';
+
 part 'coffee.freezed.dart';
 part 'coffee.g.dart';
 

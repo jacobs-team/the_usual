@@ -6,7 +6,7 @@ import 'package:the_usual/app/app.dart';
 import '../helpers/helpers.dart';
 
 void main() {
-  group(CoffeeApp, () {
+  group(TheUsualsApp, () {
     late DevToolsCubit devToolsCubit;
 
     setUp(() {
@@ -15,12 +15,12 @@ void main() {
       when(() => devToolsCubit.state).thenReturn(const DevToolsState());
     });
 
-    testWidgets('renders $CoffeeApp', (tester) async {
+    testWidgets('renders $TheUsualsApp', (tester) async {
       await tester.pumpPumpPumpItUP(
         deps: [devToolsCubit],
-        const CoffeeApp(),
+        const TheUsualsApp(),
       );
-      expect(find.byType(CoffeeApp), findsOneWidget);
+      expect(find.byType(TheUsualsApp), findsOneWidget);
     });
 
     testWidgets('adds $ClearFeed when the user signs out', (tester) async {
@@ -42,7 +42,7 @@ void main() {
 
       await tester.pumpPumpPumpItUP(
         deps: [devToolsCubit, authCubit, coffeeBloc, connectivityCubit],
-        const CoffeeApp(),
+        const TheUsualsApp(),
       );
       await tester.pump();
 

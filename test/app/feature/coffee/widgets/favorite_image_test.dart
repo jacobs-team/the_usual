@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:the_usual/app/core/core.dart';
-import 'package:the_usual/app/feature/feature.dart';
+import 'package:the_usual/app/app.dart';
 import 'package:the_usual/l10n/l10n.dart';
 
 import '../../../../helpers/helpers.dart';

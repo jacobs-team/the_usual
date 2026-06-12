@@ -1,11 +1,9 @@
-// ignore_for_file: public_member_api_docs
-
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
 
-part 'dev_tools_cubit.g.dart';
 part 'dev_tools_cubit.freezed.dart';
+part 'dev_tools_cubit.g.dart';
 
 /// {@template dev_tools_cubit}
 /// A [HydratedCubit] that manages persistent developer settings

@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
-import 'package:the_usual/app/core/core.dart';
+import 'package:the_usual/app/app.dart';
 
 /// {@template coffee_api}
 /// A service class that acts as a high-level interface for network requests.

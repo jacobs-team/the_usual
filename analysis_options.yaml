@@ -8,3 +8,4 @@ linter:
     sort_pub_dependencies: false
     sort_constructors_first: false
     document_ignores: false
+    public_member_api_docs: false

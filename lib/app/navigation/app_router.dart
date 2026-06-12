@@ -4,9 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
-import 'package:the_usual/app/core/cubit/auth_cubit.dart';
-import 'package:the_usual/app/feature/feature.dart';
-import 'package:the_usual/app/navigation/routes.dart';
+import 'package:the_usual/app/app.dart';
 import 'package:the_usual/l10n/l10n.dart';
 
 /// {@template app_router}
@@ -19,7 +17,9 @@ import 'package:the_usual/l10n/l10n.dart';
 @singleton
 class AppRouter {
   /// {@macro app_router}
-  AppRouter(this._authCubit) {
+  AppRouter(
+    // this._authCubit
+  ) {
     router = GoRouter(
       initialLocation: Routes.onboarding,
       // refreshListenable: _authCubit,
@@ -47,7 +47,7 @@ class AppRouter {
     );
   }
 
-  final AuthCubit _authCubit;
+  // final AuthCubit _authCubit;
 
   /// The [GoRouter] instance used by the application.
   late final GoRouter router;

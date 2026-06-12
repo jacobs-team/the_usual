@@ -1,2 +1,8 @@
+export 'build_usuals_view.dart';
+export 'complete_view.dart';
+export 'first_log_view.dart';
+export 'meal_schedule_view.dart';
 export 'onboarding_view.dart';
+export 'reminder_style_view.dart';
+export 'weight_tracking_view.dart';
 export 'welcome_view.dart';

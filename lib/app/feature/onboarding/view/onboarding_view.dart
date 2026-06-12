@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
-import 'package:the_usual/app/feature/onboarding/bloc/bloc.dart';
-import 'package:the_usual/app/feature/onboarding/view/welcome_view.dart';
 
 /// {@template onboarding_view}
 /// Hosts the onboarding flow, rendering the screen for the
@@ -20,9 +19,13 @@ class OnboardingView extends StatelessWidget {
       builder: (context, step) {
         return switch (step) {
           OnboardingStep.welcome => const WelcomeView(),
-          _ => Scaffold(
-            body: Center(child: Text('TODO: ${step.name}')),
-          ),
+          OnboardingStep.buildUsuals => const BuildUsualsView(),
+          OnboardingStep.reminderStyle => const ReminderStyleView(),
+          OnboardingStep.mealSchedule => const MealScheduleView(),
+          OnboardingStep.weightTracking => const WeightTrackingView(),
+          OnboardingStep.firstLog => const FirstLogView(),
+          // TODO(onboarding): route to the home/log feature once it exists.
+          OnboardingStep.complete => const CompleteView(),
         };
       },
     );

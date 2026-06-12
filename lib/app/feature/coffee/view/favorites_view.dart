@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
-import 'package:the_usual/app/feature/coffee/coffee.dart';
 import 'package:the_usual/design_system/design_system.dart';
 import 'package:the_usual/l10n/l10n.dart';
 

@@ -1,8 +1,7 @@
-// ignore_for_file: public_member_api_docs, placeholder
 // coverage:ignore-file
 
 import 'package:flutter/material.dart';
-import 'package:the_usual/app/core/core.dart';
+import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
 import 'package:the_usual/l10n/l10n.dart';
 

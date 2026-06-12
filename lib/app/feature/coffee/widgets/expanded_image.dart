@@ -2,9 +2,8 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:the_usual/app/core/core.dart';
+import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
-import 'package:the_usual/app/feature/coffee/bloc/coffee_bloc.dart';
 import 'package:the_usual/l10n/l10n.dart';
 
 /// {@template expanded_image}

@@ -6,8 +6,11 @@
 - Do not add unnecessary inline comments. Only comment on non-obvious logic. Never restate what the code already says.
 - Always use barrel files over direct imports.
 - Always use `fvm flutter` instead of `flutter` for all Flutter CLI commands.
+- Never run the app (`flutter run` or launching on any device). The developer runs it from VS Code so the debug windows and controls stay attached. Ask them to run it, then interact with their running instance if needed.
 - Do not fix linter warnings or info-level diagnostics — only fix errors.
 - The code generator for freezed, json_serializable, and injectable should be running in the background at all times, if it's not. please ask the user to start it.
+- Don't worry about writing tests until told to do so by the user.
+- Do not prematurely optimize. Do not add events, methods, or abstractions for cases an existing general one already covers. If a specific behavior is needed later, add it then. Example: a `getStartedPressed` event whose handler only advances to the next step is unnecessary when `continuePressed` already does that — use `continuePressed` until "get started" actually needs different behavior.
 
 ## Models, States & Events
 

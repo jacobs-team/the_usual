@@ -6,6 +6,6 @@ import 'package:the_usual/bootstrap.dart';
 Future<void> main() async {
   await bootstrap(() async {
     await configureDependencies(Environment.prod);
-    return const CoffeeApp();
+    return const TheUsualsApp();
   });
 }

@@ -1,4 +1,4 @@
-import 'package:the_usual/app/core/core.dart';
+import 'package:the_usual/app/app.dart';
 
 /// Maps a [raw] dynamic value into a single object of type [T].
 ///

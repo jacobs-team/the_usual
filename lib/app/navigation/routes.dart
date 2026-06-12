@@ -1,6 +1,4 @@
-// ignore_for_file: public_member_api_docs
-
-import 'package:the_usual/app/navigation/navigation.dart';
+import 'package:the_usual/app/app.dart';
 
 /// {@template routes}
 /// A collection of static string constants representing

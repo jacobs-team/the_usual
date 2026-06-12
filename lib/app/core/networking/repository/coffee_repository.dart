@@ -1,5 +1,5 @@
 import 'package:injectable/injectable.dart';
-import 'package:the_usual/app/core/core.dart';
+import 'package:the_usual/app/app.dart';
 
 /// {@template coffee_repository}
 /// A repository that handles data operations for coffee-related resources.
