@@ -26,6 +26,8 @@ import 'package:the_usual/app/feature/coffee/bloc/coffee_bloc.dart' as _i1016;
 import 'package:the_usual/app/feature/dev_tools/cubit/dev_tools_cubit.dart'
     as _i818;
 import 'package:the_usual/app/feature/feature.dart' as _i476;
+import 'package:the_usual/app/feature/onboarding/bloc/onboarding_bloc.dart'
+    as _i640;
 import 'package:the_usual/app/navigation/app_router.dart' as _i874;
 
 extension GetItInjectableX on _i174.GetIt {
@@ -44,6 +46,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i473.ConnectivityCubit>(() => _i473.ConnectivityCubit());
     gh.singleton<_i115.FileCacheService>(() => _i115.FileCacheService());
     gh.singleton<_i818.DevToolsCubit>(() => _i818.DevToolsCubit());
+    gh.lazySingleton<_i640.OnboardingBloc>(() => _i640.OnboardingBloc());
     gh.singleton<_i13.RestClient>(
       () => _i13.RestClient(gh<_i540.AuthCubit>(), gh<_i476.DevToolsCubit>()),
     );

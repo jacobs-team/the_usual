@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:the_usual/app/core/cubit/auth_cubit.dart';
 import 'package:the_usual/app/feature/feature.dart';
-import 'package:the_usual/app/navigation/navigation_wrapper.dart';
 import 'package:the_usual/app/navigation/routes.dart';
 import 'package:the_usual/l10n/l10n.dart';
 
@@ -22,22 +21,25 @@ class AppRouter {
   /// {@macro app_router}
   AppRouter(this._authCubit) {
     router = GoRouter(
-      initialLocation: Routes.coffee,
-      refreshListenable: _authCubit,
+      initialLocation: Routes.onboarding,
+      // refreshListenable: _authCubit,
       redirect: (context, state) {
-        final signedIn = _authCubit.state.signedIn;
-        final isSigningIn = state.uri.path.startsWith(Routes.signIn);
+        // final signedIn = _authCubit.state.signedIn;
+        // final isSigningIn = state.uri.path.startsWith(Routes.signIn);
+        // final isOnboarding = state.uri.path.startsWith(Routes.onboarding);
 
-        // If not signedIn and trying to access a protected route - Force
-        // signIn.
-        if (!signedIn && !isSigningIn) {
-          return Routes.signIn;
-        }
+        // if (isOnboarding) {
+        //   return null;
+        // }
 
-        // If signedIn and trying to access signIn -> Force coffee.
-        if (signedIn && isSigningIn) {
-          return Routes.coffee;
-        }
+        // if (!signedIn && !isSigningIn) {
+        //   return Routes.signIn;
+        // }
+
+        // If signedIn and trying to access signIn -> Force onboarding.
+        // if (signedIn && isSigningIn) {
+        //   return Routes.onboarding;
+        // }
 
         return null;
       },
@@ -52,40 +54,18 @@ class AppRouter {
 
   /// The list of top-level and nested Routes.
   static final List<RouteBase> routes = [
-    StatefulShellRoute.indexedStack(
-      branches: [
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: Routes.coffee,
-              pageBuilder: (context, state) {
-                return const NoTransitionPage(
-                  child: CoffeeView(),
-                );
-              },
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: Routes.favorites,
-              pageBuilder: (context, state) {
-                return const NoTransitionPage(child: FavoritesView());
-              },
-            ),
-          ],
-        ),
-      ],
-      builder: (context, state, navigationShell) =>
-          NavigationWrapper(navigationShell: navigationShell),
-    ),
     GoRoute(
-      path: Routes.signIn,
+      path: Routes.onboarding,
       pageBuilder: (context, state) {
-        return const NoTransitionPage(child: SignInView());
+        return const NoTransitionPage(child: OnboardingView());
       },
     ),
+    // GoRoute(
+    //   path: Routes.signIn,
+    //   pageBuilder: (context, state) {
+    //     return const NoTransitionPage(child: SignInView());
+    //   },
+    // ),
     if (kDebugMode)
       GoRoute(
         path: Routes.devTools,

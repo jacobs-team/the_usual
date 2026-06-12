@@ -7,6 +7,7 @@
 - Always use barrel files over direct imports.
 - Always use `fvm flutter` instead of `flutter` for all Flutter CLI commands.
 - Do not fix linter warnings or info-level diagnostics — only fix errors.
+- The code generator for freezed, json_serializable, and injectable should be running in the background at all times, if it's not. please ask the user to start it.
 
 ## Models, States & Events
 

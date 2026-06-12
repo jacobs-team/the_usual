@@ -10,8 +10,9 @@ import 'package:the_usual/app/navigation/navigation.dart';
 /// They also will be shown in the Url bar on web.
 /// {@endtemplate}
 abstract class Routes {
-  static const String coffee = '/coffee';
-  static const String favorites = '/favorites';
-  static const String signIn = '/sign-in';
+  // static const String coffee = '/coffee';
+  static const String onboarding = '/onboarding';
+  // static const String favorites = '/favorites';
+  // static const String signIn = '/sign-in';
   static const String devTools = '/dev-tools';
 }
