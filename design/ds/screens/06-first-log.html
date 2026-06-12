@@ -1,0 +1,41 @@
+<!-- @dsCard group="Onboarding" name="06 · First log" subtitle="Usuals grid, something else, log CTA" width="440" height="900" -->
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#2F7A55;--tint:#E8F3EC;--ink:#1A1D1B;--sub:#6B7280;--line:#E5E7E3;--surf:#F4F5F3}
+*{margin:0;box-sizing:border-box;font-family:'Inter',-apple-system,system-ui,sans-serif}
+body{background:#ECEEEC;display:flex;justify-content:center;padding:24px}
+.phone{width:390px;height:844px;background:#fff;border-radius:24px;padding:64px 24px 32px;display:flex;flex-direction:column;gap:18px}
+.topbar{display:flex;align-items:center;justify-content:space-between}
+.dots{display:flex;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--line)}.dot.on{background:var(--accent)}
+h1{font-size:26px;font-weight:700;color:var(--ink)}
+.sub{font-size:15px;color:var(--sub)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.food{background:var(--surf);border-radius:14px;padding:10px 10px 12px;display:flex;flex-direction:column;gap:10px;border:1.5px solid transparent}
+.food.sel{background:var(--tint);border-color:var(--accent)}
+.food b{font-size:15px;font-weight:500;color:var(--ink)}
+.photo{height:84px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center}
+.photo::after{content:'';width:34px;height:34px;border-radius:50%;background:var(--line)}
+.else{display:flex;align-items:center;justify-content:center;gap:10px;border:1.5px solid var(--line);border-radius:14px;padding:16px;font-size:16px;font-weight:500;color:var(--ink)}
+.else .cam{width:26px;height:26px;border-radius:8px;background:var(--surf);display:flex;align-items:center;justify-content:center}
+.else .cam::after{content:'';width:11px;height:11px;border-radius:50%;background:var(--line)}
+.spacer{flex:1}
+.btn{display:flex;justify-content:center;padding:16px;border-radius:14px;background:var(--accent);color:#fff;font-size:16px;font-weight:600}
+.ghost{font-size:15px;font-weight:500;color:var(--sub);text-align:center}
+</style></head><body><div class="phone">
+<div class="topbar"><span>←</span><div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot on"></span></div><span></span></div>
+<h1>Did you eat lunch today?</h1>
+<p class="sub">Tap everything you had.</p>
+<div class="grid">
+<div class="food sel"><div class="photo"></div><b>Chicken bowl</b></div>
+<div class="food"><div class="photo"></div><b>Turkey sandwich</b></div>
+<div class="food"><div class="photo"></div><b>Leftovers</b></div>
+<div class="food"><div class="photo"></div><b>Big salad</b></div>
+</div>
+<div class="else"><div class="cam"></div>I ate something else</div>
+<div class="spacer"></div>
+<div class="btn">Log it</div>
+<p class="ghost">I didn't eat lunch</p>
+</div></body></html>

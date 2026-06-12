@@ -1,0 +1,45 @@
+<!-- @dsCard group="Onboarding" name="02 · Build your usuals" subtitle="Meal tabs, suggestion chips, item list, add field" width="440" height="900" -->
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#2F7A55;--tint:#E8F3EC;--ink:#1A1D1B;--sub:#6B7280;--line:#E5E7E3;--surf:#F4F5F3}
+*{margin:0;box-sizing:border-box;font-family:'Inter',-apple-system,system-ui,sans-serif}
+body{background:#ECEEEC;display:flex;justify-content:center;padding:24px}
+.phone{width:390px;height:844px;background:#fff;border-radius:24px;padding:64px 24px 32px;display:flex;flex-direction:column;gap:18px}
+.topbar{display:flex;align-items:center;justify-content:space-between}
+.dots{display:flex;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--line)}.dot.on{background:var(--accent)}
+.skip{font-size:15px;font-weight:500;color:var(--sub)}
+h1{font-size:26px;font-weight:700;color:var(--ink)}
+.sub{font-size:15px;color:var(--sub);line-height:1.4}
+.lbl{font-size:12px;font-weight:600;letter-spacing:.08em;color:var(--sub)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{padding:9px 14px;border-radius:999px;background:var(--surf);font-size:14px;font-weight:500;color:var(--ink)}
+.chip.sel{background:var(--tint);border:1px solid var(--accent);color:var(--accent)}
+.item{display:flex;align-items:center;gap:12px;background:var(--surf);border-radius:12px;padding:10px 14px 10px 10px}
+.item span{flex:1;font-size:16px;font-weight:500;color:var(--ink)}
+.item i{font-style:normal;color:var(--sub);font-size:14px}
+.photo{width:44px;height:44px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center}
+.photo::after{content:'';width:18px;height:18px;border-radius:50%;background:var(--line)}
+.input{display:flex;align-items:center;gap:10px;border:1.5px solid var(--line);border-radius:12px;padding:14px 14px 14px 16px}
+.input span{flex:1;font-size:15px;color:var(--sub)}
+.input .photo{width:26px;height:26px;background:var(--surf)}.input .photo::after{width:11px;height:11px}
+.spacer{flex:1}
+.btn{display:flex;justify-content:center;padding:16px;border-radius:14px;background:var(--accent);color:#fff;font-size:16px;font-weight:600}
+.ghost{font-size:15px;font-weight:500;color:var(--sub);text-align:center}
+</style></head><body><div class="phone">
+<div class="topbar"><span>←</span><div class="dots"><span class="dot"></span><span class="dot on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><span class="skip">Skip</span></div>
+<h1>Add your usual meals</h1>
+<p class="sub">Pick what you eat most. You can add more anytime.</p>
+<div class="chips"><span class="chip sel">Breakfast</span><span class="chip">Lunch</span><span class="chip">Dinner</span><span class="chip">Snacks</span></div>
+<p class="lbl">SUGGESTIONS</p>
+<div class="chips"><span class="chip">+ Eggs &amp; toast</span><span class="chip">+ Oatmeal</span><span class="chip">+ Cereal</span><span class="chip">+ Smoothie</span><span class="chip">+ Coffee &amp; bagel</span><span class="chip">+ Leftovers</span></div>
+<p class="lbl">YOUR ITEMS (2)</p>
+<div class="item"><div class="photo"></div><span>Eggs &amp; toast</span><i>✕</i></div>
+<div class="item"><div class="photo"></div><span>Greek yogurt + granola</span><i>✕</i></div>
+<div class="input"><span>Add your own…</span><div class="photo"></div></div>
+<div class="spacer"></div>
+<div class="btn">Continue</div>
+<p class="ghost">Skip for now</p>
+</div></body></html>

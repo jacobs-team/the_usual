@@ -1,0 +1,42 @@
+<!-- @dsCard group="Onboarding" name="04 · Meal schedule" subtitle="Per-meal times with toggles, once-a-day mode" width="440" height="900" -->
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#2F7A55;--tint:#E8F3EC;--ink:#1A1D1B;--sub:#6B7280;--line:#E5E7E3;--surf:#F4F5F3}
+*{margin:0;box-sizing:border-box;font-family:'Inter',-apple-system,system-ui,sans-serif}
+body{background:#ECEEEC;display:flex;justify-content:center;padding:24px}
+.phone{width:390px;height:844px;background:#fff;border-radius:24px;padding:64px 24px 32px;display:flex;flex-direction:column;gap:18px}
+.topbar{display:flex;align-items:center;justify-content:space-between}
+.dots{display:flex;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--line)}.dot.on{background:var(--accent)}
+.skip{font-size:15px;font-weight:500;color:var(--sub)}
+h1{font-size:26px;font-weight:700;color:var(--ink)}
+.sub{font-size:14px;color:var(--sub);line-height:1.45}
+.seg{display:flex;background:var(--surf);border-radius:12px;padding:4px;gap:4px}
+.seg div{flex:1;text-align:center;padding:9px 12px;border-radius:9px;font-size:14px;font-weight:500;color:var(--sub)}
+.seg .on{background:#fff;font-weight:600;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.meal{display:flex;align-items:center;gap:12px;background:var(--surf);border-radius:14px;padding:14px 16px}
+.meal span{flex:1;font-size:16px;font-weight:500;color:var(--ink)}
+.meal.off span{color:var(--sub)}
+.pill{background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 12px;font-size:14px;font-weight:600;color:var(--ink)}
+.meal.off .pill{background:none;border:none;color:var(--sub);font-weight:500}
+.toggle{width:46px;height:28px;border-radius:14px;background:var(--accent);position:relative;flex-shrink:0}
+.toggle::after{content:'';position:absolute;width:22px;height:22px;border-radius:50%;background:#fff;top:3px;right:3px}
+.toggle.off{background:#D6D9D4}.toggle.off::after{left:3px;right:auto}
+.note{font-size:13px;color:var(--sub);line-height:1.4}
+.spacer{flex:1}
+.btn{display:flex;justify-content:center;padding:16px;border-radius:14px;background:var(--accent);color:#fff;font-size:16px;font-weight:600}
+</style></head><body><div class="phone">
+<div class="topbar"><span>←</span><div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot on"></span><span class="dot"></span><span class="dot"></span></div><span class="skip">Skip</span></div>
+<h1>When should we ask?</h1>
+<div class="seg"><div class="on">After each meal</div><div>Once a day</div></div>
+<p class="sub">Logging near when you ate is more accurate, and you can snap a photo while the food is in front of you.</p>
+<div class="meal"><span>Breakfast</span><span class="pill">9:00 AM</span><div class="toggle"></div></div>
+<div class="meal"><span>Lunch</span><span class="pill">2:00 PM</span><div class="toggle"></div></div>
+<div class="meal"><span>Dinner</span><span class="pill">7:30 PM</span><div class="toggle"></div></div>
+<div class="meal off"><span>Snacks</span><span class="pill">No reminder</span><div class="toggle off"></div></div>
+<p class="note">You can add a meal any time you eat. Reminders just keep you honest.</p>
+<div class="spacer"></div>
+<div class="btn">Continue</div>
+</div></body></html>

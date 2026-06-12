@@ -1,0 +1,45 @@
+<!-- @dsCard group="Foundations" name="Tokens & controls" subtitle="Palette, type, chips, buttons, toggle, segmented" width="720" height="560" -->
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#2F7A55;--tint:#E8F3EC;--ink:#1A1D1B;--sub:#6B7280;--line:#E5E7E3;--surf:#F4F5F3}
+*{margin:0;box-sizing:border-box;font-family:'Inter',-apple-system,system-ui,sans-serif}
+body{padding:28px;display:flex;flex-direction:column;gap:24px;background:#fff}
+h2{font-size:13px;font-weight:600;letter-spacing:.08em;color:var(--sub);text-transform:uppercase}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.sw{width:72px;height:48px;border-radius:10px;border:1px solid var(--line)}
+.sw span{display:block;font-size:11px;color:var(--sub);margin-top:52px;white-space:nowrap}
+.chip{display:inline-flex;padding:9px 14px;border-radius:999px;background:var(--surf);font-size:14px;font-weight:500;color:var(--ink)}
+.chip.sel{background:var(--tint);border:1px solid var(--accent);color:var(--accent)}
+.btn{display:inline-flex;justify-content:center;align-items:center;padding:14px 24px;border-radius:14px;background:var(--accent);color:#fff;font-size:16px;font-weight:600}
+.btn.outline{background:#fff;border:1.5px solid var(--line);color:var(--ink)}
+.toggle{width:46px;height:28px;border-radius:14px;background:var(--accent);position:relative}
+.toggle::after{content:'';position:absolute;width:22px;height:22px;border-radius:50%;background:#fff;top:3px;right:3px}
+.toggle.off{background:#D6D9D4}.toggle.off::after{left:3px;right:auto}
+.seg{display:flex;background:var(--surf);border-radius:12px;padding:4px;gap:4px;width:280px}
+.seg div{flex:1;text-align:center;padding:9px 12px;border-radius:9px;font-size:14px;font-weight:500;color:var(--sub)}
+.seg .on{background:#fff;font-weight:600;color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+</style></head><body>
+<div><h2>Color</h2><div class="row" style="margin-top:10px">
+<div class="sw" style="background:#2F7A55"><span>accent 2F7A55</span></div>
+<div class="sw" style="background:#E8F3EC"><span>tint E8F3EC</span></div>
+<div class="sw" style="background:#1A1D1B"><span>ink 1A1D1B</span></div>
+<div class="sw" style="background:#6B7280"><span>sub 6B7280</span></div>
+<div class="sw" style="background:#F4F5F3"><span>surface F4F5F3</span></div>
+<div class="sw" style="background:#E5E7E3"><span>line E5E7E3</span></div>
+</div></div>
+<div style="margin-top:18px"><h2>Type · Inter</h2>
+<p style="font-size:32px;font-weight:700;color:var(--ink)">Display 32 Bold</p>
+<p style="font-size:26px;font-weight:700;color:var(--ink)">Title 26 Bold</p>
+<p style="font-size:16px;font-weight:600;color:var(--ink)">Label 16 Semibold</p>
+<p style="font-size:15px;color:var(--sub)">Body 15 Regular, secondary</p>
+<p style="font-size:12px;font-weight:600;letter-spacing:.08em;color:var(--sub)">SECTION LABEL 12</p>
+</div>
+<div><h2>Controls</h2><div class="row" style="margin-top:10px">
+<span class="chip sel">Selected chip</span><span class="chip">Chip</span>
+<span class="btn">Primary</span><span class="btn outline">Outline</span>
+<span class="toggle"></span><span class="toggle off"></span>
+<span class="seg"><div class="on">On</div><div>Off</div></span>
+</div></div>
+</body></html>

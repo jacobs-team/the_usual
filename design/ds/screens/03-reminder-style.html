@@ -1,0 +1,35 @@
+<!-- @dsCard group="Onboarding" name="03 · Reminder style" subtitle="Notifications / on open / none, contextual permission" width="440" height="900" -->
+<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#2F7A55;--tint:#E8F3EC;--ink:#1A1D1B;--sub:#6B7280;--line:#E5E7E3;--surf:#F4F5F3}
+*{margin:0;box-sizing:border-box;font-family:'Inter',-apple-system,system-ui,sans-serif}
+body{background:#ECEEEC;display:flex;justify-content:center;padding:24px}
+.phone{width:390px;height:844px;background:#fff;border-radius:24px;padding:64px 24px 32px;display:flex;flex-direction:column;gap:18px}
+.topbar{display:flex;align-items:center;justify-content:space-between}
+.dots{display:flex;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--line)}.dot.on{background:var(--accent)}
+.skip{font-size:15px;font-weight:500;color:var(--sub)}
+h1{font-size:26px;font-weight:700;color:var(--ink)}
+.sub{font-size:15px;color:var(--sub);line-height:1.4}
+.opt{display:flex;align-items:center;gap:14px;border:1.5px solid var(--line);border-radius:16px;padding:18px}
+.opt.sel{background:var(--tint);border-color:var(--accent)}
+.opt .copy{flex:1;display:flex;flex-direction:column;gap:4px}
+.opt b{font-size:16px;font-weight:600;color:var(--ink)}
+.opt p{font-size:14px;color:var(--sub)}
+.opt .note{font-size:13px;font-weight:500;color:var(--accent)}
+.radio{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);flex-shrink:0}
+.radio.on{background:var(--accent);border:none}
+.spacer{flex:1}
+.btn{display:flex;justify-content:center;padding:16px;border-radius:14px;background:var(--accent);color:#fff;font-size:16px;font-weight:600}
+</style></head><body><div class="phone">
+<div class="topbar"><span>←</span><div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><span class="skip">Skip</span></div>
+<h1>How should we check in?</h1>
+<p class="sub">We ask if you ate. You tap what it was.</p>
+<div class="opt sel"><div class="copy"><b>Notifications</b><p>A quick nudge at your meal times.</p><span class="note">We'll ask for permission next.</span></div><div class="radio on"></div></div>
+<div class="opt"><div class="copy"><b>When I open the app</b><p>No pings. We ask when you launch.</p></div><div class="radio"></div></div>
+<div class="opt"><div class="copy"><b>Don't remind me</b><p>Log on your own schedule.</p></div><div class="radio"></div></div>
+<div class="spacer"></div>
+<div class="btn">Continue</div>
+</div></body></html>
