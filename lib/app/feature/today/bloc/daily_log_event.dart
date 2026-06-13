@@ -25,9 +25,8 @@ sealed class DailyLogEvent with _$DailyLogEvent {
     double? weight,
     WeightUnit weightUnit,
   ) = TodayWeightChanged;
-  const factory DailyLogEvent.weightEntryRemoved(String id) =
-      WeightEntryRemoved;
 
-  // TODO(dev): temporary. Seeds sample history in debug; remove before ship.
+  // TODO(dev): temporary. Replaces the log with sample history; triggered from
+  // Dev Tools. Remove before ship.
   const factory DailyLogEvent.sampleDataSeeded() = SampleDataSeeded;
 }

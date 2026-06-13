@@ -45,72 +45,72 @@ class _FoodEntrySheetState extends State<FoodEntrySheet> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    return SafeArea(
-      top: false,
-      child: Padding(
-        padding: EdgeInsets.only(
-          left: AppDesign.spacing.lg,
-          right: AppDesign.spacing.lg,
-          top: AppDesign.spacing.lg,
-          bottom:
-              MediaQuery.of(context).viewInsets.bottom + AppDesign.spacing.xl,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(widget.title, style: textTheme.titleMedium),
-            SizedBox(height: AppDesign.spacing.md),
-            const SectionLabel('NAME'),
-            SizedBox(height: AppDesign.spacing.sm),
-            TheUsualTextField(
-              controller: _nameController,
-              autofocus: true,
-              hintText: 'e.g. Chicken caesar salad',
-              onChanged: (_) => setState(() {}),
-            ),
-            SizedBox(height: AppDesign.spacing.md),
-            const SectionLabel('CALORIES · OPTIONAL'),
-            SizedBox(height: AppDesign.spacing.sm),
-            CalorieField(
-              controller: _caloriesController,
-              hintText: 'Leave blank to skip',
-            ),
-            if (widget.showAddToUsualMeals)
-              CheckboxListTile(
-                contentPadding: EdgeInsets.zero,
-                controlAffinity: ListTileControlAffinity.leading,
-                title: const Text('Add to usual meals'),
-                value: _addToUsualMeals,
-                onChanged: (value) =>
-                    setState(() => _addToUsualMeals = value ?? false),
+    // Lift the sheet above the keyboard, then keep the content clear of the
+    // home indicator with SafeArea.
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.viewInsetsOf(context).bottom,
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: EdgeInsets.all(AppDesign.spacing.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(widget.title, style: textTheme.titleMedium),
+              SizedBox(height: AppDesign.spacing.md),
+              const SectionLabel('NAME'),
+              SizedBox(height: AppDesign.spacing.sm),
+              TheUsualTextField(
+                controller: _nameController,
+                autofocus: true,
+                hintText: 'e.g. Chicken caesar salad',
+                onChanged: (_) => setState(() {}),
               ),
-            SizedBox(height: AppDesign.spacing.lg),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    child: const Text('Cancel'),
-                  ),
+              SizedBox(height: AppDesign.spacing.md),
+              const SectionLabel('CALORIES · OPTIONAL'),
+              SizedBox(height: AppDesign.spacing.sm),
+              CalorieField(
+                controller: _caloriesController,
+              ),
+              if (widget.showAddToUsualMeals)
+                CheckboxListTile(
+                  contentPadding: EdgeInsets.zero,
+                  controlAffinity: ListTileControlAffinity.leading,
+                  title: const Text('Add to usual meals'),
+                  value: _addToUsualMeals,
+                  onChanged: (value) =>
+                      setState(() => _addToUsualMeals = value ?? false),
                 ),
-                SizedBox(width: AppDesign.spacing.sm),
-                Expanded(
-                  flex: 2,
-                  child: FilledButton(
-                    onPressed: _nameController.text.trim().isEmpty
-                        ? null
-                        : () => Navigator.of(context).pop((
-                            _nameController.text,
-                            int.tryParse(_caloriesController.text),
-                            _addToUsualMeals,
-                          )),
-                    child: Text(widget.confirmLabel),
+              SizedBox(height: AppDesign.spacing.lg),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('Cancel'),
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
+                  SizedBox(width: AppDesign.spacing.sm),
+                  Expanded(
+                    flex: 2,
+                    child: FilledButton(
+                      onPressed: _nameController.text.trim().isEmpty
+                          ? null
+                          : () => Navigator.of(context).pop((
+                              _nameController.text,
+                              int.tryParse(_caloriesController.text),
+                              _addToUsualMeals,
+                            )),
+                      child: Text(widget.confirmLabel),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

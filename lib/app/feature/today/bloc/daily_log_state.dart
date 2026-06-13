@@ -1,8 +1,24 @@
 part of 'daily_log_bloc.dart';
 
+/// One logged day rolled up for the history screen: its calorie total,
+/// weigh-in, and meals.
+typedef HistoryDay = ({
+  DateTime day,
+  int calories,
+  WeightEntry? weightEntry,
+  List<MealLogEntry> mealEntries,
+});
+
+/// One month of history: its logged days (newest first) and the average daily
+/// calories across them.
+typedef HistoryMonth = ({
+  DateTime month,
+  int averageDailyCalories,
+  List<HistoryDay> days,
+});
+
 /// {@template daily_log_state}
-/// Everything logged across all days: meals and weigh-ins. Helpers narrow
-/// the meal entries to a given day.
+/// Everything logged across all days: meals and weigh-ins.
 /// {@endtemplate}
 @freezed
 abstract class DailyLogState with _$DailyLogState {
@@ -18,19 +34,6 @@ abstract class DailyLogState with _$DailyLogState {
   factory DailyLogState.fromJson(Map<String, dynamic> json) =>
       _$DailyLogStateFromJson(json);
 
-  /// Total known calories logged on [day]. Entries without calories don't
-  /// contribute until their value is filled in.
-  int caloriesOn(DateTime day) {
-    return mealEntries
-        .where(
-          (mealLogEntry) => DateUtils.isSameDay(mealLogEntry.loggedAt, day),
-        )
-        .fold(
-          0,
-          (total, mealLogEntry) => total + (mealLogEntry.calories ?? 0),
-        );
-  }
-
   /// The weigh-in recorded on [day], or null when there isn't one.
   WeightEntry? weightOn(DateTime day) {
     for (final weightEntry in weightEntries) {
@@ -39,59 +42,55 @@ abstract class DailyLogState with _$DailyLogState {
     return null;
   }
 
-  /// Every day that has any logged meal or weigh-in, newest first.
-  List<DateTime> get loggedDays {
-    final days = <DateTime>{
-      for (final mealLogEntry in mealEntries)
-        DateUtils.dateOnly(mealLogEntry.loggedAt),
-      for (final weightEntry in weightEntries)
-        DateUtils.dateOnly(weightEntry.loggedAt),
-    };
-    return days.toList()..sort((a, b) => b.compareTo(a));
-  }
-
-  /// Every month that has any logged day, oldest first. Each is the first of
-  /// its month, so the newest sits last.
-  List<DateTime> get loggedMonths {
-    final months = <DateTime>{
-      for (final day in loggedDays) DateTime(day.year, day.month),
-    };
-    return months.toList()..sort((a, b) => a.compareTo(b));
-  }
-
-  /// The logged days that fall within [month], newest first.
-  List<DateTime> loggedDaysIn(DateTime month) {
-    return loggedDays
-        .where((day) => day.year == month.year && day.month == month.month)
-        .toList();
-  }
-
-  /// Average calories across the logged days in [month], rounded. Days with no
-  /// calories still count as a zero-calorie day.
-  int averageDailyCaloriesIn(DateTime month) {
-    final daysInMonth = loggedDaysIn(month);
-    if (daysInMonth.isEmpty) return 0;
-    final totalCalories = daysInMonth.fold(
-      0,
-      (total, day) => total + caloriesOn(day),
-    );
-    return (totalCalories / daysInMonth.length).round();
-  }
-
-  /// The meal entries logged on [day].
-  List<MealLogEntry> mealEntriesOn(DateTime day) {
-    return mealEntries
-        .where(
-          (mealLogEntry) => DateUtils.isSameDay(mealLogEntry.loggedAt, day),
-        )
-        .toList();
-  }
-
   /// The most recent weigh-in, or null when none have been recorded.
   WeightEntry? get latestWeight {
     if (weightEntries.isEmpty) return null;
     return weightEntries.reduce(
       (a, b) => a.loggedAt.isAfter(b.loggedAt) ? a : b,
     );
+  }
+
+  /// The full log rolled up by month for the history screen, oldest month
+  /// first. Built in a single pass: meals and weigh-ins are bucketed by day,
+  /// days are grouped into months, and each month's average is computed once.
+  List<HistoryMonth> get historyByMonth {
+    final mealsByDay = <DateTime, List<MealLogEntry>>{};
+    for (final mealLogEntry in mealEntries) {
+      final day = DateUtils.dateOnly(mealLogEntry.loggedAt);
+      mealsByDay.putIfAbsent(day, () => <MealLogEntry>[]).add(mealLogEntry);
+    }
+
+    final weightByDay = <DateTime, WeightEntry>{};
+    for (final weightEntry in weightEntries) {
+      weightByDay[DateUtils.dateOnly(weightEntry.loggedAt)] = weightEntry;
+    }
+
+    final allDays = <DateTime>{...mealsByDay.keys, ...weightByDay.keys}.toList()
+      ..sort((a, b) => b.compareTo(a));
+
+    final daysByMonth = <DateTime, List<HistoryDay>>{};
+    for (final day in allDays) {
+      final meals = mealsByDay[day] ?? const <MealLogEntry>[];
+      final month = DateTime(day.year, day.month);
+      daysByMonth.putIfAbsent(month, () => <HistoryDay>[]).add((
+        day: day,
+        calories: meals.totalCalories,
+        weightEntry: weightByDay[day],
+        mealEntries: meals,
+      ));
+    }
+
+    final months = daysByMonth.keys.toList()..sort((a, b) => a.compareTo(b));
+    final history = <HistoryMonth>[];
+    for (final month in months) {
+      final days = daysByMonth[month]!;
+      final totalCalories = days.fold(0, (total, day) => total + day.calories);
+      history.add((
+        month: month,
+        averageDailyCalories: (totalCalories / days.length).round(),
+        days: days,
+      ));
+    }
+    return history;
   }
 }

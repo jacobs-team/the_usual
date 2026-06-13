@@ -67,13 +67,17 @@ class TodayView extends StatelessWidget {
                     return ListView(
                       padding: EdgeInsets.all(AppDesign.spacing.lg),
                       children: [
+                        const SectionLabel('WEIGHT'),
+                        SizedBox(height: AppDesign.spacing.sm),
                         const _WeightTracker(),
-                        SizedBox(height: AppDesign.spacing.lg),
+                        SizedBox(height: AppDesign.spacing.xl),
+                        const SectionLabel('MEALS'),
+                        SizedBox(height: AppDesign.spacing.sm),
                         Text(
                           '${breakdown.calories} cal today',
                           style: textTheme.headlineSmall,
                         ),
-                        SizedBox(height: AppDesign.spacing.lg),
+                        SizedBox(height: AppDesign.spacing.md),
                         for (final mealOfTheDay in MealOfTheDay.values)
                           MealLogSection(
                             mealOfTheDay: mealOfTheDay,

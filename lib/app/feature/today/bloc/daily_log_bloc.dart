@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -33,24 +32,9 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
         MealEntryCaloriesChanged() => _onMealEntryCaloriesChanged(event, emit),
         WeightLogged() => _onWeightLogged(event, emit),
         TodayWeightChanged() => _onTodayWeightChanged(event, emit),
-        WeightEntryRemoved() => emit(
-          state.copyWith(
-            weightEntries: state.weightEntries
-                .where((weightEntry) => weightEntry.id != event.id)
-                .toList(),
-          ),
-        ),
         SampleDataSeeded() => _onSampleDataSeeded(emit),
       },
     );
-
-    // TODO(dev): temporary. Fills empty debug runs with sample history so the
-    // history screen has something to show. Remove before ship.
-    if (kDebugMode &&
-        state.mealEntries.isEmpty &&
-        state.weightEntries.isEmpty) {
-      add(const DailyLogEvent.sampleDataSeeded());
-    }
   }
 
   static const _uuid = Uuid();

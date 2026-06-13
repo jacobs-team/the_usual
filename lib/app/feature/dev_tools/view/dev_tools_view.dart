@@ -49,6 +49,20 @@ class DevToolsView extends StatelessWidget {
               );
             },
           ),
+          const Divider(),
+          ListTile(
+            title: Text(
+              'Load sample history',
+              style: theme.textTheme.bodyLarge,
+            ),
+            subtitle: const Text(
+              'Replaces the log with seeded days and months',
+            ),
+            trailing: const Icon(Icons.history),
+            onTap: () => getIt<DailyLogBloc>().add(
+              const DailyLogEvent.sampleDataSeeded(),
+            ),
+          ),
         ],
       ),
     );

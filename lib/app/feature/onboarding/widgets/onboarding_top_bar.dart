@@ -39,7 +39,7 @@ class OnboardingTopBar extends StatelessWidget implements PreferredSizeWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 for (final dotStep in steps)
-                  if (dotStep != OnboardingStep.complete)
+                  if (dotStep.showsProgressDot)
                     Padding(
                       padding: EdgeInsets.symmetric(
                         horizontal: AppDesign.spacing.xs,

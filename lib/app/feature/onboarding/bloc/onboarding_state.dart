@@ -47,5 +47,10 @@ enum OnboardingStep {
   mealSchedule,
   weightTracking,
   firstLog,
-  complete,
+  complete;
+
+  /// Whether this step appears as a dot in the progress indicator. The welcome
+  /// intro and completion screen are bookends and don't get a dot.
+  bool get showsProgressDot =>
+      this != OnboardingStep.welcome && this != OnboardingStep.complete;
 }

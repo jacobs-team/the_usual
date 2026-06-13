@@ -25,12 +25,12 @@ class _HistoryViewState extends State<HistoryView> {
   @override
   void initState() {
     super.initState();
-    final loggedMonths = _dailyLogBloc.state.loggedMonths;
-    final initialIndex = loggedMonths.isEmpty ? 0 : loggedMonths.length - 1;
+    final history = _dailyLogBloc.state.historyByMonth;
+    final initialIndex = history.isEmpty ? 0 : history.length - 1;
     final now = DateTime.now();
-    _selectedMonth = loggedMonths.isEmpty
+    _selectedMonth = history.isEmpty
         ? DateTime(now.year, now.month)
-        : loggedMonths[initialIndex];
+        : history[initialIndex].month;
     _pageController = PageController(initialPage: initialIndex);
   }
 
@@ -48,8 +48,8 @@ class _HistoryViewState extends State<HistoryView> {
         child: BlocBuilder<DailyLogBloc, DailyLogState>(
           bloc: _dailyLogBloc,
           builder: (context, state) {
-            final loggedMonths = state.loggedMonths;
-            if (loggedMonths.isEmpty) {
+            final history = state.historyByMonth;
+            if (history.isEmpty) {
               return Center(
                 child: Padding(
                   padding: EdgeInsets.all(AppDesign.spacing.xl),
@@ -67,9 +67,8 @@ class _HistoryViewState extends State<HistoryView> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 _MonthSelector(
-                  loggedMonths: loggedMonths,
+                  history: history,
                   selectedMonth: _selectedMonth,
-                  state: state,
                   onMonthSelected: (index) => _pageController.animateToPage(
                     index,
                     duration: AppDesign.durations.fast,
@@ -79,11 +78,12 @@ class _HistoryViewState extends State<HistoryView> {
                 Expanded(
                   child: PageView.builder(
                     controller: _pageController,
-                    itemCount: loggedMonths.length,
-                    onPageChanged: (index) =>
-                        setState(() => _selectedMonth = loggedMonths[index]),
+                    itemCount: history.length,
+                    onPageChanged: (index) => setState(
+                      () => _selectedMonth = history[index].month,
+                    ),
                     itemBuilder: (context, index) {
-                      final month = loggedMonths[index];
+                      final monthHistory = history[index];
                       final localizations = MaterialLocalizations.of(context);
 
                       return ListView(
@@ -100,17 +100,12 @@ class _HistoryViewState extends State<HistoryView> {
                             ),
                             child: SectionLabel(
                               localizations
-                                  .formatMonthYear(month)
+                                  .formatMonthYear(monthHistory.month)
                                   .toUpperCase(),
                             ),
                           ),
-                          for (final day in state.loggedDaysIn(month))
-                            _HistoryDayCard(
-                              day: day,
-                              mealEntries: state.mealEntriesOn(day),
-                              calories: state.caloriesOn(day),
-                              weightEntry: state.weightOn(day),
-                            ),
+                          for (final historyDay in monthHistory.days)
+                            _HistoryDayCard(historyDay: historyDay),
                         ],
                       );
                     },
@@ -129,15 +124,13 @@ class _HistoryViewState extends State<HistoryView> {
 /// month is highlighted and scrolled into view as the selection changes.
 class _MonthSelector extends StatefulWidget {
   const _MonthSelector({
-    required this.loggedMonths,
+    required this.history,
     required this.selectedMonth,
-    required this.state,
     required this.onMonthSelected,
   });
 
-  final List<DateTime> loggedMonths;
+  final List<HistoryMonth> history;
   final DateTime selectedMonth;
-  final DailyLogState state;
   final ValueChanged<int> onMonthSelected;
 
   @override
@@ -184,31 +177,31 @@ class _MonthSelectorState extends State<_MonthSelector> {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          for (var index = 0; index < widget.loggedMonths.length; index++)
+          for (var index = 0; index < widget.history.length; index++)
             Builder(
               builder: (context) {
-                final month = widget.loggedMonths[index];
+                final monthHistory = widget.history[index];
                 final monthName = localizations
-                    .formatMonthYear(month)
+                    .formatMonthYear(monthHistory.month)
                     .split(' ')
                     .first;
                 final abbreviation = monthName
                     .substring(0, monthName.length < 3 ? monthName.length : 3)
                     .toUpperCase();
                 final isSelected = DateUtils.isSameMonth(
-                  month,
+                  monthHistory.month,
                   widget.selectedMonth,
                 );
                 return Padding(
                   padding: EdgeInsets.only(
-                    right: index == widget.loggedMonths.length - 1
+                    right: index == widget.history.length - 1
                         ? 0
                         : AppDesign.spacing.sm,
                   ),
                   child: _MonthChip(
                     key: isSelected ? _selectedChipKey : null,
                     label: abbreviation,
-                    averageCalories: widget.state.averageDailyCaloriesIn(month),
+                    averageCalories: monthHistory.averageDailyCalories,
                     isSelected: isSelected,
                     onTap: () => widget.onMonthSelected(index),
                   ),
@@ -285,31 +278,24 @@ class _MonthChip extends StatelessWidget {
 /// A single day in the history list: a summary that expands to the day's
 /// meals grouped by meal time.
 class _HistoryDayCard extends StatelessWidget {
-  const _HistoryDayCard({
-    required this.day,
-    required this.mealEntries,
-    required this.calories,
-    required this.weightEntry,
-  });
+  const _HistoryDayCard({required this.historyDay});
 
-  final DateTime day;
-  final List<MealLogEntry> mealEntries;
-  final int calories;
-  final WeightEntry? weightEntry;
+  final HistoryDay historyDay;
 
   @override
   Widget build(BuildContext context) {
     final localizations = MaterialLocalizations.of(context);
+    final weightEntry = historyDay.weightEntry;
     final summary = [
-      '${localizations.formatDecimal(calories)} cal',
-      if (weightEntry != null) weightEntry!.label,
+      '${localizations.formatDecimal(historyDay.calories)} cal',
+      if (weightEntry != null) weightEntry.label,
     ].join(' · ');
 
     return Card(
       margin: EdgeInsets.only(bottom: AppDesign.spacing.sm),
       child: ExpansionTile(
         shape: const Border(),
-        title: Text(localizations.formatMediumDate(day)),
+        title: Text(localizations.formatMediumDate(historyDay.day)),
         subtitle: Text(summary),
         childrenPadding: EdgeInsets.fromLTRB(
           AppDesign.spacing.lg,
@@ -320,11 +306,11 @@ class _HistoryDayCard extends StatelessWidget {
         expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           for (final mealOfTheDay in MealOfTheDay.values)
-            if (mealEntries.any(
+            if (historyDay.mealEntries.any(
               (mealLogEntry) => mealLogEntry.mealOfTheDay == mealOfTheDay,
             )) ...[
               SectionLabel(mealOfTheDay.label.toUpperCase()),
-              for (final mealLogEntry in mealEntries)
+              for (final mealLogEntry in historyDay.mealEntries)
                 if (mealLogEntry.mealOfTheDay == mealOfTheDay)
                   _HistoryEntryRow(mealLogEntry: mealLogEntry),
               SizedBox(height: AppDesign.spacing.sm),

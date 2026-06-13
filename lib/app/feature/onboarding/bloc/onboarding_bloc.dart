@@ -249,7 +249,11 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
 
     final usualMeals =
         state.settings.usuals[event.mealOfTheDay] ?? <UsualMeal>[];
-    final usualMeal = UsualMeal(id: _uuid.v4(), name: name);
+    final usualMeal = UsualMeal(
+      id: _uuid.v4(),
+      name: name,
+      calories: event.calories,
+    );
     emit(
       state.copyWith(
         settings: state.settings.copyWith(

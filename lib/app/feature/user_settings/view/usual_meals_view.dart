@@ -6,7 +6,7 @@ import 'package:the_usual/app/core/dependencies/dependencies.dart';
 
 /// {@template usual_meals_view}
 /// Manages the user's usuals library: one tab per meal with the saved items,
-/// editable calories, and an add sheet.
+/// editable calories, and an inline composer to add more.
 /// {@endtemplate}
 class UsualMealsView extends StatelessWidget {
   /// {@macro usual_meals_view}

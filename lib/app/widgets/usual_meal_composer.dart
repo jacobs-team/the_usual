@@ -50,7 +50,7 @@ class _UsualMealComposerState extends State<UsualMealComposer> {
           child: TheUsualTextField(
             controller: _nameController,
             focusNode: _nameFocus,
-            hintText: 'Add a meal',
+            hintText: 'Meal description',
             textInputAction: TextInputAction.next,
             onSubmitted: (_) => _caloriesFocus.requestFocus(),
           ),

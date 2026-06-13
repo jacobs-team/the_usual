@@ -50,6 +50,7 @@ sealed class OnboardingEvent with _$OnboardingEvent {
       FirstLogItemToggled;
   const factory OnboardingEvent.somethingElseLogged(
     MealOfTheDay mealOfTheDay,
-    String name,
-  ) = SomethingElseLogged;
+    String name, {
+    int? calories,
+  }) = SomethingElseLogged;
 }

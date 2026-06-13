@@ -39,9 +39,9 @@ class UserSettingsView extends StatelessWidget {
             SizedBox(height: AppDesign.spacing.xl),
             const SectionLabel('YOUR FOOD'),
             SizedBox(height: AppDesign.spacing.sm),
-            const UsualMealsRow(),
+            const UsualMealsTile(),
             SizedBox(height: AppDesign.spacing.xl),
-            const ReplayOnboardingRow(),
+            const ResetAppStateTile(),
             SizedBox(height: AppDesign.spacing.lg),
             Center(
               child: Text(

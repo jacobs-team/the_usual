@@ -89,19 +89,26 @@ class _FirstLogViewState extends State<FirstLogView> {
                       OnboardingActions(
                         above: OutlinedButton.icon(
                           onPressed: () async {
-                            final name = await showDialog<String>(
-                              context: context,
-                              builder: (context) =>
-                                  const AteSomethingElseDialog(),
+                            final result =
+                                await showModalBottomSheet<
+                                  (String, int?, bool)
+                                >(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  builder: (context) => const FoodEntrySheet(
+                                    title: 'Log something else',
+                                    confirmLabel: 'Log',
+                                  ),
+                                );
+                            if (result == null) return;
+                            final (name, calories, _) = result;
+                            getIt<OnboardingBloc>().add(
+                              OnboardingEvent.somethingElseLogged(
+                                _mealOfTheDay,
+                                name,
+                                calories: calories,
+                              ),
                             );
-                            if (name != null && name.trim().isNotEmpty) {
-                              getIt<OnboardingBloc>().add(
-                                OnboardingEvent.somethingElseLogged(
-                                  _mealOfTheDay,
-                                  name,
-                                ),
-                              );
-                            }
                           },
                           icon: const Icon(Icons.camera_alt_outlined),
                           label: const Text('I ate something else'),

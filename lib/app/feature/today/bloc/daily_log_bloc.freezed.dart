@@ -12,17 +12,11 @@ part of 'daily_log_bloc.dart';
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
-mixin _$DailyLogEvent implements DiagnosticableTreeMixin {
+mixin _$DailyLogEvent {
 
 
 
 
-@override
-void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-  properties
-    ..add(DiagnosticsProperty('type', 'DailyLogEvent'))
-    ;
-}
 
 @override
 bool operator ==(Object other) {
@@ -34,7 +28,7 @@ bool operator ==(Object other) {
 int get hashCode => runtimeType.hashCode;
 
 @override
-String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+String toString() {
   return 'DailyLogEvent()';
 }
 
@@ -61,7 +55,7 @@ extension DailyLogEventPatterns on DailyLogEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( MealLogged value)?  mealLogged,TResult Function( MealEntryRemoved value)?  mealEntryRemoved,TResult Function( MealEntryCaloriesChanged value)?  mealEntryCaloriesChanged,TResult Function( WeightLogged value)?  weightLogged,TResult Function( TodayWeightChanged value)?  todayWeightChanged,TResult Function( WeightEntryRemoved value)?  weightEntryRemoved,TResult Function( SampleDataSeeded value)?  sampleDataSeeded,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( MealLogged value)?  mealLogged,TResult Function( MealEntryRemoved value)?  mealEntryRemoved,TResult Function( MealEntryCaloriesChanged value)?  mealEntryCaloriesChanged,TResult Function( WeightLogged value)?  weightLogged,TResult Function( TodayWeightChanged value)?  todayWeightChanged,TResult Function( SampleDataSeeded value)?  sampleDataSeeded,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case MealLogged() when mealLogged != null:
@@ -69,8 +63,7 @@ return mealLogged(_that);case MealEntryRemoved() when mealEntryRemoved != null:
 return mealEntryRemoved(_that);case MealEntryCaloriesChanged() when mealEntryCaloriesChanged != null:
 return mealEntryCaloriesChanged(_that);case WeightLogged() when weightLogged != null:
 return weightLogged(_that);case TodayWeightChanged() when todayWeightChanged != null:
-return todayWeightChanged(_that);case WeightEntryRemoved() when weightEntryRemoved != null:
-return weightEntryRemoved(_that);case SampleDataSeeded() when sampleDataSeeded != null:
+return todayWeightChanged(_that);case SampleDataSeeded() when sampleDataSeeded != null:
 return sampleDataSeeded(_that);case _:
   return orElse();
 
@@ -89,7 +82,7 @@ return sampleDataSeeded(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( MealLogged value)  mealLogged,required TResult Function( MealEntryRemoved value)  mealEntryRemoved,required TResult Function( MealEntryCaloriesChanged value)  mealEntryCaloriesChanged,required TResult Function( WeightLogged value)  weightLogged,required TResult Function( TodayWeightChanged value)  todayWeightChanged,required TResult Function( WeightEntryRemoved value)  weightEntryRemoved,required TResult Function( SampleDataSeeded value)  sampleDataSeeded,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( MealLogged value)  mealLogged,required TResult Function( MealEntryRemoved value)  mealEntryRemoved,required TResult Function( MealEntryCaloriesChanged value)  mealEntryCaloriesChanged,required TResult Function( WeightLogged value)  weightLogged,required TResult Function( TodayWeightChanged value)  todayWeightChanged,required TResult Function( SampleDataSeeded value)  sampleDataSeeded,}){
 final _that = this;
 switch (_that) {
 case MealLogged():
@@ -97,8 +90,7 @@ return mealLogged(_that);case MealEntryRemoved():
 return mealEntryRemoved(_that);case MealEntryCaloriesChanged():
 return mealEntryCaloriesChanged(_that);case WeightLogged():
 return weightLogged(_that);case TodayWeightChanged():
-return todayWeightChanged(_that);case WeightEntryRemoved():
-return weightEntryRemoved(_that);case SampleDataSeeded():
+return todayWeightChanged(_that);case SampleDataSeeded():
 return sampleDataSeeded(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
@@ -113,7 +105,7 @@ return sampleDataSeeded(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( MealLogged value)?  mealLogged,TResult? Function( MealEntryRemoved value)?  mealEntryRemoved,TResult? Function( MealEntryCaloriesChanged value)?  mealEntryCaloriesChanged,TResult? Function( WeightLogged value)?  weightLogged,TResult? Function( TodayWeightChanged value)?  todayWeightChanged,TResult? Function( WeightEntryRemoved value)?  weightEntryRemoved,TResult? Function( SampleDataSeeded value)?  sampleDataSeeded,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( MealLogged value)?  mealLogged,TResult? Function( MealEntryRemoved value)?  mealEntryRemoved,TResult? Function( MealEntryCaloriesChanged value)?  mealEntryCaloriesChanged,TResult? Function( WeightLogged value)?  weightLogged,TResult? Function( TodayWeightChanged value)?  todayWeightChanged,TResult? Function( SampleDataSeeded value)?  sampleDataSeeded,}){
 final _that = this;
 switch (_that) {
 case MealLogged() when mealLogged != null:
@@ -121,8 +113,7 @@ return mealLogged(_that);case MealEntryRemoved() when mealEntryRemoved != null:
 return mealEntryRemoved(_that);case MealEntryCaloriesChanged() when mealEntryCaloriesChanged != null:
 return mealEntryCaloriesChanged(_that);case WeightLogged() when weightLogged != null:
 return weightLogged(_that);case TodayWeightChanged() when todayWeightChanged != null:
-return todayWeightChanged(_that);case WeightEntryRemoved() when weightEntryRemoved != null:
-return weightEntryRemoved(_that);case SampleDataSeeded() when sampleDataSeeded != null:
+return todayWeightChanged(_that);case SampleDataSeeded() when sampleDataSeeded != null:
 return sampleDataSeeded(_that);case _:
   return null;
 
@@ -140,15 +131,14 @@ return sampleDataSeeded(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( MealOfTheDay mealOfTheDay,  String name,  int? calories,  String? usualMealId,  String? photoPath)?  mealLogged,TResult Function( String id)?  mealEntryRemoved,TResult Function( String id,  int? calories)?  mealEntryCaloriesChanged,TResult Function( double weight,  WeightUnit weightUnit)?  weightLogged,TResult Function( double? weight,  WeightUnit weightUnit)?  todayWeightChanged,TResult Function( String id)?  weightEntryRemoved,TResult Function()?  sampleDataSeeded,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( MealOfTheDay mealOfTheDay,  String name,  int? calories,  String? usualMealId,  String? photoPath)?  mealLogged,TResult Function( String id)?  mealEntryRemoved,TResult Function( String id,  int? calories)?  mealEntryCaloriesChanged,TResult Function( double weight,  WeightUnit weightUnit)?  weightLogged,TResult Function( double? weight,  WeightUnit weightUnit)?  todayWeightChanged,TResult Function()?  sampleDataSeeded,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case MealLogged() when mealLogged != null:
 return mealLogged(_that.mealOfTheDay,_that.name,_that.calories,_that.usualMealId,_that.photoPath);case MealEntryRemoved() when mealEntryRemoved != null:
 return mealEntryRemoved(_that.id);case MealEntryCaloriesChanged() when mealEntryCaloriesChanged != null:
 return mealEntryCaloriesChanged(_that.id,_that.calories);case WeightLogged() when weightLogged != null:
 return weightLogged(_that.weight,_that.weightUnit);case TodayWeightChanged() when todayWeightChanged != null:
-return todayWeightChanged(_that.weight,_that.weightUnit);case WeightEntryRemoved() when weightEntryRemoved != null:
-return weightEntryRemoved(_that.id);case SampleDataSeeded() when sampleDataSeeded != null:
+return todayWeightChanged(_that.weight,_that.weightUnit);case SampleDataSeeded() when sampleDataSeeded != null:
 return sampleDataSeeded();case _:
   return orElse();
 
@@ -167,15 +157,14 @@ return sampleDataSeeded();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( MealOfTheDay mealOfTheDay,  String name,  int? calories,  String? usualMealId,  String? photoPath)  mealLogged,required TResult Function( String id)  mealEntryRemoved,required TResult Function( String id,  int? calories)  mealEntryCaloriesChanged,required TResult Function( double weight,  WeightUnit weightUnit)  weightLogged,required TResult Function( double? weight,  WeightUnit weightUnit)  todayWeightChanged,required TResult Function( String id)  weightEntryRemoved,required TResult Function()  sampleDataSeeded,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( MealOfTheDay mealOfTheDay,  String name,  int? calories,  String? usualMealId,  String? photoPath)  mealLogged,required TResult Function( String id)  mealEntryRemoved,required TResult Function( String id,  int? calories)  mealEntryCaloriesChanged,required TResult Function( double weight,  WeightUnit weightUnit)  weightLogged,required TResult Function( double? weight,  WeightUnit weightUnit)  todayWeightChanged,required TResult Function()  sampleDataSeeded,}) {final _that = this;
 switch (_that) {
 case MealLogged():
 return mealLogged(_that.mealOfTheDay,_that.name,_that.calories,_that.usualMealId,_that.photoPath);case MealEntryRemoved():
 return mealEntryRemoved(_that.id);case MealEntryCaloriesChanged():
 return mealEntryCaloriesChanged(_that.id,_that.calories);case WeightLogged():
 return weightLogged(_that.weight,_that.weightUnit);case TodayWeightChanged():
-return todayWeightChanged(_that.weight,_that.weightUnit);case WeightEntryRemoved():
-return weightEntryRemoved(_that.id);case SampleDataSeeded():
+return todayWeightChanged(_that.weight,_that.weightUnit);case SampleDataSeeded():
 return sampleDataSeeded();}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -190,15 +179,14 @@ return sampleDataSeeded();}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( MealOfTheDay mealOfTheDay,  String name,  int? calories,  String? usualMealId,  String? photoPath)?  mealLogged,TResult? Function( String id)?  mealEntryRemoved,TResult? Function( String id,  int? calories)?  mealEntryCaloriesChanged,TResult? Function( double weight,  WeightUnit weightUnit)?  weightLogged,TResult? Function( double? weight,  WeightUnit weightUnit)?  todayWeightChanged,TResult? Function( String id)?  weightEntryRemoved,TResult? Function()?  sampleDataSeeded,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( MealOfTheDay mealOfTheDay,  String name,  int? calories,  String? usualMealId,  String? photoPath)?  mealLogged,TResult? Function( String id)?  mealEntryRemoved,TResult? Function( String id,  int? calories)?  mealEntryCaloriesChanged,TResult? Function( double weight,  WeightUnit weightUnit)?  weightLogged,TResult? Function( double? weight,  WeightUnit weightUnit)?  todayWeightChanged,TResult? Function()?  sampleDataSeeded,}) {final _that = this;
 switch (_that) {
 case MealLogged() when mealLogged != null:
 return mealLogged(_that.mealOfTheDay,_that.name,_that.calories,_that.usualMealId,_that.photoPath);case MealEntryRemoved() when mealEntryRemoved != null:
 return mealEntryRemoved(_that.id);case MealEntryCaloriesChanged() when mealEntryCaloriesChanged != null:
 return mealEntryCaloriesChanged(_that.id,_that.calories);case WeightLogged() when weightLogged != null:
 return weightLogged(_that.weight,_that.weightUnit);case TodayWeightChanged() when todayWeightChanged != null:
-return todayWeightChanged(_that.weight,_that.weightUnit);case WeightEntryRemoved() when weightEntryRemoved != null:
-return weightEntryRemoved(_that.id);case SampleDataSeeded() when sampleDataSeeded != null:
+return todayWeightChanged(_that.weight,_that.weightUnit);case SampleDataSeeded() when sampleDataSeeded != null:
 return sampleDataSeeded();case _:
   return null;
 
@@ -210,7 +198,7 @@ return sampleDataSeeded();case _:
 /// @nodoc
 
 
-class MealLogged with DiagnosticableTreeMixin implements DailyLogEvent {
+class MealLogged implements DailyLogEvent {
   const MealLogged(this.mealOfTheDay, this.name, {this.calories, this.usualMealId, this.photoPath});
   
 
@@ -227,12 +215,6 @@ class MealLogged with DiagnosticableTreeMixin implements DailyLogEvent {
 $MealLoggedCopyWith<MealLogged> get copyWith => _$MealLoggedCopyWithImpl<MealLogged>(this, _$identity);
 
 
-@override
-void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-  properties
-    ..add(DiagnosticsProperty('type', 'DailyLogEvent.mealLogged'))
-    ..add(DiagnosticsProperty('mealOfTheDay', mealOfTheDay))..add(DiagnosticsProperty('name', name))..add(DiagnosticsProperty('calories', calories))..add(DiagnosticsProperty('usualMealId', usualMealId))..add(DiagnosticsProperty('photoPath', photoPath));
-}
 
 @override
 bool operator ==(Object other) {
@@ -244,7 +226,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,mealOfTheDay,name,calories,usualMealId,photoPath);
 
 @override
-String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+String toString() {
   return 'DailyLogEvent.mealLogged(mealOfTheDay: $mealOfTheDay, name: $name, calories: $calories, usualMealId: $usualMealId, photoPath: $photoPath)';
 }
 
@@ -290,7 +272,7 @@ as String?,
 /// @nodoc
 
 
-class MealEntryRemoved with DiagnosticableTreeMixin implements DailyLogEvent {
+class MealEntryRemoved implements DailyLogEvent {
   const MealEntryRemoved(this.id);
   
 
@@ -303,12 +285,6 @@ class MealEntryRemoved with DiagnosticableTreeMixin implements DailyLogEvent {
 $MealEntryRemovedCopyWith<MealEntryRemoved> get copyWith => _$MealEntryRemovedCopyWithImpl<MealEntryRemoved>(this, _$identity);
 
 
-@override
-void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-  properties
-    ..add(DiagnosticsProperty('type', 'DailyLogEvent.mealEntryRemoved'))
-    ..add(DiagnosticsProperty('id', id));
-}
 
 @override
 bool operator ==(Object other) {
@@ -320,7 +296,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,id);
 
 @override
-String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+String toString() {
   return 'DailyLogEvent.mealEntryRemoved(id: $id)';
 }
 
@@ -362,7 +338,7 @@ as String,
 /// @nodoc
 
 
-class MealEntryCaloriesChanged with DiagnosticableTreeMixin implements DailyLogEvent {
+class MealEntryCaloriesChanged implements DailyLogEvent {
   const MealEntryCaloriesChanged(this.id, this.calories);
   
 
@@ -376,12 +352,6 @@ class MealEntryCaloriesChanged with DiagnosticableTreeMixin implements DailyLogE
 $MealEntryCaloriesChangedCopyWith<MealEntryCaloriesChanged> get copyWith => _$MealEntryCaloriesChangedCopyWithImpl<MealEntryCaloriesChanged>(this, _$identity);
 
 
-@override
-void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-  properties
-    ..add(DiagnosticsProperty('type', 'DailyLogEvent.mealEntryCaloriesChanged'))
-    ..add(DiagnosticsProperty('id', id))..add(DiagnosticsProperty('calories', calories));
-}
 
 @override
 bool operator ==(Object other) {
@@ -393,7 +363,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,id,calories);
 
 @override
-String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+String toString() {
   return 'DailyLogEvent.mealEntryCaloriesChanged(id: $id, calories: $calories)';
 }
 
@@ -436,7 +406,7 @@ as int?,
 /// @nodoc
 
 
-class WeightLogged with DiagnosticableTreeMixin implements DailyLogEvent {
+class WeightLogged implements DailyLogEvent {
   const WeightLogged(this.weight, this.weightUnit);
   
 
@@ -450,12 +420,6 @@ class WeightLogged with DiagnosticableTreeMixin implements DailyLogEvent {
 $WeightLoggedCopyWith<WeightLogged> get copyWith => _$WeightLoggedCopyWithImpl<WeightLogged>(this, _$identity);
 
 
-@override
-void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-  properties
-    ..add(DiagnosticsProperty('type', 'DailyLogEvent.weightLogged'))
-    ..add(DiagnosticsProperty('weight', weight))..add(DiagnosticsProperty('weightUnit', weightUnit));
-}
 
 @override
 bool operator ==(Object other) {
@@ -467,7 +431,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,weight,weightUnit);
 
 @override
-String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+String toString() {
   return 'DailyLogEvent.weightLogged(weight: $weight, weightUnit: $weightUnit)';
 }
 
@@ -510,7 +474,7 @@ as WeightUnit,
 /// @nodoc
 
 
-class TodayWeightChanged with DiagnosticableTreeMixin implements DailyLogEvent {
+class TodayWeightChanged implements DailyLogEvent {
   const TodayWeightChanged(this.weight, this.weightUnit);
   
 
@@ -524,12 +488,6 @@ class TodayWeightChanged with DiagnosticableTreeMixin implements DailyLogEvent {
 $TodayWeightChangedCopyWith<TodayWeightChanged> get copyWith => _$TodayWeightChangedCopyWithImpl<TodayWeightChanged>(this, _$identity);
 
 
-@override
-void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-  properties
-    ..add(DiagnosticsProperty('type', 'DailyLogEvent.todayWeightChanged'))
-    ..add(DiagnosticsProperty('weight', weight))..add(DiagnosticsProperty('weightUnit', weightUnit));
-}
 
 @override
 bool operator ==(Object other) {
@@ -541,7 +499,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,weight,weightUnit);
 
 @override
-String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+String toString() {
   return 'DailyLogEvent.todayWeightChanged(weight: $weight, weightUnit: $weightUnit)';
 }
 
@@ -584,79 +542,7 @@ as WeightUnit,
 /// @nodoc
 
 
-class WeightEntryRemoved with DiagnosticableTreeMixin implements DailyLogEvent {
-  const WeightEntryRemoved(this.id);
-  
-
- final  String id;
-
-/// Create a copy of DailyLogEvent
-/// with the given fields replaced by the non-null parameter values.
-@JsonKey(includeFromJson: false, includeToJson: false)
-@pragma('vm:prefer-inline')
-$WeightEntryRemovedCopyWith<WeightEntryRemoved> get copyWith => _$WeightEntryRemovedCopyWithImpl<WeightEntryRemoved>(this, _$identity);
-
-
-@override
-void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-  properties
-    ..add(DiagnosticsProperty('type', 'DailyLogEvent.weightEntryRemoved'))
-    ..add(DiagnosticsProperty('id', id));
-}
-
-@override
-bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WeightEntryRemoved&&(identical(other.id, id) || other.id == id));
-}
-
-
-@override
-int get hashCode => Object.hash(runtimeType,id);
-
-@override
-String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'DailyLogEvent.weightEntryRemoved(id: $id)';
-}
-
-
-}
-
-/// @nodoc
-abstract mixin class $WeightEntryRemovedCopyWith<$Res> implements $DailyLogEventCopyWith<$Res> {
-  factory $WeightEntryRemovedCopyWith(WeightEntryRemoved value, $Res Function(WeightEntryRemoved) _then) = _$WeightEntryRemovedCopyWithImpl;
-@useResult
-$Res call({
- String id
-});
-
-
-
-
-}
-/// @nodoc
-class _$WeightEntryRemovedCopyWithImpl<$Res>
-    implements $WeightEntryRemovedCopyWith<$Res> {
-  _$WeightEntryRemovedCopyWithImpl(this._self, this._then);
-
-  final WeightEntryRemoved _self;
-  final $Res Function(WeightEntryRemoved) _then;
-
-/// Create a copy of DailyLogEvent
-/// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? id = null,}) {
-  return _then(WeightEntryRemoved(
-null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,
-  ));
-}
-
-
-}
-
-/// @nodoc
-
-
-class SampleDataSeeded with DiagnosticableTreeMixin implements DailyLogEvent {
+class SampleDataSeeded implements DailyLogEvent {
   const SampleDataSeeded();
   
 
@@ -664,12 +550,6 @@ class SampleDataSeeded with DiagnosticableTreeMixin implements DailyLogEvent {
 
 
 
-@override
-void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-  properties
-    ..add(DiagnosticsProperty('type', 'DailyLogEvent.sampleDataSeeded'))
-    ;
-}
 
 @override
 bool operator ==(Object other) {
@@ -681,7 +561,7 @@ bool operator ==(Object other) {
 int get hashCode => runtimeType.hashCode;
 
 @override
-String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+String toString() {
   return 'DailyLogEvent.sampleDataSeeded()';
 }
 
@@ -693,7 +573,7 @@ String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
 
 
 /// @nodoc
-mixin _$DailyLogState implements DiagnosticableTreeMixin {
+mixin _$DailyLogState {
 
  List<MealLogEntry> get mealEntries; List<WeightEntry> get weightEntries;
 /// Create a copy of DailyLogState
@@ -705,12 +585,6 @@ $DailyLogStateCopyWith<DailyLogState> get copyWith => _$DailyLogStateCopyWithImp
   /// Serializes this DailyLogState to a JSON map.
   Map<String, dynamic> toJson();
 
-@override
-void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-  properties
-    ..add(DiagnosticsProperty('type', 'DailyLogState'))
-    ..add(DiagnosticsProperty('mealEntries', mealEntries))..add(DiagnosticsProperty('weightEntries', weightEntries));
-}
 
 @override
 bool operator ==(Object other) {
@@ -722,7 +596,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(mealEntries),const DeepCollectionEquality().hash(weightEntries));
 
 @override
-String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+String toString() {
   return 'DailyLogState(mealEntries: $mealEntries, weightEntries: $weightEntries)';
 }
 
@@ -895,7 +769,7 @@ return $default(_that.mealEntries,_that.weightEntries);case _:
 /// @nodoc
 
 @JsonSerializable(explicitToJson: true)
-class _DailyLogState extends DailyLogState with DiagnosticableTreeMixin {
+class _DailyLogState extends DailyLogState {
   const _DailyLogState({final  List<MealLogEntry> mealEntries = const <MealLogEntry>[], final  List<WeightEntry> weightEntries = const <WeightEntry>[]}): _mealEntries = mealEntries,_weightEntries = weightEntries,super._();
   factory _DailyLogState.fromJson(Map<String, dynamic> json) => _$DailyLogStateFromJson(json);
 
@@ -924,12 +798,6 @@ _$DailyLogStateCopyWith<_DailyLogState> get copyWith => __$DailyLogStateCopyWith
 Map<String, dynamic> toJson() {
   return _$DailyLogStateToJson(this, );
 }
-@override
-void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-  properties
-    ..add(DiagnosticsProperty('type', 'DailyLogState'))
-    ..add(DiagnosticsProperty('mealEntries', mealEntries))..add(DiagnosticsProperty('weightEntries', weightEntries));
-}
 
 @override
 bool operator ==(Object other) {
@@ -941,7 +809,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_mealEntries),const DeepCollectionEquality().hash(_weightEntries));
 
 @override
-String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
+String toString() {
   return 'DailyLogState(mealEntries: $mealEntries, weightEntries: $weightEntries)';
 }
 

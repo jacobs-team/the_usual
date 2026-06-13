@@ -6,9 +6,10 @@ import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template usual_meal_list}
 /// One meal's tab on the usual meals screen: the saved usual meals with an
-/// inline composer to add more.
+/// inline composer to add more. Kept alive so swiping between tabs doesn't
+/// rebuild its fields.
 /// {@endtemplate}
-class UsualMealList extends StatelessWidget {
+class UsualMealList extends StatefulWidget {
   /// {@macro usual_meal_list}
   const UsualMealList({required this.mealOfTheDay, super.key});
 
@@ -16,7 +17,18 @@ class UsualMealList extends StatelessWidget {
   final MealOfTheDay mealOfTheDay;
 
   @override
+  State<UsualMealList> createState() => _UsualMealListState();
+}
+
+class _UsualMealListState extends State<UsualMealList>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
+    final mealOfTheDay = widget.mealOfTheDay;
     return BlocSelector<UserSettingsBloc, UserSettingsState, List<UsualMeal>>(
       bloc: getIt<UserSettingsBloc>(),
       selector: (state) => state.usuals[mealOfTheDay] ?? <UsualMeal>[],
