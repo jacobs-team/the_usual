@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:the_usual/app/app.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template food_entry_sheet}
 /// Bottom sheet capturing a food name plus optional calories, used both for
@@ -49,37 +49,32 @@ class _FoodEntrySheetState extends State<FoodEntrySheet> {
       top: false,
       child: Padding(
         padding: EdgeInsets.only(
-          left: 16,
-          right: 16,
-          top: 18,
-          bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+          left: AppDesign.spacing.lg,
+          right: AppDesign.spacing.lg,
+          top: AppDesign.spacing.lg,
+          bottom:
+              MediaQuery.of(context).viewInsets.bottom + AppDesign.spacing.xl,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(widget.title, style: textTheme.titleMedium),
-            const SizedBox(height: 14),
+            SizedBox(height: AppDesign.spacing.md),
             const SectionLabel('NAME'),
-            const SizedBox(height: 6),
+            SizedBox(height: AppDesign.spacing.sm),
             TheUsualTextField(
               controller: _nameController,
               autofocus: true,
               hintText: 'e.g. Chicken caesar salad',
               onChanged: (_) => setState(() {}),
             ),
-            const SizedBox(height: 14),
+            SizedBox(height: AppDesign.spacing.md),
             const SectionLabel('CALORIES · OPTIONAL'),
-            const SizedBox(height: 6),
-            TheUsualTextField(
+            SizedBox(height: AppDesign.spacing.sm),
+            CalorieField(
               controller: _caloriesController,
-              keyboardType: TextInputType.number,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-                LengthLimitingTextInputFormatter(4),
-              ],
               hintText: 'Leave blank to skip',
-              suffixText: ' cal',
             ),
             if (widget.showAddToUsualMeals)
               CheckboxListTile(
@@ -90,7 +85,7 @@ class _FoodEntrySheetState extends State<FoodEntrySheet> {
                 onChanged: (value) =>
                     setState(() => _addToUsualMeals = value ?? false),
               ),
-            const SizedBox(height: 18),
+            SizedBox(height: AppDesign.spacing.lg),
             Row(
               children: [
                 Expanded(
@@ -99,7 +94,7 @@ class _FoodEntrySheetState extends State<FoodEntrySheet> {
                     child: const Text('Cancel'),
                   ),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: AppDesign.spacing.sm),
                 Expanded(
                   flex: 2,
                   child: FilledButton(

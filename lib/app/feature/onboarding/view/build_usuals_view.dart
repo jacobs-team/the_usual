@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template build_usuals_view}
 /// Second onboarding screen: build the per-meal usuals library by typing a
@@ -18,7 +19,7 @@ class BuildUsualsView extends StatelessWidget {
       appBar: const OnboardingTopBar(step: OnboardingStep.buildUsuals),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(AppDesign.spacing.xl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -38,14 +39,14 @@ class BuildUsualsView extends StatelessWidget {
                               'Add your usual meals',
                               style: textTheme.headlineSmall,
                             ),
-                            const SizedBox(height: 12),
+                            SizedBox(height: AppDesign.spacing.md),
                             Text(
                               'Add what you usually eat for each meal. You can '
                               'edit these anytime — on the fly while logging, '
                               'or later in Settings.',
                               style: textTheme.bodyMedium,
                             ),
-                            const SizedBox(height: 24),
+                            SizedBox(height: AppDesign.spacing.xl),
                             for (final mealOfTheDay in MealOfTheDay.values) ...[
                               UsualMealSection(
                                 mealOfTheDay: mealOfTheDay,
@@ -74,14 +75,14 @@ class BuildUsualsView extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 28),
+                              SizedBox(height: AppDesign.spacing.xl),
                             ],
                           ],
                         );
                       },
                     ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: AppDesign.spacing.md),
               OnboardingActions(
                 primary: FilledButton(
                   onPressed: () => getIt<OnboardingBloc>().add(

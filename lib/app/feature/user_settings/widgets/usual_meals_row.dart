@@ -31,14 +31,10 @@ class UsualMealsRow extends StatelessWidget {
           for (final mealOfTheDay in MealOfTheDay.values)
             '${mealOfTheDay.label} ${usuals[mealOfTheDay]?.length ?? 0}',
         ].join(' · ');
-        return Card(
-          margin: EdgeInsets.zero,
-          child: ListTile(
-            title: const Text('Your usual meals'),
-            subtitle: Text(summary),
-            trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.go(Routes.usualMeals),
-          ),
+        return SettingsNavRow(
+          title: 'Your usual meals',
+          subtitle: summary,
+          onTap: () => context.go(Routes.usualMeals),
         );
       },
     );

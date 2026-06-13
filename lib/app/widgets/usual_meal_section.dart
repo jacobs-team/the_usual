@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:the_usual/app/app.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template usual_meal_section}
 /// One meal's usual meals: a heading, the saved meals as editable rows, and
@@ -40,7 +41,7 @@ class UsualMealSection extends StatelessWidget {
         SectionLabel(
           '${mealOfTheDay.label.toUpperCase()} (${usualMeals.length})',
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: AppDesign.spacing.sm),
         for (final usualMeal in usualMeals)
           UsualMealRow(
             key: ValueKey(usualMeal.id),
@@ -49,7 +50,7 @@ class UsualMealSection extends StatelessWidget {
                 onCaloriesChanged(usualMeal.id, calories),
             onRemoved: () => onRemoved(usualMeal.id),
           ),
-        const SizedBox(height: 8),
+        SizedBox(height: AppDesign.spacing.sm),
         UsualMealComposer(onAdd: onAdded),
       ],
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template info_box}
 /// Dashed-border box with a short explanatory message, used when a section
@@ -18,7 +19,7 @@ class InfoBox extends StatelessWidget {
       painter: _DashedBorderPainter(color: theme.colorScheme.outlineVariant),
       child: Container(
         width: double.infinity,
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(AppDesign.spacing.lg),
         child: Text(message, style: theme.textTheme.bodySmall),
       ),
     );
@@ -30,7 +31,6 @@ class _DashedBorderPainter extends CustomPainter {
 
   final Color color;
 
-  static const _radius = 12.0;
   static const _dashLength = 5.0;
   static const _gapLength = 4.0;
 
@@ -45,7 +45,7 @@ class _DashedBorderPainter extends CustomPainter {
       ..addRRect(
         RRect.fromRectAndRadius(
           Offset.zero & size,
-          const Radius.circular(_radius),
+          Radius.circular(AppDesign.radius.sm),
         ),
       );
 

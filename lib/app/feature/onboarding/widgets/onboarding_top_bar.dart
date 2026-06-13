@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template onboarding_top_bar}
 /// App bar shared by onboarding screens: back arrow, centered progress dots,
@@ -40,7 +41,9 @@ class OnboardingTopBar extends StatelessWidget implements PreferredSizeWidget {
                 for (final dotStep in steps)
                   if (dotStep != OnboardingStep.complete)
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 3),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: AppDesign.spacing.xs,
+                      ),
                       child: DecoratedBox(
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
@@ -48,7 +51,7 @@ class OnboardingTopBar extends StatelessWidget implements PreferredSizeWidget {
                               ? colorScheme.primary
                               : colorScheme.outlineVariant,
                         ),
-                        child: const SizedBox.square(dimension: 8),
+                        child: SizedBox.square(dimension: AppDesign.spacing.sm),
                       ),
                     ),
               ],

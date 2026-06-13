@@ -14,10 +14,10 @@ abstract class UsualMeal with _$UsualMeal {
     required String name,
     String? photoPath,
 
-    /// Estimated or user-entered calories, null when not set yet.
+    /// User-entered calories, null when not set yet.
     int? calories,
-  }) = _UsualItem;
+  }) = _UsualMeal;
 
   factory UsualMeal.fromJson(Map<String, dynamic> json) =>
-      _$UsualItemFromJson(json);
+      _$UsualMealFromJson(json);
 }

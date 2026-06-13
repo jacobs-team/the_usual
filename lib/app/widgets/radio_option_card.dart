@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template radio_option_card}
 /// A tappable card with a title, subtitle, and radio indicator, used for
@@ -34,12 +35,12 @@ class RadioOptionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return InkWell(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppDesign.radius.sm),
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(AppDesign.spacing.lg),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDesign.radius.sm),
           border: Border.all(
             color: selected
                 ? theme.colorScheme.primary
@@ -54,10 +55,10 @@ class RadioOptionCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(title, style: theme.textTheme.titleMedium),
-                  const SizedBox(height: 4),
+                  SizedBox(height: AppDesign.spacing.xs),
                   Text(subtitle, style: theme.textTheme.bodySmall),
                   if (note != null) ...[
-                    const SizedBox(height: 4),
+                    SizedBox(height: AppDesign.spacing.xs),
                     Text(
                       note!,
                       style: theme.textTheme.bodySmall?.copyWith(

@@ -13,19 +13,14 @@ class ReplayOnboardingRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.zero,
-      child: ListTile(
-        title: const Text('Reset app'),
-        subtitle: const Text(
+    return SettingsNavRow(
+      title: 'Reset app',
+      subtitle:
           'Clears all saved data and resets to defaults. Restarts onboarding',
-        ),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: () async {
-          await HydratedBloc.storage.clear();
-          if (context.mounted) context.go(Routes.onboarding);
-        },
-      ),
+      onTap: () async {
+        await HydratedBloc.storage.clear();
+        if (context.mounted) context.go(Routes.onboarding);
+      },
     );
   }
 }

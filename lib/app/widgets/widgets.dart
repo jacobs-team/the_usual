@@ -1,3 +1,4 @@
+export 'calorie_field.dart';
 export 'end_of_day_reminder_row.dart';
 export 'food_entry_sheet.dart';
 export 'glass_container.dart';

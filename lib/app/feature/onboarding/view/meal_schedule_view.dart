@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template meal_schedule_view}
 /// Fourth onboarding screen: pick per-meal reminder times or a single
@@ -18,7 +19,7 @@ class MealScheduleView extends StatelessWidget {
       appBar: const OnboardingTopBar(step: OnboardingStep.mealSchedule),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(AppDesign.spacing.xl),
           child:
               BlocSelector<
                 OnboardingBloc,
@@ -48,7 +49,7 @@ class MealScheduleView extends StatelessWidget {
                         'When should we ask?',
                         style: textTheme.headlineSmall,
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: AppDesign.spacing.lg),
                       MealScheduleModeSelector(
                         mealCheckinScheduleMode: mealCheckinScheduleMode,
                         onChanged: (mealCheckinScheduleMode) =>
@@ -58,7 +59,7 @@ class MealScheduleView extends StatelessWidget {
                               ),
                             ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: AppDesign.spacing.lg),
                       Text(
                         mealCheckinScheduleMode ==
                                 MealCheckinScheduleMode.perMeal
@@ -68,7 +69,7 @@ class MealScheduleView extends StatelessWidget {
                             : 'One check-in covering the whole day.',
                         style: textTheme.bodySmall,
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: AppDesign.spacing.xl),
                       if (mealCheckinScheduleMode ==
                           MealCheckinScheduleMode.perMeal)
                         for (final mealOfTheDay in MealOfTheDay.values)
@@ -101,7 +102,7 @@ class MealScheduleView extends StatelessWidget {
                                 OnboardingEvent.endOfDayTimeChanged(timeOfDay),
                               ),
                         ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: AppDesign.spacing.lg),
                       Text(
                         'You can add a meal any time you eat. Reminders just '
                         'keep you honest.',

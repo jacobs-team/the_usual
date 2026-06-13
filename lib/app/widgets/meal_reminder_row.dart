@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:the_usual/app/app.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template meal_reminder_row}
 /// A card row for one meal's reminder: meal name, a tappable time chip that
@@ -30,7 +31,7 @@ class MealReminderRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: EdgeInsets.only(bottom: AppDesign.spacing.sm),
       child: ListTile(
         title: Text(mealOfTheDay.label),
         trailing: Row(
@@ -49,7 +50,7 @@ class MealReminderRow extends StatelessWidget {
               )
             else
               const Text('No reminder'),
-            const SizedBox(width: 8),
+            SizedBox(width: AppDesign.spacing.sm),
             Switch(value: mealReminder.enabled, onChanged: onToggled),
           ],
         ),

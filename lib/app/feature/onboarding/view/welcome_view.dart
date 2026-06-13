@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template welcome_view}
 /// First onboarding screen: value prop and a single CTA to start the flow.
@@ -14,7 +15,7 @@ class WelcomeView extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(AppDesign.spacing.xl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -27,7 +28,7 @@ class WelcomeView extends StatelessWidget {
                 'Track what you eat in two taps.',
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: AppDesign.spacing.md),
               const Text(
                 'Set up your usual meals once and logging takes seconds.',
               ),

@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
+import 'package:the_usual/design_system/design_system.dart';
 import 'package:the_usual/l10n/l10n.dart';
 
 /// {@template today_view}
@@ -57,40 +58,28 @@ class TodayView extends StatelessWidget {
                 return BlocSelector<
                   DailyLogBloc,
                   DailyLogState,
-                  (int, List<MealLogEntry>)
+                  List<MealLogEntry>
                 >(
                   bloc: getIt<DailyLogBloc>(),
-                  selector: (state) => (
-                    state.caloriesOn(today),
-                    state.mealEntries,
-                  ),
-                  builder: (context, selected) {
-                    final (caloriesToday, mealEntries) = selected;
-                    final todaysEntries = mealEntries
-                        .where(
-                          (mealLogEntry) =>
-                              DateUtils.isSameDay(mealLogEntry.loggedAt, today),
-                        )
-                        .toList();
+                  selector: (state) => state.mealEntries,
+                  builder: (context, mealEntries) {
+                    final breakdown = mealEntries.breakdownOn(today);
                     return ListView(
-                      padding: const EdgeInsets.all(16),
+                      padding: EdgeInsets.all(AppDesign.spacing.lg),
                       children: [
                         const _WeightTracker(),
-                        const SizedBox(height: 16),
+                        SizedBox(height: AppDesign.spacing.lg),
                         Text(
-                          '$caloriesToday cal today',
+                          '${breakdown.calories} cal today',
                           style: textTheme.headlineSmall,
                         ),
-                        const SizedBox(height: 16),
+                        SizedBox(height: AppDesign.spacing.lg),
                         for (final mealOfTheDay in MealOfTheDay.values)
                           MealLogSection(
                             mealOfTheDay: mealOfTheDay,
-                            mealLogEntries: todaysEntries
-                                .where(
-                                  (mealLogEntry) =>
-                                      mealLogEntry.mealOfTheDay == mealOfTheDay,
-                                )
-                                .toList(),
+                            mealLogEntries:
+                                breakdown.entriesByMeal[mealOfTheDay] ??
+                                const <MealLogEntry>[],
                             usualMeals:
                                 usualMeals[mealOfTheDay] ?? <UsualMeal>[],
                             isCurrent: mealOfTheDay == currentMeal,
@@ -128,31 +117,29 @@ class _WeightTracker extends StatelessWidget {
           margin: EdgeInsets.zero,
           child: ListTile(
             title: const Text('Weight'),
-            trailing: SizedBox(
-              child: TheUsualTextField(
-                autoSize: true,
-                dense: true,
-                textAlign: TextAlign.right,
-                initialValue: todayWeight == null
-                    ? ''
-                    : _formatWeight(todayWeight.weight),
-                hintText: latestWeight == null
-                    ? '—'
-                    : _formatWeight(latestWeight.weight),
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
+            trailing: TheUsualTextField(
+              autoSize: true,
+              dense: true,
+              textAlign: TextAlign.right,
+              initialValue: todayWeight == null
+                  ? ''
+                  : todayWeight.weight.trimmedDecimal,
+              hintText: latestWeight == null
+                  ? '—'
+                  : latestWeight.weight.trimmedDecimal,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(
+                  RegExp(r'^\d{0,4}\.?\d{0,1}'),
                 ),
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(
-                    RegExp(r'^\d{0,4}\.?\d{0,1}'),
-                  ),
-                ],
-                suffixText: ' ${weightUnit.name}',
-                onChanged: (value) => getIt<DailyLogBloc>().add(
-                  DailyLogEvent.todayWeightChanged(
-                    double.tryParse(value),
-                    weightUnit,
-                  ),
+              ],
+              suffixText: ' ${weightUnit.name}',
+              onChanged: (value) => getIt<DailyLogBloc>().add(
+                DailyLogEvent.todayWeightChanged(
+                  double.tryParse(value),
+                  weightUnit,
                 ),
               ),
             ),
@@ -161,70 +148,4 @@ class _WeightTracker extends StatelessWidget {
       },
     );
   }
-}
-
-// Replaced by the inline weight field in _WeightTracker. Kept for reference.
-// /// Dialog that captures a weight value. Pops with the entered weight, or
-// /// null when cancelled.
-// class _LogWeightDialog extends StatefulWidget {
-//   const _LogWeightDialog({
-//     required this.initialWeight,
-//     required this.weightUnit,
-//   });
-//
-//   final double? initialWeight;
-//   final WeightUnit weightUnit;
-//
-//   @override
-//   State<_LogWeightDialog> createState() => _LogWeightDialogState();
-// }
-//
-// class _LogWeightDialogState extends State<_LogWeightDialog> {
-//   late final TextEditingController _controller;
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     final weight = widget.initialWeight;
-//     _controller = TextEditingController(
-//       text: weight == null ? '' : _formatWeight(weight),
-//     );
-//   }
-//
-//   @override
-//   void dispose() {
-//     _controller.dispose();
-//     super.dispose();
-//   }
-//
-//   void _submit() {
-//     Navigator.of(context).pop(double.tryParse(_controller.text));
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return AlertDialog(
-//       title: const Text('Log weight'),
-//       content: TheUsualTextField(
-//         controller: _controller,
-//         autofocus: true,
-//         keyboardType: const TextInputType.numberWithOptions(decimal: true),
-//         suffixText: ' ${widget.weightUnit.name}',
-//         onSubmitted: (_) => _submit(),
-//       ),
-//       actions: [
-//         TextButton(
-//           onPressed: () => Navigator.of(context).pop(),
-//           child: const Text('Cancel'),
-//         ),
-//         FilledButton(onPressed: _submit, child: const Text('Save')),
-//       ],
-//     );
-//   }
-// }
-
-String _formatWeight(double weight) {
-  return weight == weight.roundToDouble()
-      ? weight.toInt().toString()
-      : weight.toString();
 }

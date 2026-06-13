@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template history_view}
 /// Logged history browsed a month at a time. A horizontal strip selects the
@@ -51,7 +52,7 @@ class _HistoryViewState extends State<HistoryView> {
             if (loggedMonths.isEmpty) {
               return Center(
                 child: Padding(
-                  padding: const EdgeInsets.all(24),
+                  padding: EdgeInsets.all(AppDesign.spacing.xl),
                   child: Text(
                     'No history yet. Log a meal or weigh-in and it shows up '
                     'here.',
@@ -71,7 +72,7 @@ class _HistoryViewState extends State<HistoryView> {
                   state: state,
                   onMonthSelected: (index) => _pageController.animateToPage(
                     index,
-                    duration: const Duration(milliseconds: 300),
+                    duration: AppDesign.durations.fast,
                     curve: Curves.easeOut,
                   ),
                 ),
@@ -86,10 +87,17 @@ class _HistoryViewState extends State<HistoryView> {
                       final localizations = MaterialLocalizations.of(context);
 
                       return ListView(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                        padding: EdgeInsets.fromLTRB(
+                          AppDesign.spacing.lg,
+                          AppDesign.spacing.sm,
+                          AppDesign.spacing.lg,
+                          AppDesign.spacing.xl,
+                        ),
                         children: [
                           Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
+                            padding: EdgeInsets.only(
+                              bottom: AppDesign.spacing.sm,
+                            ),
                             child: SectionLabel(
                               localizations
                                   .formatMonthYear(month)
@@ -118,7 +126,7 @@ class _HistoryViewState extends State<HistoryView> {
 }
 
 /// The horizontal strip of month chips above the history pages. The selected
-/// month is highlighted and kept in view as the selection changes.
+/// month is highlighted and scrolled into view as the selection changes.
 class _MonthSelector extends StatefulWidget {
   const _MonthSelector({
     required this.loggedMonths,
@@ -137,41 +145,29 @@ class _MonthSelector extends StatefulWidget {
 }
 
 class _MonthSelectorState extends State<_MonthSelector> {
-  static const _chipWidth = 76.0;
-  static const _chipSpacing = 8.0;
-  final _scrollController = ScrollController();
+  final _selectedChipKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToSelected());
+    WidgetsBinding.instance.addPostFrameCallback((_) => _revealSelected());
   }
 
   @override
   void didUpdateWidget(_MonthSelector oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.selectedMonth != widget.selectedMonth) _scrollToSelected();
+    if (oldWidget.selectedMonth != widget.selectedMonth) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _revealSelected());
+    }
   }
 
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _scrollToSelected() {
-    if (!_scrollController.hasClients) return;
-    final selectedIndex = widget.loggedMonths.indexOf(widget.selectedMonth);
-    if (selectedIndex < 0) return;
-
-    final viewportWidth = _scrollController.position.viewportDimension;
-    const chipExtent = _chipWidth + _chipSpacing;
-    final centeredOffset =
-        selectedIndex * chipExtent - (viewportWidth - _chipWidth) / 2;
-    final maxOffset = _scrollController.position.maxScrollExtent;
-    _scrollController.animateTo(
-      centeredOffset.clamp(0.0, maxOffset),
-      duration: const Duration(milliseconds: 300),
+  void _revealSelected() {
+    final selectedContext = _selectedChipKey.currentContext;
+    if (selectedContext == null) return;
+    Scrollable.ensureVisible(
+      selectedContext,
+      alignment: 0.5,
+      duration: AppDesign.durations.fast,
       curve: Curves.easeOut,
     );
   }
@@ -179,32 +175,47 @@ class _MonthSelectorState extends State<_MonthSelector> {
   @override
   Widget build(BuildContext context) {
     final localizations = MaterialLocalizations.of(context);
-    return SizedBox(
-      height: 84,
-      child: ListView.separated(
-        controller: _scrollController,
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        itemCount: widget.loggedMonths.length,
-        separatorBuilder: (context, index) =>
-            const SizedBox(width: _chipSpacing),
-        itemBuilder: (context, index) {
-          final month = widget.loggedMonths[index];
-          final monthName = localizations
-              .formatMonthYear(month)
-              .split(' ')
-              .first;
-          final abbreviation = monthName
-              .substring(0, monthName.length < 3 ? monthName.length : 3)
-              .toUpperCase();
-          return _MonthChip(
-            width: _chipWidth,
-            label: abbreviation,
-            averageCalories: widget.state.averageDailyCaloriesIn(month),
-            isSelected: DateUtils.isSameMonth(month, widget.selectedMonth),
-            onTap: () => widget.onMonthSelected(index),
-          );
-        },
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: EdgeInsets.symmetric(
+        horizontal: AppDesign.spacing.lg,
+        vertical: AppDesign.spacing.md,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var index = 0; index < widget.loggedMonths.length; index++)
+            Builder(
+              builder: (context) {
+                final month = widget.loggedMonths[index];
+                final monthName = localizations
+                    .formatMonthYear(month)
+                    .split(' ')
+                    .first;
+                final abbreviation = monthName
+                    .substring(0, monthName.length < 3 ? monthName.length : 3)
+                    .toUpperCase();
+                final isSelected = DateUtils.isSameMonth(
+                  month,
+                  widget.selectedMonth,
+                );
+                return Padding(
+                  padding: EdgeInsets.only(
+                    right: index == widget.loggedMonths.length - 1
+                        ? 0
+                        : AppDesign.spacing.sm,
+                  ),
+                  child: _MonthChip(
+                    key: isSelected ? _selectedChipKey : null,
+                    label: abbreviation,
+                    averageCalories: widget.state.averageDailyCaloriesIn(month),
+                    isSelected: isSelected,
+                    onTap: () => widget.onMonthSelected(index),
+                  ),
+                );
+              },
+            ),
+        ],
       ),
     );
   }
@@ -214,14 +225,13 @@ class _MonthSelectorState extends State<_MonthSelector> {
 /// calories.
 class _MonthChip extends StatelessWidget {
   const _MonthChip({
-    required this.width,
     required this.label,
     required this.averageCalories,
     required this.isSelected,
     required this.onTap,
+    super.key,
   });
 
-  final double width;
   final String label;
   final int averageCalories;
   final bool isSelected;
@@ -238,12 +248,15 @@ class _MonthChip extends StatelessWidget {
       color: isSelected
           ? theme.colorScheme.primary
           : theme.colorScheme.surfaceContainerHighest,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(AppDesign.radius.md),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(8),
+          padding: EdgeInsets.symmetric(
+            horizontal: AppDesign.spacing.md,
+            vertical: AppDesign.spacing.sm,
+          ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -254,9 +267,9 @@ class _MonthChip extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 4),
+              SizedBox(height: AppDesign.spacing.xs),
               Text(
-                '${_compactCalories(averageCalories)} avg cal',
+                '${averageCalories.compact} avg cal',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: foregroundColor.withValues(alpha: 0.7),
                 ),
@@ -267,12 +280,6 @@ class _MonthChip extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Calories shown compactly in tight spaces: 1,950 reads as "2.0k".
-String _compactCalories(int calories) {
-  if (calories < 1000) return '$calories';
-  return '${(calories / 1000).toStringAsFixed(1)}k';
 }
 
 /// A single day in the history list: a summary that expands to the day's
@@ -299,12 +306,17 @@ class _HistoryDayCard extends StatelessWidget {
     ].join(' · ');
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: EdgeInsets.only(bottom: AppDesign.spacing.sm),
       child: ExpansionTile(
         shape: const Border(),
         title: Text(localizations.formatMediumDate(day)),
         subtitle: Text(summary),
-        childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+        childrenPadding: EdgeInsets.fromLTRB(
+          AppDesign.spacing.lg,
+          0,
+          AppDesign.spacing.lg,
+          AppDesign.spacing.md,
+        ),
         expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           for (final mealOfTheDay in MealOfTheDay.values)
@@ -315,7 +327,7 @@ class _HistoryDayCard extends StatelessWidget {
               for (final mealLogEntry in mealEntries)
                 if (mealLogEntry.mealOfTheDay == mealOfTheDay)
                   _HistoryEntryRow(mealLogEntry: mealLogEntry),
-              const SizedBox(height: 8),
+              SizedBox(height: AppDesign.spacing.sm),
             ],
         ],
       ),
@@ -333,7 +345,7 @@ class _HistoryEntryRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final calories = mealLogEntry.calories;
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: EdgeInsets.symmetric(vertical: AppDesign.spacing.xs),
       child: Row(
         children: [
           Expanded(child: Text(mealLogEntry.name)),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template reminder_style_view}
 /// Third onboarding screen: choose how the app checks in about meals.
@@ -17,7 +18,7 @@ class ReminderStyleView extends StatelessWidget {
       appBar: const OnboardingTopBar(step: OnboardingStep.reminderStyle),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(AppDesign.spacing.xl),
           child: BlocSelector<OnboardingBloc, OnboardingState, ReminderStyle>(
             bloc: getIt<OnboardingBloc>(),
             selector: (state) => state.settings.reminderStyle,
@@ -29,18 +30,16 @@ class ReminderStyleView extends StatelessWidget {
                     'How should we check in?',
                     style: textTheme.headlineSmall,
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: AppDesign.spacing.sm),
                   const Text('We ask if you ate. You tap what it was.'),
-                  const SizedBox(height: 20),
+                  SizedBox(height: AppDesign.spacing.xl),
                   for (final reminderStyle in ReminderStyle.values) ...[
                     if (reminderStyle != ReminderStyle.values.first)
-                      const SizedBox(height: 12),
+                      SizedBox(height: AppDesign.spacing.md),
                     RadioOptionCard(
                       title: reminderStyle.label,
                       subtitle: reminderStyle.description,
-                      note: reminderStyle == ReminderStyle.notifications
-                          ? "We'll ask for permission next."
-                          : null,
+                      note: reminderStyle.permissionNote,
                       selected: reminderStyle == selected,
                       onTap: () => getIt<OnboardingBloc>().add(
                         OnboardingEvent.reminderStyleSelected(reminderStyle),

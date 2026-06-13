@@ -6,14 +6,14 @@ part of 'usual_meal.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_UsualItem _$UsualItemFromJson(Map<String, dynamic> json) => _UsualItem(
+_UsualMeal _$UsualMealFromJson(Map<String, dynamic> json) => _UsualMeal(
   id: json['id'] as String,
   name: json['name'] as String,
   photoPath: json['photoPath'] as String?,
   calories: (json['calories'] as num?)?.toInt(),
 );
 
-Map<String, dynamic> _$UsualItemToJson(_UsualItem instance) =>
+Map<String, dynamic> _$UsualMealToJson(_UsualMeal instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,

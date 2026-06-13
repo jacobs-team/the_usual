@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template meal_schedule_section}
 /// Settings section for when meal check-ins happen: per-meal reminder times
@@ -59,14 +60,14 @@ class MealScheduleSection extends StatelessWidget {
                     ),
                   ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: AppDesign.spacing.sm),
             Text(
               mealCheckinScheduleMode == MealCheckinScheduleMode.perMeal
                   ? 'Logging near when you ate is more accurate.'
                   : 'One check-in covering the whole day.',
               style: textTheme.bodySmall,
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: AppDesign.spacing.md),
             if (mealCheckinScheduleMode == MealCheckinScheduleMode.perMeal)
               for (final mealOfTheDay in MealOfTheDay.values)
                 if (mealReminders[mealOfTheDay] case final mealReminder?)

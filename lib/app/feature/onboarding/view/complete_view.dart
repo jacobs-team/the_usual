@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template complete_view}
 /// Shown when onboarding finishes. Routes the user home or to settings.
@@ -15,7 +16,7 @@ class CompleteView extends StatelessWidget {
     return Scaffold(
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(AppDesign.spacing.xl),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -25,7 +26,7 @@ class CompleteView extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const Text("You're all set."),
-                    const SizedBox(height: 16),
+                    SizedBox(height: AppDesign.spacing.lg),
                     OutlinedButton(
                       onPressed: () => getIt<OnboardingBloc>().add(
                         const OnboardingEvent.resetPressed(),

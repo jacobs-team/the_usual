@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:the_usual/app/app.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template user_settings_view}
 /// Settings screen where the user can revisit the choices they made during
@@ -22,26 +23,26 @@ class UserSettingsView extends StatelessWidget {
       ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(AppDesign.spacing.xl),
           children: [
             const SectionLabel('HOW WE CHECK IN'),
-            const SizedBox(height: 8),
+            SizedBox(height: AppDesign.spacing.sm),
             const ReminderStyleSection(),
-            const SizedBox(height: 24),
+            SizedBox(height: AppDesign.spacing.xl),
             const SectionLabel('WHEN WE ASK'),
-            const SizedBox(height: 8),
+            SizedBox(height: AppDesign.spacing.sm),
             const MealScheduleSection(),
-            const SizedBox(height: 24),
+            SizedBox(height: AppDesign.spacing.xl),
             const SectionLabel('WEIGHT CHECK-INS'),
-            const SizedBox(height: 8),
+            SizedBox(height: AppDesign.spacing.sm),
             const WeightSection(),
-            const SizedBox(height: 24),
+            SizedBox(height: AppDesign.spacing.xl),
             const SectionLabel('YOUR FOOD'),
-            const SizedBox(height: 8),
+            SizedBox(height: AppDesign.spacing.sm),
             const UsualMealsRow(),
-            const SizedBox(height: 24),
+            SizedBox(height: AppDesign.spacing.xl),
             const ReplayOnboardingRow(),
-            const SizedBox(height: 16),
+            SizedBox(height: AppDesign.spacing.lg),
             Center(
               child: Text(
                 'No account. Your data stays on your phone.',

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template weight_section}
 /// Settings section for weight check-ins: frequency, time of day, and the
@@ -54,7 +55,7 @@ class _WeightSectionState extends State<WeightSection> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text('How often', style: textTheme.bodySmall),
-            const SizedBox(height: 8),
+            SizedBox(height: AppDesign.spacing.sm),
             WeightCheckinFrequencyChips(
               selected: weightCheckinFrequency,
               onSelected: (weightCheckinFrequency) =>
@@ -64,7 +65,7 @@ class _WeightSectionState extends State<WeightSection> {
                     ),
                   ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: AppDesign.spacing.md),
             if (weightCheckinFrequency == WeightCheckinFrequency.off)
               const InfoBox(
                 'Weight check-ins are off. Pick a frequency to turn them '
@@ -72,16 +73,16 @@ class _WeightSectionState extends State<WeightSection> {
               )
             else ...[
               Text('What time of day', style: textTheme.bodySmall),
-              const SizedBox(height: 8),
+              SizedBox(height: AppDesign.spacing.sm),
               WeightTimeOfDayChips(
                 selected: weightTimeOfDay,
                 onSelected: (weightTimeOfDay) => getIt<UserSettingsBloc>().add(
                   UserSettingsEvent.weightTimeOfDaySelected(weightTimeOfDay),
                 ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: AppDesign.spacing.md),
               Text('Starting weight', style: textTheme.bodySmall),
-              const SizedBox(height: 8),
+              SizedBox(height: AppDesign.spacing.sm),
               WeightInput(
                 controller: _weightController,
                 weightUnit: weightUnit,

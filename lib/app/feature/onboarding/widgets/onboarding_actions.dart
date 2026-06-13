@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template onboarding_actions}
 /// Bottom action area shared by onboarding screens. Reserves fixed-height
@@ -29,7 +30,7 @@ class OnboardingActions extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         SizedBox(height: 48, child: above),
-        const SizedBox(height: 12),
+        SizedBox(height: AppDesign.spacing.md),
         primary,
         SizedBox(height: 48, child: secondary),
       ],

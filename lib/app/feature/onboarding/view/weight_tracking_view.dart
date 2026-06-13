@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template weight_tracking_view}
 /// Fifth onboarding screen: weigh-in cadence, time of day, and starting
@@ -40,7 +41,7 @@ class _WeightTrackingViewState extends State<WeightTrackingView> {
       appBar: const OnboardingTopBar(step: OnboardingStep.weightTracking),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(AppDesign.spacing.xl),
           child:
               BlocSelector<
                 OnboardingBloc,
@@ -64,11 +65,11 @@ class _WeightTrackingViewState extends State<WeightTrackingView> {
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text('Weight check-ins', style: textTheme.headlineSmall),
-                      const SizedBox(height: 8),
+                      SizedBox(height: AppDesign.spacing.sm),
                       const Text('A quick weigh-in keeps the trend honest.'),
-                      const SizedBox(height: 20),
+                      SizedBox(height: AppDesign.spacing.xl),
                       const SectionLabel('HOW OFTEN'),
-                      const SizedBox(height: 8),
+                      SizedBox(height: AppDesign.spacing.sm),
                       WeightCheckinFrequencyChips(
                         selected: weightCheckinFrequency,
                         onSelected: (weightCheckinFrequency) =>
@@ -78,7 +79,7 @@ class _WeightTrackingViewState extends State<WeightTrackingView> {
                               ),
                             ),
                       ),
-                      const SizedBox(height: 20),
+                      SizedBox(height: AppDesign.spacing.xl),
                       if (weightCheckinFrequency == WeightCheckinFrequency.off)
                         Text(
                           'No weight check-ins. You can turn them on any time '
@@ -87,7 +88,7 @@ class _WeightTrackingViewState extends State<WeightTrackingView> {
                         )
                       else ...[
                         const SectionLabel('WHAT TIME OF DAY'),
-                        const SizedBox(height: 8),
+                        SizedBox(height: AppDesign.spacing.sm),
                         WeightTimeOfDayChips(
                           selected: weightTimeOfDay,
                           onSelected: (weightTimeOfDay) =>
@@ -97,14 +98,14 @@ class _WeightTrackingViewState extends State<WeightTrackingView> {
                                 ),
                               ),
                         ),
-                        const SizedBox(height: 8),
+                        SizedBox(height: AppDesign.spacing.sm),
                         Text(
                           'Morning weigh-ins are the most consistent.',
                           style: textTheme.bodySmall,
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(height: AppDesign.spacing.xl),
                         const SectionLabel('STARTING WEIGHT'),
-                        const SizedBox(height: 8),
+                        SizedBox(height: AppDesign.spacing.sm),
                         WeightInput(
                           controller: _weightController,
                           weightUnit: weightUnit,

@@ -11,18 +11,11 @@ part of 'usual_meal.dart';
 
 // dart format off
 T _$identity<T>(T value) => value;
-UsualMeal _$UsualMealFromJson(
-  Map<String, dynamic> json
-) {
-    return _UsualItem.fromJson(
-      json
-    );
-}
 
 /// @nodoc
 mixin _$UsualMeal {
 
- String get id; String get name; String? get photoPath;/// Estimated or user-entered calories, null when not set yet.
+ String get id; String get name; String? get photoPath;/// User-entered calories, null when not set yet.
  int? get calories;
 /// Create a copy of UsualMeal
 /// with the given fields replaced by the non-null parameter values.
@@ -100,10 +93,10 @@ extension UsualMealPatterns on UsualMeal {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _UsualItem value)?  $default,{required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _UsualMeal value)?  $default,{required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _UsualItem() when $default != null:
+case _UsualMeal() when $default != null:
 return $default(_that);case _:
   return orElse();
 
@@ -122,10 +115,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _UsualItem value)  $default,){
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _UsualMeal value)  $default,){
 final _that = this;
 switch (_that) {
-case _UsualItem():
+case _UsualMeal():
 return $default(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -143,10 +136,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _UsualItem value)?  $default,){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _UsualMeal value)?  $default,){
 final _that = this;
 switch (_that) {
-case _UsualItem() when $default != null:
+case _UsualMeal() when $default != null:
 return $default(_that);case _:
   return null;
 
@@ -166,7 +159,7 @@ return $default(_that);case _:
 
 @optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String? photoPath,  int? calories)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _UsualItem() when $default != null:
+case _UsualMeal() when $default != null:
 return $default(_that.id,_that.name,_that.photoPath,_that.calories);case _:
   return orElse();
 
@@ -187,7 +180,7 @@ return $default(_that.id,_that.name,_that.photoPath,_that.calories);case _:
 
 @optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String? photoPath,  int? calories)  $default,) {final _that = this;
 switch (_that) {
-case _UsualItem():
+case _UsualMeal():
 return $default(_that.id,_that.name,_that.photoPath,_that.calories);case _:
   throw StateError('Unexpected subclass');
 
@@ -207,7 +200,7 @@ return $default(_that.id,_that.name,_that.photoPath,_that.calories);case _:
 
 @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String? photoPath,  int? calories)?  $default,) {final _that = this;
 switch (_that) {
-case _UsualItem() when $default != null:
+case _UsualMeal() when $default != null:
 return $default(_that.id,_that.name,_that.photoPath,_that.calories);case _:
   return null;
 
@@ -219,30 +212,30 @@ return $default(_that.id,_that.name,_that.photoPath,_that.calories);case _:
 /// @nodoc
 @JsonSerializable()
 
-class _UsualItem implements UsualMeal {
-  const _UsualItem({required this.id, required this.name, this.photoPath, this.calories});
-  factory _UsualItem.fromJson(Map<String, dynamic> json) => _$UsualItemFromJson(json);
+class _UsualMeal implements UsualMeal {
+  const _UsualMeal({required this.id, required this.name, this.photoPath, this.calories});
+  factory _UsualMeal.fromJson(Map<String, dynamic> json) => _$UsualMealFromJson(json);
 
 @override final  String id;
 @override final  String name;
 @override final  String? photoPath;
-/// Estimated or user-entered calories, null when not set yet.
+/// User-entered calories, null when not set yet.
 @override final  int? calories;
 
 /// Create a copy of UsualMeal
 /// with the given fields replaced by the non-null parameter values.
 @override @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-_$UsualItemCopyWith<_UsualItem> get copyWith => __$UsualItemCopyWithImpl<_UsualItem>(this, _$identity);
+_$UsualMealCopyWith<_UsualMeal> get copyWith => __$UsualMealCopyWithImpl<_UsualMeal>(this, _$identity);
 
 @override
 Map<String, dynamic> toJson() {
-  return _$UsualItemToJson(this, );
+  return _$UsualMealToJson(this, );
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UsualItem&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath)&&(identical(other.calories, calories) || other.calories == calories));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UsualMeal&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath)&&(identical(other.calories, calories) || other.calories == calories));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -258,8 +251,8 @@ String toString() {
 }
 
 /// @nodoc
-abstract mixin class _$UsualItemCopyWith<$Res> implements $UsualMealCopyWith<$Res> {
-  factory _$UsualItemCopyWith(_UsualItem value, $Res Function(_UsualItem) _then) = __$UsualItemCopyWithImpl;
+abstract mixin class _$UsualMealCopyWith<$Res> implements $UsualMealCopyWith<$Res> {
+  factory _$UsualMealCopyWith(_UsualMeal value, $Res Function(_UsualMeal) _then) = __$UsualMealCopyWithImpl;
 @override @useResult
 $Res call({
  String id, String name, String? photoPath, int? calories
@@ -270,17 +263,17 @@ $Res call({
 
 }
 /// @nodoc
-class __$UsualItemCopyWithImpl<$Res>
-    implements _$UsualItemCopyWith<$Res> {
-  __$UsualItemCopyWithImpl(this._self, this._then);
+class __$UsualMealCopyWithImpl<$Res>
+    implements _$UsualMealCopyWith<$Res> {
+  __$UsualMealCopyWithImpl(this._self, this._then);
 
-  final _UsualItem _self;
-  final $Res Function(_UsualItem) _then;
+  final _UsualMeal _self;
+  final $Res Function(_UsualMeal) _then;
 
 /// Create a copy of UsualMeal
 /// with the given fields replaced by the non-null parameter values.
 @override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? photoPath = freezed,Object? calories = freezed,}) {
-  return _then(_UsualItem(
+  return _then(_UsualMeal(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,photoPath: freezed == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable

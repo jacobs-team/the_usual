@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template meal_log_section}
 /// One meal's slice of the Today view: what's been logged for it so far,
@@ -32,10 +33,7 @@ class MealLogSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final calories = mealLogEntries.fold(
-      0,
-      (total, mealLogEntry) => total + (mealLogEntry.calories ?? 0),
-    );
+    final calories = mealLogEntries.totalCalories;
     final loggedNames = mealLogEntries
         .map((mealLogEntry) => mealLogEntry.name.toLowerCase())
         .toSet();
@@ -50,15 +48,15 @@ class MealLogSection extends StatelessWidget {
         .toList();
 
     return Card(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: AppDesign.spacing.md),
       shape: isCurrent
           ? RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppDesign.radius.sm),
               side: BorderSide(color: theme.colorScheme.primary, width: 2),
             )
           : null,
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: EdgeInsets.all(AppDesign.spacing.lg),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -80,10 +78,10 @@ class MealLogSection extends StatelessWidget {
                 mealLogEntry: mealLogEntry,
               ),
             if (quickPicks.isNotEmpty) ...[
-              const SizedBox(height: 8),
+              SizedBox(height: AppDesign.spacing.sm),
               Wrap(
-                spacing: 8,
-                runSpacing: 8,
+                spacing: AppDesign.spacing.sm,
+                runSpacing: AppDesign.spacing.sm,
                 children: [
                   for (final usualMeal in quickPicks)
                     ActionChip(
@@ -101,7 +99,7 @@ class MealLogSection extends StatelessWidget {
                 ],
               ),
             ],
-            const SizedBox(height: 8),
+            SizedBox(height: AppDesign.spacing.sm),
             Align(
               alignment: Alignment.centerLeft,
               child: TextButton.icon(

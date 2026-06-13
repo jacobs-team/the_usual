@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:the_usual/app/app.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template end_of_day_reminder_row}
 /// A card row for the single daily check-in covering all meals, with a
@@ -22,7 +23,7 @@ class EndOfDayReminderRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: EdgeInsets.only(bottom: AppDesign.spacing.sm),
       child: ListTile(
         title: const Text('Daily check-in'),
         subtitle: const Text('Covers all meals at once'),

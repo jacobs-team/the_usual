@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:the_usual/app/app.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template weight_input}
 /// Weight entry field with unit choice chips as its suffix. The caller owns
@@ -39,13 +40,13 @@ class WeightInput extends StatelessWidget {
       ],
       textStyle: textTheme.headlineMedium,
       suffixIcon: Padding(
-        padding: const EdgeInsets.only(right: 8),
+        padding: EdgeInsets.only(right: AppDesign.spacing.sm),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             for (final option in WeightUnit.values)
               Padding(
-                padding: const EdgeInsets.only(left: 4),
+                padding: EdgeInsets.only(left: AppDesign.spacing.xs),
                 child: ChoiceChip(
                   label: Text(option.name),
                   selected: option == weightUnit,

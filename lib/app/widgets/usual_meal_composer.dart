@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:the_usual/app/app.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template usual_meal_composer}
 /// Inline name + optional calories entry, shown as the last row of a usual
@@ -55,22 +55,15 @@ class _UsualMealComposerState extends State<UsualMealComposer> {
             onSubmitted: (_) => _caloriesFocus.requestFocus(),
           ),
         ),
-        const SizedBox(width: 8),
-        TheUsualTextField(
+        SizedBox(width: AppDesign.spacing.sm),
+        CalorieField(
           controller: _caloriesController,
           focusNode: _caloriesFocus,
-          hintText: '—',
-          suffixText: ' cal',
           autoSize: true,
-          keyboardType: TextInputType.number,
-          inputFormatters: [
-            FilteringTextInputFormatter.digitsOnly,
-            LengthLimitingTextInputFormatter(4),
-          ],
           textInputAction: TextInputAction.done,
           onSubmitted: (_) => _submit(),
         ),
-        const SizedBox(width: 4),
+        SizedBox(width: AppDesign.spacing.xs),
         IconButton.filled(icon: const Icon(Icons.add), onPressed: _submit),
       ],
     );

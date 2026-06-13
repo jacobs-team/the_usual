@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template the_usual_text_field}
 /// The app's standard text field. Outlined and comfortably padded by
@@ -101,7 +102,10 @@ class TheUsualTextField extends StatelessWidget {
         isDense: dense,
         border: dense ? null : const OutlineInputBorder(),
         contentPadding: dense
-            ? const EdgeInsets.symmetric(horizontal: 8, vertical: 8)
+            ? EdgeInsets.symmetric(
+                horizontal: AppDesign.spacing.sm,
+                vertical: AppDesign.spacing.sm,
+              )
             : null,
       ),
       onChanged: onChanged,

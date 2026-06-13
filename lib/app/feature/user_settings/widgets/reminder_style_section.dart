@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template reminder_style_section}
 /// Settings section for choosing how the app checks in about meals.
@@ -21,7 +22,7 @@ class ReminderStyleSection extends StatelessWidget {
           children: [
             for (final reminderStyle in ReminderStyle.values) ...[
               if (reminderStyle != ReminderStyle.values.first)
-                const SizedBox(height: 8),
+                SizedBox(height: AppDesign.spacing.sm),
               RadioOptionCard(
                 title: reminderStyle.label,
                 subtitle: reminderStyle.description,

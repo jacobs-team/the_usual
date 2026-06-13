@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
@@ -57,20 +56,12 @@ class _LoggedEntryRowState extends State<LoggedEntryRow> {
         Row(
           children: [
             Expanded(child: Text(mealLogEntry.name)),
-            TheUsualTextField(
+            CalorieField(
               autoSize: true,
               dense: true,
-              initialValue: mealLogEntry.calories?.toString() ?? '',
-              keyboardType: TextInputType.number,
               textAlign: TextAlign.right,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-                LengthLimitingTextInputFormatter(4),
-              ],
-              hintText: '—',
-              suffixText: ' cal',
-              onChanged: (value) {
-                final calories = int.tryParse(value);
+              initialValue: mealLogEntry.calories?.toString() ?? '',
+              onChanged: (calories) {
                 getIt<DailyLogBloc>().add(
                   DailyLogEvent.mealEntryCaloriesChanged(
                     mealLogEntry.id,

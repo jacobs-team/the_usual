@@ -1,3 +1,4 @@
+export 'extensions/extensions.dart';
 export 'meal_checkin_schedule_mode.dart';
 export 'meal_log_entry.dart';
 export 'meal_of_the_day.dart';

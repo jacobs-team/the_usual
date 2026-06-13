@@ -15,8 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$MealLogEntry {
 
- String get id; DateTime get loggedAt; MealOfTheDay get mealOfTheDay; String get name; int? get calories;/// The usual meal this came from, null when it was a one-off entry.
- String? get usualMealId; String? get photoPath;
+ String get id; DateTime get loggedAt; MealOfTheDay get mealOfTheDay; String get name; int? get calories; String? get usualMealId; String? get photoPath;
 /// Create a copy of MealLogEntry
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -224,7 +223,6 @@ class _MealLogEntry implements MealLogEntry {
 @override final  MealOfTheDay mealOfTheDay;
 @override final  String name;
 @override final  int? calories;
-/// The usual meal this came from, null when it was a one-off entry.
 @override final  String? usualMealId;
 @override final  String? photoPath;
 

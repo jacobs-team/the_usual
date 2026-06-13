@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template first_log_view}
 /// Final onboarding screen: ask about the meal closest to the current time
@@ -34,7 +35,7 @@ class _FirstLogViewState extends State<FirstLogView> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.all(AppDesign.spacing.xl),
           child:
               BlocSelector<
                 OnboardingBloc,
@@ -55,9 +56,9 @@ class _FirstLogViewState extends State<FirstLogView> {
                         'Did you eat ${_mealOfTheDay.name} today?',
                         style: textTheme.headlineSmall,
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: AppDesign.spacing.sm),
                       const Text('Tap everything you had.'),
-                      const SizedBox(height: 20),
+                      SizedBox(height: AppDesign.spacing.xl),
                       Expanded(
                         child: usualMeals.isEmpty
                             ? Center(
@@ -70,8 +71,8 @@ class _FirstLogViewState extends State<FirstLogView> {
                               )
                             : GridView.count(
                                 crossAxisCount: 2,
-                                mainAxisSpacing: 12,
-                                crossAxisSpacing: 12,
+                                mainAxisSpacing: AppDesign.spacing.md,
+                                crossAxisSpacing: AppDesign.spacing.md,
                                 childAspectRatio: 165 / 134,
                                 children: [
                                   for (final usualMeal in usualMeals)
@@ -84,7 +85,7 @@ class _FirstLogViewState extends State<FirstLogView> {
                                 ],
                               ),
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: AppDesign.spacing.md),
                       OnboardingActions(
                         above: OutlinedButton.icon(
                           onPressed: () async {
@@ -140,14 +141,14 @@ class _FoodCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return InkWell(
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(AppDesign.radius.sm),
       onTap: () => getIt<OnboardingBloc>().add(
         OnboardingEvent.firstLogItemToggled(usualMeal.id),
       ),
       child: Container(
-        padding: const EdgeInsets.all(10),
+        padding: EdgeInsets.all(AppDesign.spacing.md),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppDesign.radius.sm),
           border: Border.all(
             color: selected
                 ? theme.colorScheme.primary
@@ -163,12 +164,12 @@ class _FoodCard extends StatelessWidget {
                 width: double.infinity,
                 decoration: BoxDecoration(
                   color: theme.colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(AppDesign.radius.sm),
                 ),
                 child: const Icon(Icons.image_outlined),
               ),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: AppDesign.spacing.sm),
             Text(
               usualMeal.name,
               style: theme.textTheme.bodyMedium,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:the_usual/app/app.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template usual_meal_row}
 /// A card row for one usual meal: name, inline-editable calories, and a
@@ -28,27 +28,20 @@ class UsualMealRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: EdgeInsets.only(bottom: AppDesign.spacing.sm),
       child: ListTile(
         title: Text(usualMeal.name, overflow: TextOverflow.ellipsis),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TheUsualTextField(
+            CalorieField(
               autoSize: true,
               dense: true,
-              initialValue: usualMeal.calories?.toString() ?? '',
-              keyboardType: TextInputType.number,
               textAlign: TextAlign.right,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-                LengthLimitingTextInputFormatter(4),
-              ],
-              hintText: '—',
-              suffixText: ' cal',
-              onChanged: (value) => onCaloriesChanged(int.tryParse(value)),
+              initialValue: usualMeal.calories?.toString() ?? '',
+              onChanged: onCaloriesChanged,
             ),
-            const SizedBox(width: 4),
+            SizedBox(width: AppDesign.spacing.xs),
             IconButton(icon: const Icon(Icons.close), onPressed: onRemoved),
           ],
         ),
