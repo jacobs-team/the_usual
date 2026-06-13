@@ -9,6 +9,7 @@ class TheUsualTextField extends StatelessWidget {
   /// {@macro the_usual_text_field}
   const TheUsualTextField({
     this.controller,
+    this.focusNode,
     this.initialValue,
     this.hintText,
     this.suffixText,
@@ -32,6 +33,9 @@ class TheUsualTextField extends StatelessWidget {
 
   /// Controller for the text. Mutually exclusive with [initialValue].
   final TextEditingController? controller;
+
+  /// Focus node for the field, e.g. to move focus between fields.
+  final FocusNode? focusNode;
 
   /// Starting text when no [controller] is provided.
   final String? initialValue;
@@ -82,6 +86,7 @@ class TheUsualTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     final field = TextFormField(
       controller: controller,
+      focusNode: focusNode,
       initialValue: initialValue,
       keyboardType: keyboardType,
       textAlign: textAlign,

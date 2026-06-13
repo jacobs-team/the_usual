@@ -21,26 +21,28 @@ abstract class UserSettingsState with _$UserSettingsState {
     @Default({
       MealOfTheDay.breakfast: MealReminder(
         enabled: true,
-        time: TimeOfDay(hour: 9, minute: 0),
+        timeOfDay: TimeOfDay(hour: 9, minute: 0),
       ),
       MealOfTheDay.lunch: MealReminder(
         enabled: true,
-        time: TimeOfDay(hour: 14, minute: 0),
+        timeOfDay: TimeOfDay(hour: 14, minute: 0),
       ),
       MealOfTheDay.dinner: MealReminder(
         enabled: true,
-        time: TimeOfDay(hour: 19, minute: 30),
+        timeOfDay: TimeOfDay(hour: 19, minute: 30),
       ),
       MealOfTheDay.snacks: MealReminder(
         enabled: false,
-        time: TimeOfDay(hour: 15, minute: 0),
+        timeOfDay: TimeOfDay(hour: 15, minute: 0),
       ),
     })
     Map<MealOfTheDay, MealReminder> mealReminders,
 
     /// The single daily check-in covering all meals, used in
     /// [MealCheckinScheduleMode.endOfDay].
-    @Default(MealReminder(enabled: true, time: TimeOfDay(hour: 20, minute: 0)))
+    @Default(
+      MealReminder(enabled: true, timeOfDay: TimeOfDay(hour: 20, minute: 0)),
+    )
     MealReminder endOfDayReminder,
 
     /// How often the user weighs in. [WeightCheckinFrequency.off] disables

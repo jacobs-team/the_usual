@@ -55,16 +55,17 @@ extension OnboardingEventPatterns on OnboardingEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( BackPressed value)?  backPressed,TResult Function( ResetPressed value)?  resetPressed,TResult Function( SkipPressed value)?  skipPressed,TResult Function( ContinuePressed value)?  continuePressed,TResult Function( UsualAdded value)?  usualAdded,TResult Function( UsualRemoved value)?  usualRemoved,TResult Function( ReminderStyleSelected value)?  reminderStyleSelected,TResult Function( MealCheckinScheduleModeChanged value)?  mealCheckinScheduleModeChanged,TResult Function( MealReminderToggled value)?  mealReminderToggled,TResult Function( MealReminderTimeChanged value)?  mealReminderTimeChanged,TResult Function( EndOfDayTimeChanged value)?  endOfDayTimeChanged,TResult Function( WeightCheckinFrequencySelected value)?  weightCheckinFrequencySelected,TResult Function( WeightTimeOfDaySelected value)?  weightTimeOfDaySelected,TResult Function( WeightUnitSelected value)?  weightUnitSelected,TResult Function( StartingWeightChanged value)?  startingWeightChanged,TResult Function( FirstLogItemToggled value)?  firstLogItemToggled,TResult Function( SomethingElseLogged value)?  somethingElseLogged,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( BackPressed value)?  backPressed,TResult Function( ResetPressed value)?  resetPressed,TResult Function( SkipPressed value)?  skipPressed,TResult Function( ContinuePressed value)?  continuePressed,TResult Function( UsualMealAdded value)?  usualMealAdded,TResult Function( UsualMealRemoved value)?  usualMealRemoved,TResult Function( UsualMealCaloriesChanged value)?  usualMealCaloriesChanged,TResult Function( ReminderStyleSelected value)?  reminderStyleSelected,TResult Function( MealCheckinScheduleModeChanged value)?  mealCheckinScheduleModeChanged,TResult Function( MealReminderToggled value)?  mealReminderToggled,TResult Function( MealReminderTimeChanged value)?  mealReminderTimeChanged,TResult Function( EndOfDayTimeChanged value)?  endOfDayTimeChanged,TResult Function( WeightCheckinFrequencySelected value)?  weightCheckinFrequencySelected,TResult Function( WeightTimeOfDaySelected value)?  weightTimeOfDaySelected,TResult Function( WeightUnitSelected value)?  weightUnitSelected,TResult Function( StartingWeightChanged value)?  startingWeightChanged,TResult Function( FirstLogItemToggled value)?  firstLogItemToggled,TResult Function( SomethingElseLogged value)?  somethingElseLogged,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case BackPressed() when backPressed != null:
 return backPressed(_that);case ResetPressed() when resetPressed != null:
 return resetPressed(_that);case SkipPressed() when skipPressed != null:
 return skipPressed(_that);case ContinuePressed() when continuePressed != null:
-return continuePressed(_that);case UsualAdded() when usualAdded != null:
-return usualAdded(_that);case UsualRemoved() when usualRemoved != null:
-return usualRemoved(_that);case ReminderStyleSelected() when reminderStyleSelected != null:
+return continuePressed(_that);case UsualMealAdded() when usualMealAdded != null:
+return usualMealAdded(_that);case UsualMealRemoved() when usualMealRemoved != null:
+return usualMealRemoved(_that);case UsualMealCaloriesChanged() when usualMealCaloriesChanged != null:
+return usualMealCaloriesChanged(_that);case ReminderStyleSelected() when reminderStyleSelected != null:
 return reminderStyleSelected(_that);case MealCheckinScheduleModeChanged() when mealCheckinScheduleModeChanged != null:
 return mealCheckinScheduleModeChanged(_that);case MealReminderToggled() when mealReminderToggled != null:
 return mealReminderToggled(_that);case MealReminderTimeChanged() when mealReminderTimeChanged != null:
@@ -93,16 +94,17 @@ return somethingElseLogged(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( BackPressed value)  backPressed,required TResult Function( ResetPressed value)  resetPressed,required TResult Function( SkipPressed value)  skipPressed,required TResult Function( ContinuePressed value)  continuePressed,required TResult Function( UsualAdded value)  usualAdded,required TResult Function( UsualRemoved value)  usualRemoved,required TResult Function( ReminderStyleSelected value)  reminderStyleSelected,required TResult Function( MealCheckinScheduleModeChanged value)  mealCheckinScheduleModeChanged,required TResult Function( MealReminderToggled value)  mealReminderToggled,required TResult Function( MealReminderTimeChanged value)  mealReminderTimeChanged,required TResult Function( EndOfDayTimeChanged value)  endOfDayTimeChanged,required TResult Function( WeightCheckinFrequencySelected value)  weightCheckinFrequencySelected,required TResult Function( WeightTimeOfDaySelected value)  weightTimeOfDaySelected,required TResult Function( WeightUnitSelected value)  weightUnitSelected,required TResult Function( StartingWeightChanged value)  startingWeightChanged,required TResult Function( FirstLogItemToggled value)  firstLogItemToggled,required TResult Function( SomethingElseLogged value)  somethingElseLogged,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( BackPressed value)  backPressed,required TResult Function( ResetPressed value)  resetPressed,required TResult Function( SkipPressed value)  skipPressed,required TResult Function( ContinuePressed value)  continuePressed,required TResult Function( UsualMealAdded value)  usualMealAdded,required TResult Function( UsualMealRemoved value)  usualMealRemoved,required TResult Function( UsualMealCaloriesChanged value)  usualMealCaloriesChanged,required TResult Function( ReminderStyleSelected value)  reminderStyleSelected,required TResult Function( MealCheckinScheduleModeChanged value)  mealCheckinScheduleModeChanged,required TResult Function( MealReminderToggled value)  mealReminderToggled,required TResult Function( MealReminderTimeChanged value)  mealReminderTimeChanged,required TResult Function( EndOfDayTimeChanged value)  endOfDayTimeChanged,required TResult Function( WeightCheckinFrequencySelected value)  weightCheckinFrequencySelected,required TResult Function( WeightTimeOfDaySelected value)  weightTimeOfDaySelected,required TResult Function( WeightUnitSelected value)  weightUnitSelected,required TResult Function( StartingWeightChanged value)  startingWeightChanged,required TResult Function( FirstLogItemToggled value)  firstLogItemToggled,required TResult Function( SomethingElseLogged value)  somethingElseLogged,}){
 final _that = this;
 switch (_that) {
 case BackPressed():
 return backPressed(_that);case ResetPressed():
 return resetPressed(_that);case SkipPressed():
 return skipPressed(_that);case ContinuePressed():
-return continuePressed(_that);case UsualAdded():
-return usualAdded(_that);case UsualRemoved():
-return usualRemoved(_that);case ReminderStyleSelected():
+return continuePressed(_that);case UsualMealAdded():
+return usualMealAdded(_that);case UsualMealRemoved():
+return usualMealRemoved(_that);case UsualMealCaloriesChanged():
+return usualMealCaloriesChanged(_that);case ReminderStyleSelected():
 return reminderStyleSelected(_that);case MealCheckinScheduleModeChanged():
 return mealCheckinScheduleModeChanged(_that);case MealReminderToggled():
 return mealReminderToggled(_that);case MealReminderTimeChanged():
@@ -127,16 +129,17 @@ return somethingElseLogged(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( BackPressed value)?  backPressed,TResult? Function( ResetPressed value)?  resetPressed,TResult? Function( SkipPressed value)?  skipPressed,TResult? Function( ContinuePressed value)?  continuePressed,TResult? Function( UsualAdded value)?  usualAdded,TResult? Function( UsualRemoved value)?  usualRemoved,TResult? Function( ReminderStyleSelected value)?  reminderStyleSelected,TResult? Function( MealCheckinScheduleModeChanged value)?  mealCheckinScheduleModeChanged,TResult? Function( MealReminderToggled value)?  mealReminderToggled,TResult? Function( MealReminderTimeChanged value)?  mealReminderTimeChanged,TResult? Function( EndOfDayTimeChanged value)?  endOfDayTimeChanged,TResult? Function( WeightCheckinFrequencySelected value)?  weightCheckinFrequencySelected,TResult? Function( WeightTimeOfDaySelected value)?  weightTimeOfDaySelected,TResult? Function( WeightUnitSelected value)?  weightUnitSelected,TResult? Function( StartingWeightChanged value)?  startingWeightChanged,TResult? Function( FirstLogItemToggled value)?  firstLogItemToggled,TResult? Function( SomethingElseLogged value)?  somethingElseLogged,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( BackPressed value)?  backPressed,TResult? Function( ResetPressed value)?  resetPressed,TResult? Function( SkipPressed value)?  skipPressed,TResult? Function( ContinuePressed value)?  continuePressed,TResult? Function( UsualMealAdded value)?  usualMealAdded,TResult? Function( UsualMealRemoved value)?  usualMealRemoved,TResult? Function( UsualMealCaloriesChanged value)?  usualMealCaloriesChanged,TResult? Function( ReminderStyleSelected value)?  reminderStyleSelected,TResult? Function( MealCheckinScheduleModeChanged value)?  mealCheckinScheduleModeChanged,TResult? Function( MealReminderToggled value)?  mealReminderToggled,TResult? Function( MealReminderTimeChanged value)?  mealReminderTimeChanged,TResult? Function( EndOfDayTimeChanged value)?  endOfDayTimeChanged,TResult? Function( WeightCheckinFrequencySelected value)?  weightCheckinFrequencySelected,TResult? Function( WeightTimeOfDaySelected value)?  weightTimeOfDaySelected,TResult? Function( WeightUnitSelected value)?  weightUnitSelected,TResult? Function( StartingWeightChanged value)?  startingWeightChanged,TResult? Function( FirstLogItemToggled value)?  firstLogItemToggled,TResult? Function( SomethingElseLogged value)?  somethingElseLogged,}){
 final _that = this;
 switch (_that) {
 case BackPressed() when backPressed != null:
 return backPressed(_that);case ResetPressed() when resetPressed != null:
 return resetPressed(_that);case SkipPressed() when skipPressed != null:
 return skipPressed(_that);case ContinuePressed() when continuePressed != null:
-return continuePressed(_that);case UsualAdded() when usualAdded != null:
-return usualAdded(_that);case UsualRemoved() when usualRemoved != null:
-return usualRemoved(_that);case ReminderStyleSelected() when reminderStyleSelected != null:
+return continuePressed(_that);case UsualMealAdded() when usualMealAdded != null:
+return usualMealAdded(_that);case UsualMealRemoved() when usualMealRemoved != null:
+return usualMealRemoved(_that);case UsualMealCaloriesChanged() when usualMealCaloriesChanged != null:
+return usualMealCaloriesChanged(_that);case ReminderStyleSelected() when reminderStyleSelected != null:
 return reminderStyleSelected(_that);case MealCheckinScheduleModeChanged() when mealCheckinScheduleModeChanged != null:
 return mealCheckinScheduleModeChanged(_that);case MealReminderToggled() when mealReminderToggled != null:
 return mealReminderToggled(_that);case MealReminderTimeChanged() when mealReminderTimeChanged != null:
@@ -164,26 +167,27 @@ return somethingElseLogged(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  backPressed,TResult Function()?  resetPressed,TResult Function()?  skipPressed,TResult Function()?  continuePressed,TResult Function( MealOfTheDay meal,  String name)?  usualAdded,TResult Function( MealOfTheDay meal,  String id)?  usualRemoved,TResult Function( ReminderStyle style)?  reminderStyleSelected,TResult Function( MealCheckinScheduleMode mode)?  mealCheckinScheduleModeChanged,TResult Function( MealOfTheDay meal,  bool enabled)?  mealReminderToggled,TResult Function( MealOfTheDay meal,  TimeOfDay time)?  mealReminderTimeChanged,TResult Function( TimeOfDay time)?  endOfDayTimeChanged,TResult Function( WeightCheckinFrequency frequency)?  weightCheckinFrequencySelected,TResult Function( WeightTimeOfDay timeOfDay)?  weightTimeOfDaySelected,TResult Function( WeightUnit unit)?  weightUnitSelected,TResult Function( double? weight)?  startingWeightChanged,TResult Function( String id)?  firstLogItemToggled,TResult Function( MealOfTheDay meal,  String name)?  somethingElseLogged,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  backPressed,TResult Function()?  resetPressed,TResult Function()?  skipPressed,TResult Function()?  continuePressed,TResult Function( MealOfTheDay mealOfTheDay,  String name,  int? calories)?  usualMealAdded,TResult Function( MealOfTheDay mealOfTheDay,  String id)?  usualMealRemoved,TResult Function( MealOfTheDay mealOfTheDay,  String id,  int? calories)?  usualMealCaloriesChanged,TResult Function( ReminderStyle reminderStyle)?  reminderStyleSelected,TResult Function( MealCheckinScheduleMode mealCheckinScheduleMode)?  mealCheckinScheduleModeChanged,TResult Function( MealOfTheDay mealOfTheDay,  bool enabled)?  mealReminderToggled,TResult Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)?  mealReminderTimeChanged,TResult Function( TimeOfDay timeOfDay)?  endOfDayTimeChanged,TResult Function( WeightCheckinFrequency weightCheckinFrequency)?  weightCheckinFrequencySelected,TResult Function( WeightTimeOfDay weightTimeOfDay)?  weightTimeOfDaySelected,TResult Function( WeightUnit weightUnit)?  weightUnitSelected,TResult Function( double? weight)?  startingWeightChanged,TResult Function( String id)?  firstLogItemToggled,TResult Function( MealOfTheDay mealOfTheDay,  String name)?  somethingElseLogged,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case BackPressed() when backPressed != null:
 return backPressed();case ResetPressed() when resetPressed != null:
 return resetPressed();case SkipPressed() when skipPressed != null:
 return skipPressed();case ContinuePressed() when continuePressed != null:
-return continuePressed();case UsualAdded() when usualAdded != null:
-return usualAdded(_that.meal,_that.name);case UsualRemoved() when usualRemoved != null:
-return usualRemoved(_that.meal,_that.id);case ReminderStyleSelected() when reminderStyleSelected != null:
-return reminderStyleSelected(_that.style);case MealCheckinScheduleModeChanged() when mealCheckinScheduleModeChanged != null:
-return mealCheckinScheduleModeChanged(_that.mode);case MealReminderToggled() when mealReminderToggled != null:
-return mealReminderToggled(_that.meal,_that.enabled);case MealReminderTimeChanged() when mealReminderTimeChanged != null:
-return mealReminderTimeChanged(_that.meal,_that.time);case EndOfDayTimeChanged() when endOfDayTimeChanged != null:
-return endOfDayTimeChanged(_that.time);case WeightCheckinFrequencySelected() when weightCheckinFrequencySelected != null:
-return weightCheckinFrequencySelected(_that.frequency);case WeightTimeOfDaySelected() when weightTimeOfDaySelected != null:
-return weightTimeOfDaySelected(_that.timeOfDay);case WeightUnitSelected() when weightUnitSelected != null:
-return weightUnitSelected(_that.unit);case StartingWeightChanged() when startingWeightChanged != null:
+return continuePressed();case UsualMealAdded() when usualMealAdded != null:
+return usualMealAdded(_that.mealOfTheDay,_that.name,_that.calories);case UsualMealRemoved() when usualMealRemoved != null:
+return usualMealRemoved(_that.mealOfTheDay,_that.id);case UsualMealCaloriesChanged() when usualMealCaloriesChanged != null:
+return usualMealCaloriesChanged(_that.mealOfTheDay,_that.id,_that.calories);case ReminderStyleSelected() when reminderStyleSelected != null:
+return reminderStyleSelected(_that.reminderStyle);case MealCheckinScheduleModeChanged() when mealCheckinScheduleModeChanged != null:
+return mealCheckinScheduleModeChanged(_that.mealCheckinScheduleMode);case MealReminderToggled() when mealReminderToggled != null:
+return mealReminderToggled(_that.mealOfTheDay,_that.enabled);case MealReminderTimeChanged() when mealReminderTimeChanged != null:
+return mealReminderTimeChanged(_that.mealOfTheDay,_that.timeOfDay);case EndOfDayTimeChanged() when endOfDayTimeChanged != null:
+return endOfDayTimeChanged(_that.timeOfDay);case WeightCheckinFrequencySelected() when weightCheckinFrequencySelected != null:
+return weightCheckinFrequencySelected(_that.weightCheckinFrequency);case WeightTimeOfDaySelected() when weightTimeOfDaySelected != null:
+return weightTimeOfDaySelected(_that.weightTimeOfDay);case WeightUnitSelected() when weightUnitSelected != null:
+return weightUnitSelected(_that.weightUnit);case StartingWeightChanged() when startingWeightChanged != null:
 return startingWeightChanged(_that.weight);case FirstLogItemToggled() when firstLogItemToggled != null:
 return firstLogItemToggled(_that.id);case SomethingElseLogged() when somethingElseLogged != null:
-return somethingElseLogged(_that.meal,_that.name);case _:
+return somethingElseLogged(_that.mealOfTheDay,_that.name);case _:
   return orElse();
 
 }
@@ -201,26 +205,27 @@ return somethingElseLogged(_that.meal,_that.name);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  backPressed,required TResult Function()  resetPressed,required TResult Function()  skipPressed,required TResult Function()  continuePressed,required TResult Function( MealOfTheDay meal,  String name)  usualAdded,required TResult Function( MealOfTheDay meal,  String id)  usualRemoved,required TResult Function( ReminderStyle style)  reminderStyleSelected,required TResult Function( MealCheckinScheduleMode mode)  mealCheckinScheduleModeChanged,required TResult Function( MealOfTheDay meal,  bool enabled)  mealReminderToggled,required TResult Function( MealOfTheDay meal,  TimeOfDay time)  mealReminderTimeChanged,required TResult Function( TimeOfDay time)  endOfDayTimeChanged,required TResult Function( WeightCheckinFrequency frequency)  weightCheckinFrequencySelected,required TResult Function( WeightTimeOfDay timeOfDay)  weightTimeOfDaySelected,required TResult Function( WeightUnit unit)  weightUnitSelected,required TResult Function( double? weight)  startingWeightChanged,required TResult Function( String id)  firstLogItemToggled,required TResult Function( MealOfTheDay meal,  String name)  somethingElseLogged,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  backPressed,required TResult Function()  resetPressed,required TResult Function()  skipPressed,required TResult Function()  continuePressed,required TResult Function( MealOfTheDay mealOfTheDay,  String name,  int? calories)  usualMealAdded,required TResult Function( MealOfTheDay mealOfTheDay,  String id)  usualMealRemoved,required TResult Function( MealOfTheDay mealOfTheDay,  String id,  int? calories)  usualMealCaloriesChanged,required TResult Function( ReminderStyle reminderStyle)  reminderStyleSelected,required TResult Function( MealCheckinScheduleMode mealCheckinScheduleMode)  mealCheckinScheduleModeChanged,required TResult Function( MealOfTheDay mealOfTheDay,  bool enabled)  mealReminderToggled,required TResult Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)  mealReminderTimeChanged,required TResult Function( TimeOfDay timeOfDay)  endOfDayTimeChanged,required TResult Function( WeightCheckinFrequency weightCheckinFrequency)  weightCheckinFrequencySelected,required TResult Function( WeightTimeOfDay weightTimeOfDay)  weightTimeOfDaySelected,required TResult Function( WeightUnit weightUnit)  weightUnitSelected,required TResult Function( double? weight)  startingWeightChanged,required TResult Function( String id)  firstLogItemToggled,required TResult Function( MealOfTheDay mealOfTheDay,  String name)  somethingElseLogged,}) {final _that = this;
 switch (_that) {
 case BackPressed():
 return backPressed();case ResetPressed():
 return resetPressed();case SkipPressed():
 return skipPressed();case ContinuePressed():
-return continuePressed();case UsualAdded():
-return usualAdded(_that.meal,_that.name);case UsualRemoved():
-return usualRemoved(_that.meal,_that.id);case ReminderStyleSelected():
-return reminderStyleSelected(_that.style);case MealCheckinScheduleModeChanged():
-return mealCheckinScheduleModeChanged(_that.mode);case MealReminderToggled():
-return mealReminderToggled(_that.meal,_that.enabled);case MealReminderTimeChanged():
-return mealReminderTimeChanged(_that.meal,_that.time);case EndOfDayTimeChanged():
-return endOfDayTimeChanged(_that.time);case WeightCheckinFrequencySelected():
-return weightCheckinFrequencySelected(_that.frequency);case WeightTimeOfDaySelected():
-return weightTimeOfDaySelected(_that.timeOfDay);case WeightUnitSelected():
-return weightUnitSelected(_that.unit);case StartingWeightChanged():
+return continuePressed();case UsualMealAdded():
+return usualMealAdded(_that.mealOfTheDay,_that.name,_that.calories);case UsualMealRemoved():
+return usualMealRemoved(_that.mealOfTheDay,_that.id);case UsualMealCaloriesChanged():
+return usualMealCaloriesChanged(_that.mealOfTheDay,_that.id,_that.calories);case ReminderStyleSelected():
+return reminderStyleSelected(_that.reminderStyle);case MealCheckinScheduleModeChanged():
+return mealCheckinScheduleModeChanged(_that.mealCheckinScheduleMode);case MealReminderToggled():
+return mealReminderToggled(_that.mealOfTheDay,_that.enabled);case MealReminderTimeChanged():
+return mealReminderTimeChanged(_that.mealOfTheDay,_that.timeOfDay);case EndOfDayTimeChanged():
+return endOfDayTimeChanged(_that.timeOfDay);case WeightCheckinFrequencySelected():
+return weightCheckinFrequencySelected(_that.weightCheckinFrequency);case WeightTimeOfDaySelected():
+return weightTimeOfDaySelected(_that.weightTimeOfDay);case WeightUnitSelected():
+return weightUnitSelected(_that.weightUnit);case StartingWeightChanged():
 return startingWeightChanged(_that.weight);case FirstLogItemToggled():
 return firstLogItemToggled(_that.id);case SomethingElseLogged():
-return somethingElseLogged(_that.meal,_that.name);}
+return somethingElseLogged(_that.mealOfTheDay,_that.name);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -234,26 +239,27 @@ return somethingElseLogged(_that.meal,_that.name);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  backPressed,TResult? Function()?  resetPressed,TResult? Function()?  skipPressed,TResult? Function()?  continuePressed,TResult? Function( MealOfTheDay meal,  String name)?  usualAdded,TResult? Function( MealOfTheDay meal,  String id)?  usualRemoved,TResult? Function( ReminderStyle style)?  reminderStyleSelected,TResult? Function( MealCheckinScheduleMode mode)?  mealCheckinScheduleModeChanged,TResult? Function( MealOfTheDay meal,  bool enabled)?  mealReminderToggled,TResult? Function( MealOfTheDay meal,  TimeOfDay time)?  mealReminderTimeChanged,TResult? Function( TimeOfDay time)?  endOfDayTimeChanged,TResult? Function( WeightCheckinFrequency frequency)?  weightCheckinFrequencySelected,TResult? Function( WeightTimeOfDay timeOfDay)?  weightTimeOfDaySelected,TResult? Function( WeightUnit unit)?  weightUnitSelected,TResult? Function( double? weight)?  startingWeightChanged,TResult? Function( String id)?  firstLogItemToggled,TResult? Function( MealOfTheDay meal,  String name)?  somethingElseLogged,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  backPressed,TResult? Function()?  resetPressed,TResult? Function()?  skipPressed,TResult? Function()?  continuePressed,TResult? Function( MealOfTheDay mealOfTheDay,  String name,  int? calories)?  usualMealAdded,TResult? Function( MealOfTheDay mealOfTheDay,  String id)?  usualMealRemoved,TResult? Function( MealOfTheDay mealOfTheDay,  String id,  int? calories)?  usualMealCaloriesChanged,TResult? Function( ReminderStyle reminderStyle)?  reminderStyleSelected,TResult? Function( MealCheckinScheduleMode mealCheckinScheduleMode)?  mealCheckinScheduleModeChanged,TResult? Function( MealOfTheDay mealOfTheDay,  bool enabled)?  mealReminderToggled,TResult? Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)?  mealReminderTimeChanged,TResult? Function( TimeOfDay timeOfDay)?  endOfDayTimeChanged,TResult? Function( WeightCheckinFrequency weightCheckinFrequency)?  weightCheckinFrequencySelected,TResult? Function( WeightTimeOfDay weightTimeOfDay)?  weightTimeOfDaySelected,TResult? Function( WeightUnit weightUnit)?  weightUnitSelected,TResult? Function( double? weight)?  startingWeightChanged,TResult? Function( String id)?  firstLogItemToggled,TResult? Function( MealOfTheDay mealOfTheDay,  String name)?  somethingElseLogged,}) {final _that = this;
 switch (_that) {
 case BackPressed() when backPressed != null:
 return backPressed();case ResetPressed() when resetPressed != null:
 return resetPressed();case SkipPressed() when skipPressed != null:
 return skipPressed();case ContinuePressed() when continuePressed != null:
-return continuePressed();case UsualAdded() when usualAdded != null:
-return usualAdded(_that.meal,_that.name);case UsualRemoved() when usualRemoved != null:
-return usualRemoved(_that.meal,_that.id);case ReminderStyleSelected() when reminderStyleSelected != null:
-return reminderStyleSelected(_that.style);case MealCheckinScheduleModeChanged() when mealCheckinScheduleModeChanged != null:
-return mealCheckinScheduleModeChanged(_that.mode);case MealReminderToggled() when mealReminderToggled != null:
-return mealReminderToggled(_that.meal,_that.enabled);case MealReminderTimeChanged() when mealReminderTimeChanged != null:
-return mealReminderTimeChanged(_that.meal,_that.time);case EndOfDayTimeChanged() when endOfDayTimeChanged != null:
-return endOfDayTimeChanged(_that.time);case WeightCheckinFrequencySelected() when weightCheckinFrequencySelected != null:
-return weightCheckinFrequencySelected(_that.frequency);case WeightTimeOfDaySelected() when weightTimeOfDaySelected != null:
-return weightTimeOfDaySelected(_that.timeOfDay);case WeightUnitSelected() when weightUnitSelected != null:
-return weightUnitSelected(_that.unit);case StartingWeightChanged() when startingWeightChanged != null:
+return continuePressed();case UsualMealAdded() when usualMealAdded != null:
+return usualMealAdded(_that.mealOfTheDay,_that.name,_that.calories);case UsualMealRemoved() when usualMealRemoved != null:
+return usualMealRemoved(_that.mealOfTheDay,_that.id);case UsualMealCaloriesChanged() when usualMealCaloriesChanged != null:
+return usualMealCaloriesChanged(_that.mealOfTheDay,_that.id,_that.calories);case ReminderStyleSelected() when reminderStyleSelected != null:
+return reminderStyleSelected(_that.reminderStyle);case MealCheckinScheduleModeChanged() when mealCheckinScheduleModeChanged != null:
+return mealCheckinScheduleModeChanged(_that.mealCheckinScheduleMode);case MealReminderToggled() when mealReminderToggled != null:
+return mealReminderToggled(_that.mealOfTheDay,_that.enabled);case MealReminderTimeChanged() when mealReminderTimeChanged != null:
+return mealReminderTimeChanged(_that.mealOfTheDay,_that.timeOfDay);case EndOfDayTimeChanged() when endOfDayTimeChanged != null:
+return endOfDayTimeChanged(_that.timeOfDay);case WeightCheckinFrequencySelected() when weightCheckinFrequencySelected != null:
+return weightCheckinFrequencySelected(_that.weightCheckinFrequency);case WeightTimeOfDaySelected() when weightTimeOfDaySelected != null:
+return weightTimeOfDaySelected(_that.weightTimeOfDay);case WeightUnitSelected() when weightUnitSelected != null:
+return weightUnitSelected(_that.weightUnit);case StartingWeightChanged() when startingWeightChanged != null:
 return startingWeightChanged(_that.weight);case FirstLogItemToggled() when firstLogItemToggled != null:
 return firstLogItemToggled(_that.id);case SomethingElseLogged() when somethingElseLogged != null:
-return somethingElseLogged(_that.meal,_that.name);case _:
+return somethingElseLogged(_that.mealOfTheDay,_that.name);case _:
   return null;
 
 }
@@ -392,44 +398,45 @@ String toString() {
 /// @nodoc
 
 
-class UsualAdded implements OnboardingEvent {
-  const UsualAdded(this.meal, this.name);
+class UsualMealAdded implements OnboardingEvent {
+  const UsualMealAdded(this.mealOfTheDay, this.name, this.calories);
   
 
- final  MealOfTheDay meal;
+ final  MealOfTheDay mealOfTheDay;
  final  String name;
+ final  int? calories;
 
 /// Create a copy of OnboardingEvent
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$UsualAddedCopyWith<UsualAdded> get copyWith => _$UsualAddedCopyWithImpl<UsualAdded>(this, _$identity);
+$UsualMealAddedCopyWith<UsualMealAdded> get copyWith => _$UsualMealAddedCopyWithImpl<UsualMealAdded>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UsualAdded&&(identical(other.meal, meal) || other.meal == meal)&&(identical(other.name, name) || other.name == name));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UsualMealAdded&&(identical(other.mealOfTheDay, mealOfTheDay) || other.mealOfTheDay == mealOfTheDay)&&(identical(other.name, name) || other.name == name)&&(identical(other.calories, calories) || other.calories == calories));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,meal,name);
+int get hashCode => Object.hash(runtimeType,mealOfTheDay,name,calories);
 
 @override
 String toString() {
-  return 'OnboardingEvent.usualAdded(meal: $meal, name: $name)';
+  return 'OnboardingEvent.usualMealAdded(mealOfTheDay: $mealOfTheDay, name: $name, calories: $calories)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $UsualAddedCopyWith<$Res> implements $OnboardingEventCopyWith<$Res> {
-  factory $UsualAddedCopyWith(UsualAdded value, $Res Function(UsualAdded) _then) = _$UsualAddedCopyWithImpl;
+abstract mixin class $UsualMealAddedCopyWith<$Res> implements $OnboardingEventCopyWith<$Res> {
+  factory $UsualMealAddedCopyWith(UsualMealAdded value, $Res Function(UsualMealAdded) _then) = _$UsualMealAddedCopyWithImpl;
 @useResult
 $Res call({
- MealOfTheDay meal, String name
+ MealOfTheDay mealOfTheDay, String name, int? calories
 });
 
 
@@ -437,20 +444,21 @@ $Res call({
 
 }
 /// @nodoc
-class _$UsualAddedCopyWithImpl<$Res>
-    implements $UsualAddedCopyWith<$Res> {
-  _$UsualAddedCopyWithImpl(this._self, this._then);
+class _$UsualMealAddedCopyWithImpl<$Res>
+    implements $UsualMealAddedCopyWith<$Res> {
+  _$UsualMealAddedCopyWithImpl(this._self, this._then);
 
-  final UsualAdded _self;
-  final $Res Function(UsualAdded) _then;
+  final UsualMealAdded _self;
+  final $Res Function(UsualMealAdded) _then;
 
 /// Create a copy of OnboardingEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? meal = null,Object? name = null,}) {
-  return _then(UsualAdded(
-null == meal ? _self.meal : meal // ignore: cast_nullable_to_non_nullable
+@pragma('vm:prefer-inline') $Res call({Object? mealOfTheDay = null,Object? name = null,Object? calories = freezed,}) {
+  return _then(UsualMealAdded(
+null == mealOfTheDay ? _self.mealOfTheDay : mealOfTheDay // ignore: cast_nullable_to_non_nullable
 as MealOfTheDay,null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,
+as String,freezed == calories ? _self.calories : calories // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -460,44 +468,44 @@ as String,
 /// @nodoc
 
 
-class UsualRemoved implements OnboardingEvent {
-  const UsualRemoved(this.meal, this.id);
+class UsualMealRemoved implements OnboardingEvent {
+  const UsualMealRemoved(this.mealOfTheDay, this.id);
   
 
- final  MealOfTheDay meal;
+ final  MealOfTheDay mealOfTheDay;
  final  String id;
 
 /// Create a copy of OnboardingEvent
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$UsualRemovedCopyWith<UsualRemoved> get copyWith => _$UsualRemovedCopyWithImpl<UsualRemoved>(this, _$identity);
+$UsualMealRemovedCopyWith<UsualMealRemoved> get copyWith => _$UsualMealRemovedCopyWithImpl<UsualMealRemoved>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UsualRemoved&&(identical(other.meal, meal) || other.meal == meal)&&(identical(other.id, id) || other.id == id));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UsualMealRemoved&&(identical(other.mealOfTheDay, mealOfTheDay) || other.mealOfTheDay == mealOfTheDay)&&(identical(other.id, id) || other.id == id));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,meal,id);
+int get hashCode => Object.hash(runtimeType,mealOfTheDay,id);
 
 @override
 String toString() {
-  return 'OnboardingEvent.usualRemoved(meal: $meal, id: $id)';
+  return 'OnboardingEvent.usualMealRemoved(mealOfTheDay: $mealOfTheDay, id: $id)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $UsualRemovedCopyWith<$Res> implements $OnboardingEventCopyWith<$Res> {
-  factory $UsualRemovedCopyWith(UsualRemoved value, $Res Function(UsualRemoved) _then) = _$UsualRemovedCopyWithImpl;
+abstract mixin class $UsualMealRemovedCopyWith<$Res> implements $OnboardingEventCopyWith<$Res> {
+  factory $UsualMealRemovedCopyWith(UsualMealRemoved value, $Res Function(UsualMealRemoved) _then) = _$UsualMealRemovedCopyWithImpl;
 @useResult
 $Res call({
- MealOfTheDay meal, String id
+ MealOfTheDay mealOfTheDay, String id
 });
 
 
@@ -505,18 +513,18 @@ $Res call({
 
 }
 /// @nodoc
-class _$UsualRemovedCopyWithImpl<$Res>
-    implements $UsualRemovedCopyWith<$Res> {
-  _$UsualRemovedCopyWithImpl(this._self, this._then);
+class _$UsualMealRemovedCopyWithImpl<$Res>
+    implements $UsualMealRemovedCopyWith<$Res> {
+  _$UsualMealRemovedCopyWithImpl(this._self, this._then);
 
-  final UsualRemoved _self;
-  final $Res Function(UsualRemoved) _then;
+  final UsualMealRemoved _self;
+  final $Res Function(UsualMealRemoved) _then;
 
 /// Create a copy of OnboardingEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? meal = null,Object? id = null,}) {
-  return _then(UsualRemoved(
-null == meal ? _self.meal : meal // ignore: cast_nullable_to_non_nullable
+@pragma('vm:prefer-inline') $Res call({Object? mealOfTheDay = null,Object? id = null,}) {
+  return _then(UsualMealRemoved(
+null == mealOfTheDay ? _self.mealOfTheDay : mealOfTheDay // ignore: cast_nullable_to_non_nullable
 as MealOfTheDay,null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,
   ));
@@ -528,11 +536,81 @@ as String,
 /// @nodoc
 
 
-class ReminderStyleSelected implements OnboardingEvent {
-  const ReminderStyleSelected(this.style);
+class UsualMealCaloriesChanged implements OnboardingEvent {
+  const UsualMealCaloriesChanged(this.mealOfTheDay, this.id, this.calories);
   
 
- final  ReminderStyle style;
+ final  MealOfTheDay mealOfTheDay;
+ final  String id;
+ final  int? calories;
+
+/// Create a copy of OnboardingEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$UsualMealCaloriesChangedCopyWith<UsualMealCaloriesChanged> get copyWith => _$UsualMealCaloriesChangedCopyWithImpl<UsualMealCaloriesChanged>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UsualMealCaloriesChanged&&(identical(other.mealOfTheDay, mealOfTheDay) || other.mealOfTheDay == mealOfTheDay)&&(identical(other.id, id) || other.id == id)&&(identical(other.calories, calories) || other.calories == calories));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,mealOfTheDay,id,calories);
+
+@override
+String toString() {
+  return 'OnboardingEvent.usualMealCaloriesChanged(mealOfTheDay: $mealOfTheDay, id: $id, calories: $calories)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $UsualMealCaloriesChangedCopyWith<$Res> implements $OnboardingEventCopyWith<$Res> {
+  factory $UsualMealCaloriesChangedCopyWith(UsualMealCaloriesChanged value, $Res Function(UsualMealCaloriesChanged) _then) = _$UsualMealCaloriesChangedCopyWithImpl;
+@useResult
+$Res call({
+ MealOfTheDay mealOfTheDay, String id, int? calories
+});
+
+
+
+
+}
+/// @nodoc
+class _$UsualMealCaloriesChangedCopyWithImpl<$Res>
+    implements $UsualMealCaloriesChangedCopyWith<$Res> {
+  _$UsualMealCaloriesChangedCopyWithImpl(this._self, this._then);
+
+  final UsualMealCaloriesChanged _self;
+  final $Res Function(UsualMealCaloriesChanged) _then;
+
+/// Create a copy of OnboardingEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? mealOfTheDay = null,Object? id = null,Object? calories = freezed,}) {
+  return _then(UsualMealCaloriesChanged(
+null == mealOfTheDay ? _self.mealOfTheDay : mealOfTheDay // ignore: cast_nullable_to_non_nullable
+as MealOfTheDay,null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,freezed == calories ? _self.calories : calories // ignore: cast_nullable_to_non_nullable
+as int?,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class ReminderStyleSelected implements OnboardingEvent {
+  const ReminderStyleSelected(this.reminderStyle);
+  
+
+ final  ReminderStyle reminderStyle;
 
 /// Create a copy of OnboardingEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -544,16 +622,16 @@ $ReminderStyleSelectedCopyWith<ReminderStyleSelected> get copyWith => _$Reminder
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReminderStyleSelected&&(identical(other.style, style) || other.style == style));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ReminderStyleSelected&&(identical(other.reminderStyle, reminderStyle) || other.reminderStyle == reminderStyle));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,style);
+int get hashCode => Object.hash(runtimeType,reminderStyle);
 
 @override
 String toString() {
-  return 'OnboardingEvent.reminderStyleSelected(style: $style)';
+  return 'OnboardingEvent.reminderStyleSelected(reminderStyle: $reminderStyle)';
 }
 
 
@@ -564,7 +642,7 @@ abstract mixin class $ReminderStyleSelectedCopyWith<$Res> implements $Onboarding
   factory $ReminderStyleSelectedCopyWith(ReminderStyleSelected value, $Res Function(ReminderStyleSelected) _then) = _$ReminderStyleSelectedCopyWithImpl;
 @useResult
 $Res call({
- ReminderStyle style
+ ReminderStyle reminderStyle
 });
 
 
@@ -581,9 +659,9 @@ class _$ReminderStyleSelectedCopyWithImpl<$Res>
 
 /// Create a copy of OnboardingEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? style = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? reminderStyle = null,}) {
   return _then(ReminderStyleSelected(
-null == style ? _self.style : style // ignore: cast_nullable_to_non_nullable
+null == reminderStyle ? _self.reminderStyle : reminderStyle // ignore: cast_nullable_to_non_nullable
 as ReminderStyle,
   ));
 }
@@ -595,10 +673,10 @@ as ReminderStyle,
 
 
 class MealCheckinScheduleModeChanged implements OnboardingEvent {
-  const MealCheckinScheduleModeChanged(this.mode);
+  const MealCheckinScheduleModeChanged(this.mealCheckinScheduleMode);
   
 
- final  MealCheckinScheduleMode mode;
+ final  MealCheckinScheduleMode mealCheckinScheduleMode;
 
 /// Create a copy of OnboardingEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -610,16 +688,16 @@ $MealCheckinScheduleModeChangedCopyWith<MealCheckinScheduleModeChanged> get copy
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MealCheckinScheduleModeChanged&&(identical(other.mode, mode) || other.mode == mode));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MealCheckinScheduleModeChanged&&(identical(other.mealCheckinScheduleMode, mealCheckinScheduleMode) || other.mealCheckinScheduleMode == mealCheckinScheduleMode));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,mode);
+int get hashCode => Object.hash(runtimeType,mealCheckinScheduleMode);
 
 @override
 String toString() {
-  return 'OnboardingEvent.mealCheckinScheduleModeChanged(mode: $mode)';
+  return 'OnboardingEvent.mealCheckinScheduleModeChanged(mealCheckinScheduleMode: $mealCheckinScheduleMode)';
 }
 
 
@@ -630,7 +708,7 @@ abstract mixin class $MealCheckinScheduleModeChangedCopyWith<$Res> implements $O
   factory $MealCheckinScheduleModeChangedCopyWith(MealCheckinScheduleModeChanged value, $Res Function(MealCheckinScheduleModeChanged) _then) = _$MealCheckinScheduleModeChangedCopyWithImpl;
 @useResult
 $Res call({
- MealCheckinScheduleMode mode
+ MealCheckinScheduleMode mealCheckinScheduleMode
 });
 
 
@@ -647,9 +725,9 @@ class _$MealCheckinScheduleModeChangedCopyWithImpl<$Res>
 
 /// Create a copy of OnboardingEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? mode = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? mealCheckinScheduleMode = null,}) {
   return _then(MealCheckinScheduleModeChanged(
-null == mode ? _self.mode : mode // ignore: cast_nullable_to_non_nullable
+null == mealCheckinScheduleMode ? _self.mealCheckinScheduleMode : mealCheckinScheduleMode // ignore: cast_nullable_to_non_nullable
 as MealCheckinScheduleMode,
   ));
 }
@@ -661,10 +739,10 @@ as MealCheckinScheduleMode,
 
 
 class MealReminderToggled implements OnboardingEvent {
-  const MealReminderToggled(this.meal, {required this.enabled});
+  const MealReminderToggled(this.mealOfTheDay, {required this.enabled});
   
 
- final  MealOfTheDay meal;
+ final  MealOfTheDay mealOfTheDay;
  final  bool enabled;
 
 /// Create a copy of OnboardingEvent
@@ -677,16 +755,16 @@ $MealReminderToggledCopyWith<MealReminderToggled> get copyWith => _$MealReminder
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MealReminderToggled&&(identical(other.meal, meal) || other.meal == meal)&&(identical(other.enabled, enabled) || other.enabled == enabled));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MealReminderToggled&&(identical(other.mealOfTheDay, mealOfTheDay) || other.mealOfTheDay == mealOfTheDay)&&(identical(other.enabled, enabled) || other.enabled == enabled));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,meal,enabled);
+int get hashCode => Object.hash(runtimeType,mealOfTheDay,enabled);
 
 @override
 String toString() {
-  return 'OnboardingEvent.mealReminderToggled(meal: $meal, enabled: $enabled)';
+  return 'OnboardingEvent.mealReminderToggled(mealOfTheDay: $mealOfTheDay, enabled: $enabled)';
 }
 
 
@@ -697,7 +775,7 @@ abstract mixin class $MealReminderToggledCopyWith<$Res> implements $OnboardingEv
   factory $MealReminderToggledCopyWith(MealReminderToggled value, $Res Function(MealReminderToggled) _then) = _$MealReminderToggledCopyWithImpl;
 @useResult
 $Res call({
- MealOfTheDay meal, bool enabled
+ MealOfTheDay mealOfTheDay, bool enabled
 });
 
 
@@ -714,9 +792,9 @@ class _$MealReminderToggledCopyWithImpl<$Res>
 
 /// Create a copy of OnboardingEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? meal = null,Object? enabled = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? mealOfTheDay = null,Object? enabled = null,}) {
   return _then(MealReminderToggled(
-null == meal ? _self.meal : meal // ignore: cast_nullable_to_non_nullable
+null == mealOfTheDay ? _self.mealOfTheDay : mealOfTheDay // ignore: cast_nullable_to_non_nullable
 as MealOfTheDay,enabled: null == enabled ? _self.enabled : enabled // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
@@ -729,11 +807,11 @@ as bool,
 
 
 class MealReminderTimeChanged implements OnboardingEvent {
-  const MealReminderTimeChanged(this.meal, this.time);
+  const MealReminderTimeChanged(this.mealOfTheDay, this.timeOfDay);
   
 
- final  MealOfTheDay meal;
- final  TimeOfDay time;
+ final  MealOfTheDay mealOfTheDay;
+ final  TimeOfDay timeOfDay;
 
 /// Create a copy of OnboardingEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -745,16 +823,16 @@ $MealReminderTimeChangedCopyWith<MealReminderTimeChanged> get copyWith => _$Meal
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MealReminderTimeChanged&&(identical(other.meal, meal) || other.meal == meal)&&(identical(other.time, time) || other.time == time));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MealReminderTimeChanged&&(identical(other.mealOfTheDay, mealOfTheDay) || other.mealOfTheDay == mealOfTheDay)&&(identical(other.timeOfDay, timeOfDay) || other.timeOfDay == timeOfDay));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,meal,time);
+int get hashCode => Object.hash(runtimeType,mealOfTheDay,timeOfDay);
 
 @override
 String toString() {
-  return 'OnboardingEvent.mealReminderTimeChanged(meal: $meal, time: $time)';
+  return 'OnboardingEvent.mealReminderTimeChanged(mealOfTheDay: $mealOfTheDay, timeOfDay: $timeOfDay)';
 }
 
 
@@ -765,7 +843,7 @@ abstract mixin class $MealReminderTimeChangedCopyWith<$Res> implements $Onboardi
   factory $MealReminderTimeChangedCopyWith(MealReminderTimeChanged value, $Res Function(MealReminderTimeChanged) _then) = _$MealReminderTimeChangedCopyWithImpl;
 @useResult
 $Res call({
- MealOfTheDay meal, TimeOfDay time
+ MealOfTheDay mealOfTheDay, TimeOfDay timeOfDay
 });
 
 
@@ -782,10 +860,10 @@ class _$MealReminderTimeChangedCopyWithImpl<$Res>
 
 /// Create a copy of OnboardingEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? meal = null,Object? time = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? mealOfTheDay = null,Object? timeOfDay = null,}) {
   return _then(MealReminderTimeChanged(
-null == meal ? _self.meal : meal // ignore: cast_nullable_to_non_nullable
-as MealOfTheDay,null == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
+null == mealOfTheDay ? _self.mealOfTheDay : mealOfTheDay // ignore: cast_nullable_to_non_nullable
+as MealOfTheDay,null == timeOfDay ? _self.timeOfDay : timeOfDay // ignore: cast_nullable_to_non_nullable
 as TimeOfDay,
   ));
 }
@@ -797,10 +875,10 @@ as TimeOfDay,
 
 
 class EndOfDayTimeChanged implements OnboardingEvent {
-  const EndOfDayTimeChanged(this.time);
+  const EndOfDayTimeChanged(this.timeOfDay);
   
 
- final  TimeOfDay time;
+ final  TimeOfDay timeOfDay;
 
 /// Create a copy of OnboardingEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -812,16 +890,16 @@ $EndOfDayTimeChangedCopyWith<EndOfDayTimeChanged> get copyWith => _$EndOfDayTime
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is EndOfDayTimeChanged&&(identical(other.time, time) || other.time == time));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EndOfDayTimeChanged&&(identical(other.timeOfDay, timeOfDay) || other.timeOfDay == timeOfDay));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,time);
+int get hashCode => Object.hash(runtimeType,timeOfDay);
 
 @override
 String toString() {
-  return 'OnboardingEvent.endOfDayTimeChanged(time: $time)';
+  return 'OnboardingEvent.endOfDayTimeChanged(timeOfDay: $timeOfDay)';
 }
 
 
@@ -832,7 +910,7 @@ abstract mixin class $EndOfDayTimeChangedCopyWith<$Res> implements $OnboardingEv
   factory $EndOfDayTimeChangedCopyWith(EndOfDayTimeChanged value, $Res Function(EndOfDayTimeChanged) _then) = _$EndOfDayTimeChangedCopyWithImpl;
 @useResult
 $Res call({
- TimeOfDay time
+ TimeOfDay timeOfDay
 });
 
 
@@ -849,9 +927,9 @@ class _$EndOfDayTimeChangedCopyWithImpl<$Res>
 
 /// Create a copy of OnboardingEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? time = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? timeOfDay = null,}) {
   return _then(EndOfDayTimeChanged(
-null == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
+null == timeOfDay ? _self.timeOfDay : timeOfDay // ignore: cast_nullable_to_non_nullable
 as TimeOfDay,
   ));
 }
@@ -863,10 +941,10 @@ as TimeOfDay,
 
 
 class WeightCheckinFrequencySelected implements OnboardingEvent {
-  const WeightCheckinFrequencySelected(this.frequency);
+  const WeightCheckinFrequencySelected(this.weightCheckinFrequency);
   
 
- final  WeightCheckinFrequency frequency;
+ final  WeightCheckinFrequency weightCheckinFrequency;
 
 /// Create a copy of OnboardingEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -878,16 +956,16 @@ $WeightCheckinFrequencySelectedCopyWith<WeightCheckinFrequencySelected> get copy
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WeightCheckinFrequencySelected&&(identical(other.frequency, frequency) || other.frequency == frequency));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WeightCheckinFrequencySelected&&(identical(other.weightCheckinFrequency, weightCheckinFrequency) || other.weightCheckinFrequency == weightCheckinFrequency));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,frequency);
+int get hashCode => Object.hash(runtimeType,weightCheckinFrequency);
 
 @override
 String toString() {
-  return 'OnboardingEvent.weightCheckinFrequencySelected(frequency: $frequency)';
+  return 'OnboardingEvent.weightCheckinFrequencySelected(weightCheckinFrequency: $weightCheckinFrequency)';
 }
 
 
@@ -898,7 +976,7 @@ abstract mixin class $WeightCheckinFrequencySelectedCopyWith<$Res> implements $O
   factory $WeightCheckinFrequencySelectedCopyWith(WeightCheckinFrequencySelected value, $Res Function(WeightCheckinFrequencySelected) _then) = _$WeightCheckinFrequencySelectedCopyWithImpl;
 @useResult
 $Res call({
- WeightCheckinFrequency frequency
+ WeightCheckinFrequency weightCheckinFrequency
 });
 
 
@@ -915,9 +993,9 @@ class _$WeightCheckinFrequencySelectedCopyWithImpl<$Res>
 
 /// Create a copy of OnboardingEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? frequency = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? weightCheckinFrequency = null,}) {
   return _then(WeightCheckinFrequencySelected(
-null == frequency ? _self.frequency : frequency // ignore: cast_nullable_to_non_nullable
+null == weightCheckinFrequency ? _self.weightCheckinFrequency : weightCheckinFrequency // ignore: cast_nullable_to_non_nullable
 as WeightCheckinFrequency,
   ));
 }
@@ -929,10 +1007,10 @@ as WeightCheckinFrequency,
 
 
 class WeightTimeOfDaySelected implements OnboardingEvent {
-  const WeightTimeOfDaySelected(this.timeOfDay);
+  const WeightTimeOfDaySelected(this.weightTimeOfDay);
   
 
- final  WeightTimeOfDay timeOfDay;
+ final  WeightTimeOfDay weightTimeOfDay;
 
 /// Create a copy of OnboardingEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -944,16 +1022,16 @@ $WeightTimeOfDaySelectedCopyWith<WeightTimeOfDaySelected> get copyWith => _$Weig
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WeightTimeOfDaySelected&&(identical(other.timeOfDay, timeOfDay) || other.timeOfDay == timeOfDay));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WeightTimeOfDaySelected&&(identical(other.weightTimeOfDay, weightTimeOfDay) || other.weightTimeOfDay == weightTimeOfDay));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,timeOfDay);
+int get hashCode => Object.hash(runtimeType,weightTimeOfDay);
 
 @override
 String toString() {
-  return 'OnboardingEvent.weightTimeOfDaySelected(timeOfDay: $timeOfDay)';
+  return 'OnboardingEvent.weightTimeOfDaySelected(weightTimeOfDay: $weightTimeOfDay)';
 }
 
 
@@ -964,7 +1042,7 @@ abstract mixin class $WeightTimeOfDaySelectedCopyWith<$Res> implements $Onboardi
   factory $WeightTimeOfDaySelectedCopyWith(WeightTimeOfDaySelected value, $Res Function(WeightTimeOfDaySelected) _then) = _$WeightTimeOfDaySelectedCopyWithImpl;
 @useResult
 $Res call({
- WeightTimeOfDay timeOfDay
+ WeightTimeOfDay weightTimeOfDay
 });
 
 
@@ -981,9 +1059,9 @@ class _$WeightTimeOfDaySelectedCopyWithImpl<$Res>
 
 /// Create a copy of OnboardingEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? timeOfDay = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? weightTimeOfDay = null,}) {
   return _then(WeightTimeOfDaySelected(
-null == timeOfDay ? _self.timeOfDay : timeOfDay // ignore: cast_nullable_to_non_nullable
+null == weightTimeOfDay ? _self.weightTimeOfDay : weightTimeOfDay // ignore: cast_nullable_to_non_nullable
 as WeightTimeOfDay,
   ));
 }
@@ -995,10 +1073,10 @@ as WeightTimeOfDay,
 
 
 class WeightUnitSelected implements OnboardingEvent {
-  const WeightUnitSelected(this.unit);
+  const WeightUnitSelected(this.weightUnit);
   
 
- final  WeightUnit unit;
+ final  WeightUnit weightUnit;
 
 /// Create a copy of OnboardingEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -1010,16 +1088,16 @@ $WeightUnitSelectedCopyWith<WeightUnitSelected> get copyWith => _$WeightUnitSele
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WeightUnitSelected&&(identical(other.unit, unit) || other.unit == unit));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WeightUnitSelected&&(identical(other.weightUnit, weightUnit) || other.weightUnit == weightUnit));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,unit);
+int get hashCode => Object.hash(runtimeType,weightUnit);
 
 @override
 String toString() {
-  return 'OnboardingEvent.weightUnitSelected(unit: $unit)';
+  return 'OnboardingEvent.weightUnitSelected(weightUnit: $weightUnit)';
 }
 
 
@@ -1030,7 +1108,7 @@ abstract mixin class $WeightUnitSelectedCopyWith<$Res> implements $OnboardingEve
   factory $WeightUnitSelectedCopyWith(WeightUnitSelected value, $Res Function(WeightUnitSelected) _then) = _$WeightUnitSelectedCopyWithImpl;
 @useResult
 $Res call({
- WeightUnit unit
+ WeightUnit weightUnit
 });
 
 
@@ -1047,9 +1125,9 @@ class _$WeightUnitSelectedCopyWithImpl<$Res>
 
 /// Create a copy of OnboardingEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? unit = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? weightUnit = null,}) {
   return _then(WeightUnitSelected(
-null == unit ? _self.unit : unit // ignore: cast_nullable_to_non_nullable
+null == weightUnit ? _self.weightUnit : weightUnit // ignore: cast_nullable_to_non_nullable
 as WeightUnit,
   ));
 }
@@ -1193,10 +1271,10 @@ as String,
 
 
 class SomethingElseLogged implements OnboardingEvent {
-  const SomethingElseLogged(this.meal, this.name);
+  const SomethingElseLogged(this.mealOfTheDay, this.name);
   
 
- final  MealOfTheDay meal;
+ final  MealOfTheDay mealOfTheDay;
  final  String name;
 
 /// Create a copy of OnboardingEvent
@@ -1209,16 +1287,16 @@ $SomethingElseLoggedCopyWith<SomethingElseLogged> get copyWith => _$SomethingEls
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SomethingElseLogged&&(identical(other.meal, meal) || other.meal == meal)&&(identical(other.name, name) || other.name == name));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SomethingElseLogged&&(identical(other.mealOfTheDay, mealOfTheDay) || other.mealOfTheDay == mealOfTheDay)&&(identical(other.name, name) || other.name == name));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,meal,name);
+int get hashCode => Object.hash(runtimeType,mealOfTheDay,name);
 
 @override
 String toString() {
-  return 'OnboardingEvent.somethingElseLogged(meal: $meal, name: $name)';
+  return 'OnboardingEvent.somethingElseLogged(mealOfTheDay: $mealOfTheDay, name: $name)';
 }
 
 
@@ -1229,7 +1307,7 @@ abstract mixin class $SomethingElseLoggedCopyWith<$Res> implements $OnboardingEv
   factory $SomethingElseLoggedCopyWith(SomethingElseLogged value, $Res Function(SomethingElseLogged) _then) = _$SomethingElseLoggedCopyWithImpl;
 @useResult
 $Res call({
- MealOfTheDay meal, String name
+ MealOfTheDay mealOfTheDay, String name
 });
 
 
@@ -1246,9 +1324,9 @@ class _$SomethingElseLoggedCopyWithImpl<$Res>
 
 /// Create a copy of OnboardingEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? meal = null,Object? name = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? mealOfTheDay = null,Object? name = null,}) {
   return _then(SomethingElseLogged(
-null == meal ? _self.meal : meal // ignore: cast_nullable_to_non_nullable
+null == mealOfTheDay ? _self.mealOfTheDay : mealOfTheDay // ignore: cast_nullable_to_non_nullable
 as MealOfTheDay,null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,
   ));

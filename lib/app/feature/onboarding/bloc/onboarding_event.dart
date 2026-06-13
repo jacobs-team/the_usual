@@ -6,39 +6,50 @@ sealed class OnboardingEvent with _$OnboardingEvent {
   const factory OnboardingEvent.resetPressed() = ResetPressed;
   const factory OnboardingEvent.skipPressed() = SkipPressed;
   const factory OnboardingEvent.continuePressed() = ContinuePressed;
-  const factory OnboardingEvent.usualAdded(MealOfTheDay meal, String name) =
-      UsualAdded;
-  const factory OnboardingEvent.usualRemoved(MealOfTheDay meal, String id) =
-      UsualRemoved;
-  const factory OnboardingEvent.reminderStyleSelected(ReminderStyle style) =
-      ReminderStyleSelected;
+  const factory OnboardingEvent.usualMealAdded(
+    MealOfTheDay mealOfTheDay,
+    String name,
+    int? calories,
+  ) = UsualMealAdded;
+  const factory OnboardingEvent.usualMealRemoved(
+    MealOfTheDay mealOfTheDay,
+    String id,
+  ) = UsualMealRemoved;
+  const factory OnboardingEvent.usualMealCaloriesChanged(
+    MealOfTheDay mealOfTheDay,
+    String id,
+    int? calories,
+  ) = UsualMealCaloriesChanged;
+  const factory OnboardingEvent.reminderStyleSelected(
+    ReminderStyle reminderStyle,
+  ) = ReminderStyleSelected;
   const factory OnboardingEvent.mealCheckinScheduleModeChanged(
-    MealCheckinScheduleMode mode,
+    MealCheckinScheduleMode mealCheckinScheduleMode,
   ) = MealCheckinScheduleModeChanged;
   const factory OnboardingEvent.mealReminderToggled(
-    MealOfTheDay meal, {
+    MealOfTheDay mealOfTheDay, {
     required bool enabled,
   }) = MealReminderToggled;
   const factory OnboardingEvent.mealReminderTimeChanged(
-    MealOfTheDay meal,
-    TimeOfDay time,
+    MealOfTheDay mealOfTheDay,
+    TimeOfDay timeOfDay,
   ) = MealReminderTimeChanged;
-  const factory OnboardingEvent.endOfDayTimeChanged(TimeOfDay time) =
+  const factory OnboardingEvent.endOfDayTimeChanged(TimeOfDay timeOfDay) =
       EndOfDayTimeChanged;
   const factory OnboardingEvent.weightCheckinFrequencySelected(
-    WeightCheckinFrequency frequency,
+    WeightCheckinFrequency weightCheckinFrequency,
   ) = WeightCheckinFrequencySelected;
   const factory OnboardingEvent.weightTimeOfDaySelected(
-    WeightTimeOfDay timeOfDay,
+    WeightTimeOfDay weightTimeOfDay,
   ) = WeightTimeOfDaySelected;
-  const factory OnboardingEvent.weightUnitSelected(WeightUnit unit) =
+  const factory OnboardingEvent.weightUnitSelected(WeightUnit weightUnit) =
       WeightUnitSelected;
   const factory OnboardingEvent.startingWeightChanged(double? weight) =
       StartingWeightChanged;
   const factory OnboardingEvent.firstLogItemToggled(String id) =
       FirstLogItemToggled;
   const factory OnboardingEvent.somethingElseLogged(
-    MealOfTheDay meal,
+    MealOfTheDay mealOfTheDay,
     String name,
   ) = SomethingElseLogged;
 }

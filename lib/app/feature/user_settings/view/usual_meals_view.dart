@@ -25,12 +25,12 @@ class UsualMealsView extends StatelessWidget {
             isScrollable: true,
             tabAlignment: TabAlignment.start,
             tabs: [
-              for (final meal in MealOfTheDay.values)
+              for (final mealOfTheDay in MealOfTheDay.values)
                 BlocSelector<UserSettingsBloc, UserSettingsState, int>(
                   bloc: getIt<UserSettingsBloc>(),
-                  selector: (state) => state.usuals[meal]?.length ?? 0,
+                  selector: (state) => state.usuals[mealOfTheDay]?.length ?? 0,
                   builder: (context, count) {
-                    return Tab(text: '${meal.label} ($count)');
+                    return Tab(text: '${mealOfTheDay.label} ($count)');
                   },
                 ),
             ],
@@ -38,7 +38,8 @@ class UsualMealsView extends StatelessWidget {
         ),
         body: TabBarView(
           children: [
-            for (final meal in MealOfTheDay.values) UsualMealList(meal: meal),
+            for (final mealOfTheDay in MealOfTheDay.values)
+              UsualMealList(mealOfTheDay: mealOfTheDay),
           ],
         ),
       ),

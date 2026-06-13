@@ -24,12 +24,12 @@ class UsualMealsRow extends StatelessWidget {
       builder: (context, usuals) {
         final total = MealOfTheDay.values.fold(
           0,
-          (sum, meal) => sum + (usuals[meal]?.length ?? 0),
+          (sum, mealOfTheDay) => sum + (usuals[mealOfTheDay]?.length ?? 0),
         );
         final summary = [
           '$total items',
-          for (final meal in MealOfTheDay.values)
-            '${meal.label} ${usuals[meal]?.length ?? 0}',
+          for (final mealOfTheDay in MealOfTheDay.values)
+            '${mealOfTheDay.label} ${usuals[mealOfTheDay]?.length ?? 0}',
         ].join(' · ');
         return Card(
           margin: EdgeInsets.zero,

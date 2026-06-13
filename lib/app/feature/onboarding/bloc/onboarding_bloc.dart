@@ -27,20 +27,23 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
         ContinuePressed() => emit(
           state.copyWith(activeStepIndex: state.activeStepIndex + 1),
         ),
-        UsualAdded() => _onUsualAdded(event, emit),
-        UsualRemoved() => _onUsualRemoved(event, emit),
+        UsualMealAdded() => _onUsualMealAdded(event, emit),
+        UsualMealRemoved() => _onUsualMealRemoved(event, emit),
+        UsualMealCaloriesChanged() => _onUsualMealCaloriesChanged(event, emit),
         // TODO(onboarding): request OS notification permission when
         // ReminderStyle.notifications is picked, falling back to onAppOpen if
         // denied. Notification approach is an open item in docs/onboarding.
         ReminderStyleSelected() => emit(
           state.copyWith(
-            settings: state.settings.copyWith(reminderStyle: event.style),
+            settings: state.settings.copyWith(
+              reminderStyle: event.reminderStyle,
+            ),
           ),
         ),
         MealCheckinScheduleModeChanged() => emit(
           state.copyWith(
             settings: state.settings.copyWith(
-              mealCheckinScheduleMode: event.mode,
+              mealCheckinScheduleMode: event.mealCheckinScheduleMode,
             ),
           ),
         ),
@@ -50,7 +53,7 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
           state.copyWith(
             settings: state.settings.copyWith(
               endOfDayReminder: state.settings.endOfDayReminder.copyWith(
-                time: event.time,
+                timeOfDay: event.timeOfDay,
               ),
             ),
           ),
@@ -58,18 +61,20 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
         WeightCheckinFrequencySelected() => emit(
           state.copyWith(
             settings: state.settings.copyWith(
-              weightCheckinFrequency: event.frequency,
+              weightCheckinFrequency: event.weightCheckinFrequency,
             ),
           ),
         ),
         WeightTimeOfDaySelected() => emit(
           state.copyWith(
-            settings: state.settings.copyWith(weightTimeOfDay: event.timeOfDay),
+            settings: state.settings.copyWith(
+              weightTimeOfDay: event.weightTimeOfDay,
+            ),
           ),
         ),
         WeightUnitSelected() => emit(
           state.copyWith(
-            settings: state.settings.copyWith(weightUnit: event.unit),
+            settings: state.settings.copyWith(weightUnit: event.weightUnit),
           ),
         ),
         StartingWeightChanged() => emit(
@@ -109,13 +114,14 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
     });
   }
 
-  void _onUsualAdded(UsualAdded event, Emitter<OnboardingState> emit) {
+  void _onUsualMealAdded(UsualMealAdded event, Emitter<OnboardingState> emit) {
     final name = event.name.trim();
     if (name.isEmpty) return;
 
-    final items = state.settings.usuals[event.meal] ?? <UsualMeal>[];
-    final exists = items.any(
-      (item) => item.name.toLowerCase() == name.toLowerCase(),
+    final usualMeals =
+        state.settings.usuals[event.mealOfTheDay] ?? <UsualMeal>[];
+    final exists = usualMeals.any(
+      (usualMeal) => usualMeal.name.toLowerCase() == name.toLowerCase(),
     );
     if (exists) return;
 
@@ -124,17 +130,24 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
         settings: state.settings.copyWith(
           usuals: {
             ...state.settings.usuals,
-            event.meal: [...items, UsualMeal(id: _uuid.v4(), name: name)],
+            event.mealOfTheDay: [
+              ...usualMeals,
+              UsualMeal(id: _uuid.v4(), name: name, calories: event.calories),
+            ],
           },
         ),
       ),
     );
   }
 
-  void _onUsualRemoved(UsualRemoved event, Emitter<OnboardingState> emit) {
-    final items = state.settings.usuals[event.meal] ?? <UsualMeal>[];
-    final remainingItems = items
-        .where((item) => item.id != event.id)
+  void _onUsualMealRemoved(
+    UsualMealRemoved event,
+    Emitter<OnboardingState> emit,
+  ) {
+    final usualMeals =
+        state.settings.usuals[event.mealOfTheDay] ?? <UsualMeal>[];
+    final remainingUsualMeals = usualMeals
+        .where((usualMeal) => usualMeal.id != event.id)
         .toList();
     final remainingSelectedIds = state.firstLogSelectedIds
         .where((id) => id != event.id)
@@ -143,9 +156,38 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
     emit(
       state.copyWith(
         settings: state.settings.copyWith(
-          usuals: {...state.settings.usuals, event.meal: remainingItems},
+          usuals: {
+            ...state.settings.usuals,
+            event.mealOfTheDay: remainingUsualMeals,
+          },
         ),
         firstLogSelectedIds: remainingSelectedIds,
+      ),
+    );
+  }
+
+  void _onUsualMealCaloriesChanged(
+    UsualMealCaloriesChanged event,
+    Emitter<OnboardingState> emit,
+  ) {
+    final usualMeals =
+        state.settings.usuals[event.mealOfTheDay] ?? <UsualMeal>[];
+    final updatedUsualMeals = [
+      for (final usualMeal in usualMeals)
+        if (usualMeal.id == event.id)
+          usualMeal.copyWith(calories: event.calories)
+        else
+          usualMeal,
+    ];
+
+    emit(
+      state.copyWith(
+        settings: state.settings.copyWith(
+          usuals: {
+            ...state.settings.usuals,
+            event.mealOfTheDay: updatedUsualMeals,
+          },
+        ),
       ),
     );
   }
@@ -154,14 +196,14 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
     MealReminderToggled event,
     Emitter<OnboardingState> emit,
   ) {
-    final reminder = state.settings.mealReminders[event.meal];
-    if (reminder == null) return;
+    final mealReminder = state.settings.mealReminders[event.mealOfTheDay];
+    if (mealReminder == null) return;
     emit(
       state.copyWith(
         settings: state.settings.copyWith(
           mealReminders: {
             ...state.settings.mealReminders,
-            event.meal: reminder.copyWith(enabled: event.enabled),
+            event.mealOfTheDay: mealReminder.copyWith(enabled: event.enabled),
           },
         ),
       ),
@@ -172,14 +214,16 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
     MealReminderTimeChanged event,
     Emitter<OnboardingState> emit,
   ) {
-    final reminder = state.settings.mealReminders[event.meal];
-    if (reminder == null) return;
+    final mealReminder = state.settings.mealReminders[event.mealOfTheDay];
+    if (mealReminder == null) return;
     emit(
       state.copyWith(
         settings: state.settings.copyWith(
           mealReminders: {
             ...state.settings.mealReminders,
-            event.meal: reminder.copyWith(time: event.time),
+            event.mealOfTheDay: mealReminder.copyWith(
+              timeOfDay: event.timeOfDay,
+            ),
           },
         ),
       ),
@@ -203,17 +247,18 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
     final name = event.name.trim();
     if (name.isEmpty) return;
 
-    final items = state.settings.usuals[event.meal] ?? <UsualMeal>[];
-    final item = UsualMeal(id: _uuid.v4(), name: name);
+    final usualMeals =
+        state.settings.usuals[event.mealOfTheDay] ?? <UsualMeal>[];
+    final usualMeal = UsualMeal(id: _uuid.v4(), name: name);
     emit(
       state.copyWith(
         settings: state.settings.copyWith(
           usuals: {
             ...state.settings.usuals,
-            event.meal: [...items, item],
+            event.mealOfTheDay: [...usualMeals, usualMeal],
           },
         ),
-        firstLogSelectedIds: [...state.firstLogSelectedIds, item.id],
+        firstLogSelectedIds: [...state.firstLogSelectedIds, usualMeal.id],
       ),
     );
   }

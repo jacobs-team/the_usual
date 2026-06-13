@@ -10,7 +10,7 @@ class WeightInput extends StatelessWidget {
   /// {@macro weight_input}
   const WeightInput({
     required this.controller,
-    required this.unit,
+    required this.weightUnit,
     required this.onWeightChanged,
     required this.onUnitSelected,
     super.key,
@@ -20,7 +20,7 @@ class WeightInput extends StatelessWidget {
   final TextEditingController controller;
 
   /// The currently selected unit.
-  final WeightUnit unit;
+  final WeightUnit weightUnit;
 
   /// Called with the parsed weight, or null when the text isn't a number.
   final ValueChanged<double?> onWeightChanged;
@@ -48,7 +48,7 @@ class WeightInput extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 4),
                 child: ChoiceChip(
                   label: Text(option.name),
-                  selected: option == unit,
+                  selected: option == weightUnit,
                   onSelected: (_) => onUnitSelected(option),
                 ),
               ),

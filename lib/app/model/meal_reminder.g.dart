@@ -9,13 +9,13 @@ part of 'meal_reminder.dart';
 _MealReminder _$MealReminderFromJson(Map<String, dynamic> json) =>
     _MealReminder(
       enabled: json['enabled'] as bool,
-      time: const TimeOfDayConverter().fromJson(
-        json['time'] as Map<String, dynamic>,
+      timeOfDay: const TimeOfDayConverter().fromJson(
+        json['timeOfDay'] as Map<String, dynamic>,
       ),
     );
 
 Map<String, dynamic> _$MealReminderToJson(_MealReminder instance) =>
     <String, dynamic>{
       'enabled': instance.enabled,
-      'time': const TimeOfDayConverter().toJson(instance.time),
+      'timeOfDay': const TimeOfDayConverter().toJson(instance.timeOfDay),
     };

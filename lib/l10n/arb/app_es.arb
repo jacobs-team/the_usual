@@ -46,6 +46,10 @@
     "@settingsTooltip": {
         "description": "Tooltip del botón de ajustes en la barra superior"
     },
+    "historyTooltip": "Historial",
+    "@historyTooltip": {
+        "description": "Tooltip del botón de historial en la barra superior"
+    },
     "previousImageTooltip": "Imagen anterior",
     "@previousImageTooltip": {
         "description": "Tooltip del botón que desplaza a la imagen anterior"

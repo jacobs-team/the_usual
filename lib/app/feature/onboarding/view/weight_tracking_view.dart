@@ -54,7 +54,12 @@ class _WeightTrackingViewState extends State<WeightTrackingView> {
                   state.settings.weightUnit,
                 ),
                 builder: (context, selected) {
-                  final (frequency, timeOfDay, unit) = selected;
+                  final (
+                    weightCheckinFrequency,
+                    weightTimeOfDay,
+                    weightUnit,
+                  ) = selected;
+
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -65,15 +70,16 @@ class _WeightTrackingViewState extends State<WeightTrackingView> {
                       const SectionLabel('HOW OFTEN'),
                       const SizedBox(height: 8),
                       WeightCheckinFrequencyChips(
-                        selected: frequency,
-                        onSelected: (frequency) => getIt<OnboardingBloc>().add(
-                          OnboardingEvent.weightCheckinFrequencySelected(
-                            frequency,
-                          ),
-                        ),
+                        selected: weightCheckinFrequency,
+                        onSelected: (weightCheckinFrequency) =>
+                            getIt<OnboardingBloc>().add(
+                              OnboardingEvent.weightCheckinFrequencySelected(
+                                weightCheckinFrequency,
+                              ),
+                            ),
                       ),
                       const SizedBox(height: 20),
-                      if (frequency == WeightCheckinFrequency.off)
+                      if (weightCheckinFrequency == WeightCheckinFrequency.off)
                         Text(
                           'No weight check-ins. You can turn them on any time '
                           'in Settings.',
@@ -83,11 +89,11 @@ class _WeightTrackingViewState extends State<WeightTrackingView> {
                         const SectionLabel('WHAT TIME OF DAY'),
                         const SizedBox(height: 8),
                         WeightTimeOfDayChips(
-                          selected: timeOfDay,
-                          onSelected: (timeOfDay) =>
+                          selected: weightTimeOfDay,
+                          onSelected: (weightTimeOfDay) =>
                               getIt<OnboardingBloc>().add(
                                 OnboardingEvent.weightTimeOfDaySelected(
-                                  timeOfDay,
+                                  weightTimeOfDay,
                                 ),
                               ),
                         ),
@@ -101,14 +107,15 @@ class _WeightTrackingViewState extends State<WeightTrackingView> {
                         const SizedBox(height: 8),
                         WeightInput(
                           controller: _weightController,
-                          unit: unit,
+                          weightUnit: weightUnit,
                           onWeightChanged: (weight) =>
                               getIt<OnboardingBloc>().add(
                                 OnboardingEvent.startingWeightChanged(weight),
                               ),
-                          onUnitSelected: (unit) => getIt<OnboardingBloc>().add(
-                            OnboardingEvent.weightUnitSelected(unit),
-                          ),
+                          onUnitSelected: (weightUnit) =>
+                              getIt<OnboardingBloc>().add(
+                                OnboardingEvent.weightUnitSelected(weightUnit),
+                              ),
                         ),
                       ],
                       const Spacer(),

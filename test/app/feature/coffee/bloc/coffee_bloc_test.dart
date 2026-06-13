@@ -1,9 +1,9 @@
-import 'package:the_usual/app/app.dart';
 import 'dart:io';
 
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:the_usual/app/app.dart';
 
 import '../../../../helpers/helpers.dart';
 

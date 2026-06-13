@@ -38,7 +38,7 @@ class CompleteView extends StatelessWidget {
               const Spacer(),
               OnboardingActions(
                 primary: FilledButton(
-                  onPressed: () => context.go(Routes.home),
+                  onPressed: () => context.go(Routes.today),
                   child: const Text('Done'),
                 ),
                 secondary: TextButton(

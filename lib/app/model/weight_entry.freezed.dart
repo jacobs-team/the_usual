@@ -1,0 +1,286 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
+// ignore_for_file: type=lint
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
+
+part of 'weight_entry.dart';
+
+// **************************************************************************
+// FreezedGenerator
+// **************************************************************************
+
+// dart format off
+T _$identity<T>(T value) => value;
+
+/// @nodoc
+mixin _$WeightEntry {
+
+ String get id; DateTime get loggedAt; double get weight; WeightUnit get weightUnit;
+/// Create a copy of WeightEntry
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$WeightEntryCopyWith<WeightEntry> get copyWith => _$WeightEntryCopyWithImpl<WeightEntry>(this as WeightEntry, _$identity);
+
+  /// Serializes this WeightEntry to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WeightEntry&&(identical(other.id, id) || other.id == id)&&(identical(other.loggedAt, loggedAt) || other.loggedAt == loggedAt)&&(identical(other.weight, weight) || other.weight == weight)&&(identical(other.weightUnit, weightUnit) || other.weightUnit == weightUnit));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,loggedAt,weight,weightUnit);
+
+@override
+String toString() {
+  return 'WeightEntry(id: $id, loggedAt: $loggedAt, weight: $weight, weightUnit: $weightUnit)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $WeightEntryCopyWith<$Res>  {
+  factory $WeightEntryCopyWith(WeightEntry value, $Res Function(WeightEntry) _then) = _$WeightEntryCopyWithImpl;
+@useResult
+$Res call({
+ String id, DateTime loggedAt, double weight, WeightUnit weightUnit
+});
+
+
+
+
+}
+/// @nodoc
+class _$WeightEntryCopyWithImpl<$Res>
+    implements $WeightEntryCopyWith<$Res> {
+  _$WeightEntryCopyWithImpl(this._self, this._then);
+
+  final WeightEntry _self;
+  final $Res Function(WeightEntry) _then;
+
+/// Create a copy of WeightEntry
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? loggedAt = null,Object? weight = null,Object? weightUnit = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,loggedAt: null == loggedAt ? _self.loggedAt : loggedAt // ignore: cast_nullable_to_non_nullable
+as DateTime,weight: null == weight ? _self.weight : weight // ignore: cast_nullable_to_non_nullable
+as double,weightUnit: null == weightUnit ? _self.weightUnit : weightUnit // ignore: cast_nullable_to_non_nullable
+as WeightUnit,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [WeightEntry].
+extension WeightEntryPatterns on WeightEntry {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _WeightEntry value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _WeightEntry() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _WeightEntry value)  $default,){
+final _that = this;
+switch (_that) {
+case _WeightEntry():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _WeightEntry value)?  $default,){
+final _that = this;
+switch (_that) {
+case _WeightEntry() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  DateTime loggedAt,  double weight,  WeightUnit weightUnit)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _WeightEntry() when $default != null:
+return $default(_that.id,_that.loggedAt,_that.weight,_that.weightUnit);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  DateTime loggedAt,  double weight,  WeightUnit weightUnit)  $default,) {final _that = this;
+switch (_that) {
+case _WeightEntry():
+return $default(_that.id,_that.loggedAt,_that.weight,_that.weightUnit);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  DateTime loggedAt,  double weight,  WeightUnit weightUnit)?  $default,) {final _that = this;
+switch (_that) {
+case _WeightEntry() when $default != null:
+return $default(_that.id,_that.loggedAt,_that.weight,_that.weightUnit);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _WeightEntry extends WeightEntry {
+  const _WeightEntry({required this.id, required this.loggedAt, required this.weight, required this.weightUnit}): super._();
+  factory _WeightEntry.fromJson(Map<String, dynamic> json) => _$WeightEntryFromJson(json);
+
+@override final  String id;
+@override final  DateTime loggedAt;
+@override final  double weight;
+@override final  WeightUnit weightUnit;
+
+/// Create a copy of WeightEntry
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$WeightEntryCopyWith<_WeightEntry> get copyWith => __$WeightEntryCopyWithImpl<_WeightEntry>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$WeightEntryToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WeightEntry&&(identical(other.id, id) || other.id == id)&&(identical(other.loggedAt, loggedAt) || other.loggedAt == loggedAt)&&(identical(other.weight, weight) || other.weight == weight)&&(identical(other.weightUnit, weightUnit) || other.weightUnit == weightUnit));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,loggedAt,weight,weightUnit);
+
+@override
+String toString() {
+  return 'WeightEntry(id: $id, loggedAt: $loggedAt, weight: $weight, weightUnit: $weightUnit)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$WeightEntryCopyWith<$Res> implements $WeightEntryCopyWith<$Res> {
+  factory _$WeightEntryCopyWith(_WeightEntry value, $Res Function(_WeightEntry) _then) = __$WeightEntryCopyWithImpl;
+@override @useResult
+$Res call({
+ String id, DateTime loggedAt, double weight, WeightUnit weightUnit
+});
+
+
+
+
+}
+/// @nodoc
+class __$WeightEntryCopyWithImpl<$Res>
+    implements _$WeightEntryCopyWith<$Res> {
+  __$WeightEntryCopyWithImpl(this._self, this._then);
+
+  final _WeightEntry _self;
+  final $Res Function(_WeightEntry) _then;
+
+/// Create a copy of WeightEntry
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? loggedAt = null,Object? weight = null,Object? weightUnit = null,}) {
+  return _then(_WeightEntry(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,loggedAt: null == loggedAt ? _self.loggedAt : loggedAt // ignore: cast_nullable_to_non_nullable
+as DateTime,weight: null == weight ? _self.weight : weight // ignore: cast_nullable_to_non_nullable
+as double,weightUnit: null == weightUnit ? _self.weightUnit : weightUnit // ignore: cast_nullable_to_non_nullable
+as WeightUnit,
+  ));
+}
+
+
+}
+
+// dart format on

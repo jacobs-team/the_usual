@@ -24,10 +24,12 @@ class UserSettingsBloc
       (event, emit) => switch (event) {
         SettingsCommitted() => emit(event.settings),
         SettingsReminderStyleSelected() => emit(
-          state.copyWith(reminderStyle: event.style),
+          state.copyWith(reminderStyle: event.reminderStyle),
         ),
         SettingsMealCheckinScheduleModeChanged() => emit(
-          state.copyWith(mealCheckinScheduleMode: event.mode),
+          state.copyWith(
+            mealCheckinScheduleMode: event.mealCheckinScheduleMode,
+          ),
         ),
         SettingsMealReminderToggled() => _onMealReminderToggled(event, emit),
         SettingsMealReminderTimeChanged() => _onMealReminderTimeChanged(
@@ -37,25 +39,28 @@ class UserSettingsBloc
         SettingsEndOfDayTimeChanged() => emit(
           state.copyWith(
             endOfDayReminder: state.endOfDayReminder.copyWith(
-              time: event.time,
+              timeOfDay: event.timeOfDay,
             ),
           ),
         ),
         SettingsWeightCheckinFrequencySelected() => emit(
-          state.copyWith(weightCheckinFrequency: event.frequency),
+          state.copyWith(weightCheckinFrequency: event.weightCheckinFrequency),
         ),
         SettingsWeightTimeOfDaySelected() => emit(
-          state.copyWith(weightTimeOfDay: event.timeOfDay),
+          state.copyWith(weightTimeOfDay: event.weightTimeOfDay),
         ),
         SettingsWeightUnitSelected() => emit(
-          state.copyWith(weightUnit: event.unit),
+          state.copyWith(weightUnit: event.weightUnit),
         ),
         SettingsStartingWeightChanged() => emit(
           state.copyWith(startingWeight: event.weight),
         ),
-        SettingsUsualAdded() => _onUsualAdded(event, emit),
-        SettingsUsualRemoved() => _onUsualRemoved(event, emit),
-        SettingsUsualCaloriesChanged() => _onUsualCaloriesChanged(event, emit),
+        SettingsUsualMealAdded() => _onUsualMealAdded(event, emit),
+        SettingsUsualMealRemoved() => _onUsualMealRemoved(event, emit),
+        SettingsUsualMealCaloriesChanged() => _onUsualMealCaloriesChanged(
+          event,
+          emit,
+        ),
       },
     );
   }
@@ -66,13 +71,13 @@ class UserSettingsBloc
     SettingsMealReminderToggled event,
     Emitter<UserSettingsState> emit,
   ) {
-    final reminder = state.mealReminders[event.meal];
-    if (reminder == null) return;
+    final mealReminder = state.mealReminders[event.mealOfTheDay];
+    if (mealReminder == null) return;
     emit(
       state.copyWith(
         mealReminders: {
           ...state.mealReminders,
-          event.meal: reminder.copyWith(enabled: event.enabled),
+          event.mealOfTheDay: mealReminder.copyWith(enabled: event.enabled),
         },
       ),
     );
@@ -82,28 +87,30 @@ class UserSettingsBloc
     SettingsMealReminderTimeChanged event,
     Emitter<UserSettingsState> emit,
   ) {
-    final reminder = state.mealReminders[event.meal];
-    if (reminder == null) return;
+    final mealReminder = state.mealReminders[event.mealOfTheDay];
+    if (mealReminder == null) return;
     emit(
       state.copyWith(
         mealReminders: {
           ...state.mealReminders,
-          event.meal: reminder.copyWith(time: event.time),
+          event.mealOfTheDay: mealReminder.copyWith(
+            timeOfDay: event.timeOfDay,
+          ),
         },
       ),
     );
   }
 
-  void _onUsualAdded(
-    SettingsUsualAdded event,
+  void _onUsualMealAdded(
+    SettingsUsualMealAdded event,
     Emitter<UserSettingsState> emit,
   ) {
     final name = event.name.trim();
     if (name.isEmpty) return;
 
-    final items = state.usuals[event.meal] ?? <UsualMeal>[];
-    final exists = items.any(
-      (item) => item.name.toLowerCase() == name.toLowerCase(),
+    final usualMeals = state.usuals[event.mealOfTheDay] ?? <UsualMeal>[];
+    final exists = usualMeals.any(
+      (usualMeal) => usualMeal.name.toLowerCase() == name.toLowerCase(),
     );
     if (exists) return;
 
@@ -111,8 +118,8 @@ class UserSettingsBloc
       state.copyWith(
         usuals: {
           ...state.usuals,
-          event.meal: [
-            ...items,
+          event.mealOfTheDay: [
+            ...usualMeals,
             UsualMeal(id: _uuid.v4(), name: name, calories: event.calories),
           ],
         },
@@ -120,38 +127,38 @@ class UserSettingsBloc
     );
   }
 
-  void _onUsualRemoved(
-    SettingsUsualRemoved event,
+  void _onUsualMealRemoved(
+    SettingsUsualMealRemoved event,
     Emitter<UserSettingsState> emit,
   ) {
-    final items = state.usuals[event.meal] ?? <UsualMeal>[];
-    final remainingItems = items
-        .where((item) => item.id != event.id)
+    final usualMeals = state.usuals[event.mealOfTheDay] ?? <UsualMeal>[];
+    final remainingUsualMeals = usualMeals
+        .where((usualMeal) => usualMeal.id != event.id)
         .toList();
 
     emit(
       state.copyWith(
-        usuals: {...state.usuals, event.meal: remainingItems},
+        usuals: {...state.usuals, event.mealOfTheDay: remainingUsualMeals},
       ),
     );
   }
 
-  void _onUsualCaloriesChanged(
-    SettingsUsualCaloriesChanged event,
+  void _onUsualMealCaloriesChanged(
+    SettingsUsualMealCaloriesChanged event,
     Emitter<UserSettingsState> emit,
   ) {
-    final items = state.usuals[event.meal] ?? <UsualMeal>[];
-    final updatedItems = [
-      for (final item in items)
-        if (item.id == event.id)
-          item.copyWith(calories: event.calories)
+    final usualMeals = state.usuals[event.mealOfTheDay] ?? <UsualMeal>[];
+    final updatedUsualMeals = [
+      for (final usualMeal in usualMeals)
+        if (usualMeal.id == event.id)
+          usualMeal.copyWith(calories: event.calories)
         else
-          item,
+          usualMeal,
     ];
 
     emit(
       state.copyWith(
-        usuals: {...state.usuals, event.meal: updatedItems},
+        usuals: {...state.usuals, event.mealOfTheDay: updatedUsualMeals},
       ),
     );
   }

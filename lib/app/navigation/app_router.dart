@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:the_usual/app/app.dart';
+import 'package:the_usual/app/core/dependencies/dependencies.dart';
 import 'package:the_usual/l10n/l10n.dart';
 
 /// {@template app_router}
@@ -21,21 +22,12 @@ class AppRouter {
     // this._authCubit
   ) {
     router = GoRouter(
-      initialLocation: Routes.onboarding,
-      // refreshListenable: _authCubit,
+      initialLocation: Routes.today,
       redirect: (context, state) {
-        // final signedIn = _authCubit.state.signedIn;
-        // final isSigningIn = state.uri.path.startsWith(Routes.signIn);
+        final onboardingComplete =
+            getIt<OnboardingBloc>().state.step == OnboardingStep.complete;
 
-        // if (!signedIn && !isSigningIn) {
-        //   return Routes.signIn;
-        // }
-
-        // If signedIn and trying to access signIn -> Force onboarding.
-        // if (signedIn && isSigningIn) {
-        //   return Routes.onboarding;
-        // }
-
+        if (!onboardingComplete) return Routes.onboarding;
         return null;
       },
       routes: routes,
@@ -56,9 +48,15 @@ class AppRouter {
       },
     ),
     GoRoute(
-      path: Routes.home,
+      path: Routes.today,
       pageBuilder: (context, state) {
-        return const NoTransitionPage(child: HomeView());
+        return const NoTransitionPage(child: TodayView());
+      },
+    ),
+    GoRoute(
+      path: Routes.history,
+      pageBuilder: (context, state) {
+        return const NoTransitionPage(child: HistoryView());
       },
     ),
     GoRoute(

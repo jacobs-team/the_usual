@@ -3,73 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
 
-const _suggestions = <MealOfTheDay, List<String>>{
-  MealOfTheDay.breakfast: [
-    'Eggs & toast',
-    'Oatmeal',
-    'Cereal',
-    'Smoothie',
-    'Coffee & bagel',
-    'Leftovers',
-  ],
-  MealOfTheDay.lunch: [
-    'Sandwich',
-    'Salad',
-    'Chicken bowl',
-    'Soup',
-    'Burrito',
-    'Leftovers',
-  ],
-  MealOfTheDay.dinner: [
-    'Pasta',
-    'Stir fry',
-    'Tacos',
-    'Pizza',
-    'Chicken & rice',
-    'Leftovers',
-  ],
-  MealOfTheDay.snacks: [
-    'Yogurt',
-    'Fruit',
-    'Protein bar',
-    'Nuts',
-    'Chips',
-    'Cheese & crackers',
-  ],
-};
-
 /// {@template build_usuals_view}
-/// Second onboarding screen: build the per-meal usuals library with
-/// suggestion chips and free text entry.
+/// Second onboarding screen: build the per-meal usuals library by typing a
+/// name and optional calories for each meal time, all on one scrolling view.
 /// {@endtemplate}
-class BuildUsualsView extends StatefulWidget {
+class BuildUsualsView extends StatelessWidget {
   /// {@macro build_usuals_view}
   const BuildUsualsView({super.key});
-
-  @override
-  State<BuildUsualsView> createState() => _BuildUsualsViewState();
-}
-
-class _BuildUsualsViewState extends State<BuildUsualsView> {
-  MealOfTheDay _selectedMealOfTheDay = MealOfTheDay.breakfast;
-  final _nameController = TextEditingController();
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    super.dispose();
-  }
-
-  void _addItem(String name) {
-    getIt<OnboardingBloc>().add(
-      OnboardingEvent.usualAdded(_selectedMealOfTheDay, name),
-    );
-  }
-
-  void _submitInput() {
-    _addItem(_nameController.text);
-    _nameController.clear();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,85 +27,56 @@ class _BuildUsualsViewState extends State<BuildUsualsView> {
                     BlocSelector<
                       OnboardingBloc,
                       OnboardingState,
-                      List<UsualMeal>
+                      Map<MealOfTheDay, List<UsualMeal>>
                     >(
                       bloc: getIt<OnboardingBloc>(),
-                      selector: (state) =>
-                          state.settings.usuals[_selectedMealOfTheDay] ??
-                          <UsualMeal>[],
-                      builder: (context, items) {
-                        final itemNames = {
-                          for (final item in items) item.name.toLowerCase(),
-                        };
-                        final suggestions = _suggestions[_selectedMealOfTheDay]!
-                            .where(
-                              (name) => !itemNames.contains(name.toLowerCase()),
-                            )
-                            .toList();
-                        return SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Text(
-                                'Add your usual meals',
-                                style: textTheme.headlineSmall,
-                              ),
-                              const SizedBox(height: 8),
-                              const Text(
-                                'Pick what you eat most. You can add more '
-                                'anytime.',
-                              ),
-                              const SizedBox(height: 20),
-                              Wrap(
-                                spacing: 8,
-                                children: [
-                                  for (final meal in MealOfTheDay.values)
-                                    ChoiceChip(
-                                      label: Text(meal.label),
-                                      selected: meal == _selectedMealOfTheDay,
-                                      onSelected: (_) => setState(
-                                        () => _selectedMealOfTheDay = meal,
+                      selector: (state) => state.settings.usuals,
+                      builder: (context, usuals) {
+                        return ListView(
+                          children: [
+                            Text(
+                              'Add your usual meals',
+                              style: textTheme.headlineSmall,
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              'Add what you usually eat for each meal. You can '
+                              'edit these anytime — on the fly while logging, '
+                              'or later in Settings.',
+                              style: textTheme.bodyMedium,
+                            ),
+                            const SizedBox(height: 24),
+                            for (final mealOfTheDay in MealOfTheDay.values) ...[
+                              UsualMealSection(
+                                mealOfTheDay: mealOfTheDay,
+                                usualMeals:
+                                    usuals[mealOfTheDay] ?? const <UsualMeal>[],
+                                onAdded: (name, calories) =>
+                                    getIt<OnboardingBloc>().add(
+                                      OnboardingEvent.usualMealAdded(
+                                        mealOfTheDay,
+                                        name,
+                                        calories,
                                       ),
                                     ),
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-                              const SectionLabel('SUGGESTIONS'),
-                              const SizedBox(height: 8),
-                              Wrap(
-                                spacing: 8,
-                                runSpacing: 8,
-                                children: [
-                                  for (final name in suggestions)
-                                    ActionChip(
-                                      label: Text('+ $name'),
-                                      onPressed: () => _addItem(name),
+                                onCaloriesChanged: (id, calories) =>
+                                    getIt<OnboardingBloc>().add(
+                                      OnboardingEvent.usualMealCaloriesChanged(
+                                        mealOfTheDay,
+                                        id,
+                                        calories,
+                                      ),
                                     ),
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-                              SectionLabel('YOUR ITEMS (${items.length})'),
-                              const SizedBox(height: 8),
-                              for (final item in items)
-                                _UsualItemTile(
-                                  meal: _selectedMealOfTheDay,
-                                  item: item,
+                                onRemoved: (id) => getIt<OnboardingBloc>().add(
+                                  OnboardingEvent.usualMealRemoved(
+                                    mealOfTheDay,
+                                    id,
+                                  ),
                                 ),
-                              const SizedBox(height: 8),
-                              TheUsualTextField(
-                                controller: _nameController,
-                                hintText: 'Add your own…',
-                                suffixIcon: const IconButton(
-                                  icon: Icon(Icons.camera_alt_outlined),
-                                  // TODO(onboarding): photo capture from
-                                  // camera or library.
-                                  onPressed: null,
-                                ),
-                                textInputAction: TextInputAction.done,
-                                onSubmitted: (_) => _submitInput(),
                               ),
+                              const SizedBox(height: 28),
                             ],
-                          ),
+                          ],
                         );
                       },
                     ),
@@ -186,38 +97,6 @@ class _BuildUsualsViewState extends State<BuildUsualsView> {
                 ),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _UsualItemTile extends StatelessWidget {
-  const _UsualItemTile({required this.meal, required this.item});
-
-  final MealOfTheDay meal;
-  final UsualMeal item;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        leading: Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: const Icon(Icons.image_outlined),
-        ),
-        title: Text(item.name),
-        trailing: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () => getIt<OnboardingBloc>().add(
-            OnboardingEvent.usualRemoved(meal, item.id),
           ),
         ),
       ),

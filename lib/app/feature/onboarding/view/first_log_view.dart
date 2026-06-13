@@ -16,24 +16,12 @@ class FirstLogView extends StatefulWidget {
 }
 
 class _FirstLogViewState extends State<FirstLogView> {
-  late final MealOfTheDay _meal;
+  late final MealOfTheDay _mealOfTheDay;
 
   @override
   void initState() {
     super.initState();
-    _meal = MealOfTheDay.fromTime(TimeOfDay.now());
-  }
-
-  Future<void> _showSomethingElseDialog() async {
-    final name = await showDialog<String>(
-      context: context,
-      builder: (context) => const AteSomethingElseDialog(),
-    );
-    if (name != null && name.trim().isNotEmpty) {
-      getIt<OnboardingBloc>().add(
-        OnboardingEvent.somethingElseLogged(_meal, name),
-      );
-    }
+    _mealOfTheDay = MealOfTheDay.fromTime(TimeOfDay.now());
   }
 
   @override
@@ -55,27 +43,27 @@ class _FirstLogViewState extends State<FirstLogView> {
               >(
                 bloc: getIt<OnboardingBloc>(),
                 selector: (state) => (
-                  state.settings.usuals[_meal] ?? <UsualMeal>[],
+                  state.settings.usuals[_mealOfTheDay] ?? <UsualMeal>[],
                   state.firstLogSelectedIds,
                 ),
                 builder: (context, selected) {
-                  final (items, selectedIds) = selected;
+                  final (usualMeals, selectedIds) = selected;
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Text(
-                        'Did you eat ${_meal.name} today?',
+                        'Did you eat ${_mealOfTheDay.name} today?',
                         style: textTheme.headlineSmall,
                       ),
                       const SizedBox(height: 8),
                       const Text('Tap everything you had.'),
                       const SizedBox(height: 20),
                       Expanded(
-                        child: items.isEmpty
+                        child: usualMeals.isEmpty
                             ? Center(
                                 child: Text(
-                                  'No ${_meal.name} usual meals yet. Tap '
-                                  '"I ate something else" to add what '
+                                  'No ${_mealOfTheDay.name} usual meals yet. '
+                                  'Tap "I ate something else" to add what '
                                   'you had.',
                                   textAlign: TextAlign.center,
                                 ),
@@ -86,10 +74,12 @@ class _FirstLogViewState extends State<FirstLogView> {
                                 crossAxisSpacing: 12,
                                 childAspectRatio: 165 / 134,
                                 children: [
-                                  for (final item in items)
+                                  for (final usualMeal in usualMeals)
                                     _FoodCard(
-                                      item: item,
-                                      selected: selectedIds.contains(item.id),
+                                      usualMeal: usualMeal,
+                                      selected: selectedIds.contains(
+                                        usualMeal.id,
+                                      ),
                                     ),
                                 ],
                               ),
@@ -97,7 +87,21 @@ class _FirstLogViewState extends State<FirstLogView> {
                       const SizedBox(height: 12),
                       OnboardingActions(
                         above: OutlinedButton.icon(
-                          onPressed: _showSomethingElseDialog,
+                          onPressed: () async {
+                            final name = await showDialog<String>(
+                              context: context,
+                              builder: (context) =>
+                                  const AteSomethingElseDialog(),
+                            );
+                            if (name != null && name.trim().isNotEmpty) {
+                              getIt<OnboardingBloc>().add(
+                                OnboardingEvent.somethingElseLogged(
+                                  _mealOfTheDay,
+                                  name,
+                                ),
+                              );
+                            }
+                          },
                           icon: const Icon(Icons.camera_alt_outlined),
                           label: const Text('I ate something else'),
                         ),
@@ -113,7 +117,7 @@ class _FirstLogViewState extends State<FirstLogView> {
                           onPressed: () => getIt<OnboardingBloc>().add(
                             const OnboardingEvent.continuePressed(),
                           ),
-                          child: Text("I didn't eat ${_meal.name}"),
+                          child: Text("I didn't eat ${_mealOfTheDay.name}"),
                         ),
                       ),
                     ],
@@ -127,9 +131,9 @@ class _FirstLogViewState extends State<FirstLogView> {
 }
 
 class _FoodCard extends StatelessWidget {
-  const _FoodCard({required this.item, required this.selected});
+  const _FoodCard({required this.usualMeal, required this.selected});
 
-  final UsualMeal item;
+  final UsualMeal usualMeal;
   final bool selected;
 
   @override
@@ -138,7 +142,7 @@ class _FoodCard extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(12),
       onTap: () => getIt<OnboardingBloc>().add(
-        OnboardingEvent.firstLogItemToggled(item.id),
+        OnboardingEvent.firstLogItemToggled(usualMeal.id),
       ),
       child: Container(
         padding: const EdgeInsets.all(10),
@@ -166,7 +170,7 @@ class _FoodCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              item.name,
+              usualMeal.name,
               style: theme.textTheme.bodyMedium,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,

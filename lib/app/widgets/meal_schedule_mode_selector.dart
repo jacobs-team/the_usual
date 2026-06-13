@@ -8,13 +8,13 @@ import 'package:the_usual/app/app.dart';
 class MealScheduleModeSelector extends StatelessWidget {
   /// {@macro meal_schedule_mode_selector}
   const MealScheduleModeSelector({
-    required this.mode,
+    required this.mealCheckinScheduleMode,
     required this.onChanged,
     super.key,
   });
 
   /// The currently selected mode.
-  final MealCheckinScheduleMode mode;
+  final MealCheckinScheduleMode mealCheckinScheduleMode;
 
   /// Called with the newly selected mode.
   final ValueChanged<MealCheckinScheduleMode> onChanged;
@@ -26,7 +26,7 @@ class MealScheduleModeSelector extends StatelessWidget {
         for (final option in MealCheckinScheduleMode.values)
           ButtonSegment(value: option, label: Text(option.label)),
       ],
-      selected: {mode},
+      selected: {mealCheckinScheduleMode},
       onSelectionChanged: (selection) => onChanged(selection.first),
     );
   }

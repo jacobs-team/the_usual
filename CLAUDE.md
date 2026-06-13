@@ -4,6 +4,7 @@
 
 - Do not re-add previously removed code. If code was removed by the developer, assume it was intentional. Ask before re-introducing it.
 - Do not add unnecessary inline comments. Only comment on non-obvious logic. Never restate what the code already says.
+- A doc comment describes what something IS, not the history of how it got there. When you change behavior, do NOT append context about the change ("X is now null when...", "calories are no longer estimated..."). Only edit a comment if the existing text no longer accurately describes the definition. If the original sentence still holds, leave it or just delete the now-wrong clause — comments are not a change log. Example: changing a field's behavior, keep `/// A single thing the user logged eating.` as-is rather than tacking on why calories may be null.
 - Always use barrel files over direct imports.
 - Always use `fvm flutter` instead of `flutter` for all Flutter CLI commands.
 - Never run the app (`flutter run` or launching on any device). The developer runs it from VS Code so the debug windows and controls stay attached. Ask them to run it, then interact with their running instance if needed.
@@ -11,12 +12,17 @@
 - The code generator for freezed, json_serializable, and injectable should be running in the background at all times, if it's not. please ask the user to start it.
 - Don't worry about writing tests until told to do so by the user.
 - Do not prematurely optimize. Do not add events, methods, or abstractions for cases an existing general one already covers. If a specific behavior is needed later, add it then. Example: a `getStartedPressed` event whose handler only advances to the next step is unnecessary when `continuePressed` already does that — use `continuePressed` until "get started" actually needs different behavior.
+- Do not extract a function/method that has only one caller. Inline it at the call site. The only exception is when the extraction genuinely increases clarity for a reader (e.g. a well-named helper like `_isSameDay` over an inline date comparison, or a BLoC `_on*` handler that keeps the event switch readable). Passing `BuildContext` into a private helper is a smell: such handlers (`_logWeight(context)`, `_pickTime(context)`, `_addUsual(context)`) should be inlined into the `onPressed`/builder closure where context is already in scope.
 - Favor clarity over conciseness. The code must be easily readable and understandable by a person who didn't write it. When an expression nests several operations (spread + lookup + filter + copyWith in one go), break it into named local variables or a private method that tells the story step by step, instead of one dense inline expression.
 
 ## Models, States & Events
 
 - Always use `@freezed` for data classes, BLoC states, and BLoC events.
 - Use `@JsonSerializable(fieldRename: FieldRename.snake)` on the constructor when the API returns snake_case.
+
+## Naming
+
+- Name fields and variables after the model type they hold, in full. A value of type `MealOfTheDay` is named `mealOfTheDay`, never `meal` — the short form is ambiguous (a meal could be a `UsualMeal`, a `MealLogEntry`, etc.). Example: `const factory MealLogEntry({required MealOfTheDay mealOfTheDay, ...})`, and loops read `for (final mealOfTheDay in MealOfTheDay.values)`.
 
 ## BLoC
 

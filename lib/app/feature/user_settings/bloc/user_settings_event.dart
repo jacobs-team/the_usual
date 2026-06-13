@@ -5,41 +5,44 @@ sealed class UserSettingsEvent with _$UserSettingsEvent {
   const factory UserSettingsEvent.settingsCommitted(
     UserSettingsState settings,
   ) = SettingsCommitted;
-  const factory UserSettingsEvent.reminderStyleSelected(ReminderStyle style) =
-      SettingsReminderStyleSelected;
+  const factory UserSettingsEvent.reminderStyleSelected(
+    ReminderStyle reminderStyle,
+  ) = SettingsReminderStyleSelected;
   const factory UserSettingsEvent.mealCheckinScheduleModeChanged(
-    MealCheckinScheduleMode mode,
+    MealCheckinScheduleMode mealCheckinScheduleMode,
   ) = SettingsMealCheckinScheduleModeChanged;
   const factory UserSettingsEvent.mealReminderToggled(
-    MealOfTheDay meal, {
+    MealOfTheDay mealOfTheDay, {
     required bool enabled,
   }) = SettingsMealReminderToggled;
   const factory UserSettingsEvent.mealReminderTimeChanged(
-    MealOfTheDay meal,
-    TimeOfDay time,
+    MealOfTheDay mealOfTheDay,
+    TimeOfDay timeOfDay,
   ) = SettingsMealReminderTimeChanged;
-  const factory UserSettingsEvent.endOfDayTimeChanged(TimeOfDay time) =
+  const factory UserSettingsEvent.endOfDayTimeChanged(TimeOfDay timeOfDay) =
       SettingsEndOfDayTimeChanged;
   const factory UserSettingsEvent.weightCheckinFrequencySelected(
-    WeightCheckinFrequency frequency,
+    WeightCheckinFrequency weightCheckinFrequency,
   ) = SettingsWeightCheckinFrequencySelected;
   const factory UserSettingsEvent.weightTimeOfDaySelected(
-    WeightTimeOfDay timeOfDay,
+    WeightTimeOfDay weightTimeOfDay,
   ) = SettingsWeightTimeOfDaySelected;
-  const factory UserSettingsEvent.weightUnitSelected(WeightUnit unit) =
+  const factory UserSettingsEvent.weightUnitSelected(WeightUnit weightUnit) =
       SettingsWeightUnitSelected;
   const factory UserSettingsEvent.startingWeightChanged(double? weight) =
       SettingsStartingWeightChanged;
-  const factory UserSettingsEvent.usualAdded(
-    MealOfTheDay meal,
+  const factory UserSettingsEvent.usualMealAdded(
+    MealOfTheDay mealOfTheDay,
     String name,
     int? calories,
-  ) = SettingsUsualAdded;
-  const factory UserSettingsEvent.usualRemoved(MealOfTheDay meal, String id) =
-      SettingsUsualRemoved;
-  const factory UserSettingsEvent.usualCaloriesChanged(
-    MealOfTheDay meal,
+  ) = SettingsUsualMealAdded;
+  const factory UserSettingsEvent.usualMealRemoved(
+    MealOfTheDay mealOfTheDay,
+    String id,
+  ) = SettingsUsualMealRemoved;
+  const factory UserSettingsEvent.usualMealCaloriesChanged(
+    MealOfTheDay mealOfTheDay,
     String id,
     int? calories,
-  ) = SettingsUsualCaloriesChanged;
+  ) = SettingsUsualMealCaloriesChanged;
 }

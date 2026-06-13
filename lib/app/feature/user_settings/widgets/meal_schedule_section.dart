@@ -33,9 +33,14 @@ class MealScheduleSection extends StatelessWidget {
         state.endOfDayReminder,
       ),
       builder: (context, selected) {
-        final (style, mode, mealReminders, endOfDayReminder) = selected;
+        final (
+          reminderStyle,
+          mealCheckinScheduleMode,
+          mealReminders,
+          endOfDayReminder,
+        ) = selected;
 
-        if (style == ReminderStyle.none) {
+        if (reminderStyle == ReminderStyle.none) {
           return const InfoBox(
             'Reminders are off. Pick a check-in style above to schedule '
             'them.',
@@ -46,40 +51,46 @@ class MealScheduleSection extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             MealScheduleModeSelector(
-              mode: mode,
-              onChanged: (mode) => getIt<UserSettingsBloc>().add(
-                UserSettingsEvent.mealCheckinScheduleModeChanged(mode),
-              ),
+              mealCheckinScheduleMode: mealCheckinScheduleMode,
+              onChanged: (mealCheckinScheduleMode) =>
+                  getIt<UserSettingsBloc>().add(
+                    UserSettingsEvent.mealCheckinScheduleModeChanged(
+                      mealCheckinScheduleMode,
+                    ),
+                  ),
             ),
             const SizedBox(height: 8),
             Text(
-              mode == MealCheckinScheduleMode.perMeal
+              mealCheckinScheduleMode == MealCheckinScheduleMode.perMeal
                   ? 'Logging near when you ate is more accurate.'
                   : 'One check-in covering the whole day.',
               style: textTheme.bodySmall,
             ),
             const SizedBox(height: 12),
-            if (mode == MealCheckinScheduleMode.perMeal)
-              for (final meal in MealOfTheDay.values)
-                if (mealReminders[meal] case final reminder?)
+            if (mealCheckinScheduleMode == MealCheckinScheduleMode.perMeal)
+              for (final mealOfTheDay in MealOfTheDay.values)
+                if (mealReminders[mealOfTheDay] case final mealReminder?)
                   MealReminderRow(
-                    meal: meal,
-                    reminder: reminder,
+                    mealOfTheDay: mealOfTheDay,
+                    mealReminder: mealReminder,
                     onToggled: (enabled) => getIt<UserSettingsBloc>().add(
                       UserSettingsEvent.mealReminderToggled(
-                        meal,
+                        mealOfTheDay,
                         enabled: enabled,
                       ),
                     ),
-                    onTimeChanged: (time) => getIt<UserSettingsBloc>().add(
-                      UserSettingsEvent.mealReminderTimeChanged(meal, time),
+                    onTimeChanged: (timeOfDay) => getIt<UserSettingsBloc>().add(
+                      UserSettingsEvent.mealReminderTimeChanged(
+                        mealOfTheDay,
+                        timeOfDay,
+                      ),
                     ),
                   ),
-            if (mode == MealCheckinScheduleMode.endOfDay)
+            if (mealCheckinScheduleMode == MealCheckinScheduleMode.endOfDay)
               EndOfDayReminderRow(
-                reminder: endOfDayReminder,
-                onTimeChanged: (time) => getIt<UserSettingsBloc>().add(
-                  UserSettingsEvent.endOfDayTimeChanged(time),
+                mealReminder: endOfDayReminder,
+                onTimeChanged: (timeOfDay) => getIt<UserSettingsBloc>().add(
+                  UserSettingsEvent.endOfDayTimeChanged(timeOfDay),
                 ),
               ),
           ],

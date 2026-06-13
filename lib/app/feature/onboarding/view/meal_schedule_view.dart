@@ -36,7 +36,11 @@ class MealScheduleView extends StatelessWidget {
                   state.settings.endOfDayReminder,
                 ),
                 builder: (context, selected) {
-                  final (mode, mealReminders, endOfDayReminder) = selected;
+                  final (
+                    mealCheckinScheduleMode,
+                    mealReminders,
+                    endOfDayReminder,
+                  ) = selected;
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -46,14 +50,18 @@ class MealScheduleView extends StatelessWidget {
                       ),
                       const SizedBox(height: 16),
                       MealScheduleModeSelector(
-                        mode: mode,
-                        onChanged: (mode) => getIt<OnboardingBloc>().add(
-                          OnboardingEvent.mealCheckinScheduleModeChanged(mode),
-                        ),
+                        mealCheckinScheduleMode: mealCheckinScheduleMode,
+                        onChanged: (mealCheckinScheduleMode) =>
+                            getIt<OnboardingBloc>().add(
+                              OnboardingEvent.mealCheckinScheduleModeChanged(
+                                mealCheckinScheduleMode,
+                              ),
+                            ),
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        mode == MealCheckinScheduleMode.perMeal
+                        mealCheckinScheduleMode ==
+                                MealCheckinScheduleMode.perMeal
                             ? 'Logging near when you ate is more accurate, and '
                                   'you can snap a photo while the food is in '
                                   'front of you.'
@@ -61,33 +69,37 @@ class MealScheduleView extends StatelessWidget {
                         style: textTheme.bodySmall,
                       ),
                       const SizedBox(height: 20),
-                      if (mode == MealCheckinScheduleMode.perMeal)
-                        for (final meal in MealOfTheDay.values)
-                          if (mealReminders[meal] case final reminder?)
+                      if (mealCheckinScheduleMode ==
+                          MealCheckinScheduleMode.perMeal)
+                        for (final mealOfTheDay in MealOfTheDay.values)
+                          if (mealReminders[mealOfTheDay]
+                              case final mealReminder?)
                             MealReminderRow(
-                              meal: meal,
-                              reminder: reminder,
+                              mealOfTheDay: mealOfTheDay,
+                              mealReminder: mealReminder,
                               onToggled: (enabled) =>
                                   getIt<OnboardingBloc>().add(
                                     OnboardingEvent.mealReminderToggled(
-                                      meal,
+                                      mealOfTheDay,
                                       enabled: enabled,
                                     ),
                                   ),
-                              onTimeChanged: (time) =>
+                              onTimeChanged: (timeOfDay) =>
                                   getIt<OnboardingBloc>().add(
                                     OnboardingEvent.mealReminderTimeChanged(
-                                      meal,
-                                      time,
+                                      mealOfTheDay,
+                                      timeOfDay,
                                     ),
                                   ),
                             ),
-                      if (mode == MealCheckinScheduleMode.endOfDay)
+                      if (mealCheckinScheduleMode ==
+                          MealCheckinScheduleMode.endOfDay)
                         EndOfDayReminderRow(
-                          reminder: endOfDayReminder,
-                          onTimeChanged: (time) => getIt<OnboardingBloc>().add(
-                            OnboardingEvent.endOfDayTimeChanged(time),
-                          ),
+                          mealReminder: endOfDayReminder,
+                          onTimeChanged: (timeOfDay) =>
+                              getIt<OnboardingBloc>().add(
+                                OnboardingEvent.endOfDayTimeChanged(timeOfDay),
+                              ),
                         ),
                       const SizedBox(height: 16),
                       Text(

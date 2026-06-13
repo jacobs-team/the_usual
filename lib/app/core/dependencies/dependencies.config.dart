@@ -27,6 +27,7 @@ import 'package:the_usual/app/feature/dev_tools/cubit/dev_tools_cubit.dart'
     as _i818;
 import 'package:the_usual/app/feature/onboarding/bloc/onboarding_bloc.dart'
     as _i640;
+import 'package:the_usual/app/feature/today/bloc/daily_log_bloc.dart' as _i155;
 import 'package:the_usual/app/feature/user_settings/bloc/user_settings_bloc.dart'
     as _i807;
 import 'package:the_usual/app/navigation/app_router.dart' as _i874;
@@ -49,6 +50,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i818.DevToolsCubit>(() => _i818.DevToolsCubit());
     gh.singleton<_i874.AppRouter>(() => _i874.AppRouter());
     gh.lazySingleton<_i640.OnboardingBloc>(() => _i640.OnboardingBloc());
+    gh.lazySingleton<_i155.DailyLogBloc>(() => _i155.DailyLogBloc());
     gh.lazySingleton<_i807.UserSettingsBloc>(() => _i807.UserSettingsBloc());
     gh.singleton<_i13.RestClient>(
       () => _i13.RestClient(gh<_i538.AuthCubit>(), gh<_i538.DevToolsCubit>()),

@@ -30,7 +30,7 @@ abstract class MealReminder with _$MealReminder {
   /// {@macro meal_reminder}
   const factory MealReminder({
     required bool enabled,
-    @TimeOfDayConverter() required TimeOfDay time,
+    @TimeOfDayConverter() required TimeOfDay timeOfDay,
   }) = _MealReminder;
 
   factory MealReminder.fromJson(Map<String, dynamic> json) =>

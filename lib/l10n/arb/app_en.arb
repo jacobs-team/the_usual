@@ -46,6 +46,10 @@
     "@settingsTooltip": {
         "description": "Tooltip for the settings button in the app bar"
     },
+    "historyTooltip": "History",
+    "@historyTooltip": {
+        "description": "Tooltip for the history button in the app bar"
+    },
     "previousImageTooltip": "Previous image",
     "@previousImageTooltip": {
         "description": "Tooltip for the button that scrolls to the previous image"

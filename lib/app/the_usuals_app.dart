@@ -35,9 +35,34 @@ class TheUsualsApp extends StatelessWidget {
           listenWhen: (previous, current) =>
               previous.step != OnboardingStep.complete &&
               current.step == OnboardingStep.complete,
-          listener: (context, state) => getIt<UserSettingsBloc>().add(
-            UserSettingsEvent.settingsCommitted(state.settings),
-          ),
+          listener: (context, state) {
+            final settings = state.settings;
+            getIt<UserSettingsBloc>().add(
+              UserSettingsEvent.settingsCommitted(settings),
+            );
+            final startingWeight = settings.startingWeight;
+            if (startingWeight != null) {
+              getIt<DailyLogBloc>().add(
+                DailyLogEvent.weightLogged(startingWeight, settings.weightUnit),
+              );
+            }
+            for (final MapEntry(key: mealOfTheDay, value: usualMeals)
+                in settings.usuals.entries) {
+              for (final usualMeal in usualMeals) {
+                if (state.firstLogSelectedIds.contains(usualMeal.id)) {
+                  getIt<DailyLogBloc>().add(
+                    DailyLogEvent.mealLogged(
+                      mealOfTheDay,
+                      usualMeal.name,
+                      calories: usualMeal.calories,
+                      usualMealId: usualMeal.id,
+                      photoPath: usualMeal.photoPath,
+                    ),
+                  );
+                }
+              }
+            }
+          },
         ),
       ],
       child: BlocSelector<DevToolsCubit, DevToolsState, bool>(

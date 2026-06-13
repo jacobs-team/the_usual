@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:the_usual/app/app.dart';
-import 'package:the_usual/app/core/dependencies/dependencies.dart';
 
 /// {@template replay_onboarding_row}
-/// Settings row that resets the onboarding flow and navigates back into it.
+/// Settings row that wipes all saved app data and navigates back into the
+/// onboarding flow.
 /// {@endtemplate}
 class ReplayOnboardingRow extends StatelessWidget {
   /// {@macro replay_onboarding_row}
@@ -15,14 +16,14 @@ class ReplayOnboardingRow extends StatelessWidget {
     return Card(
       margin: EdgeInsets.zero,
       child: ListTile(
-        title: const Text('Replay onboarding'),
+        title: const Text('Reset app'),
         subtitle: const Text(
-          'Start setup again. Resets these choices to defaults.',
+          'Clears all saved data and resets to defaults. Restarts onboarding',
         ),
         trailing: const Icon(Icons.chevron_right),
-        onTap: () {
-          getIt<OnboardingBloc>().add(const OnboardingEvent.resetPressed());
-          context.go(Routes.onboarding);
+        onTap: () async {
+          await HydratedBloc.storage.clear();
+          if (context.mounted) context.go(Routes.onboarding);
         },
       ),
     );

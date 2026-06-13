@@ -8,18 +8,18 @@ import 'package:the_usual/app/app.dart';
 class MealReminderRow extends StatelessWidget {
   /// {@macro meal_reminder_row}
   const MealReminderRow({
-    required this.meal,
-    required this.reminder,
+    required this.mealOfTheDay,
+    required this.mealReminder,
     required this.onToggled,
     required this.onTimeChanged,
     super.key,
   });
 
   /// The meal this reminder belongs to.
-  final MealOfTheDay meal;
+  final MealOfTheDay mealOfTheDay;
 
   /// The reminder being displayed.
-  final MealReminder reminder;
+  final MealReminder mealReminder;
 
   /// Called with the new enabled state when the switch is flipped.
   final ValueChanged<bool> onToggled;
@@ -27,32 +27,30 @@ class MealReminderRow extends StatelessWidget {
   /// Called with the picked time when a new time is chosen.
   final ValueChanged<TimeOfDay> onTimeChanged;
 
-  Future<void> _pickTime(BuildContext context) async {
-    final picked = await showTimePicker(
-      context: context,
-      initialTime: reminder.time,
-    );
-    if (picked != null) onTimeChanged(picked);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
-        title: Text(meal.label),
+        title: Text(mealOfTheDay.label),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (reminder.enabled)
+            if (mealReminder.enabled)
               ActionChip(
-                label: Text(reminder.time.format(context)),
-                onPressed: () => _pickTime(context),
+                label: Text(mealReminder.timeOfDay.format(context)),
+                onPressed: () async {
+                  final picked = await showTimePicker(
+                    context: context,
+                    initialTime: mealReminder.timeOfDay,
+                  );
+                  if (picked != null) onTimeChanged(picked);
+                },
               )
             else
               const Text('No reminder'),
             const SizedBox(width: 8),
-            Switch(value: reminder.enabled, onChanged: onToggled),
+            Switch(value: mealReminder.enabled, onChanged: onToggled),
           ],
         ),
       ),

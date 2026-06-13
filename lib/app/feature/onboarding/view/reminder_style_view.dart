@@ -32,18 +32,18 @@ class ReminderStyleView extends StatelessWidget {
                   const SizedBox(height: 8),
                   const Text('We ask if you ate. You tap what it was.'),
                   const SizedBox(height: 20),
-                  for (final style in ReminderStyle.values) ...[
-                    if (style != ReminderStyle.values.first)
+                  for (final reminderStyle in ReminderStyle.values) ...[
+                    if (reminderStyle != ReminderStyle.values.first)
                       const SizedBox(height: 12),
                     RadioOptionCard(
-                      title: style.label,
-                      subtitle: style.description,
-                      note: style == ReminderStyle.notifications
+                      title: reminderStyle.label,
+                      subtitle: reminderStyle.description,
+                      note: reminderStyle == ReminderStyle.notifications
                           ? "We'll ask for permission next."
                           : null,
-                      selected: style == selected,
+                      selected: reminderStyle == selected,
                       onTap: () => getIt<OnboardingBloc>().add(
-                        OnboardingEvent.reminderStyleSelected(style),
+                        OnboardingEvent.reminderStyleSelected(reminderStyle),
                       ),
                     ),
                   ],

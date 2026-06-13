@@ -19,15 +19,15 @@ class ReminderStyleSection extends StatelessWidget {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            for (final style in ReminderStyle.values) ...[
-              if (style != ReminderStyle.values.first)
+            for (final reminderStyle in ReminderStyle.values) ...[
+              if (reminderStyle != ReminderStyle.values.first)
                 const SizedBox(height: 8),
               RadioOptionCard(
-                title: style.label,
-                subtitle: style.description,
-                selected: style == selected,
+                title: reminderStyle.label,
+                subtitle: reminderStyle.description,
+                selected: reminderStyle == selected,
                 onTap: () => getIt<UserSettingsBloc>().add(
-                  UserSettingsEvent.reminderStyleSelected(style),
+                  UserSettingsEvent.reminderStyleSelected(reminderStyle),
                 ),
               ),
             ],

@@ -49,20 +49,23 @@ class _WeightSectionState extends State<WeightSection> {
         state.weightUnit,
       ),
       builder: (context, selected) {
-        final (frequency, timeOfDay, unit) = selected;
+        final (weightCheckinFrequency, weightTimeOfDay, weightUnit) = selected;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text('How often', style: textTheme.bodySmall),
             const SizedBox(height: 8),
             WeightCheckinFrequencyChips(
-              selected: frequency,
-              onSelected: (frequency) => getIt<UserSettingsBloc>().add(
-                UserSettingsEvent.weightCheckinFrequencySelected(frequency),
-              ),
+              selected: weightCheckinFrequency,
+              onSelected: (weightCheckinFrequency) =>
+                  getIt<UserSettingsBloc>().add(
+                    UserSettingsEvent.weightCheckinFrequencySelected(
+                      weightCheckinFrequency,
+                    ),
+                  ),
             ),
             const SizedBox(height: 12),
-            if (frequency == WeightCheckinFrequency.off)
+            if (weightCheckinFrequency == WeightCheckinFrequency.off)
               const InfoBox(
                 'Weight check-ins are off. Pick a frequency to turn them '
                 'back on.',
@@ -71,22 +74,22 @@ class _WeightSectionState extends State<WeightSection> {
               Text('What time of day', style: textTheme.bodySmall),
               const SizedBox(height: 8),
               WeightTimeOfDayChips(
-                selected: timeOfDay,
-                onSelected: (timeOfDay) => getIt<UserSettingsBloc>().add(
-                  UserSettingsEvent.weightTimeOfDaySelected(timeOfDay),
+                selected: weightTimeOfDay,
+                onSelected: (weightTimeOfDay) => getIt<UserSettingsBloc>().add(
+                  UserSettingsEvent.weightTimeOfDaySelected(weightTimeOfDay),
                 ),
               ),
               const SizedBox(height: 12),
-              Text('Current weight', style: textTheme.bodySmall),
+              Text('Starting weight', style: textTheme.bodySmall),
               const SizedBox(height: 8),
               WeightInput(
                 controller: _weightController,
-                unit: unit,
+                weightUnit: weightUnit,
                 onWeightChanged: (weight) => getIt<UserSettingsBloc>().add(
                   UserSettingsEvent.startingWeightChanged(weight),
                 ),
-                onUnitSelected: (unit) => getIt<UserSettingsBloc>().add(
-                  UserSettingsEvent.weightUnitSelected(unit),
+                onUnitSelected: (weightUnit) => getIt<UserSettingsBloc>().add(
+                  UserSettingsEvent.weightUnitSelected(weightUnit),
                 ),
               ),
             ],

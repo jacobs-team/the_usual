@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$MealReminder {
 
- bool get enabled;@TimeOfDayConverter() TimeOfDay get time;
+ bool get enabled;@TimeOfDayConverter() TimeOfDay get timeOfDay;
 /// Create a copy of MealReminder
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $MealReminderCopyWith<MealReminder> get copyWith => _$MealReminderCopyWithImpl<M
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MealReminder&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.time, time) || other.time == time));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MealReminder&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.timeOfDay, timeOfDay) || other.timeOfDay == timeOfDay));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,enabled,time);
+int get hashCode => Object.hash(runtimeType,enabled,timeOfDay);
 
 @override
 String toString() {
-  return 'MealReminder(enabled: $enabled, time: $time)';
+  return 'MealReminder(enabled: $enabled, timeOfDay: $timeOfDay)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $MealReminderCopyWith<$Res>  {
   factory $MealReminderCopyWith(MealReminder value, $Res Function(MealReminder) _then) = _$MealReminderCopyWithImpl;
 @useResult
 $Res call({
- bool enabled,@TimeOfDayConverter() TimeOfDay time
+ bool enabled,@TimeOfDayConverter() TimeOfDay timeOfDay
 });
 
 
@@ -65,10 +65,10 @@ class _$MealReminderCopyWithImpl<$Res>
 
 /// Create a copy of MealReminder
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? enabled = null,Object? time = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? enabled = null,Object? timeOfDay = null,}) {
   return _then(_self.copyWith(
 enabled: null == enabled ? _self.enabled : enabled // ignore: cast_nullable_to_non_nullable
-as bool,time: null == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
+as bool,timeOfDay: null == timeOfDay ? _self.timeOfDay : timeOfDay // ignore: cast_nullable_to_non_nullable
 as TimeOfDay,
   ));
 }
@@ -154,10 +154,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool enabled, @TimeOfDayConverter()  TimeOfDay time)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool enabled, @TimeOfDayConverter()  TimeOfDay timeOfDay)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _MealReminder() when $default != null:
-return $default(_that.enabled,_that.time);case _:
+return $default(_that.enabled,_that.timeOfDay);case _:
   return orElse();
 
 }
@@ -175,10 +175,10 @@ return $default(_that.enabled,_that.time);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool enabled, @TimeOfDayConverter()  TimeOfDay time)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool enabled, @TimeOfDayConverter()  TimeOfDay timeOfDay)  $default,) {final _that = this;
 switch (_that) {
 case _MealReminder():
-return $default(_that.enabled,_that.time);case _:
+return $default(_that.enabled,_that.timeOfDay);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,10 +195,10 @@ return $default(_that.enabled,_that.time);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool enabled, @TimeOfDayConverter()  TimeOfDay time)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool enabled, @TimeOfDayConverter()  TimeOfDay timeOfDay)?  $default,) {final _that = this;
 switch (_that) {
 case _MealReminder() when $default != null:
-return $default(_that.enabled,_that.time);case _:
+return $default(_that.enabled,_that.timeOfDay);case _:
   return null;
 
 }
@@ -210,11 +210,11 @@ return $default(_that.enabled,_that.time);case _:
 @JsonSerializable()
 
 class _MealReminder implements MealReminder {
-  const _MealReminder({required this.enabled, @TimeOfDayConverter() required this.time});
+  const _MealReminder({required this.enabled, @TimeOfDayConverter() required this.timeOfDay});
   factory _MealReminder.fromJson(Map<String, dynamic> json) => _$MealReminderFromJson(json);
 
 @override final  bool enabled;
-@override@TimeOfDayConverter() final  TimeOfDay time;
+@override@TimeOfDayConverter() final  TimeOfDay timeOfDay;
 
 /// Create a copy of MealReminder
 /// with the given fields replaced by the non-null parameter values.
@@ -229,16 +229,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MealReminder&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.time, time) || other.time == time));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MealReminder&&(identical(other.enabled, enabled) || other.enabled == enabled)&&(identical(other.timeOfDay, timeOfDay) || other.timeOfDay == timeOfDay));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,enabled,time);
+int get hashCode => Object.hash(runtimeType,enabled,timeOfDay);
 
 @override
 String toString() {
-  return 'MealReminder(enabled: $enabled, time: $time)';
+  return 'MealReminder(enabled: $enabled, timeOfDay: $timeOfDay)';
 }
 
 
@@ -249,7 +249,7 @@ abstract mixin class _$MealReminderCopyWith<$Res> implements $MealReminderCopyWi
   factory _$MealReminderCopyWith(_MealReminder value, $Res Function(_MealReminder) _then) = __$MealReminderCopyWithImpl;
 @override @useResult
 $Res call({
- bool enabled,@TimeOfDayConverter() TimeOfDay time
+ bool enabled,@TimeOfDayConverter() TimeOfDay timeOfDay
 });
 
 
@@ -266,10 +266,10 @@ class __$MealReminderCopyWithImpl<$Res>
 
 /// Create a copy of MealReminder
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? enabled = null,Object? time = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? enabled = null,Object? timeOfDay = null,}) {
   return _then(_MealReminder(
 enabled: null == enabled ? _self.enabled : enabled // ignore: cast_nullable_to_non_nullable
-as bool,time: null == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
+as bool,timeOfDay: null == timeOfDay ? _self.timeOfDay : timeOfDay // ignore: cast_nullable_to_non_nullable
 as TimeOfDay,
   ));
 }

@@ -4,55 +4,42 @@ import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
 
 /// {@template usual_meal_list}
-/// One meal's tab on the usual meals screen: the saved items with an add
-/// button, and an empty notice when there are none.
+/// One meal's tab on the usual meals screen: the saved usual meals with an
+/// inline composer to add more.
 /// {@endtemplate}
 class UsualMealList extends StatelessWidget {
   /// {@macro usual_meal_list}
-  const UsualMealList({required this.meal, super.key});
+  const UsualMealList({required this.mealOfTheDay, super.key});
 
   /// The meal group this list shows.
-  final MealOfTheDay meal;
-
-  Future<void> _addUsual(BuildContext context) async {
-    final result = await showModalBottomSheet<(String, int?)>(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => AddUsualSheet(meal: meal),
-    );
-    if (result == null) return;
-    final (name, calories) = result;
-    getIt<UserSettingsBloc>().add(
-      UserSettingsEvent.usualAdded(meal, name, calories),
-    );
-  }
+  final MealOfTheDay mealOfTheDay;
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     return BlocSelector<UserSettingsBloc, UserSettingsState, List<UsualMeal>>(
       bloc: getIt<UserSettingsBloc>(),
-      selector: (state) => state.usuals[meal] ?? <UsualMeal>[],
-      builder: (context, items) {
+      selector: (state) => state.usuals[mealOfTheDay] ?? <UsualMeal>[],
+      builder: (context, usualMeals) {
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SectionLabel('${meal.label.toUpperCase()} (${items.length})'),
-                Text('Tap calories to edit', style: textTheme.bodySmall),
-              ],
-            ),
-            const SizedBox(height: 8),
-            if (items.isEmpty)
-              InfoBox('No ${meal.name} usuals yet. Add one below.'),
-            for (final item in items)
-              UsualMealRow(key: ValueKey(item.id), meal: meal, item: item),
-            const SizedBox(height: 4),
-            OutlinedButton(
-              onPressed: () => _addUsual(context),
-              child: const Text('+ Add a usual'),
+            UsualMealSection(
+              mealOfTheDay: mealOfTheDay,
+              usualMeals: usualMeals,
+              onAdded: (name, calories) => getIt<UserSettingsBloc>().add(
+                UserSettingsEvent.usualMealAdded(mealOfTheDay, name, calories),
+              ),
+              onCaloriesChanged: (id, calories) =>
+                  getIt<UserSettingsBloc>().add(
+                    UserSettingsEvent.usualMealCaloriesChanged(
+                      mealOfTheDay,
+                      id,
+                      calories,
+                    ),
+                  ),
+              onRemoved: (id) => getIt<UserSettingsBloc>().add(
+                UserSettingsEvent.usualMealRemoved(mealOfTheDay, id),
+              ),
             ),
           ],
         );

@@ -18,7 +18,7 @@ class UserSettingsView extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         title: const Text('Settings'),
-        leading: BackButton(onPressed: () => context.go(Routes.home)),
+        leading: BackButton(onPressed: () => context.go(Routes.today)),
       ),
       body: SafeArea(
         child: ListView(
