@@ -32,27 +32,21 @@ class ReminderStyleView extends StatelessWidget {
                   const SizedBox(height: 8),
                   const Text('We ask if you ate. You tap what it was.'),
                   const SizedBox(height: 20),
-                  _ReminderOption(
-                    style: ReminderStyle.notifications,
-                    title: 'Notifications',
-                    subtitle: 'A quick nudge at your meal times.',
-                    note: "We'll ask for permission next.",
-                    selected: selected == ReminderStyle.notifications,
-                  ),
-                  const SizedBox(height: 12),
-                  _ReminderOption(
-                    style: ReminderStyle.onAppOpen,
-                    title: 'When I open the app',
-                    subtitle: 'No pings. We ask when you launch.',
-                    selected: selected == ReminderStyle.onAppOpen,
-                  ),
-                  const SizedBox(height: 12),
-                  _ReminderOption(
-                    style: ReminderStyle.none,
-                    title: "Don't remind me",
-                    subtitle: 'Log on your own schedule.',
-                    selected: selected == ReminderStyle.none,
-                  ),
+                  for (final style in ReminderStyle.values) ...[
+                    if (style != ReminderStyle.values.first)
+                      const SizedBox(height: 12),
+                    RadioOptionCard(
+                      title: style.label,
+                      subtitle: style.description,
+                      note: style == ReminderStyle.notifications
+                          ? "We'll ask for permission next."
+                          : null,
+                      selected: style == selected,
+                      onTap: () => getIt<OnboardingBloc>().add(
+                        OnboardingEvent.reminderStyleSelected(style),
+                      ),
+                    ),
+                  ],
                   const Spacer(),
                   OnboardingActions(
                     primary: FilledButton(
@@ -66,74 +60,6 @@ class ReminderStyleView extends StatelessWidget {
               );
             },
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _ReminderOption extends StatelessWidget {
-  const _ReminderOption({
-    required this.style,
-    required this.title,
-    required this.subtitle,
-    required this.selected,
-    this.note,
-  });
-
-  final ReminderStyle style;
-  final String title;
-  final String subtitle;
-  final String? note;
-  final bool selected;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return InkWell(
-      borderRadius: BorderRadius.circular(12),
-      onTap: () => getIt<OnboardingBloc>().add(
-        OnboardingEvent.reminderStyleSelected(style),
-      ),
-      child: Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: selected
-                ? theme.colorScheme.primary
-                : theme.colorScheme.outlineVariant,
-            width: selected ? 2 : 1,
-          ),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(title, style: theme.textTheme.titleMedium),
-                  const SizedBox(height: 4),
-                  Text(subtitle, style: theme.textTheme.bodySmall),
-                  if (note != null) ...[
-                    const SizedBox(height: 4),
-                    Text(
-                      note!,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.outline,
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            Icon(
-              selected
-                  ? Icons.radio_button_checked
-                  : Icons.radio_button_unchecked,
-              color: selected ? theme.colorScheme.primary : null,
-            ),
-          ],
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:the_usual/app/app.dart';
 
 /// {@template ate_something_else_dialog}
 /// Dialog asking the user what they ate when it isn't one of their usuals.
@@ -25,10 +26,10 @@ class _AteSomethingElseDialogState extends State<AteSomethingElseDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('What did you eat?'),
-      content: TextField(
+      content: TheUsualTextField(
         controller: _controller,
         autofocus: true,
-        decoration: const InputDecoration(hintText: 'e.g. Ramen'),
+        hintText: 'e.g. Ramen',
         onSubmitted: (value) => Navigator.of(context).pop(value),
       ),
       actions: [

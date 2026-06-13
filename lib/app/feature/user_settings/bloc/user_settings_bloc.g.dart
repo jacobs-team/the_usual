@@ -59,23 +59,38 @@ _UserSettingsState _$UserSettingsStateFromJson(
       $enumDecodeNullable(_$WeightUnitEnumMap, json['weightUnit']) ??
       WeightUnit.lb,
   startingWeight: (json['startingWeight'] as num?)?.toDouble(),
+  usuals:
+      (json['usuals'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(
+          $enumDecode(_$MealOfTheDayEnumMap, k),
+          (e as List<dynamic>)
+              .map((e) => UsualMeal.fromJson(e as Map<String, dynamic>))
+              .toList(),
+        ),
+      ) ??
+      const <MealOfTheDay, List<UsualMeal>>{},
 );
 
-Map<String, dynamic> _$UserSettingsStateToJson(_UserSettingsState instance) =>
-    <String, dynamic>{
-      'reminderStyle': _$ReminderStyleEnumMap[instance.reminderStyle]!,
-      'mealCheckinScheduleMode':
-          _$MealCheckinScheduleModeEnumMap[instance.mealCheckinScheduleMode]!,
-      'mealReminders': instance.mealReminders.map(
-        (k, e) => MapEntry(_$MealOfTheDayEnumMap[k]!, e.toJson()),
-      ),
-      'endOfDayReminder': instance.endOfDayReminder.toJson(),
-      'weightCheckinFrequency':
-          _$WeightCheckinFrequencyEnumMap[instance.weightCheckinFrequency]!,
-      'weightTimeOfDay': _$WeightTimeOfDayEnumMap[instance.weightTimeOfDay]!,
-      'weightUnit': _$WeightUnitEnumMap[instance.weightUnit]!,
-      'startingWeight': instance.startingWeight,
-    };
+Map<String, dynamic> _$UserSettingsStateToJson(
+  _UserSettingsState instance,
+) => <String, dynamic>{
+  'reminderStyle': _$ReminderStyleEnumMap[instance.reminderStyle]!,
+  'mealCheckinScheduleMode':
+      _$MealCheckinScheduleModeEnumMap[instance.mealCheckinScheduleMode]!,
+  'mealReminders': instance.mealReminders.map(
+    (k, e) => MapEntry(_$MealOfTheDayEnumMap[k]!, e.toJson()),
+  ),
+  'endOfDayReminder': instance.endOfDayReminder.toJson(),
+  'weightCheckinFrequency':
+      _$WeightCheckinFrequencyEnumMap[instance.weightCheckinFrequency]!,
+  'weightTimeOfDay': _$WeightTimeOfDayEnumMap[instance.weightTimeOfDay]!,
+  'weightUnit': _$WeightUnitEnumMap[instance.weightUnit]!,
+  'startingWeight': instance.startingWeight,
+  'usuals': instance.usuals.map(
+    (k, e) =>
+        MapEntry(_$MealOfTheDayEnumMap[k]!, e.map((e) => e.toJson()).toList()),
+  ),
+};
 
 const _$ReminderStyleEnumMap = {
   ReminderStyle.notifications: 'notifications',

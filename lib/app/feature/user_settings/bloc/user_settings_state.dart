@@ -54,6 +54,10 @@ abstract class UserSettingsState with _$UserSettingsState {
 
     /// Baseline weight in [weightUnit], null when never provided.
     double? startingWeight,
+
+    /// The user's usuals library, keyed by meal timing.
+    @Default(<MealOfTheDay, List<UsualMeal>>{})
+    Map<MealOfTheDay, List<UsualMeal>> usuals,
   }) = _UserSettingsState;
 
   factory UserSettingsState.fromJson(Map<String, dynamic> json) =>

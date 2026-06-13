@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    html, body { margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
+  </style>
+</helmet>
+
+<div style="min-height: 100vh; background: #ECECEC; display: flex; justify-content: center; align-items: flex-start; padding: 36px 20px; font-family: Helvetica, Arial, sans-serif;">
+  <x-import component="AndroidDevice" from="./android-frame.jsx" hint-size="428,908">
+    <div style="height: 100%; display: flex; flex-direction: column; position: relative; background: #FAFAFA; font-family: Helvetica, Arial, sans-serif; color: #161616;">
+
+      <!-- ════════ SCREEN: SETTINGS ════════ -->
+      <sc-if value="{{ onSettingsScreen }}" hint-placeholder-val="{{ true }}">
+        <div data-screen-label="Settings" style="height: 100%; display: flex; flex-direction: column; min-height: 0;">
+
+          <div style="display: flex; align-items: center; gap: 4px; padding: 8px 12px 8px 8px; background: #FAFAFA; border-bottom: 1px solid #E4E4E4; flex-shrink: 0;">
+            <div style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 999px; font-size: 20px; cursor: pointer; color: #161616;" style-hover="background: #EFEFEF;">←</div>
+            <div style="font-size: 20px; font-weight: 700; flex: 1;">Settings</div>
+            <div style="background: #161616; color: #FFFFFF; font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 999px; transition: opacity 0.25s ease; opacity: {{ toastOpacity }}; pointer-events: none;">{{ toastMsg }}</div>
+          </div>
+
+          <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 20px 16px 28px;">
+
+            <!-- ───── Check-in style ───── -->
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 1.2px; color: #8A8A8A; margin: 0 4px 8px;">HOW WE CHECK IN</div>
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px;">
+              <sc-for list="{{ reminderOptions }}" as="opt" hint-placeholder-count="3">
+                <div onClick="{{ opt.onSelect }}" style="display: flex; align-items: center; gap: 12px; background: #FFFFFF; border: {{ opt.border }}; border-radius: 12px; padding: {{ opt.padding }}; cursor: pointer;" style-hover="border-color: #9A9A9A;">
+                  <div style="flex: 1; display: flex; flex-direction: column; gap: 3px;">
+                    <div style="font-size: 15px; font-weight: 600;">{{ opt.title }}</div>
+                    <div style="font-size: 13px; color: #757575;">{{ opt.subtitle }}</div>
+                  </div>
+                  <div style="width: 20px; height: 20px; border-radius: 999px; border: 2px solid {{ opt.radioColor }}; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <div style="width: 10px; height: 10px; border-radius: 999px; background: #161616; display: {{ opt.dotDisplay }};"></div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+
+            <!-- ───── Meal schedule ───── -->
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 1.2px; color: #8A8A8A; margin: 0 4px 8px;">WHEN WE ASK</div>
+
+            <sc-if value="{{ scheduleOff }}" hint-placeholder-val="{{ false }}">
+              <div style="background: #F1F1F1; border: 1px dashed #C9C9C9; border-radius: 12px; padding: 16px; font-size: 13px; color: #757575; margin-bottom: 24px;">
+                Reminders are off. Pick a check-in style above to schedule them.
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ scheduleOn }}" hint-placeholder-val="{{ true }}">
+              <div style="margin-bottom: 24px;">
+                <div style="display: flex; border: 1px solid #CFCFCF; border-radius: 10px; overflow: hidden; margin-bottom: 8px;">
+                  <sc-for list="{{ scheduleModeChips }}" as="seg" hint-placeholder-count="2">
+                    <div onClick="{{ seg.onClick }}" style="flex: 1; text-align: center; padding: 10px 0; font-size: 14px; font-weight: 600; cursor: pointer; background: {{ seg.bg }}; color: {{ seg.fg }};">{{ seg.label }}</div>
+                  </sc-for>
+                </div>
+                <div style="font-size: 12px; color: #8A8A8A; margin: 0 4px 12px;">{{ scheduleModeHint }}</div>
+
+                <sc-if value="{{ perMealMode }}" hint-placeholder-val="{{ true }}">
+                  <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <sc-for list="{{ mealRows }}" as="row" hint-placeholder-count="4">
+                      <div style="display: flex; align-items: center; gap: 10px; background: #FFFFFF; border: 1px solid #DCDCDC; border-radius: 12px; padding: 12px 14px;">
+                        <div style="flex: 1; font-size: 15px; font-weight: 600;">{{ row.label }}</div>
+                        <sc-if value="{{ row.enabled }}" hint-placeholder-val="{{ true }}">
+                          <div onClick="{{ row.onTime }}" style="font-size: 13px; font-weight: 600; background: #F1F1F1; border: 1px solid #CFCFCF; border-radius: 999px; padding: 6px 12px; cursor: pointer;" style-hover="background: #E6E6E6;">{{ row.timeLabel }}</div>
+                        </sc-if>
+                        <sc-if value="{{ row.disabled }}" hint-placeholder-val="{{ false }}">
+                          <div style="font-size: 12px; color: #A0A0A0;">No reminder</div>
+                        </sc-if>
+                        <div onClick="{{ row.onToggle }}" style="width: 44px; height: 26px; border-radius: 999px; background: {{ row.switchBg }}; position: relative; cursor: pointer; transition: background 0.15s ease; flex-shrink: 0;">
+                          <div style="width: 20px; height: 20px; border-radius: 999px; background: #FFFFFF; position: absolute; top: 3px; left: 3px; transform: translateX({{ row.knobX }}px); transition: transform 0.15s ease; box-shadow: 0 1px 2px rgba(0,0,0,0.25);"></div>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </sc-if>
+
+                <sc-if value="{{ endOfDayMode }}" hint-placeholder-val="{{ false }}">
+                  <div style="display: flex; align-items: center; gap: 10px; background: #FFFFFF; border: 1px solid #DCDCDC; border-radius: 12px; padding: 12px 14px;">
+                    <div style="flex: 1; display: flex; flex-direction: column; gap: 2px;">
+                      <div style="font-size: 15px; font-weight: 600;">Daily check-in</div>
+                      <div style="font-size: 12px; color: #8A8A8A;">Covers all meals at once</div>
+                    </div>
+                    <div onClick="{{ onEndOfDayTime }}" style="font-size: 13px; font-weight: 600; background: #F1F1F1; border: 1px solid #CFCFCF; border-radius: 999px; padding: 6px 12px; cursor: pointer;" style-hover="background: #E6E6E6;">{{ endOfDayTimeLabel }}</div>
+                  </div>
+                </sc-if>
+              </div>
+            </sc-if>
+
+            <!-- ───── Weight check-ins ───── -->
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 1.2px; color: #8A8A8A; margin: 0 4px 8px;">WEIGHT CHECK-INS</div>
+            <div style="margin-bottom: 24px;">
+              <div style="font-size: 12px; color: #8A8A8A; margin: 0 4px 8px;">How often</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;">
+                <sc-for list="{{ freqChips }}" as="chip" hint-placeholder-count="4">
+                  <div onClick="{{ chip.onClick }}" style="font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 999px; cursor: pointer; background: {{ chip.bg }}; color: {{ chip.fg }}; border: 1px solid {{ chip.bd }};">{{ chip.label }}</div>
+                </sc-for>
+              </div>
+
+              <sc-if value="{{ weightOff }}" hint-placeholder-val="{{ false }}">
+                <div style="background: #F1F1F1; border: 1px dashed #C9C9C9; border-radius: 12px; padding: 16px; font-size: 13px; color: #757575;">
+                  Weight check-ins are off. Pick a frequency to turn them back on.
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ weightOn }}" hint-placeholder-val="{{ true }}">
+                <div style="font-size: 12px; color: #8A8A8A; margin: 0 4px 8px;">What time of day</div>
+                <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px;">
+                  <sc-for list="{{ weightTimeChips }}" as="chip" hint-placeholder-count="3">
+                    <div onClick="{{ chip.onClick }}" style="font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 999px; cursor: pointer; background: {{ chip.bg }}; color: {{ chip.fg }}; border: 1px solid {{ chip.bd }};">{{ chip.label }}</div>
+                  </sc-for>
+                </div>
+
+                <div style="font-size: 12px; color: #8A8A8A; margin: 0 4px 8px;">Current weight</div>
+                <div style="display: flex; align-items: center; gap: 8px; background: #FFFFFF; border: 1px solid #DCDCDC; border-radius: 12px; padding: 10px 12px;">
+                  <input value="{{ weightValue }}" onChange="{{ onWeightChange }}" placeholder="—" inputMode="decimal" style="flex: 1; min-width: 0; border: none; outline: none; font-size: 20px; font-weight: 600; font-family: Helvetica, Arial, sans-serif; color: #161616; background: transparent;"></input>
+                  <sc-for list="{{ unitChips }}" as="chip" hint-placeholder-count="2">
+                    <div onClick="{{ chip.onClick }}" style="font-size: 13px; font-weight: 600; padding: 7px 13px; border-radius: 999px; cursor: pointer; background: {{ chip.bg }}; color: {{ chip.fg }}; border: 1px solid {{ chip.bd }};">{{ chip.label }}</div>
+                  </sc-for>
+                </div>
+              </sc-if>
+            </div>
+
+            <!-- ───── Usuals nav row ───── -->
+            <div style="font-size: 11px; font-weight: 700; letter-spacing: 1.2px; color: #8A8A8A; margin: 0 4px 8px;">YOUR FOOD</div>
+            <div onClick="{{ goUsuals }}" style="display: flex; align-items: center; gap: 12px; background: #FFFFFF; border: 1px solid #DCDCDC; border-radius: 12px; padding: 14px; cursor: pointer; margin-bottom: 24px;" style-hover="border-color: #9A9A9A;">
+              <div style="flex: 1; display: flex; flex-direction: column; gap: 3px;">
+                <div style="font-size: 15px; font-weight: 600;">Your usual meals</div>
+                <div style="font-size: 12px; color: #8A8A8A;">{{ usualsSummary }}</div>
+              </div>
+              <div style="color: #B0B0B0; font-size: 18px;">›</div>
+            </div>
+
+            <!-- ───── Footer ───── -->
+            <div onClick="{{ onReplayOnboarding }}" style="display: flex; align-items: center; gap: 12px; background: #FFFFFF; border: 1px solid #DCDCDC; border-radius: 12px; padding: 14px; cursor: pointer; margin-bottom: 16px;" style-hover="border-color: #9A9A9A;">
+              <div style="flex: 1; display: flex; flex-direction: column; gap: 2px;">
+                <div style="font-size: 15px; font-weight: 600;">Replay onboarding</div>
+                <div style="font-size: 12px; color: #8A8A8A;">Start setup again. Resets these choices to defaults.</div>
+              </div>
+              <div style="color: #B0B0B0; font-size: 18px;">›</div>
+            </div>
+            <div style="text-align: center; font-size: 12px; color: #A0A0A0;">No account. Your data stays on your phone.</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ════════ SCREEN: YOUR USUALS ════════ -->
+      <sc-if value="{{ onUsualsScreen }}" hint-placeholder-val="{{ false }}">
+        <div data-screen-label="Your usuals" style="height: 100%; display: flex; flex-direction: column; min-height: 0;">
+
+          <div style="display: flex; align-items: center; gap: 4px; padding: 8px 12px 8px 8px; background: #FAFAFA; border-bottom: 1px solid #E4E4E4; flex-shrink: 0;">
+            <div onClick="{{ goSettings }}" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 999px; font-size: 20px; cursor: pointer; color: #161616;" style-hover="background: #EFEFEF;">←</div>
+            <div style="font-size: 20px; font-weight: 700; flex: 1;">Your usual meals</div>
+            <div style="background: #161616; color: #FFFFFF; font-size: 12px; font-weight: 700; padding: 5px 12px; border-radius: 999px; transition: opacity 0.25s ease; opacity: {{ toastOpacity }}; pointer-events: none;">{{ toastMsg }}</div>
+          </div>
+
+          <!-- Meal tab bar (pinned) -->
+          <div style="display: flex; background: #FAFAFA; border-bottom: 1px solid #E4E4E4; flex-shrink: 0;">
+            <sc-for list="{{ usualTabs }}" as="tab" hint-placeholder-count="4">
+              <div onClick="{{ tab.onClick }}" style="flex: 1; display: flex; align-items: center; justify-content: center; gap: 5px; padding: 12px 0 10px; cursor: pointer; border-bottom: 2px solid {{ tab.underline }}; color: {{ tab.fg }};" style-hover="background: #F1F1F1;">
+                <span style="font-size: 13px; font-weight: {{ tab.weight }};">{{ tab.label }}</span>
+                <span style="font-size: 11px; font-weight: 600; background: {{ tab.badgeBg }}; color: {{ tab.badgeFg }}; border-radius: 999px; padding: 1px 6px; min-width: 12px; text-align: center;">{{ tab.count }}</span>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="flex: 1; min-height: 0; overflow-y: auto; padding: 16px 16px 28px;">
+
+            <div style="display: flex; align-items: baseline; justify-content: space-between; margin: 0 4px 8px;">
+              <div style="font-size: 11px; font-weight: 700; letter-spacing: 1.2px; color: #8A8A8A;">{{ itemsHeading }}</div>
+              <div style="font-size: 12px; color: #A0A0A0;">Tap calories to edit</div>
+            </div>
+
+            <sc-if value="{{ itemsEmpty }}" hint-placeholder-val="{{ false }}">
+              <div style="background: #F1F1F1; border: 1px dashed #C9C9C9; border-radius: 12px; padding: 16px; font-size: 13px; color: #757575; margin-bottom: 12px;">{{ emptyText }}</div>
+            </sc-if>
+
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
+              <sc-for list="{{ usualItems }}" as="item" hint-placeholder-count="5">
+                <div style="display: flex; align-items: center; gap: 12px; background: #FFFFFF; border: 1px solid #DCDCDC; border-radius: 12px; padding: 10px 14px;">
+                  <div style="width: 36px; height: 36px; border-radius: 8px; background: repeating-linear-gradient(45deg, #F0F0F0, #F0F0F0 6px, #E4E4E4 6px, #E4E4E4 12px); flex-shrink: 0;"></div>
+                  <div style="flex: 1; font-size: 15px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ item.name }}</div>
+                  <sc-if value="{{ item.estimating }}" hint-placeholder-val="{{ false }}">
+                    <div style="font-size: 12px; color: #8A8A8A; font-style: italic; flex-shrink: 0;">AI estimating…</div>
+                  </sc-if>
+                  <sc-if value="{{ item.ready }}" hint-placeholder-val="{{ true }}">
+                    <span style="display: {{ item.aiDisplay }}; font-size: 10px; font-weight: 700; letter-spacing: 0.5px; color: #FFFFFF; background: #8A8A8A; border-radius: 4px; padding: 3px 5px; flex-shrink: 0;" title="Estimated by AI — tap the number to correct it">AI</span>
+                    <div style="display: flex; align-items: center; gap: 4px; background: #F1F1F1; border: 1px solid #CFCFCF; border-radius: 999px; padding: 4px 10px 4px 4px; flex-shrink: 0;">
+                      <input value="{{ item.cal }}" onChange="{{ item.onCalChange }}" inputMode="numeric" style="width: 42px; border: none; outline: none; background: transparent; font-size: 13px; font-weight: 600; text-align: right; font-family: Helvetica, Arial, sans-serif; color: #161616;"></input>
+                      <span style="font-size: 11px; color: #8A8A8A;">cal</span>
+                    </div>
+                  </sc-if>
+                  <div onClick="{{ item.onRemove }}" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 999px; color: #8A8A8A; font-size: 16px; cursor: pointer; flex-shrink: 0;" style-hover="background: #F0F0F0; color: #161616;">✕</div>
+                </div>
+              </sc-for>
+            </div>
+
+            <!-- Add button -->
+            <div onClick="{{ openAddSheet }}" style="display: flex; align-items: center; justify-content: center; gap: 8px; border: 1px dashed #BFBFBF; border-radius: 12px; padding: 14px; cursor: pointer; color: #555555; font-size: 14px; font-weight: 600; background: #FFFFFF;" style-hover="border-color: #161616; color: #161616;">+ Add a usual</div>
+            <div style="text-align: center; font-size: 12px; color: #A0A0A0; margin-top: 10px;">Snap a photo of your food — skip the calories and AI fills them in.</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ───── Time picker sheet ───── -->
+      <sc-if value="{{ pickerOpen }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ onPickerCancel }}" style="position: absolute; inset: 0; background: rgba(0,0,0,0.35); z-index: 10;"></div>
+        <div style="position: absolute; left: 0; right: 0; bottom: 0; background: #FFFFFF; border-radius: 16px 16px 0 0; padding: 18px 16px 20px; z-index: 11; box-shadow: 0 -8px 30px rgba(0,0,0,0.18);">
+          <div style="font-size: 16px; font-weight: 700; margin-bottom: 14px;">{{ pickerTitle }}</div>
+
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: 1px; color: #8A8A8A; margin-bottom: 6px;">HOUR</div>
+          <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px;">
+            <sc-for list="{{ hourChips }}" as="chip" hint-placeholder-count="12">
+              <div onClick="{{ chip.onClick }}" style="width: 44px; text-align: center; font-size: 13px; font-weight: 600; padding: 8px 0; border-radius: 999px; cursor: pointer; background: {{ chip.bg }}; color: {{ chip.fg }}; border: 1px solid {{ chip.bd }};">{{ chip.label }}</div>
+            </sc-for>
+          </div>
+
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: 1px; color: #8A8A8A; margin-bottom: 6px;">MINUTE</div>
+          <div style="display: flex; gap: 6px; margin-bottom: 14px;">
+            <sc-for list="{{ minuteChips }}" as="chip" hint-placeholder-count="4">
+              <div onClick="{{ chip.onClick }}" style="width: 52px; text-align: center; font-size: 13px; font-weight: 600; padding: 8px 0; border-radius: 999px; cursor: pointer; background: {{ chip.bg }}; color: {{ chip.fg }}; border: 1px solid {{ chip.bd }};">{{ chip.label }}</div>
+            </sc-for>
+          </div>
+
+          <div style="display: flex; gap: 6px; margin-bottom: 18px;">
+            <sc-for list="{{ ampmChips }}" as="chip" hint-placeholder-count="2">
+              <div onClick="{{ chip.onClick }}" style="flex: 1; text-align: center; font-size: 13px; font-weight: 600; padding: 9px 0; border-radius: 999px; cursor: pointer; background: {{ chip.bg }}; color: {{ chip.fg }}; border: 1px solid {{ chip.bd }};">{{ chip.label }}</div>
+            </sc-for>
+          </div>
+
+          <div style="display: flex; gap: 8px;">
+            <div onClick="{{ onPickerCancel }}" style="flex: 1; text-align: center; font-size: 14px; font-weight: 600; padding: 13px 0; border-radius: 10px; border: 1px solid #CFCFCF; cursor: pointer; color: #161616;" style-hover="background: #F4F4F4;">Cancel</div>
+            <div onClick="{{ onPickerSet }}" style="flex: 1; text-align: center; font-size: 14px; font-weight: 600; padding: 13px 0; border-radius: 10px; background: #161616; color: #FFFFFF; cursor: pointer;" style-hover="background: #333333;">Set time</div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ───── Add usual sheet ───── -->
+      <sc-if value="{{ addSheetOpen }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ onAddCancel }}" style="position: absolute; inset: 0; background: rgba(0,0,0,0.35); z-index: 10;"></div>
+        <div style="position: absolute; left: 0; right: 0; bottom: 0; background: #FFFFFF; border-radius: 16px 16px 0 0; padding: 18px 16px 20px; z-index: 11; box-shadow: 0 -8px 30px rgba(0,0,0,0.18);">
+          <div style="font-size: 16px; font-weight: 700; margin-bottom: 14px;">{{ addSheetTitle }}</div>
+
+          <!-- Photo slot -->
+          <sc-if value="{{ addNoPhoto }}" hint-placeholder-val="{{ true }}">
+            <div onClick="{{ onSnapPhoto }}" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; border: 1px dashed #BFBFBF; border-radius: 12px; padding: 22px 0; cursor: pointer; margin-bottom: 12px; background: #FAFAFA;" style-hover="border-color: #161616;">
+              <div style="width: 40px; height: 40px; border-radius: 999px; border: 2px solid #8A8A8A; display: flex; align-items: center; justify-content: center;">
+                <div style="width: 14px; height: 14px; border-radius: 999px; border: 2px solid #8A8A8A;"></div>
+              </div>
+              <div style="font-size: 14px; font-weight: 600; color: #161616;">Snap a photo</div>
+              <div style="font-size: 12px; color: #A0A0A0;">Opens your camera</div>
+            </div>
+          </sc-if>
+          <sc-if value="{{ addHasPhoto }}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; align-items: center; gap: 12px; border: 1px solid #DCDCDC; border-radius: 12px; padding: 10px 14px; margin-bottom: 12px; background: #FFFFFF;">
+              <div style="width: 52px; height: 52px; border-radius: 8px; background: repeating-linear-gradient(45deg, #F0F0F0, #F0F0F0 6px, #E4E4E4 6px, #E4E4E4 12px); flex-shrink: 0;"></div>
+              <div style="flex: 1; font-size: 14px; font-weight: 600;">Photo added</div>
+              <div onClick="{{ onRetakePhoto }}" style="font-size: 13px; font-weight: 600; color: #555555; text-decoration: underline; cursor: pointer;" style-hover="color: #161616;">Retake</div>
+            </div>
+          </sc-if>
+
+          <!-- Name -->
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: 1px; color: #8A8A8A; margin-bottom: 6px;">NAME</div>
+          <input value="{{ addName }}" onChange="{{ onAddNameChange }}" placeholder="e.g. Chicken salad" style="width: 100%; border: 1px solid #CFCFCF; border-radius: 10px; padding: 11px 14px; font-size: 14px; font-family: Helvetica, Arial, sans-serif; outline: none; background: #FFFFFF; color: #161616; margin-bottom: 14px;"></input>
+
+          <!-- Calories -->
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: 1px; color: #8A8A8A; margin-bottom: 6px;">CALORIES · OPTIONAL</div>
+          <div style="display: flex; align-items: center; gap: 8px; border: 1px solid #CFCFCF; border-radius: 10px; padding: 11px 14px; background: #FFFFFF; margin-bottom: 6px;">
+            <input value="{{ addCal }}" onChange="{{ onAddCalChange }}" placeholder="Leave blank for AI" inputMode="numeric" style="flex: 1; min-width: 0; border: none; outline: none; font-size: 14px; font-family: Helvetica, Arial, sans-serif; background: transparent; color: #161616;"></input>
+            <span style="font-size: 12px; color: #8A8A8A;">cal</span>
+          </div>
+          <div style="font-size: 12px; color: #8A8A8A; margin: 0 2px 16px;">{{ addCalHint }}</div>
+
+          <div style="display: flex; gap: 8px;">
+            <div onClick="{{ onAddCancel }}" style="flex: 1; text-align: center; font-size: 14px; font-weight: 600; padding: 13px 0; border-radius: 10px; border: 1px solid #CFCFCF; cursor: pointer; color: #161616;" style-hover="background: #F4F4F4;">Cancel</div>
+            <div onClick="{{ onAddConfirm }}" style="flex: 2; text-align: center; font-size: 14px; font-weight: 600; padding: 13px 0; border-radius: 10px; background: {{ addConfirmBg }}; color: {{ addConfirmFg }}; cursor: pointer;">{{ addConfirmLabel }}</div>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </x-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 560, &quot;height&quot;: 1020}}">
+class Component extends DCLogic {
+  state = {
+    screen: 'settings',             // settings | usuals
+    reminderStyle: 'notifications', // notifications | onAppOpen | none
+    scheduleMode: 'perMeal',        // perMeal | endOfDay
+    mealReminders: {
+      breakfast: { enabled: true,  h: 9,  m: 0 },
+      lunch:     { enabled: true,  h: 14, m: 0 },
+      dinner:    { enabled: true,  h: 19, m: 30 },
+      snacks:    { enabled: false, h: 15, m: 0 },
+    },
+    endOfDay: { h: 20, m: 0 },
+    weightFreq: 'daily',            // daily | everyTwoDays | weekly | off
+    weightTime: 'morning',          // morning | evening | night
+    weightUnit: 'lb',               // lb | kg
+    weightValue: '165',
+    usuals: {
+      breakfast: [
+        { id: 'b1', name: 'Eggs & toast', cal: '350' },
+        { id: 'b2', name: 'Oatmeal', cal: '300' },
+        { id: 'b3', name: 'Smoothie', cal: '280' },
+        { id: 'b4', name: 'Coffee & bagel', cal: '400' },
+        { id: 'b5', name: 'Greek yogurt bowl', cal: '320' },
+      ],
+      lunch: [
+        { id: 'l1', name: 'Sandwich', cal: '450' },
+        { id: 'l2', name: 'Chicken bowl', cal: '600' },
+        { id: 'l3', name: 'Soup', cal: '300' },
+        { id: 'l4', name: 'Leftovers', cal: '500' },
+      ],
+      dinner: [
+        { id: 'd1', name: 'Pasta', cal: '650' },
+        { id: 'd2', name: 'Tacos', cal: '600' },
+        { id: 'd3', name: 'Stir fry', cal: '550' },
+        { id: 'd4', name: 'Pizza', cal: '800' },
+        { id: 'd5', name: 'Chicken & rice', cal: '550' },
+      ],
+      snacks: [
+        { id: 's1', name: 'Yogurt', cal: '150' },
+        { id: 's2', name: 'Protein bar', cal: '200' },
+        { id: 's3', name: 'Nuts', cal: '180' },
+      ],
+    },
+    selectedMeal: 'breakfast',
+    addSheet: null,                 // { name, cal, photo }
+    picker: null,                   // { target, h12, m, ampm }
+    toastOn: false,
+    toastMsg: 'Saved',
+  };
+
+  static MEALS = ['breakfast', 'lunch', 'dinner', 'snacks'];
+
+  cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+  fmt(h, m) {
+    const hh = (h % 12) || 12;
+    const mm = String(m).padStart(2, '0');
+    return hh + ':' + mm + ' ' + (h < 12 ? 'AM' : 'PM');
+  }
+
+  markSaved(msg) {
+    clearTimeout(this._toastTimer);
+    this.setState({ toastOn: true, toastMsg: msg || 'Saved' });
+    this._toastTimer = setTimeout(() => this.setState({ toastOn: false }), 1400);
+  }
+
+  componentWillUnmount() { clearTimeout(this._toastTimer); clearTimeout(this._estTimer); }
+
+  chip(label, selected, onClick) {
+    return {
+      label,
+      bg: selected ? '#161616' : '#FFFFFF',
+      fg: selected ? '#FFFFFF' : '#555555',
+      bd: selected ? '#161616' : '#CFCFCF',
+      onClick,
+    };
+  }
+
+  openPicker(target) {
+    const r = target === 'endOfDay' ? this.state.endOfDay : this.state.mealReminders[target];
+    this.setState({
+      picker: { target, h12: (r.h % 12) || 12, m: r.m, ampm: r.h < 12 ? 'AM' : 'PM' },
+    });
+  }
+
+  applyPicker() {
+    const p = this.state.picker;
+    if (!p) return;
+    const h24 = p.ampm === 'AM' ? (p.h12 % 12) : (p.h12 % 12) + 12;
+    if (p.target === 'endOfDay') {
+      this.setState({ endOfDay: { h: h24, m: p.m }, picker: null });
+    } else {
+      this.setState({
+        mealReminders: {
+          ...this.state.mealReminders,
+          [p.target]: { ...this.state.mealReminders[p.target], h: h24, m: p.m },
+        },
+        picker: null,
+      });
+    }
+    this.markSaved();
+  }
+
+  estimateCal(name) {
+    let h = 0;
+    for (const c of name) h = (h * 31 + c.charCodeAt(0)) % 997;
+    return 150 + (h % 56) * 10; // deterministic 150–700 fake estimate
+  }
+
+  confirmAdd() {
+    const sheet = this.state.addSheet;
+    if (!sheet) return;
+    const trimmed = sheet.name.trim();
+    if (!trimmed) return;
+    const meal = this.state.selectedMeal;
+    const items = this.state.usuals[meal];
+    if (items.some((i) => i.name.toLowerCase() === trimmed.toLowerCase())) {
+      this.setState({ addSheet: null });
+      this.markSaved('Already saved');
+      return;
+    }
+    const id = 'u' + Date.now();
+    const needsEstimate = !sheet.cal.trim();
+    this.setState({
+      usuals: {
+        ...this.state.usuals,
+        [meal]: [...items, { id, name: trimmed, cal: sheet.cal.trim(), estimating: needsEstimate }],
+      },
+      addSheet: null,
+    });
+    this.markSaved('Added');
+    if (needsEstimate) {
+      this._estTimer = setTimeout(() => {
+        this.setState((prev) => ({
+          usuals: {
+            ...prev.usuals,
+            [meal]: prev.usuals[meal].map((i) =>
+              i.id === id ? { ...i, cal: String(this.estimateCal(trimmed)), estimating: false, ai: true } : i),
+          },
+        }));
+        this.markSaved('AI estimated');
+      }, 1500);
+    }
+  }
+
+  renderVals() {
+    const s = this.state;
+    const set = (patch, msg) => { this.setState(patch); this.markSaved(msg); };
+
+    // ── Check-in style ──
+    const styleOpts = [
+      { key: 'notifications', title: 'Notifications', subtitle: 'A quick nudge at your meal times.' },
+      { key: 'onAppOpen', title: 'When I open the app', subtitle: 'No pings. We ask when you launch.' },
+      { key: 'none', title: "Don't remind me", subtitle: 'Log on your own schedule.' },
+    ];
+    const reminderOptions = styleOpts.map((o) => {
+      const sel = s.reminderStyle === o.key;
+      return {
+        title: o.title,
+        subtitle: o.subtitle,
+        border: sel ? '2px solid #161616' : '1px solid #DCDCDC',
+        padding: sel ? '13px 15px' : '14px 16px',
+        radioColor: sel ? '#161616' : '#C9C9C9',
+        dotDisplay: sel ? 'block' : 'none',
+        onSelect: () => set({ reminderStyle: o.key }),
+      };
+    });
+
+    // ── Meal schedule ──
+    const scheduleOn = s.reminderStyle !== 'none';
+    const scheduleModeChips = [
+      { key: 'perMeal', label: 'After each meal' },
+      { key: 'endOfDay', label: 'Once a day' },
+    ].map((m) => ({
+      label: m.label,
+      bg: s.scheduleMode === m.key ? '#161616' : '#FFFFFF',
+      fg: s.scheduleMode === m.key ? '#FFFFFF' : '#555555',
+      onClick: () => set({ scheduleMode: m.key }),
+    }));
+
+    const mealRows = Component.MEALS.map((k) => {
+      const r = s.mealReminders[k];
+      return {
+        label: this.cap(k),
+        enabled: r.enabled,
+        disabled: !r.enabled,
+        timeLabel: this.fmt(r.h, r.m),
+        switchBg: r.enabled ? '#161616' : '#C9C9C9',
+        knobX: r.enabled ? 18 : 0,
+        onToggle: () => set({
+          mealReminders: { ...s.mealReminders, [k]: { ...r, enabled: !r.enabled } },
+        }),
+        onTime: () => this.openPicker(k),
+      };
+    });
+
+    // ── Weight ──
+    const weightOn = s.weightFreq !== 'off';
+    const freqChips = [
+      { key: 'daily', label: 'Daily' },
+      { key: 'everyTwoDays', label: 'Every 2 days' },
+      { key: 'weekly', label: 'Weekly' },
+      { key: 'off', label: 'Off' },
+    ].map((f) => this.chip(f.label, s.weightFreq === f.key, () => set({ weightFreq: f.key })));
+
+    const weightTimeChips = [
+      { key: 'morning', label: 'Morning · recommended' },
+      { key: 'evening', label: 'Evening' },
+      { key: 'night', label: 'Night' },
+    ].map((t) => this.chip(t.label, s.weightTime === t.key, () => set({ weightTime: t.key })));
+
+    const unitChips = ['lb', 'kg'].map((u) =>
+      this.chip(u, s.weightUnit === u, () => set({ weightUnit: u })));
+
+    // ── Usuals ──
+    const totalItems = Component.MEALS.reduce((n, k) => n + s.usuals[k].length, 0);
+    const usualsSummary = totalItems + ' items · ' +
+      Component.MEALS.map((k) => this.cap(k) + ' ' + s.usuals[k].length).join(' · ');
+
+    const usualTabs = Component.MEALS.map((k) => {
+      const sel = s.selectedMeal === k;
+      return {
+        label: this.cap(k),
+        count: s.usuals[k].length,
+        fg: sel ? '#161616' : '#8A8A8A',
+        weight: sel ? 700 : 600,
+        underline: sel ? '#161616' : 'transparent',
+        badgeBg: sel ? '#161616' : '#E4E4E4',
+        badgeFg: sel ? '#FFFFFF' : '#757575',
+        onClick: () => this.setState({ selectedMeal: k }),
+      };
+    });
+
+    const items = s.usuals[s.selectedMeal];
+    const usualItems = items.map((item) => ({
+      name: item.name,
+      cal: item.cal,
+      estimating: !!item.estimating,
+      ready: !item.estimating,
+      aiDisplay: item.ai ? 'inline-block' : 'none',
+      onCalChange: (e) => {
+        const v = e.target.value;
+        if (!/^\d{0,4}$/.test(v)) return;
+        this.setState({
+          usuals: {
+            ...this.state.usuals,
+            [s.selectedMeal]: this.state.usuals[s.selectedMeal].map((i) =>
+              i.id === item.id ? { ...i, cal: v, ai: false } : i),
+          },
+        });
+      },
+      onRemove: () => set({
+        usuals: {
+          ...s.usuals,
+          [s.selectedMeal]: items.filter((i) => i.id !== item.id),
+        },
+      }, 'Removed'),
+    }));
+
+    // ── Time picker ──
+    const p = s.picker;
+    const hourChips = p ? Array.from({ length: 12 }, (_, i) => i + 1).map((h) =>
+      this.chip(String(h), p.h12 === h,
+        () => this.setState({ picker: { ...p, h12: h } }))) : [];
+    const minuteChips = p ? [0, 15, 30, 45].map((m) =>
+      this.chip(':' + String(m).padStart(2, '0'), p.m === m,
+        () => this.setState({ picker: { ...p, m } }))) : [];
+    const ampmChips = p ? ['AM', 'PM'].map((a) =>
+      this.chip(a, p.ampm === a,
+        () => this.setState({ picker: { ...p, ampm: a } }))) : [];
+    const pickerTitle = p
+      ? (p.target === 'endOfDay' ? 'Daily check-in time' : this.cap(p.target) + ' reminder time')
+      : '';
+
+    return {
+      onSettingsScreen: s.screen === 'settings',
+      onUsualsScreen: s.screen === 'usuals',
+      goUsuals: () => this.setState({ screen: 'usuals' }),
+      goSettings: () => this.setState({ screen: 'settings' }),
+
+      toastOpacity: s.toastOn ? 1 : 0,
+      toastMsg: s.toastMsg,
+
+      reminderOptions,
+      scheduleOn,
+      scheduleOff: !scheduleOn,
+      scheduleModeChips,
+      scheduleModeHint: s.scheduleMode === 'perMeal'
+        ? 'Logging near when you ate is more accurate.'
+        : 'One check-in covering the whole day.',
+      perMealMode: s.scheduleMode === 'perMeal',
+      endOfDayMode: s.scheduleMode === 'endOfDay',
+      mealRows,
+      endOfDayTimeLabel: this.fmt(s.endOfDay.h, s.endOfDay.m),
+      onEndOfDayTime: () => this.openPicker('endOfDay'),
+
+      freqChips,
+      weightOn,
+      weightOff: !weightOn,
+      weightTimeChips,
+      unitChips,
+      weightValue: s.weightValue,
+      onWeightChange: (e) => {
+        const v = e.target.value;
+        if (/^\d{0,4}\.?\d{0,1}$/.test(v)) set({ weightValue: v });
+      },
+
+      usualsSummary,
+      usualTabs,
+      usualItems,
+      itemsHeading: s.selectedMeal.toUpperCase() + ' (' + items.length + ')',
+      itemsEmpty: items.length === 0,
+      emptyText: 'No ' + s.selectedMeal + ' usuals yet. Add one below.',
+
+      openAddSheet: () => this.setState({ addSheet: { name: '', cal: '', photo: false } }),
+      addSheetOpen: !!s.addSheet,
+      addSheetTitle: 'Add a ' + (s.selectedMeal === 'snacks' ? 'snack' : s.selectedMeal) + ' usual',
+      addNoPhoto: s.addSheet ? !s.addSheet.photo : true,
+      addHasPhoto: s.addSheet ? s.addSheet.photo : false,
+      onSnapPhoto: () => this.setState({ addSheet: { ...s.addSheet, photo: true } }),
+      onRetakePhoto: () => this.setState({ addSheet: { ...s.addSheet, photo: false } }),
+      addName: s.addSheet ? s.addSheet.name : '',
+      addCal: s.addSheet ? s.addSheet.cal : '',
+      onAddNameChange: (e) => this.setState({ addSheet: { ...s.addSheet, name: e.target.value } }),
+      onAddCalChange: (e) => {
+        const v = e.target.value;
+        if (/^\d{0,4}$/.test(v)) this.setState({ addSheet: { ...s.addSheet, cal: v } });
+      },
+      addCalHint: s.addSheet && s.addSheet.cal.trim()
+        ? 'You can edit this anytime from the list.'
+        : 'Leave blank and AI estimates from your photo and name. Tap the number later to correct it.',
+      addConfirmBg: s.addSheet && s.addSheet.name.trim() ? '#161616' : '#D6D6D6',
+      addConfirmFg: s.addSheet && s.addSheet.name.trim() ? '#FFFFFF' : '#FFFFFF',
+      addConfirmLabel: s.addSheet && !s.addSheet.cal.trim() ? 'Add · AI estimates cal' : 'Add',
+      onAddCancel: () => this.setState({ addSheet: null }),
+      onAddConfirm: () => this.confirmAdd(),
+
+      onReplayOnboarding: () => {
+        this.setState({
+          reminderStyle: 'notifications',
+          scheduleMode: 'perMeal',
+          mealReminders: {
+            breakfast: { enabled: true,  h: 9,  m: 0 },
+            lunch:     { enabled: true,  h: 14, m: 0 },
+            dinner:    { enabled: true,  h: 19, m: 30 },
+            snacks:    { enabled: false, h: 15, m: 0 },
+          },
+          endOfDay: { h: 20, m: 0 },
+          weightFreq: 'daily',
+          weightTime: 'morning',
+          weightUnit: 'lb',
+          weightValue: '',
+        });
+        this.markSaved('Reset to defaults');
+      },
+
+      pickerOpen: !!p,
+      pickerTitle,
+      hourChips,
+      minuteChips,
+      ampmChips,
+      onPickerCancel: () => this.setState({ picker: null }),
+      onPickerSet: () => this.applyPicker(),
+    };
+  }
+}
+</script>
+</body>
+</html>

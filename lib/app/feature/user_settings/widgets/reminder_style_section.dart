@@ -1,0 +1,39 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:the_usual/app/app.dart';
+import 'package:the_usual/app/core/dependencies/dependencies.dart';
+
+/// {@template reminder_style_section}
+/// Settings section for choosing how the app checks in about meals.
+/// {@endtemplate}
+class ReminderStyleSection extends StatelessWidget {
+  /// {@macro reminder_style_section}
+  const ReminderStyleSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocSelector<UserSettingsBloc, UserSettingsState, ReminderStyle>(
+      bloc: getIt<UserSettingsBloc>(),
+      selector: (state) => state.reminderStyle,
+      builder: (context, selected) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (final style in ReminderStyle.values) ...[
+              if (style != ReminderStyle.values.first)
+                const SizedBox(height: 8),
+              RadioOptionCard(
+                title: style.label,
+                subtitle: style.description,
+                selected: style == selected,
+                onTap: () => getIt<UserSettingsBloc>().add(
+                  UserSettingsEvent.reminderStyleSelected(style),
+                ),
+              ),
+            ],
+          ],
+        );
+      },
+    );
+  }
+}

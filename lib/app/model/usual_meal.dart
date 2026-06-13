@@ -13,6 +13,9 @@ abstract class UsualMeal with _$UsualMeal {
     required String id,
     required String name,
     String? photoPath,
+
+    /// Estimated or user-entered calories, null when not set yet.
+    int? calories,
   }) = _UsualItem;
 
   factory UsualMeal.fromJson(Map<String, dynamic> json) =>

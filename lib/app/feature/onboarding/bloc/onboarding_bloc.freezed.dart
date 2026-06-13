@@ -1262,8 +1262,8 @@ as String,
 mixin _$OnboardingState {
 
 /// Position within [activeSteps], not a raw [OnboardingStep] index.
- int get activeStepIndex; Map<MealOfTheDay, List<UsualMeal>> get usuals;/// Draft of the user's settings, committed to [UserSettingsBloc] when
-/// onboarding completes.
+ int get activeStepIndex;/// Draft of the user's settings and usuals, committed to
+/// [UserSettingsBloc] when onboarding completes.
  UserSettingsState get settings; List<String> get firstLogSelectedIds;
 /// Create a copy of OnboardingState
 /// with the given fields replaced by the non-null parameter values.
@@ -1277,16 +1277,16 @@ $OnboardingStateCopyWith<OnboardingState> get copyWith => _$OnboardingStateCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OnboardingState&&(identical(other.activeStepIndex, activeStepIndex) || other.activeStepIndex == activeStepIndex)&&const DeepCollectionEquality().equals(other.usuals, usuals)&&(identical(other.settings, settings) || other.settings == settings)&&const DeepCollectionEquality().equals(other.firstLogSelectedIds, firstLogSelectedIds));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OnboardingState&&(identical(other.activeStepIndex, activeStepIndex) || other.activeStepIndex == activeStepIndex)&&(identical(other.settings, settings) || other.settings == settings)&&const DeepCollectionEquality().equals(other.firstLogSelectedIds, firstLogSelectedIds));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,activeStepIndex,const DeepCollectionEquality().hash(usuals),settings,const DeepCollectionEquality().hash(firstLogSelectedIds));
+int get hashCode => Object.hash(runtimeType,activeStepIndex,settings,const DeepCollectionEquality().hash(firstLogSelectedIds));
 
 @override
 String toString() {
-  return 'OnboardingState(activeStepIndex: $activeStepIndex, usuals: $usuals, settings: $settings, firstLogSelectedIds: $firstLogSelectedIds)';
+  return 'OnboardingState(activeStepIndex: $activeStepIndex, settings: $settings, firstLogSelectedIds: $firstLogSelectedIds)';
 }
 
 
@@ -1297,7 +1297,7 @@ abstract mixin class $OnboardingStateCopyWith<$Res>  {
   factory $OnboardingStateCopyWith(OnboardingState value, $Res Function(OnboardingState) _then) = _$OnboardingStateCopyWithImpl;
 @useResult
 $Res call({
- int activeStepIndex, Map<MealOfTheDay, List<UsualMeal>> usuals, UserSettingsState settings, List<String> firstLogSelectedIds
+ int activeStepIndex, UserSettingsState settings, List<String> firstLogSelectedIds
 });
 
 
@@ -1314,11 +1314,10 @@ class _$OnboardingStateCopyWithImpl<$Res>
 
 /// Create a copy of OnboardingState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? activeStepIndex = null,Object? usuals = null,Object? settings = null,Object? firstLogSelectedIds = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? activeStepIndex = null,Object? settings = null,Object? firstLogSelectedIds = null,}) {
   return _then(_self.copyWith(
 activeStepIndex: null == activeStepIndex ? _self.activeStepIndex : activeStepIndex // ignore: cast_nullable_to_non_nullable
-as int,usuals: null == usuals ? _self.usuals : usuals // ignore: cast_nullable_to_non_nullable
-as Map<MealOfTheDay, List<UsualMeal>>,settings: null == settings ? _self.settings : settings // ignore: cast_nullable_to_non_nullable
+as int,settings: null == settings ? _self.settings : settings // ignore: cast_nullable_to_non_nullable
 as UserSettingsState,firstLogSelectedIds: null == firstLogSelectedIds ? _self.firstLogSelectedIds : firstLogSelectedIds // ignore: cast_nullable_to_non_nullable
 as List<String>,
   ));
@@ -1414,10 +1413,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int activeStepIndex,  Map<MealOfTheDay, List<UsualMeal>> usuals,  UserSettingsState settings,  List<String> firstLogSelectedIds)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int activeStepIndex,  UserSettingsState settings,  List<String> firstLogSelectedIds)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _OnboardingState() when $default != null:
-return $default(_that.activeStepIndex,_that.usuals,_that.settings,_that.firstLogSelectedIds);case _:
+return $default(_that.activeStepIndex,_that.settings,_that.firstLogSelectedIds);case _:
   return orElse();
 
 }
@@ -1435,10 +1434,10 @@ return $default(_that.activeStepIndex,_that.usuals,_that.settings,_that.firstLog
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int activeStepIndex,  Map<MealOfTheDay, List<UsualMeal>> usuals,  UserSettingsState settings,  List<String> firstLogSelectedIds)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int activeStepIndex,  UserSettingsState settings,  List<String> firstLogSelectedIds)  $default,) {final _that = this;
 switch (_that) {
 case _OnboardingState():
-return $default(_that.activeStepIndex,_that.usuals,_that.settings,_that.firstLogSelectedIds);case _:
+return $default(_that.activeStepIndex,_that.settings,_that.firstLogSelectedIds);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1455,10 +1454,10 @@ return $default(_that.activeStepIndex,_that.usuals,_that.settings,_that.firstLog
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int activeStepIndex,  Map<MealOfTheDay, List<UsualMeal>> usuals,  UserSettingsState settings,  List<String> firstLogSelectedIds)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int activeStepIndex,  UserSettingsState settings,  List<String> firstLogSelectedIds)?  $default,) {final _that = this;
 switch (_that) {
 case _OnboardingState() when $default != null:
-return $default(_that.activeStepIndex,_that.usuals,_that.settings,_that.firstLogSelectedIds);case _:
+return $default(_that.activeStepIndex,_that.settings,_that.firstLogSelectedIds);case _:
   return null;
 
 }
@@ -1470,20 +1469,13 @@ return $default(_that.activeStepIndex,_that.usuals,_that.settings,_that.firstLog
 
 @JsonSerializable(explicitToJson: true)
 class _OnboardingState extends OnboardingState {
-  const _OnboardingState({this.activeStepIndex = 0, final  Map<MealOfTheDay, List<UsualMeal>> usuals = const <MealOfTheDay, List<UsualMeal>>{}, this.settings = const UserSettingsState(), final  List<String> firstLogSelectedIds = const <String>[]}): _usuals = usuals,_firstLogSelectedIds = firstLogSelectedIds,super._();
+  const _OnboardingState({this.activeStepIndex = 0, this.settings = const UserSettingsState(), final  List<String> firstLogSelectedIds = const <String>[]}): _firstLogSelectedIds = firstLogSelectedIds,super._();
   factory _OnboardingState.fromJson(Map<String, dynamic> json) => _$OnboardingStateFromJson(json);
 
 /// Position within [activeSteps], not a raw [OnboardingStep] index.
 @override@JsonKey() final  int activeStepIndex;
- final  Map<MealOfTheDay, List<UsualMeal>> _usuals;
-@override@JsonKey() Map<MealOfTheDay, List<UsualMeal>> get usuals {
-  if (_usuals is EqualUnmodifiableMapView) return _usuals;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableMapView(_usuals);
-}
-
-/// Draft of the user's settings, committed to [UserSettingsBloc] when
-/// onboarding completes.
+/// Draft of the user's settings and usuals, committed to
+/// [UserSettingsBloc] when onboarding completes.
 @override@JsonKey() final  UserSettingsState settings;
  final  List<String> _firstLogSelectedIds;
 @override@JsonKey() List<String> get firstLogSelectedIds {
@@ -1506,16 +1498,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OnboardingState&&(identical(other.activeStepIndex, activeStepIndex) || other.activeStepIndex == activeStepIndex)&&const DeepCollectionEquality().equals(other._usuals, _usuals)&&(identical(other.settings, settings) || other.settings == settings)&&const DeepCollectionEquality().equals(other._firstLogSelectedIds, _firstLogSelectedIds));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OnboardingState&&(identical(other.activeStepIndex, activeStepIndex) || other.activeStepIndex == activeStepIndex)&&(identical(other.settings, settings) || other.settings == settings)&&const DeepCollectionEquality().equals(other._firstLogSelectedIds, _firstLogSelectedIds));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,activeStepIndex,const DeepCollectionEquality().hash(_usuals),settings,const DeepCollectionEquality().hash(_firstLogSelectedIds));
+int get hashCode => Object.hash(runtimeType,activeStepIndex,settings,const DeepCollectionEquality().hash(_firstLogSelectedIds));
 
 @override
 String toString() {
-  return 'OnboardingState(activeStepIndex: $activeStepIndex, usuals: $usuals, settings: $settings, firstLogSelectedIds: $firstLogSelectedIds)';
+  return 'OnboardingState(activeStepIndex: $activeStepIndex, settings: $settings, firstLogSelectedIds: $firstLogSelectedIds)';
 }
 
 
@@ -1526,7 +1518,7 @@ abstract mixin class _$OnboardingStateCopyWith<$Res> implements $OnboardingState
   factory _$OnboardingStateCopyWith(_OnboardingState value, $Res Function(_OnboardingState) _then) = __$OnboardingStateCopyWithImpl;
 @override @useResult
 $Res call({
- int activeStepIndex, Map<MealOfTheDay, List<UsualMeal>> usuals, UserSettingsState settings, List<String> firstLogSelectedIds
+ int activeStepIndex, UserSettingsState settings, List<String> firstLogSelectedIds
 });
 
 
@@ -1543,11 +1535,10 @@ class __$OnboardingStateCopyWithImpl<$Res>
 
 /// Create a copy of OnboardingState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? activeStepIndex = null,Object? usuals = null,Object? settings = null,Object? firstLogSelectedIds = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? activeStepIndex = null,Object? settings = null,Object? firstLogSelectedIds = null,}) {
   return _then(_OnboardingState(
 activeStepIndex: null == activeStepIndex ? _self.activeStepIndex : activeStepIndex // ignore: cast_nullable_to_non_nullable
-as int,usuals: null == usuals ? _self._usuals : usuals // ignore: cast_nullable_to_non_nullable
-as Map<MealOfTheDay, List<UsualMeal>>,settings: null == settings ? _self.settings : settings // ignore: cast_nullable_to_non_nullable
+as int,settings: null == settings ? _self.settings : settings // ignore: cast_nullable_to_non_nullable
 as UserSettingsState,firstLogSelectedIds: null == firstLogSelectedIds ? _self._firstLogSelectedIds : firstLogSelectedIds // ignore: cast_nullable_to_non_nullable
 as List<String>,
   ));

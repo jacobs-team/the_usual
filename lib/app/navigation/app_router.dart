@@ -26,11 +26,6 @@ class AppRouter {
       redirect: (context, state) {
         // final signedIn = _authCubit.state.signedIn;
         // final isSigningIn = state.uri.path.startsWith(Routes.signIn);
-        // final isOnboarding = state.uri.path.startsWith(Routes.onboarding);
-
-        // if (isOnboarding) {
-        //   return null;
-        // }
 
         // if (!signedIn && !isSigningIn) {
         //   return Routes.signIn;
@@ -59,6 +54,26 @@ class AppRouter {
       pageBuilder: (context, state) {
         return const NoTransitionPage(child: OnboardingView());
       },
+    ),
+    GoRoute(
+      path: Routes.home,
+      pageBuilder: (context, state) {
+        return const NoTransitionPage(child: HomeView());
+      },
+    ),
+    GoRoute(
+      path: Routes.settings,
+      pageBuilder: (context, state) {
+        return const NoTransitionPage(child: UserSettingsView());
+      },
+      routes: [
+        GoRoute(
+          path: Routes.usualMealsSegment,
+          pageBuilder: (context, state) {
+            return const NoTransitionPage(child: UsualMealsView());
+          },
+        ),
+      ],
     ),
     // GoRoute(
     //   path: Routes.signIn,

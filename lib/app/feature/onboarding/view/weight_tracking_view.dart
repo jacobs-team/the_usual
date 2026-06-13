@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
@@ -63,28 +62,15 @@ class _WeightTrackingViewState extends State<WeightTrackingView> {
                       const SizedBox(height: 8),
                       const Text('A quick weigh-in keeps the trend honest.'),
                       const SizedBox(height: 20),
-                      Text('HOW OFTEN', style: textTheme.labelSmall),
+                      const SectionLabel('HOW OFTEN'),
                       const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8,
-                        children: [
-                          for (final option in WeightCheckinFrequency.values)
-                            ChoiceChip(
-                              label: Text(switch (option) {
-                                WeightCheckinFrequency.daily => 'Daily',
-                                WeightCheckinFrequency.everyTwoDays =>
-                                  'Every 2 days',
-                                WeightCheckinFrequency.weekly => 'Weekly',
-                                WeightCheckinFrequency.off => 'Off',
-                              }),
-                              selected: option == frequency,
-                              onSelected: (_) => getIt<OnboardingBloc>().add(
-                                OnboardingEvent.weightCheckinFrequencySelected(
-                                  option,
-                                ),
-                              ),
-                            ),
-                        ],
+                      WeightCheckinFrequencyChips(
+                        selected: frequency,
+                        onSelected: (frequency) => getIt<OnboardingBloc>().add(
+                          OnboardingEvent.weightCheckinFrequencySelected(
+                            frequency,
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 20),
                       if (frequency == WeightCheckinFrequency.off)
@@ -94,27 +80,16 @@ class _WeightTrackingViewState extends State<WeightTrackingView> {
                           style: textTheme.bodySmall,
                         )
                       else ...[
-                        Text('WHAT TIME OF DAY', style: textTheme.labelSmall),
+                        const SectionLabel('WHAT TIME OF DAY'),
                         const SizedBox(height: 8),
-                        Wrap(
-                          spacing: 8,
-                          children: [
-                            for (final option in WeightTimeOfDay.values)
-                              ChoiceChip(
-                                label: Text(switch (option) {
-                                  WeightTimeOfDay.morning =>
-                                    'Morning · recommended',
-                                  WeightTimeOfDay.evening => 'Evening',
-                                  WeightTimeOfDay.night => 'Night',
-                                }),
-                                selected: option == timeOfDay,
-                                onSelected: (_) => getIt<OnboardingBloc>().add(
-                                  OnboardingEvent.weightTimeOfDaySelected(
-                                    option,
-                                  ),
+                        WeightTimeOfDayChips(
+                          selected: timeOfDay,
+                          onSelected: (timeOfDay) =>
+                              getIt<OnboardingBloc>().add(
+                                OnboardingEvent.weightTimeOfDaySelected(
+                                  timeOfDay,
                                 ),
                               ),
-                          ],
                         ),
                         const SizedBox(height: 8),
                         Text(
@@ -122,48 +97,17 @@ class _WeightTrackingViewState extends State<WeightTrackingView> {
                           style: textTheme.bodySmall,
                         ),
                         const SizedBox(height: 20),
-                        Text('STARTING WEIGHT', style: textTheme.labelSmall),
+                        const SectionLabel('STARTING WEIGHT'),
                         const SizedBox(height: 8),
-                        TextField(
+                        WeightInput(
                           controller: _weightController,
-                          keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true,
-                          ),
-                          inputFormatters: [
-                            FilteringTextInputFormatter.allow(
-                              RegExp(r'^\d{0,4}\.?\d{0,1}'),
-                            ),
-                          ],
-                          style: textTheme.headlineMedium,
-                          decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
-                            suffixIcon: Padding(
-                              padding: const EdgeInsets.only(right: 8),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  for (final option in WeightUnit.values)
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 4),
-                                      child: ChoiceChip(
-                                        label: Text(option.name),
-                                        selected: option == unit,
-                                        onSelected: (_) =>
-                                            getIt<OnboardingBloc>().add(
-                                              OnboardingEvent.weightUnitSelected(
-                                                option,
-                                              ),
-                                            ),
-                                      ),
-                                    ),
-                                ],
+                          unit: unit,
+                          onWeightChanged: (weight) =>
+                              getIt<OnboardingBloc>().add(
+                                OnboardingEvent.startingWeightChanged(weight),
                               ),
-                            ),
-                          ),
-                          onChanged: (value) => getIt<OnboardingBloc>().add(
-                            OnboardingEvent.startingWeightChanged(
-                              double.tryParse(value),
-                            ),
+                          onUnitSelected: (unit) => getIt<OnboardingBloc>().add(
+                            OnboardingEvent.weightUnitSelected(unit),
                           ),
                         ),
                       ],

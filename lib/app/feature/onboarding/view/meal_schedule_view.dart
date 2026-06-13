@@ -45,24 +45,11 @@ class MealScheduleView extends StatelessWidget {
                         style: textTheme.headlineSmall,
                       ),
                       const SizedBox(height: 16),
-                      SegmentedButton<MealCheckinScheduleMode>(
-                        segments: const [
-                          ButtonSegment(
-                            value: MealCheckinScheduleMode.perMeal,
-                            label: Text('After each meal'),
-                          ),
-                          ButtonSegment(
-                            value: MealCheckinScheduleMode.endOfDay,
-                            label: Text('Once a day'),
-                          ),
-                        ],
-                        selected: {mode},
-                        onSelectionChanged: (selection) =>
-                            getIt<OnboardingBloc>().add(
-                              OnboardingEvent.mealCheckinScheduleModeChanged(
-                                selection.first,
-                              ),
-                            ),
+                      MealScheduleModeSelector(
+                        mode: mode,
+                        onChanged: (mode) => getIt<OnboardingBloc>().add(
+                          OnboardingEvent.mealCheckinScheduleModeChanged(mode),
+                        ),
                       ),
                       const SizedBox(height: 16),
                       Text(
@@ -77,9 +64,31 @@ class MealScheduleView extends StatelessWidget {
                       if (mode == MealCheckinScheduleMode.perMeal)
                         for (final meal in MealOfTheDay.values)
                           if (mealReminders[meal] case final reminder?)
-                            _MealReminderRow(meal: meal, reminder: reminder),
+                            MealReminderRow(
+                              meal: meal,
+                              reminder: reminder,
+                              onToggled: (enabled) =>
+                                  getIt<OnboardingBloc>().add(
+                                    OnboardingEvent.mealReminderToggled(
+                                      meal,
+                                      enabled: enabled,
+                                    ),
+                                  ),
+                              onTimeChanged: (time) =>
+                                  getIt<OnboardingBloc>().add(
+                                    OnboardingEvent.mealReminderTimeChanged(
+                                      meal,
+                                      time,
+                                    ),
+                                  ),
+                            ),
                       if (mode == MealCheckinScheduleMode.endOfDay)
-                        _EndOfDayRow(reminder: endOfDayReminder),
+                        EndOfDayReminderRow(
+                          reminder: endOfDayReminder,
+                          onTimeChanged: (time) => getIt<OnboardingBloc>().add(
+                            OnboardingEvent.endOfDayTimeChanged(time),
+                          ),
+                        ),
                       const SizedBox(height: 16),
                       Text(
                         'You can add a meal any time you eat. Reminders just '
@@ -99,86 +108,6 @@ class MealScheduleView extends StatelessWidget {
                   );
                 },
               ),
-        ),
-      ),
-    );
-  }
-}
-
-Future<void> _pickTime(
-  BuildContext context,
-  MealReminder reminder,
-  void Function(TimeOfDay picked) onPicked,
-) async {
-  final picked = await showTimePicker(
-    context: context,
-    initialTime: reminder.time,
-  );
-  if (picked != null) onPicked(picked);
-}
-
-class _MealReminderRow extends StatelessWidget {
-  const _MealReminderRow({required this.meal, required this.reminder});
-
-  final MealOfTheDay meal;
-  final MealReminder reminder;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        title: Text(meal.label),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (reminder.enabled)
-              ActionChip(
-                label: Text(reminder.time.format(context)),
-                onPressed: () => _pickTime(
-                  context,
-                  reminder,
-                  (picked) => getIt<OnboardingBloc>().add(
-                    OnboardingEvent.mealReminderTimeChanged(meal, picked),
-                  ),
-                ),
-              )
-            else
-              const Text('No reminder'),
-            const SizedBox(width: 8),
-            Switch(
-              value: reminder.enabled,
-              onChanged: (enabled) => getIt<OnboardingBloc>().add(
-                OnboardingEvent.mealReminderToggled(meal, enabled: enabled),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _EndOfDayRow extends StatelessWidget {
-  const _EndOfDayRow({required this.reminder});
-
-  final MealReminder reminder;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        title: const Text('Daily check-in'),
-        trailing: ActionChip(
-          label: Text(reminder.time.format(context)),
-          onPressed: () => _pickTime(
-            context,
-            reminder,
-            (picked) => getIt<OnboardingBloc>().add(
-              OnboardingEvent.endOfDayTimeChanged(picked),
-            ),
-          ),
         ),
       ),
     );

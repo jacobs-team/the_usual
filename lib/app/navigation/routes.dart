@@ -10,6 +10,10 @@ import 'package:the_usual/app/app.dart';
 abstract class Routes {
   // static const String coffee = '/coffee';
   static const String onboarding = '/onboarding';
+  static const String home = '/home';
+  static const String settings = '/settings';
+  static const String usualMeals = '/settings/$usualMealsSegment';
+  static const String usualMealsSegment = 'usuals';
   // static const String favorites = '/favorites';
   // static const String signIn = '/sign-in';
   static const String devTools = '/dev-tools';

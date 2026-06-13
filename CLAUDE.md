@@ -11,6 +11,7 @@
 - The code generator for freezed, json_serializable, and injectable should be running in the background at all times, if it's not. please ask the user to start it.
 - Don't worry about writing tests until told to do so by the user.
 - Do not prematurely optimize. Do not add events, methods, or abstractions for cases an existing general one already covers. If a specific behavior is needed later, add it then. Example: a `getStartedPressed` event whose handler only advances to the next step is unnecessary when `continuePressed` already does that — use `continuePressed` until "get started" actually needs different behavior.
+- Favor clarity over conciseness. The code must be easily readable and understandable by a person who didn't write it. When an expression nests several operations (spread + lookup + filter + copyWith in one go), break it into named local variables or a private method that tells the story step by step, instead of one dense inline expression.
 
 ## Models, States & Events
 

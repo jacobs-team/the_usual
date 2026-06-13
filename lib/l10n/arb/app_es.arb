@@ -42,6 +42,10 @@
     "@devToolsTooltip": {
         "description": "Tooltip del botón de herramientas de desarrollo en la barra superior"
     },
+    "settingsTooltip": "Ajustes",
+    "@settingsTooltip": {
+        "description": "Tooltip del botón de ajustes en la barra superior"
+    },
     "previousImageTooltip": "Imagen anterior",
     "@previousImageTooltip": {
         "description": "Tooltip del botón que desplaza a la imagen anterior"

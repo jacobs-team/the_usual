@@ -10,11 +10,9 @@ abstract class OnboardingState with _$OnboardingState {
   const factory OnboardingState({
     /// Position within [activeSteps], not a raw [OnboardingStep] index.
     @Default(0) int activeStepIndex,
-    @Default(<MealOfTheDay, List<UsualMeal>>{})
-    Map<MealOfTheDay, List<UsualMeal>> usuals,
 
-    /// Draft of the user's settings, committed to [UserSettingsBloc] when
-    /// onboarding completes.
+    /// Draft of the user's settings and usuals, committed to
+    /// [UserSettingsBloc] when onboarding completes.
     @Default(UserSettingsState()) UserSettingsState settings,
     @Default(<String>[]) List<String> firstLogSelectedIds,
   }) = _OnboardingState;

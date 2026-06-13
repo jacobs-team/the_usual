@@ -1,0 +1,98 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:the_usual/app/app.dart';
+import 'package:the_usual/app/core/dependencies/dependencies.dart';
+
+/// {@template weight_section}
+/// Settings section for weight check-ins: frequency, time of day, and the
+/// current weight with a unit toggle. Shows an off notice when check-ins are
+/// disabled.
+/// {@endtemplate}
+class WeightSection extends StatefulWidget {
+  /// {@macro weight_section}
+  const WeightSection({super.key});
+
+  @override
+  State<WeightSection> createState() => _WeightSectionState();
+}
+
+class _WeightSectionState extends State<WeightSection> {
+  late final TextEditingController _weightController;
+
+  @override
+  void initState() {
+    super.initState();
+    final weight = getIt<UserSettingsBloc>().state.startingWeight;
+    _weightController = TextEditingController(
+      text: weight == null ? '' : weight.toString(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _weightController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return BlocSelector<
+      UserSettingsBloc,
+      UserSettingsState,
+      (WeightCheckinFrequency, WeightTimeOfDay, WeightUnit)
+    >(
+      bloc: getIt<UserSettingsBloc>(),
+      selector: (state) => (
+        state.weightCheckinFrequency,
+        state.weightTimeOfDay,
+        state.weightUnit,
+      ),
+      builder: (context, selected) {
+        final (frequency, timeOfDay, unit) = selected;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text('How often', style: textTheme.bodySmall),
+            const SizedBox(height: 8),
+            WeightCheckinFrequencyChips(
+              selected: frequency,
+              onSelected: (frequency) => getIt<UserSettingsBloc>().add(
+                UserSettingsEvent.weightCheckinFrequencySelected(frequency),
+              ),
+            ),
+            const SizedBox(height: 12),
+            if (frequency == WeightCheckinFrequency.off)
+              const InfoBox(
+                'Weight check-ins are off. Pick a frequency to turn them '
+                'back on.',
+              )
+            else ...[
+              Text('What time of day', style: textTheme.bodySmall),
+              const SizedBox(height: 8),
+              WeightTimeOfDayChips(
+                selected: timeOfDay,
+                onSelected: (timeOfDay) => getIt<UserSettingsBloc>().add(
+                  UserSettingsEvent.weightTimeOfDaySelected(timeOfDay),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text('Current weight', style: textTheme.bodySmall),
+              const SizedBox(height: 8),
+              WeightInput(
+                controller: _weightController,
+                unit: unit,
+                onWeightChanged: (weight) => getIt<UserSettingsBloc>().add(
+                  UserSettingsEvent.startingWeightChanged(weight),
+                ),
+                onUnitSelected: (unit) => getIt<UserSettingsBloc>().add(
+                  UserSettingsEvent.weightUnitSelected(unit),
+                ),
+              ),
+            ],
+          ],
+        );
+      },
+    );
+  }
+}

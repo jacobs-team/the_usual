@@ -28,19 +28,7 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
           state.copyWith(activeStepIndex: state.activeStepIndex + 1),
         ),
         UsualAdded() => _onUsualAdded(event, emit),
-        UsualRemoved() => emit(
-          state.copyWith(
-            usuals: {
-              ...state.usuals,
-              event.meal: (state.usuals[event.meal] ?? <UsualMeal>[])
-                  .where((item) => item.id != event.id)
-                  .toList(),
-            },
-            firstLogSelectedIds: state.firstLogSelectedIds
-                .where((id) => id != event.id)
-                .toList(),
-          ),
-        ),
+        UsualRemoved() => _onUsualRemoved(event, emit),
         // TODO(onboarding): request OS notification permission when
         // ReminderStyle.notifications is picked, falling back to onAppOpen if
         // denied. Notification approach is an open item in docs/onboarding.
@@ -125,7 +113,7 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
     final name = event.name.trim();
     if (name.isEmpty) return;
 
-    final items = state.usuals[event.meal] ?? <UsualMeal>[];
+    final items = state.settings.usuals[event.meal] ?? <UsualMeal>[];
     final exists = items.any(
       (item) => item.name.toLowerCase() == name.toLowerCase(),
     );
@@ -133,10 +121,31 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
 
     emit(
       state.copyWith(
-        usuals: {
-          ...state.usuals,
-          event.meal: [...items, UsualMeal(id: _uuid.v4(), name: name)],
-        },
+        settings: state.settings.copyWith(
+          usuals: {
+            ...state.settings.usuals,
+            event.meal: [...items, UsualMeal(id: _uuid.v4(), name: name)],
+          },
+        ),
+      ),
+    );
+  }
+
+  void _onUsualRemoved(UsualRemoved event, Emitter<OnboardingState> emit) {
+    final items = state.settings.usuals[event.meal] ?? <UsualMeal>[];
+    final remainingItems = items
+        .where((item) => item.id != event.id)
+        .toList();
+    final remainingSelectedIds = state.firstLogSelectedIds
+        .where((id) => id != event.id)
+        .toList();
+
+    emit(
+      state.copyWith(
+        settings: state.settings.copyWith(
+          usuals: {...state.settings.usuals, event.meal: remainingItems},
+        ),
+        firstLogSelectedIds: remainingSelectedIds,
       ),
     );
   }
@@ -194,14 +203,16 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
     final name = event.name.trim();
     if (name.isEmpty) return;
 
-    final items = state.usuals[event.meal] ?? <UsualMeal>[];
+    final items = state.settings.usuals[event.meal] ?? <UsualMeal>[];
     final item = UsualMeal(id: _uuid.v4(), name: name);
     emit(
       state.copyWith(
-        usuals: {
-          ...state.usuals,
-          event.meal: [...items, item],
-        },
+        settings: state.settings.copyWith(
+          usuals: {
+            ...state.settings.usuals,
+            event.meal: [...items, item],
+          },
+        ),
         firstLogSelectedIds: [...state.firstLogSelectedIds, item.id],
       ),
     );

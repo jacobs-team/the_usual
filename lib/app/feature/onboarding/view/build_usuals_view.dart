@@ -51,7 +51,7 @@ class BuildUsualsView extends StatefulWidget {
 }
 
 class _BuildUsualsViewState extends State<BuildUsualsView> {
-  MealOfTheDay _selectedMeal = MealOfTheDay.breakfast;
+  MealOfTheDay _selectedMealOfTheDay = MealOfTheDay.breakfast;
   final _nameController = TextEditingController();
 
   @override
@@ -62,7 +62,7 @@ class _BuildUsualsViewState extends State<BuildUsualsView> {
 
   void _addItem(String name) {
     getIt<OnboardingBloc>().add(
-      OnboardingEvent.usualAdded(_selectedMeal, name),
+      OnboardingEvent.usualAdded(_selectedMealOfTheDay, name),
     );
   }
 
@@ -91,12 +91,13 @@ class _BuildUsualsViewState extends State<BuildUsualsView> {
                     >(
                       bloc: getIt<OnboardingBloc>(),
                       selector: (state) =>
-                          state.usuals[_selectedMeal] ?? <UsualMeal>[],
+                          state.settings.usuals[_selectedMealOfTheDay] ??
+                          <UsualMeal>[],
                       builder: (context, items) {
                         final itemNames = {
                           for (final item in items) item.name.toLowerCase(),
                         };
-                        final suggestions = _suggestions[_selectedMeal]!
+                        final suggestions = _suggestions[_selectedMealOfTheDay]!
                             .where(
                               (name) => !itemNames.contains(name.toLowerCase()),
                             )
@@ -121,15 +122,15 @@ class _BuildUsualsViewState extends State<BuildUsualsView> {
                                   for (final meal in MealOfTheDay.values)
                                     ChoiceChip(
                                       label: Text(meal.label),
-                                      selected: meal == _selectedMeal,
+                                      selected: meal == _selectedMealOfTheDay,
                                       onSelected: (_) => setState(
-                                        () => _selectedMeal = meal,
+                                        () => _selectedMealOfTheDay = meal,
                                       ),
                                     ),
                                 ],
                               ),
                               const SizedBox(height: 20),
-                              Text('SUGGESTIONS', style: textTheme.labelSmall),
+                              const SectionLabel('SUGGESTIONS'),
                               const SizedBox(height: 8),
                               Wrap(
                                 spacing: 8,
@@ -143,25 +144,22 @@ class _BuildUsualsViewState extends State<BuildUsualsView> {
                                 ],
                               ),
                               const SizedBox(height: 20),
-                              Text(
-                                'YOUR ITEMS (${items.length})',
-                                style: textTheme.labelSmall,
-                              ),
+                              SectionLabel('YOUR ITEMS (${items.length})'),
                               const SizedBox(height: 8),
                               for (final item in items)
-                                _UsualItemTile(meal: _selectedMeal, item: item),
+                                _UsualItemTile(
+                                  meal: _selectedMealOfTheDay,
+                                  item: item,
+                                ),
                               const SizedBox(height: 8),
-                              TextField(
+                              TheUsualTextField(
                                 controller: _nameController,
-                                decoration: const InputDecoration(
-                                  hintText: 'Add your own…',
-                                  border: OutlineInputBorder(),
-                                  suffixIcon: IconButton(
-                                    icon: Icon(Icons.camera_alt_outlined),
-                                    // TODO(onboarding): photo capture from
-                                    // camera or library.
-                                    onPressed: null,
-                                  ),
+                                hintText: 'Add your own…',
+                                suffixIcon: const IconButton(
+                                  icon: Icon(Icons.camera_alt_outlined),
+                                  // TODO(onboarding): photo capture from
+                                  // camera or library.
+                                  onPressed: null,
                                 ),
                                 textInputAction: TextInputAction.done,
                                 onSubmitted: (_) => _submitInput(),

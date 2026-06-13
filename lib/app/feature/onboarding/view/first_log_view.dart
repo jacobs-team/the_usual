@@ -55,7 +55,7 @@ class _FirstLogViewState extends State<FirstLogView> {
               >(
                 bloc: getIt<OnboardingBloc>(),
                 selector: (state) => (
-                  state.usuals[_meal] ?? <UsualMeal>[],
+                  state.settings.usuals[_meal] ?? <UsualMeal>[],
                   state.firstLogSelectedIds,
                 ),
                 builder: (context, selected) {
@@ -74,7 +74,7 @@ class _FirstLogViewState extends State<FirstLogView> {
                         child: items.isEmpty
                             ? Center(
                                 child: Text(
-                                  'No ${_meal.name} usuals yet. Tap '
+                                  'No ${_meal.name} usual meals yet. Tap '
                                   '"I ate something else" to add what '
                                   'you had.',
                                   textAlign: TextAlign.center,
