@@ -35,13 +35,7 @@ workflows:
       - name: Run code generation
         script: fvm dart run build_runner build --delete-conflicting-outputs
       - name: Set up code signing
-        script: |
-          keychain initialize
-          app-store-connect fetch-signing-files "com.jblankenship.theusual" \
-            --type IOS_APP_STORE \
-            --create
-          keychain add-certificates
-          xcode-project use-profiles
+        script: xcode-project use-profiles
       - name: Set build number from TestFlight
         script: |
           LATEST=$(app-store-connect get-latest-build-number "$APP_STORE_APP_ID")
