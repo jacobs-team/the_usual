@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
 
@@ -51,6 +53,22 @@ class DevToolsView extends StatelessWidget {
             onTap: () => getIt<DailyLogBloc>().add(
               const DailyLogEvent.sampleDataSeeded(),
             ),
+          ),
+          const Divider(),
+          ListTile(
+            title: Text(
+              'Reset app state',
+              style: theme.textTheme.bodyLarge,
+            ),
+            subtitle: const Text(
+              'Clears all saved data and restarts onboarding',
+            ),
+            trailing: const Icon(Icons.restart_alt),
+            onTap: () async {
+              await HydratedBloc.storage.clear();
+              getIt<OnboardingBloc>().add(const OnboardingEvent.resetPressed());
+              if (context.mounted) context.go(Routes.onboarding);
+            },
           ),
         ],
       ),

@@ -48,22 +48,6 @@ void main() {
       expect(find.text("You're all set."), findsOneWidget);
     });
 
-    testWidgets('adds resetPressed when Reset app state is tapped', (
-      tester,
-    ) async {
-      await tester.pumpPumpPumpItUP(
-        deps: [onboardingBloc],
-        const SizedBox.shrink(),
-        router: buildRouter(),
-      );
-
-      await tester.tap(find.text('Reset app state'));
-
-      verify(
-        () => onboardingBloc.add(const OnboardingEvent.resetPressed()),
-      ).called(1);
-    });
-
     testWidgets('navigates to today when Done is tapped', (tester) async {
       await tester.pumpPumpPumpItUP(
         deps: [onboardingBloc],

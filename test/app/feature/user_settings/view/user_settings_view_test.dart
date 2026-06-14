@@ -43,7 +43,6 @@ void main() {
       expect(find.byType(WeightSection), findsOneWidget);
       expect(find.byType(UsualMealsTile), findsOneWidget);
       expect(find.byType(AppearanceSection), findsOneWidget);
-      expect(find.byType(ResetAppStateTile), findsOneWidget);
     });
 
     testWidgets('the back button returns to today', (tester) async {

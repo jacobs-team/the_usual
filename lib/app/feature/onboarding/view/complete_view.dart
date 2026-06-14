@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:the_usual/app/app.dart';
-import 'package:the_usual/app/core/dependencies/dependencies.dart';
 import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template complete_view}
@@ -21,21 +20,7 @@ class CompleteView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               const Spacer(),
-              Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text("You're all set."),
-                    SizedBox(height: AppDesign.spacing.lg),
-                    OutlinedButton(
-                      onPressed: () => getIt<OnboardingBloc>().add(
-                        const OnboardingEvent.resetPressed(),
-                      ),
-                      child: const Text('Reset app state'),
-                    ),
-                  ],
-                ),
-              ),
+              const Center(child: Text("You're all set.")),
               const Spacer(),
               OnboardingActions(
                 primary: FilledButton(
