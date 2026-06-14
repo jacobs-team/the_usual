@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/l10n/l10n.dart';
@@ -12,6 +13,7 @@ extension PumpApp on WidgetTester {
     Widget widget, {
     List<Object> deps = const [],
     Locale locale = const Locale('en'),
+    GoRouter? router,
   }) async {
     initHydratedStorage();
     final getIt = GetIt.instance;
@@ -20,10 +22,26 @@ extension PumpApp on WidgetTester {
     final authCubit = MockAuthCubit();
     when(() => authCubit.state).thenReturn(const AuthState());
 
+    final onboardingBloc = MockOnboardingBloc();
+    when(() => onboardingBloc.state).thenReturn(const OnboardingState());
+    when(() => onboardingBloc.stream).thenAnswer((_) => const Stream.empty());
+    final dailyLogBloc = MockDailyLogBloc();
+    when(() => dailyLogBloc.state).thenReturn(const DailyLogState());
+    when(() => dailyLogBloc.stream).thenAnswer((_) => const Stream.empty());
+    final userSettingsBloc = MockUserSettingsBloc();
+    when(() => userSettingsBloc.state).thenReturn(const UserSettingsState());
+    when(
+      () => userSettingsBloc.stream,
+    ).thenAnswer((_) => const Stream.empty());
+
     getIt
       ..registerSingleton<AuthCubit>(authCubit)
       ..registerSingleton<ConnectivityCubit>(MockConnectivityCubit())
       ..registerSingleton<DevToolsCubit>(MockDevToolsCubit())
+      ..registerSingleton<OnboardingBloc>(onboardingBloc)
+      ..registerSingleton<DailyLogBloc>(dailyLogBloc)
+      ..registerSingleton<UserSettingsBloc>(userSettingsBloc)
+      ..registerSingleton<NotificationService>(MockNotificationService())
       ..registerSingleton<CoffeeApi>(MockCoffeeApi())
       ..registerSingleton<RestClient>(MockRestClient())
       ..registerSingleton<FileCacheService>(MockFileCacheService())
@@ -38,15 +56,28 @@ extension PumpApp on WidgetTester {
       AppRouter.new,
     );
 
-    await pumpWidget(
-      MaterialApp(
-        debugShowCheckedModeBanner: false,
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: locale,
-        home: Layout(child: Scaffold(body: widget)),
-      ),
-    );
+    if (router != null) {
+      await pumpWidget(
+        MaterialApp.router(
+          debugShowCheckedModeBanner: false,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: locale,
+          routerConfig: router,
+          builder: (context, child) => Layout(child: child!),
+        ),
+      );
+    } else {
+      await pumpWidget(
+        MaterialApp(
+          debugShowCheckedModeBanner: false,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: locale,
+          home: Layout(child: Scaffold(body: widget)),
+        ),
+      );
+    }
 
     await pump();
   }
@@ -66,6 +97,22 @@ extension PumpApp on WidgetTester {
       getIt
         ..unregister<DevToolsCubit>()
         ..registerSingleton<DevToolsCubit>(instance);
+    } else if (instance is OnboardingBloc) {
+      getIt
+        ..unregister<OnboardingBloc>()
+        ..registerSingleton<OnboardingBloc>(instance);
+    } else if (instance is DailyLogBloc) {
+      getIt
+        ..unregister<DailyLogBloc>()
+        ..registerSingleton<DailyLogBloc>(instance);
+    } else if (instance is UserSettingsBloc) {
+      getIt
+        ..unregister<UserSettingsBloc>()
+        ..registerSingleton<UserSettingsBloc>(instance);
+    } else if (instance is NotificationService) {
+      getIt
+        ..unregister<NotificationService>()
+        ..registerSingleton<NotificationService>(instance);
     } else if (instance is CoffeeApi) {
       getIt
         ..unregister<CoffeeApi>()

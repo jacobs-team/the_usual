@@ -3,11 +3,30 @@ import 'dart:io';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 import 'package:the_usual/app/app.dart';
 
 class MockAuthCubit extends MockCubit<AuthState> implements AuthCubit {}
+
+class MockOnboardingBloc extends MockBloc<OnboardingEvent, OnboardingState>
+    implements OnboardingBloc {}
+
+class MockDailyLogBloc extends MockBloc<DailyLogEvent, DailyLogState>
+    implements DailyLogBloc {}
+
+class MockUserSettingsBloc
+    extends MockBloc<UserSettingsEvent, UserSettingsState>
+    implements UserSettingsBloc {}
+
+class MockNotificationService extends Mock implements NotificationService {}
+
+class MockFlutterLocalNotificationsPlugin extends Mock
+    implements FlutterLocalNotificationsPlugin {}
+
+class MockAndroidFlutterLocalNotificationsPlugin extends Mock
+    implements AndroidFlutterLocalNotificationsPlugin {}
 
 class MockConnectivityCubit extends MockCubit<bool>
     implements ConnectivityCubit {}

@@ -7,13 +7,17 @@ import '../../../../helpers/helpers.dart';
 void main() {
   group(DevToolsView, () {
     late DevToolsCubit devToolsCubit;
+    late DailyLogBloc dailyLogBloc;
 
     setUp(() {
       initHydratedStorage();
       devToolsCubit = MockDevToolsCubit();
+      dailyLogBloc = MockDailyLogBloc();
 
       when(() => devToolsCubit.state).thenReturn(const DevToolsState());
       when(() => devToolsCubit.stream).thenAnswer((_) => const Stream.empty());
+      when(() => dailyLogBloc.state).thenReturn(const DailyLogState());
+      when(() => dailyLogBloc.stream).thenAnswer((_) => const Stream.empty());
     });
 
     testWidgets('renders $DevToolsView', (tester) async {
@@ -37,6 +41,19 @@ void main() {
       await tester.tap(find.text('Debug API'));
 
       verify(() => devToolsCubit.toggleDebugApi()).called(1);
+    });
+
+    testWidgets('seeds sample history when the tile is tapped', (tester) async {
+      await tester.pumpPumpPumpItUP(
+        deps: [devToolsCubit, dailyLogBloc],
+        const DevToolsView(),
+      );
+
+      await tester.tap(find.text('Load sample history'));
+
+      verify(
+        () => dailyLogBloc.add(const DailyLogEvent.sampleDataSeeded()),
+      ).called(1);
     });
   });
 }

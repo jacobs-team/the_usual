@@ -10,5 +10,7 @@ void initHydratedStorage() {
   when(
     () => hydratedStorage.write(any(), any<dynamic>()),
   ).thenAnswer((_) async {});
+  when(() => hydratedStorage.read(any())).thenReturn(null);
+  when(hydratedStorage.clear).thenAnswer((_) async {});
   HydratedBloc.storage = hydratedStorage;
 }
