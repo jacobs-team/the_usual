@@ -14,6 +14,10 @@ workflows:
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.jblankenship.theusual
+      vars:
+        # Your app's numeric Apple ID: App Store Connect > your app >
+        # App Information > General Information > Apple ID.
+        APP_STORE_APP_ID: "6780102501"
     triggering:
       events:
         - push
@@ -28,11 +32,16 @@ workflows:
         script: dart run build_runner build --delete-conflicting-outputs
       - name: Set up code signing
         script: xcode-project use-profiles
+      - name: Set build number from TestFlight
+        script: |
+          LATEST=$(app-store-connect get-latest-build-number "$APP_STORE_APP_ID")
+          echo "BUILD_NUMBER=$((LATEST + 1))" >> $CM_ENV
       - name: Build IPA
         script: |
           flutter build ipa --release \
             --flavor production \
             --target lib/main_production.dart \
+            --build-number=$BUILD_NUMBER \
             --export-options-plist=/Users/builder/export_options.plist
     artifacts:
       - build/ios/ipa/*.ipa
