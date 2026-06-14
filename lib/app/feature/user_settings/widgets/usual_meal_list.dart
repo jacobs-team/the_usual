@@ -39,15 +39,15 @@ class _UsualMealListState extends State<UsualMealList>
             UsualMealSection(
               mealOfTheDay: mealOfTheDay,
               usualMeals: usualMeals,
-              onAdded: (name, calories) => getIt<UserSettingsBloc>().add(
-                UserSettingsEvent.usualMealAdded(mealOfTheDay, name, calories),
+              onAdded: (name, nutrition) => getIt<UserSettingsBloc>().add(
+                UserSettingsEvent.usualMealAdded(mealOfTheDay, name, nutrition),
               ),
-              onCaloriesChanged: (id, calories) =>
+              onNutritionChanged: (id, nutrition) =>
                   getIt<UserSettingsBloc>().add(
-                    UserSettingsEvent.usualMealCaloriesChanged(
+                    UserSettingsEvent.usualMealNutritionChanged(
                       mealOfTheDay,
                       id,
-                      calories,
+                      nutrition,
                     ),
                   ),
               onRemoved: (id) => getIt<UserSettingsBloc>().add(

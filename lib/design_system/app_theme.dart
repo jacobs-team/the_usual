@@ -9,7 +9,15 @@ import 'package:the_usual/design_system/app_palette.dart';
 class AppTheme {
   static ThemeData _buildTheme(ColorScheme colorScheme) {
     final base = ThemeData(colorScheme: colorScheme);
-    final textTheme = GoogleFonts.manropeTextTheme(base.textTheme);
+    final baseTextTheme = GoogleFonts.manropeTextTheme(base.textTheme);
+    // titleMedium is the app's heading role — meal names on Today, group
+    // headers in the usuals list, sheet titles. Bold it once here so every
+    // heading matches without per-widget overrides.
+    final textTheme = baseTextTheme.copyWith(
+      titleMedium: baseTextTheme.titleMedium?.copyWith(
+        fontWeight: FontWeight.bold,
+      ),
+    );
 
     final smRadius = BorderRadius.circular(AppDesign.radius.sm);
     final smShape = RoundedRectangleBorder(borderRadius: smRadius);

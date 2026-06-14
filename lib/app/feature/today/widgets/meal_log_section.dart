@@ -33,7 +33,7 @@ class MealLogSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final calories = mealLogEntries.totalCalories;
+    final nutrition = mealLogEntries.totalNutrition;
     final loggedNames = mealLogEntries
         .map((mealLogEntry) => mealLogEntry.name.toLowerCase())
         .toSet();
@@ -69,7 +69,10 @@ class MealLogSection extends StatelessWidget {
                   ),
                 ),
                 if (mealLogEntries.isNotEmpty)
-                  Text('$calories cal', style: theme.textTheme.bodyMedium),
+                  NutritionSummary(
+                    nutrition: nutrition,
+                    style: theme.textTheme.bodyMedium,
+                  ),
               ],
             ),
             for (final mealLogEntry in mealLogEntries)
@@ -90,7 +93,7 @@ class MealLogSection extends StatelessWidget {
                         DailyLogEvent.mealLogged(
                           mealOfTheDay,
                           usualMeal.name,
-                          calories: usualMeal.calories,
+                          nutrition: usualMeal.nutrition,
                           usualMealId: usualMeal.id,
                           photoPath: usualMeal.photoPath,
                         ),
@@ -105,7 +108,7 @@ class MealLogSection extends StatelessWidget {
               child: TextButton.icon(
                 onPressed: () async {
                   final result =
-                      await showModalBottomSheet<(String, int?, bool)>(
+                      await showModalBottomSheet<(String, Nutrition, bool)>(
                         context: context,
                         isScrollControlled: true,
                         builder: (context) => const FoodEntrySheet(
@@ -115,13 +118,13 @@ class MealLogSection extends StatelessWidget {
                         ),
                       );
                   if (result == null) return;
-                  final (name, calories, addToUsualMeals) = result;
+                  final (name, nutrition, addToUsualMeals) = result;
                   if (addToUsualMeals) {
                     getIt<UserSettingsBloc>().add(
                       UserSettingsEvent.usualMealAdded(
                         mealOfTheDay,
                         name,
-                        calories,
+                        nutrition,
                       ),
                     );
                   }
@@ -129,7 +132,7 @@ class MealLogSection extends StatelessWidget {
                     DailyLogEvent.mealLogged(
                       mealOfTheDay,
                       name,
-                      calories: calories,
+                      nutrition: nutrition,
                     ),
                   );
                 },

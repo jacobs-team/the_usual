@@ -15,11 +15,11 @@ abstract class MealLogEntry with _$MealLogEntry {
     required DateTime loggedAt,
     required MealOfTheDay mealOfTheDay,
     required String name,
-    int? calories,
+    @Default(Nutrition()) Nutrition nutrition,
     String? usualMealId,
     String? photoPath,
   }) = _MealLogEntry;
 
   factory MealLogEntry.fromJson(Map<String, dynamic> json) =>
-      _$MealLogEntryFromJson(json);
+      _$MealLogEntryFromJson(Nutrition.migrateLegacyJson(json));
 }

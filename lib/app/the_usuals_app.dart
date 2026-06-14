@@ -86,7 +86,7 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
                     DailyLogEvent.mealLogged(
                       mealOfTheDay,
                       usualMeal.name,
-                      calories: usualMeal.calories,
+                      nutrition: usualMeal.nutrition,
                       usualMealId: usualMeal.id,
                       photoPath: usualMeal.photoPath,
                     ),

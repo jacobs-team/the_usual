@@ -13,7 +13,7 @@ class UsualMealSection extends StatelessWidget {
     required this.mealOfTheDay,
     required this.usualMeals,
     required this.onAdded,
-    required this.onCaloriesChanged,
+    required this.onNutritionChanged,
     required this.onRemoved,
     super.key,
   });
@@ -24,11 +24,11 @@ class UsualMealSection extends StatelessWidget {
   /// The saved usual meals for this meal.
   final List<UsualMeal> usualMeals;
 
-  /// Called with the name and optional calories of a new usual meal.
-  final void Function(String name, int? calories) onAdded;
+  /// Called with the name and nutrition of a new usual meal.
+  final void Function(String name, Nutrition nutrition) onAdded;
 
-  /// Called with a usual meal's id and its new calories.
-  final void Function(String id, int? calories) onCaloriesChanged;
+  /// Called with a usual meal's id and its new nutrition.
+  final void Function(String id, Nutrition nutrition) onNutritionChanged;
 
   /// Called with the id of a usual meal to remove.
   final void Function(String id) onRemoved;
@@ -38,16 +38,17 @@ class UsualMealSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SectionLabel(
-          '${mealOfTheDay.label.toUpperCase()} (${usualMeals.length})',
+        Text(
+          '${mealOfTheDay.label} (${usualMeals.length})',
+          style: Theme.of(context).textTheme.titleMedium,
         ),
         SizedBox(height: AppDesign.spacing.sm),
         for (final usualMeal in usualMeals)
           UsualMealRow(
             key: ValueKey(usualMeal.id),
             usualMeal: usualMeal,
-            onCaloriesChanged: (calories) =>
-                onCaloriesChanged(usualMeal.id, calories),
+            onNutritionChanged: (nutrition) =>
+                onNutritionChanged(usualMeal.id, nutrition),
             onRemoved: () => onRemoved(usualMeal.id),
           ),
         SizedBox(height: AppDesign.spacing.sm),

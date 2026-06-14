@@ -73,8 +73,8 @@ class TodayView extends StatelessWidget {
                         SizedBox(height: AppDesign.spacing.xl),
                         const SectionLabel('MEALS'),
                         SizedBox(height: AppDesign.spacing.sm),
-                        Text(
-                          '${breakdown.calories} cal today',
+                        NutritionSummary(
+                          nutrition: breakdown.nutrition,
                           style: textTheme.headlineSmall,
                         ),
                         SizedBox(height: AppDesign.spacing.md),

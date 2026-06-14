@@ -52,20 +52,20 @@ class BuildUsualsView extends StatelessWidget {
                                 mealOfTheDay: mealOfTheDay,
                                 usualMeals:
                                     usuals[mealOfTheDay] ?? const <UsualMeal>[],
-                                onAdded: (name, calories) =>
+                                onAdded: (name, nutrition) =>
                                     getIt<OnboardingBloc>().add(
                                       OnboardingEvent.usualMealAdded(
                                         mealOfTheDay,
                                         name,
-                                        calories,
+                                        nutrition,
                                       ),
                                     ),
-                                onCaloriesChanged: (id, calories) =>
+                                onNutritionChanged: (id, nutrition) =>
                                     getIt<OnboardingBloc>().add(
-                                      OnboardingEvent.usualMealCaloriesChanged(
+                                      OnboardingEvent.usualMealNutritionChanged(
                                         mealOfTheDay,
                                         id,
-                                        calories,
+                                        nutrition,
                                       ),
                                     ),
                                 onRemoved: (id) => getIt<OnboardingBloc>().add(

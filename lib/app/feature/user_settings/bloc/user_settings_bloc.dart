@@ -60,7 +60,7 @@ class UserSettingsBloc
         ),
         SettingsUsualMealAdded() => _onUsualMealAdded(event, emit),
         SettingsUsualMealRemoved() => _onUsualMealRemoved(event, emit),
-        SettingsUsualMealCaloriesChanged() => _onUsualMealCaloriesChanged(
+        SettingsUsualMealNutritionChanged() => _onUsualMealNutritionChanged(
           event,
           emit,
         ),
@@ -123,7 +123,7 @@ class UserSettingsBloc
           ...state.usuals,
           event.mealOfTheDay: [
             ...usualMeals,
-            UsualMeal(id: _uuid.v4(), name: name, calories: event.calories),
+            UsualMeal(id: _uuid.v4(), name: name, nutrition: event.nutrition),
           ],
         },
       ),
@@ -146,15 +146,15 @@ class UserSettingsBloc
     );
   }
 
-  void _onUsualMealCaloriesChanged(
-    SettingsUsualMealCaloriesChanged event,
+  void _onUsualMealNutritionChanged(
+    SettingsUsualMealNutritionChanged event,
     Emitter<UserSettingsState> emit,
   ) {
     final usualMeals = state.usuals[event.mealOfTheDay] ?? <UsualMeal>[];
     final updatedUsualMeals = [
       for (final usualMeal in usualMeals)
         if (usualMeal.id == event.id)
-          usualMeal.copyWith(calories: event.calories)
+          usualMeal.copyWith(nutrition: event.nutrition)
         else
           usualMeal,
     ];

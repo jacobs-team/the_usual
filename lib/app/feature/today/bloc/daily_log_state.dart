@@ -1,19 +1,19 @@
 part of 'daily_log_bloc.dart';
 
-/// One logged day rolled up for the history screen: its calorie total,
+/// One logged day rolled up for the history screen: its nutrition total,
 /// weigh-in, and meals.
 typedef HistoryDay = ({
   DateTime day,
-  int calories,
+  Nutrition nutrition,
   WeightEntry? weightEntry,
   List<MealLogEntry> mealEntries,
 });
 
 /// One month of history: its logged days (newest first) and the average daily
-/// calories across them.
+/// nutrition across them.
 typedef HistoryMonth = ({
   DateTime month,
-  int averageDailyCalories,
+  Nutrition averageNutrition,
   List<HistoryDay> days,
 });
 
@@ -74,7 +74,7 @@ abstract class DailyLogState with _$DailyLogState {
       final month = DateTime(day.year, day.month);
       daysByMonth.putIfAbsent(month, () => <HistoryDay>[]).add((
         day: day,
-        calories: meals.totalCalories,
+        nutrition: meals.totalNutrition,
         weightEntry: weightByDay[day],
         mealEntries: meals,
       ));
@@ -84,10 +84,19 @@ abstract class DailyLogState with _$DailyLogState {
     final history = <HistoryMonth>[];
     for (final month in months) {
       final days = daysByMonth[month]!;
-      final totalCalories = days.fold(0, (total, day) => total + day.calories);
+      var monthTotal = const Nutrition();
+      for (final day in days) {
+        monthTotal += day.nutrition;
+      }
+      final averageNutrition = Nutrition(
+        calories: ((monthTotal.calories ?? 0) / days.length).round(),
+        protein: ((monthTotal.protein ?? 0) / days.length).round(),
+        fat: ((monthTotal.fat ?? 0) / days.length).round(),
+        carbs: ((monthTotal.carbs ?? 0) / days.length).round(),
+      );
       history.add((
         month: month,
-        averageDailyCalories: (totalCalories / days.length).round(),
+        averageNutrition: averageNutrition,
         days: days,
       ));
     }

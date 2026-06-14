@@ -1,10 +1,12 @@
-export 'calorie_field.dart';
 export 'end_of_day_reminder_row.dart';
 export 'food_entry_sheet.dart';
 export 'glass_container.dart';
 export 'layout.dart';
+export 'macro_field.dart';
 export 'meal_reminder_row.dart';
 export 'meal_schedule_mode_selector.dart';
+export 'nutrition_fields.dart';
+export 'nutrition_summary.dart';
 export 'radio_option_card.dart';
 export 'section_label.dart';
 export 'the_usual_text_field.dart';

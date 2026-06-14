@@ -3,16 +3,15 @@ import 'package:the_usual/app/app.dart';
 import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template usual_meal_composer}
-/// Inline name + optional calories entry, shown as the last row of a usual
-/// meals list. Submitting adds the meal and refocuses the name field for the
-/// next one.
+/// Inline name + nutrition entry, shown as the last row of a usual meals list.
+/// Submitting adds the meal and refocuses the name field for the next one.
 /// {@endtemplate}
 class UsualMealComposer extends StatefulWidget {
   /// {@macro usual_meal_composer}
   const UsualMealComposer({required this.onAdd, super.key});
 
-  /// Called with the entered name and optional calories.
-  final void Function(String name, int? calories) onAdd;
+  /// Called with the entered name and nutrition.
+  final void Function(String name, Nutrition nutrition) onAdd;
 
   @override
   State<UsualMealComposer> createState() => _UsualMealComposerState();
@@ -20,51 +19,59 @@ class UsualMealComposer extends StatefulWidget {
 
 class _UsualMealComposerState extends State<UsualMealComposer> {
   final _nameController = TextEditingController();
-  final _caloriesController = TextEditingController();
   final _nameFocus = FocusNode();
-  final _caloriesFocus = FocusNode();
+
+  /// The latest nutrition the fields reported, committed on submit.
+  Nutrition _nutrition = const Nutrition();
+
+  /// Bumped on submit to give [NutritionFields] a fresh key so it clears.
+  int _fieldsGeneration = 0;
 
   @override
   void dispose() {
     _nameController.dispose();
-    _caloriesController.dispose();
     _nameFocus.dispose();
-    _caloriesFocus.dispose();
     super.dispose();
   }
 
   void _submit() {
     final name = _nameController.text.trim();
     if (name.isEmpty) return;
-    widget.onAdd(name, int.tryParse(_caloriesController.text));
+    widget.onAdd(name, _nutrition);
     _nameController.clear();
-    _caloriesController.clear();
+    setState(() {
+      _nutrition = const Nutrition();
+      _fieldsGeneration++;
+    });
     _nameFocus.requestFocus();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Expanded(
-          child: TheUsualTextField(
-            controller: _nameController,
-            focusNode: _nameFocus,
-            hintText: 'Meal description',
-            textInputAction: TextInputAction.next,
-            onSubmitted: (_) => _caloriesFocus.requestFocus(),
-          ),
+        TheUsualTextField(
+          controller: _nameController,
+          focusNode: _nameFocus,
+          hintText: 'New Meal description',
+          textInputAction: TextInputAction.next,
         ),
-        SizedBox(width: AppDesign.spacing.sm),
-        CalorieField(
-          controller: _caloriesController,
-          focusNode: _caloriesFocus,
-          autoSize: true,
-          textInputAction: TextInputAction.done,
-          onSubmitted: (_) => _submit(),
+        SizedBox(height: AppDesign.spacing.sm),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Expanded(
+              child: NutritionFields(
+                key: ValueKey(_fieldsGeneration),
+                dense: true,
+                onChanged: (nutrition) => _nutrition = nutrition,
+              ),
+            ),
+            SizedBox(width: AppDesign.spacing.sm),
+            IconButton.filled(icon: const Icon(Icons.add), onPressed: _submit),
+          ],
         ),
-        SizedBox(width: AppDesign.spacing.xs),
-        IconButton.filled(icon: const Icon(Icons.add), onPressed: _submit),
       ],
     );
   }

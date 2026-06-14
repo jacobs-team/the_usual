@@ -205,7 +205,7 @@ class _MonthSelectorState extends State<_MonthSelector> {
                   child: _MonthChip(
                     key: isSelected ? _selectedChipKey : null,
                     label: abbreviation,
-                    averageCalories: monthHistory.averageDailyCalories,
+                    averageNutrition: monthHistory.averageNutrition,
                     isSelected: isSelected,
                     onTap: () => widget.onMonthSelected(index),
                   ),
@@ -219,18 +219,18 @@ class _MonthSelectorState extends State<_MonthSelector> {
 }
 
 /// A single month in the selector strip: its abbreviation and average daily
-/// calories.
+/// nutrition.
 class _MonthChip extends StatelessWidget {
   const _MonthChip({
     required this.label,
-    required this.averageCalories,
+    required this.averageNutrition,
     required this.isSelected,
     required this.onTap,
     super.key,
   });
 
   final String label;
-  final int averageCalories;
+  final Nutrition averageNutrition;
   final bool isSelected;
   final VoidCallback onTap;
 
@@ -265,8 +265,9 @@ class _MonthChip extends StatelessWidget {
                 ),
               ),
               SizedBox(height: AppDesign.spacing.xs),
-              Text(
-                '${averageCalories.compact} avg cal',
+              NutritionSummary(
+                nutrition: averageNutrition,
+                compact: true,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: foregroundColor.withValues(alpha: 0.7),
                 ),
@@ -290,17 +291,25 @@ class _HistoryDayCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final localizations = MaterialLocalizations.of(context);
     final weightEntry = historyDay.weightEntry;
-    final summary = [
-      '${localizations.formatDecimal(historyDay.calories)} cal',
-      if (weightEntry != null) weightEntry.label,
-    ].join(' · ');
+    final bodySmall = Theme.of(context).textTheme.bodySmall;
 
     return Card(
       margin: EdgeInsets.only(bottom: AppDesign.spacing.sm),
       child: ExpansionTile(
         shape: const Border(),
         title: Text(localizations.formatMediumDate(historyDay.day)),
-        subtitle: Text(summary),
+        subtitle: Row(
+          children: [
+            Flexible(
+              child: NutritionSummary(
+                nutrition: historyDay.nutrition,
+                style: bodySmall,
+              ),
+            ),
+            if (weightEntry != null)
+              Text(' · ${weightEntry.label}', style: bodySmall),
+          ],
+        ),
         childrenPadding: EdgeInsets.fromLTRB(
           AppDesign.spacing.lg,
           0,
@@ -325,7 +334,7 @@ class _HistoryDayCard extends StatelessWidget {
   }
 }
 
-/// A read-only logged meal: name and calories.
+/// A read-only logged meal: name and nutrition.
 class _HistoryEntryRow extends StatelessWidget {
   const _HistoryEntryRow({required this.mealLogEntry});
 
@@ -333,14 +342,13 @@ class _HistoryEntryRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final calories = mealLogEntry.calories;
     return Padding(
       padding: EdgeInsets.symmetric(vertical: AppDesign.spacing.xs),
       child: Row(
         children: [
           Expanded(child: Text(mealLogEntry.name)),
-          Text(
-            calories == null ? '—' : '$calories cal',
+          NutritionSummary(
+            nutrition: mealLogEntry.nutrition,
             style: Theme.of(context).textTheme.bodySmall,
           ),
         ],

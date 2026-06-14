@@ -91,7 +91,7 @@ class _FirstLogViewState extends State<FirstLogView> {
                           onPressed: () async {
                             final result =
                                 await showModalBottomSheet<
-                                  (String, int?, bool)
+                                  (String, Nutrition, bool)
                                 >(
                                   context: context,
                                   isScrollControlled: true,
@@ -101,12 +101,12 @@ class _FirstLogViewState extends State<FirstLogView> {
                                   ),
                                 );
                             if (result == null) return;
-                            final (name, calories, _) = result;
+                            final (name, nutrition, _) = result;
                             getIt<OnboardingBloc>().add(
                               OnboardingEvent.somethingElseLogged(
                                 _mealOfTheDay,
                                 name,
-                                calories: calories,
+                                nutrition: nutrition,
                               ),
                             );
                           },
