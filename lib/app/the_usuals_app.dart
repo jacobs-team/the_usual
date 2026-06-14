@@ -30,6 +30,9 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
   void initState() {
     super.initState();
     _syncNotifications(getIt<UserSettingsBloc>().state);
+    // Tapping a reminder takes the user to Today, where they log meals.
+    getIt<NotificationService>().onReminderTapped = () =>
+        getIt<AppRouter>().router.go(Routes.today);
   }
 
   void _syncNotifications(UserSettingsState settings) {

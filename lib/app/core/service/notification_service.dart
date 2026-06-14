@@ -17,6 +17,8 @@ class NotificationService {
 
   final FlutterLocalNotificationsPlugin _plugin;
 
+  VoidCallback? onReminderTapped;
+
   static const _channelId = 'reminders';
   static const _channelName = 'Reminders';
   static const _channelDescription =
@@ -45,6 +47,7 @@ class NotificationService {
           requestSoundPermission: false,
         ),
       ),
+      onDidReceiveNotificationResponse: (response) => onReminderTapped?.call(),
     );
 
     await _plugin
@@ -143,7 +146,7 @@ class NotificationService {
           Duration(days: occurrence * intervalDays),
         ),
         notificationDetails: _details,
-        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       );
     }
   }
@@ -160,7 +163,7 @@ class NotificationService {
       body: body,
       scheduledDate: _nextInstanceOf(time),
       notificationDetails: _details,
-      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time,
     );
   }
