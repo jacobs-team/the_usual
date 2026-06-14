@@ -53,8 +53,6 @@ class MockResponseInterceptorHandler extends Mock
 class MockErrorInterceptorHandler extends Mock
     implements ErrorInterceptorHandler {}
 
-class MockCoffeeRepository extends Mock implements CoffeeRepository {}
-
 class MockFile extends Mock implements File {}
 
 final transparentPixel = Uint8List.fromList([

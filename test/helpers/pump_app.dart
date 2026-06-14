@@ -44,8 +44,7 @@ extension PumpApp on WidgetTester {
       ..registerSingleton<NotificationService>(MockNotificationService())
       ..registerSingleton<CoffeeApi>(MockCoffeeApi())
       ..registerSingleton<RestClient>(MockRestClient())
-      ..registerSingleton<FileCacheService>(MockFileCacheService())
-      ..registerSingleton<CoffeeRepository>(MockCoffeeRepository());
+      ..registerSingleton<FileCacheService>(MockFileCacheService());
 
     for (final instance in [...deps]) {
       await _registerOverride(instance);
@@ -125,10 +124,6 @@ extension PumpApp on WidgetTester {
       getIt
         ..unregister<FileCacheService>()
         ..registerSingleton<FileCacheService>(instance);
-    } else if (instance is CoffeeRepository) {
-      getIt
-        ..unregister<CoffeeRepository>()
-        ..registerSingleton<CoffeeRepository>(instance);
     }
   }
 }
