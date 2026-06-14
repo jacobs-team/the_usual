@@ -86,6 +86,7 @@ class TheUsualTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final field = TextFormField(
+      onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
       controller: controller,
       focusNode: focusNode,
       initialValue: initialValue,
@@ -93,7 +94,7 @@ class TheUsualTextField extends StatelessWidget {
       textAlign: textAlign,
       style: textStyle,
       autofocus: autofocus,
-      textInputAction: textInputAction,
+      textInputAction: textInputAction ?? TextInputAction.done,
       inputFormatters: inputFormatters,
       decoration: InputDecoration(
         hintText: hintText,
@@ -109,7 +110,8 @@ class TheUsualTextField extends StatelessWidget {
             : null,
       ),
       onChanged: onChanged,
-      onFieldSubmitted: onSubmitted,
+      onFieldSubmitted:
+          onSubmitted ?? (_) => FocusManager.instance.primaryFocus?.unfocus(),
     );
 
     if (width != null) return SizedBox(width: width, child: field);
