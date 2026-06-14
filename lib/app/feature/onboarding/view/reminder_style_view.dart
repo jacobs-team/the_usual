@@ -27,27 +27,39 @@ class ReminderStyleView extends StatelessWidget {
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    'How should we check in?',
-                    style: textTheme.headlineSmall,
-                  ),
-                  SizedBox(height: AppDesign.spacing.sm),
-                  const Text('We ask if you ate. You tap what it was.'),
-                  SizedBox(height: AppDesign.spacing.xl),
-                  for (final reminderStyle in ReminderStyle.values) ...[
-                    if (reminderStyle != ReminderStyle.values.first)
-                      SizedBox(height: AppDesign.spacing.md),
-                    RadioOptionCard(
-                      title: reminderStyle.label,
-                      subtitle: reminderStyle.description,
-                      note: reminderStyle.permissionNote,
-                      selected: reminderStyle == selected,
-                      onTap: () => getIt<OnboardingBloc>().add(
-                        OnboardingEvent.reminderStyleSelected(reminderStyle),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            'How should we check in?',
+                            style: textTheme.headlineSmall,
+                          ),
+                          SizedBox(height: AppDesign.spacing.sm),
+                          const Text(
+                            'We ask if you ate. You tap what it was.',
+                          ),
+                          SizedBox(height: AppDesign.spacing.xl),
+                          for (final reminderStyle in ReminderStyle.values) ...[
+                            if (reminderStyle != ReminderStyle.values.first)
+                              SizedBox(height: AppDesign.spacing.md),
+                            RadioOptionCard(
+                              title: reminderStyle.label,
+                              subtitle: reminderStyle.description,
+                              note: reminderStyle.permissionNote,
+                              selected: reminderStyle == selected,
+                              onTap: () => getIt<OnboardingBloc>().add(
+                                OnboardingEvent.reminderStyleSelected(
+                                  reminderStyle,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
                       ),
                     ),
-                  ],
-                  const Spacer(),
+                  ),
                   OnboardingActions(
                     primary: FilledButton(
                       onPressed: () async {
@@ -63,6 +75,12 @@ class ReminderStyleView extends StatelessWidget {
                               const OnboardingEvent.reminderStyleSelected(
                                 ReminderStyle.onAppOpen,
                               ),
+                            );
+                            if (!context.mounted) return;
+                            await showDialog<void>(
+                              context: context,
+                              builder: (_) =>
+                                  const EnableNotificationsInSettingsDialog(),
                             );
                             return;
                           }
