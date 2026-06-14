@@ -21,15 +21,14 @@ void main() {
         Builder(
           builder: (context) => ElevatedButton(
             onPressed: () async {
-              final result =
-                  await showModalBottomSheet<(String, int?, bool)>(
-                    context: context,
-                    builder: (_) => FoodEntrySheet(
-                      title: 'Log food',
-                      confirmLabel: 'Log',
-                      showAddToUsualMeals: showAddToUsualMeals,
-                    ),
-                  );
+              final result = await showModalBottomSheet<(String, int?, bool)>(
+                context: context,
+                builder: (_) => FoodEntrySheet(
+                  title: 'Log food',
+                  confirmLabel: 'Log',
+                  showAddToUsualMeals: showAddToUsualMeals,
+                ),
+              );
               results.add(result);
             },
             child: const Text('open'),
