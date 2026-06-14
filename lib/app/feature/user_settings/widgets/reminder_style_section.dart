@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
 import 'package:the_usual/design_system/design_system.dart';
@@ -27,9 +28,27 @@ class ReminderStyleSection extends StatelessWidget {
                 title: reminderStyle.label,
                 subtitle: reminderStyle.description,
                 selected: reminderStyle == selected,
-                onTap: () => getIt<UserSettingsBloc>().add(
-                  UserSettingsEvent.reminderStyleSelected(reminderStyle),
-                ),
+                onTap: () async {
+                  // Switching to notifications needs OS permission. If it
+                  // isn't granted, keep the current choice and point the user
+                  // to system settings.
+                  if (reminderStyle == ReminderStyle.notifications) {
+                    final status = await getIt<NotificationService>()
+                        .requestPermission();
+                    if (!status.isGranted) {
+                      if (!context.mounted) return;
+                      await showDialog<void>(
+                        context: context,
+                        builder: (_) =>
+                            const EnableNotificationsInSettingsDialog(),
+                      );
+                      return;
+                    }
+                  }
+                  getIt<UserSettingsBloc>().add(
+                    UserSettingsEvent.reminderStyleSelected(reminderStyle),
+                  );
+                },
               ),
             ],
           ],

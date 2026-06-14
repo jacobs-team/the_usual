@@ -1,3 +1,4 @@
+export 'enable_notifications_in_settings_dialog.dart';
 export 'info_box.dart';
 export 'meal_schedule_section.dart';
 export 'reminder_style_section.dart';

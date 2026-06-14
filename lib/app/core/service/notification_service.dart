@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:the_usual/app/model/model.dart';
 import 'package:timezone/data/latest_all.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
@@ -60,19 +61,17 @@ class NotificationService {
         );
   }
 
-  /// Asks the OS for permission to show notifications. A no-op on platforms or
-  /// runs where it has already been granted or denied.
-  Future<void> requestPermissions() async {
-    await _plugin
-        .resolvePlatformSpecificImplementation<
-          IOSFlutterLocalNotificationsPlugin
-        >()
-        ?.requestPermissions(alert: true, badge: true, sound: true);
-    await _plugin
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >()
-        ?.requestNotificationsPermission();
+  /// Asks the OS for permission to show notifications and reports the
+  /// resulting [PermissionStatus] so callers can fall back or point the user
+  /// to system settings.
+  Future<PermissionStatus> requestPermission() {
+    return Permission.notification.request();
+  }
+
+  /// Opens the OS settings page for the app so the user can enable
+  /// notifications after a permanent denial.
+  Future<void> openSystemSettings() async {
+    await openAppSettings();
   }
 
   /// Reschedules every reminder from the given settings. Cancels all existing

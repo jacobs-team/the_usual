@@ -1,7 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
 import 'package:the_usual/design_system/design_system.dart';
@@ -51,9 +50,27 @@ class ReminderStyleView extends StatelessWidget {
                   const Spacer(),
                   OnboardingActions(
                     primary: FilledButton(
-                      onPressed: () => getIt<OnboardingBloc>().add(
-                        const OnboardingEvent.continuePressed(),
-                      ),
+                      onPressed: () async {
+                        // Choosing notifications prompts the OS first. If it
+                        // isn't granted, revert to the on-app-open style and
+                        // stay on this step so the user can continue with the
+                        // updated choice.
+                        if (selected == ReminderStyle.notifications) {
+                          final status = await getIt<NotificationService>()
+                              .requestPermission();
+                          if (!status.isGranted) {
+                            getIt<OnboardingBloc>().add(
+                              const OnboardingEvent.reminderStyleSelected(
+                                ReminderStyle.onAppOpen,
+                              ),
+                            );
+                            return;
+                          }
+                        }
+                        getIt<OnboardingBloc>().add(
+                          const OnboardingEvent.continuePressed(),
+                        );
+                      },
                       child: const Text('Continue'),
                     ),
                   ),
