@@ -19,6 +19,7 @@ workflows:
         # App Information > General Information > Apple ID..
         APP_STORE_APP_ID: "6780102501"
     triggering:
+      cancel_previous_builds: true
       events:
         - push
       branch_patterns:

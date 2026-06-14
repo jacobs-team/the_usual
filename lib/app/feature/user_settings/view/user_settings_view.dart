@@ -45,8 +45,6 @@ class UserSettingsView extends StatelessWidget {
             SizedBox(height: AppDesign.spacing.sm),
             const AppearanceSection(),
             SizedBox(height: AppDesign.spacing.xl),
-            const ResetAppStateTile(),
-            SizedBox(height: AppDesign.spacing.lg),
             Center(
               child: Text(
                 'No account. Your data stays on your phone.',
