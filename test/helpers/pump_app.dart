@@ -24,7 +24,6 @@ extension PumpApp on WidgetTester {
       ..registerSingleton<AuthCubit>(authCubit)
       ..registerSingleton<ConnectivityCubit>(MockConnectivityCubit())
       ..registerSingleton<DevToolsCubit>(MockDevToolsCubit())
-      ..registerSingleton<CoffeeBloc>(MockCoffeeBloc())
       ..registerSingleton<CoffeeApi>(MockCoffeeApi())
       ..registerSingleton<RestClient>(MockRestClient())
       ..registerSingleton<FileCacheService>(MockFileCacheService())
@@ -67,10 +66,6 @@ extension PumpApp on WidgetTester {
       getIt
         ..unregister<DevToolsCubit>()
         ..registerSingleton<DevToolsCubit>(instance);
-    } else if (instance is CoffeeBloc) {
-      getIt
-        ..unregister<CoffeeBloc>()
-        ..registerSingleton<CoffeeBloc>(instance);
     } else if (instance is CoffeeApi) {
       getIt
         ..unregister<CoffeeApi>()

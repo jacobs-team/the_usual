@@ -8,6 +8,7 @@ export 'meal_schedule_mode_selector.dart';
 export 'radio_option_card.dart';
 export 'section_label.dart';
 export 'the_usual_text_field.dart';
+export 'theme_mode_selector.dart';
 export 'usual_meal_composer.dart';
 export 'usual_meal_row.dart';
 export 'usual_meal_section.dart';

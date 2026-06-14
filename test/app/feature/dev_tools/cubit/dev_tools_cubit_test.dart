@@ -17,28 +17,18 @@ void main() {
       ],
     );
 
-    blocTest<DevToolsCubit, DevToolsState>(
-      'toggleDarkMode emits toggled isDarkMode in $DevToolsCubit',
-      build: DevToolsCubit.new,
-      act: (cubit) => cubit.toggleDarkMode(),
-      expect: () => [
-        const DevToolsState(isDarkMode: true),
-      ],
-    );
-
     test('fromJson returns correct $DevToolsState', () {
-      final json = <String, dynamic>{'isApiDebug': false, 'isDarkMode': true};
+      final json = <String, dynamic>{'isApiDebug': false};
       expect(
         DevToolsCubit().fromJson(json),
-        equals(const DevToolsState(isApiDebug: false, isDarkMode: true)),
+        equals(const DevToolsState(isApiDebug: false)),
       );
     });
 
     test('toJson returns correct $Map from $DevToolsState', () {
-      const state = DevToolsState(isApiDebug: false, isDarkMode: true);
+      const state = DevToolsState(isApiDebug: false);
       final json = DevToolsCubit().toJson(state);
       expect(json['isApiDebug'], isFalse);
-      expect(json['isDarkMode'], isTrue);
     });
   });
 }

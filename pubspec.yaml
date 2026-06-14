@@ -1,6 +1,6 @@
 name: the_usual
 description: Meal and calorie tracker.
-version: 1.0.0+1
+version: 1.0.0+2
 publish_to: none
 
 environment:
@@ -53,8 +53,8 @@ flutter:
   generate: true
   uses-material-design: true
   assets:
-    - assets/images/
-
+    - assets/
+    
 flutter_gen:
   integrations:
     flutter_svg: true

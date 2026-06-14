@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template onboarding_actions}
-/// Bottom action area shared by onboarding screens. Reserves fixed-height
-/// slots below the primary button so the button sits at the same position on
-/// every screen, whether or not the slots are filled.
+/// Bottom action area shared by onboarding screens. The secondary slot below
+/// the primary button is fixed-height so the button stays put whether or not
+/// it is filled; the supporting slot above only takes space when provided.
 /// {@endtemplate}
 class OnboardingActions extends StatelessWidget {
   /// {@macro onboarding_actions}
@@ -29,8 +29,10 @@ class OnboardingActions extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        SizedBox(height: 48, child: above),
-        SizedBox(height: AppDesign.spacing.md),
+        if (above != null) ...[
+          SizedBox(height: 48, child: above),
+          SizedBox(height: AppDesign.spacing.md),
+        ],
         primary,
         SizedBox(height: 48, child: secondary),
       ],

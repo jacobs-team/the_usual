@@ -62,6 +62,9 @@ _UserSettingsState _$UserSettingsStateFromJson(
       $enumDecodeNullable(_$WeightUnitEnumMap, json['weightUnit']) ??
       WeightUnit.lb,
   startingWeight: (json['startingWeight'] as num?)?.toDouble(),
+  themeMode:
+      $enumDecodeNullable(_$ThemeModeEnumMap, json['themeMode']) ??
+      ThemeMode.system,
   usuals:
       (json['usuals'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(
@@ -89,6 +92,7 @@ Map<String, dynamic> _$UserSettingsStateToJson(
   'weightTimeOfDay': _$WeightTimeOfDayEnumMap[instance.weightTimeOfDay]!,
   'weightUnit': _$WeightUnitEnumMap[instance.weightUnit]!,
   'startingWeight': instance.startingWeight,
+  'themeMode': _$ThemeModeEnumMap[instance.themeMode]!,
   'usuals': instance.usuals.map(
     (k, e) =>
         MapEntry(_$MealOfTheDayEnumMap[k]!, e.map((e) => e.toJson()).toList()),
@@ -127,3 +131,9 @@ const _$WeightTimeOfDayEnumMap = {
 };
 
 const _$WeightUnitEnumMap = {WeightUnit.lb: 'lb', WeightUnit.kg: 'kg'};
+
+const _$ThemeModeEnumMap = {
+  ThemeMode.system: 'system',
+  ThemeMode.light: 'light',
+  ThemeMode.dark: 'dark',
+};

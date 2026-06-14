@@ -38,17 +38,6 @@ class DevToolsView extends StatelessWidget {
               );
             },
           ),
-          BlocSelector<DevToolsCubit, DevToolsState, bool>(
-            bloc: devToolsCubit,
-            selector: (state) => state.isDarkMode,
-            builder: (context, isDarkMode) {
-              return SwitchListTile(
-                onChanged: (value) => devToolsCubit.toggleDarkMode(),
-                value: isDarkMode,
-                title: Text('Dark mode', style: theme.textTheme.bodyLarge),
-              );
-            },
-          ),
           const Divider(),
           ListTile(
             title: Text(

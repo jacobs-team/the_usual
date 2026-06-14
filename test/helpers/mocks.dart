@@ -15,9 +15,6 @@ class MockConnectivityCubit extends MockCubit<bool>
 class MockDevToolsCubit extends MockCubit<DevToolsState>
     implements DevToolsCubit {}
 
-class MockCoffeeBloc extends MockBloc<CoffeeEvent, CoffeeState>
-    implements CoffeeBloc {}
-
 class MockCoffeeApi extends Mock implements CoffeeApi {}
 
 class MockRestClient extends Mock implements RestClient {}

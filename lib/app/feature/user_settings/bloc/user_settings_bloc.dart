@@ -55,6 +55,9 @@ class UserSettingsBloc
         SettingsStartingWeightChanged() => emit(
           state.copyWith(startingWeight: event.weight),
         ),
+        SettingsThemeModeSelected() => emit(
+          state.copyWith(themeMode: event.themeMode),
+        ),
         SettingsUsualMealAdded() => _onUsualMealAdded(event, emit),
         SettingsUsualMealRemoved() => _onUsualMealRemoved(event, emit),
         SettingsUsualMealCaloriesChanged() => _onUsualMealCaloriesChanged(

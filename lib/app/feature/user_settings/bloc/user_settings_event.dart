@@ -31,6 +31,8 @@ sealed class UserSettingsEvent with _$UserSettingsEvent {
       SettingsWeightUnitSelected;
   const factory UserSettingsEvent.startingWeightChanged(double? weight) =
       SettingsStartingWeightChanged;
+  const factory UserSettingsEvent.themeModeSelected(ThemeMode themeMode) =
+      SettingsThemeModeSelected;
   const factory UserSettingsEvent.usualMealAdded(
     MealOfTheDay mealOfTheDay,
     String name,

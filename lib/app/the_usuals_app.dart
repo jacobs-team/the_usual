@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
@@ -98,20 +97,16 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
           },
         ),
       ],
-      child: BlocSelector<DevToolsCubit, DevToolsState, bool>(
-        bloc: getIt<DevToolsCubit>(),
-        selector: (state) => state.isDarkMode,
-        builder: (context, isDarkMode) {
+      child: BlocSelector<UserSettingsBloc, UserSettingsState, ThemeMode>(
+        bloc: getIt<UserSettingsBloc>(),
+        selector: (state) => state.themeMode,
+        builder: (context, themeMode) {
           return MaterialApp.router(
             debugShowCheckedModeBanner: false,
             routerConfig: getIt<AppRouter>().router,
             theme: AppTheme.light,
             darkTheme: AppTheme.dark,
-            themeMode: !kDebugMode
-                ? ThemeMode.system
-                : isDarkMode
-                ? ThemeMode.dark
-                : ThemeMode.light,
+            themeMode: themeMode,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
             builder: (context, child) => Layout(child: child!),

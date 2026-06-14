@@ -57,6 +57,9 @@ abstract class UserSettingsState with _$UserSettingsState {
     /// Baseline weight in [weightUnit], null when never provided.
     double? startingWeight,
 
+    /// Whether the app follows the system theme or is forced light or dark.
+    @Default(ThemeMode.system) ThemeMode themeMode,
+
     /// The user's usuals library, keyed by meal timing.
     @Default(<MealOfTheDay, List<UsualMeal>>{})
     Map<MealOfTheDay, List<UsualMeal>> usuals,

@@ -17,9 +17,6 @@ class DevToolsCubit extends HydratedCubit<DevToolsState> {
   /// Toggles the API debugging flag.
   void toggleDebugApi() => emit(state.copyWith(isApiDebug: !state.isApiDebug));
 
-  /// Toggles the application's dark mode setting. Does nothing in prod.
-  void toggleDarkMode() => emit(state.copyWith(isDarkMode: !state.isDarkMode));
-
   @override
   DevToolsState fromJson(Map<String, dynamic> json) =>
       DevToolsState.fromJson(json);
@@ -36,7 +33,6 @@ abstract class DevToolsState with _$DevToolsState {
   /// {@macro dev_tools_state}
   const factory DevToolsState({
     @Default(true) bool isApiDebug,
-    @Default(false) bool isDarkMode,
   }) = _DevToolsState;
 
   const DevToolsState._();

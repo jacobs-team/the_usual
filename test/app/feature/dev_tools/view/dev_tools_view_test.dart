@@ -38,18 +38,5 @@ void main() {
 
       verify(() => devToolsCubit.toggleDebugApi()).called(1);
     });
-
-    testWidgets('triggers toggleDarkMode when Dark mode switch is toggled', (
-      tester,
-    ) async {
-      await tester.pumpPumpPumpItUP(
-        deps: [devToolsCubit],
-        const DevToolsView(),
-      );
-
-      await tester.tap(find.text('Dark mode'));
-
-      verify(() => devToolsCubit.toggleDarkMode()).called(1);
-    });
   });
 }

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$DevToolsState {
 
- bool get isApiDebug; bool get isDarkMode;
+ bool get isApiDebug;
 /// Create a copy of DevToolsState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $DevToolsStateCopyWith<DevToolsState> get copyWith => _$DevToolsStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DevToolsState&&(identical(other.isApiDebug, isApiDebug) || other.isApiDebug == isApiDebug)&&(identical(other.isDarkMode, isDarkMode) || other.isDarkMode == isDarkMode));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DevToolsState&&(identical(other.isApiDebug, isApiDebug) || other.isApiDebug == isApiDebug));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,isApiDebug,isDarkMode);
+int get hashCode => Object.hash(runtimeType,isApiDebug);
 
 @override
 String toString() {
-  return 'DevToolsState(isApiDebug: $isApiDebug, isDarkMode: $isDarkMode)';
+  return 'DevToolsState(isApiDebug: $isApiDebug)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $DevToolsStateCopyWith<$Res>  {
   factory $DevToolsStateCopyWith(DevToolsState value, $Res Function(DevToolsState) _then) = _$DevToolsStateCopyWithImpl;
 @useResult
 $Res call({
- bool isApiDebug, bool isDarkMode
+ bool isApiDebug
 });
 
 
@@ -65,10 +65,9 @@ class _$DevToolsStateCopyWithImpl<$Res>
 
 /// Create a copy of DevToolsState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isApiDebug = null,Object? isDarkMode = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? isApiDebug = null,}) {
   return _then(_self.copyWith(
 isApiDebug: null == isApiDebug ? _self.isApiDebug : isApiDebug // ignore: cast_nullable_to_non_nullable
-as bool,isDarkMode: null == isDarkMode ? _self.isDarkMode : isDarkMode // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -154,10 +153,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isApiDebug,  bool isDarkMode)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isApiDebug)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DevToolsState() when $default != null:
-return $default(_that.isApiDebug,_that.isDarkMode);case _:
+return $default(_that.isApiDebug);case _:
   return orElse();
 
 }
@@ -175,10 +174,10 @@ return $default(_that.isApiDebug,_that.isDarkMode);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isApiDebug,  bool isDarkMode)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isApiDebug)  $default,) {final _that = this;
 switch (_that) {
 case _DevToolsState():
-return $default(_that.isApiDebug,_that.isDarkMode);case _:
+return $default(_that.isApiDebug);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,10 +194,10 @@ return $default(_that.isApiDebug,_that.isDarkMode);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isApiDebug,  bool isDarkMode)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isApiDebug)?  $default,) {final _that = this;
 switch (_that) {
 case _DevToolsState() when $default != null:
-return $default(_that.isApiDebug,_that.isDarkMode);case _:
+return $default(_that.isApiDebug);case _:
   return null;
 
 }
@@ -210,11 +209,10 @@ return $default(_that.isApiDebug,_that.isDarkMode);case _:
 @JsonSerializable()
 
 class _DevToolsState extends DevToolsState {
-  const _DevToolsState({this.isApiDebug = true, this.isDarkMode = false}): super._();
+  const _DevToolsState({this.isApiDebug = true}): super._();
   factory _DevToolsState.fromJson(Map<String, dynamic> json) => _$DevToolsStateFromJson(json);
 
 @override@JsonKey() final  bool isApiDebug;
-@override@JsonKey() final  bool isDarkMode;
 
 /// Create a copy of DevToolsState
 /// with the given fields replaced by the non-null parameter values.
@@ -229,16 +227,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DevToolsState&&(identical(other.isApiDebug, isApiDebug) || other.isApiDebug == isApiDebug)&&(identical(other.isDarkMode, isDarkMode) || other.isDarkMode == isDarkMode));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DevToolsState&&(identical(other.isApiDebug, isApiDebug) || other.isApiDebug == isApiDebug));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,isApiDebug,isDarkMode);
+int get hashCode => Object.hash(runtimeType,isApiDebug);
 
 @override
 String toString() {
-  return 'DevToolsState(isApiDebug: $isApiDebug, isDarkMode: $isDarkMode)';
+  return 'DevToolsState(isApiDebug: $isApiDebug)';
 }
 
 
@@ -249,7 +247,7 @@ abstract mixin class _$DevToolsStateCopyWith<$Res> implements $DevToolsStateCopy
   factory _$DevToolsStateCopyWith(_DevToolsState value, $Res Function(_DevToolsState) _then) = __$DevToolsStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool isApiDebug, bool isDarkMode
+ bool isApiDebug
 });
 
 
@@ -266,10 +264,9 @@ class __$DevToolsStateCopyWithImpl<$Res>
 
 /// Create a copy of DevToolsState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isApiDebug = null,Object? isDarkMode = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? isApiDebug = null,}) {
   return _then(_DevToolsState(
 isApiDebug: null == isApiDebug ? _self.isApiDebug : isApiDebug // ignore: cast_nullable_to_non_nullable
-as bool,isDarkMode: null == isDarkMode ? _self.isDarkMode : isDarkMode // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

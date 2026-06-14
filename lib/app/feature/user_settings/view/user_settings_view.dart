@@ -41,6 +41,10 @@ class UserSettingsView extends StatelessWidget {
             SizedBox(height: AppDesign.spacing.sm),
             const UsualMealsTile(),
             SizedBox(height: AppDesign.spacing.xl),
+            const SectionLabel('APPEARANCE'),
+            SizedBox(height: AppDesign.spacing.sm),
+            const AppearanceSection(),
+            SizedBox(height: AppDesign.spacing.xl),
             const ResetAppStateTile(),
             SizedBox(height: AppDesign.spacing.lg),
             Center(

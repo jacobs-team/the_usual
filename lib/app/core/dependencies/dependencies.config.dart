@@ -25,7 +25,6 @@ import 'package:the_usual/app/core/networking/repository/coffee_repository.dart'
     as _i83;
 import 'package:the_usual/app/core/service/file_cache_service.dart' as _i115;
 import 'package:the_usual/app/core/service/service.dart' as _i988;
-import 'package:the_usual/app/feature/coffee/bloc/coffee_bloc.dart' as _i1016;
 import 'package:the_usual/app/feature/dev_tools/cubit/dev_tools_cubit.dart'
     as _i818;
 import 'package:the_usual/app/feature/onboarding/bloc/onboarding_bloc.dart'
@@ -66,12 +65,6 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i6.CoffeeApi>(() => _i6.CoffeeApi(gh<_i538.RestClient>()));
     gh.singleton<_i83.CoffeeRepository>(
       () => _i83.CoffeeRepository(gh<_i538.CoffeeApi>()),
-    );
-    gh.singleton<_i1016.CoffeeBloc>(
-      () => _i1016.CoffeeBloc(
-        gh<_i538.CoffeeRepository>(),
-        gh<_i538.FileCacheService>(),
-      ),
     );
     return this;
   }

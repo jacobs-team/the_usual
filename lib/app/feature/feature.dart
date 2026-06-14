@@ -1,4 +1,3 @@
-export 'coffee/coffee.dart';
 export 'dev_tools/dev_tools.dart';
 export 'history/history.dart';
 export 'onboarding/onboarding.dart';
