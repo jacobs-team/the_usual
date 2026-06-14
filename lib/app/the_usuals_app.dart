@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,14 +17,42 @@ import 'package:the_usual/l10n/l10n.dart';
 /// * Localization via [AppLocalizations].
 /// * Responsive layout support via the [Layout] widget.
 /// {@endtemplate}
-class TheUsualsApp extends StatelessWidget {
+class TheUsualsApp extends StatefulWidget {
   /// {@macro the_usuals_app}
   const TheUsualsApp({super.key});
+
+  @override
+  State<TheUsualsApp> createState() => _TheUsualsAppState();
+}
+
+class _TheUsualsAppState extends State<TheUsualsApp> {
+  @override
+  void initState() {
+    super.initState();
+    _syncNotifications(getIt<UserSettingsBloc>().state);
+  }
+
+  void _syncNotifications(UserSettingsState settings) {
+    unawaited(
+      getIt<NotificationService>().sync(
+        reminderStyle: settings.reminderStyle,
+        scheduleMode: settings.mealCheckinScheduleMode,
+        mealReminders: settings.mealReminders,
+        endOfDayReminder: settings.endOfDayReminder,
+        weightCheckinFrequency: settings.weightCheckinFrequency,
+        weightTimeOfDay: settings.weightTimeOfDay,
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocListener(
       listeners: [
+        BlocListener<UserSettingsBloc, UserSettingsState>(
+          bloc: getIt<UserSettingsBloc>(),
+          listener: (context, state) => _syncNotifications(state),
+        ),
         // BlocListener<AuthCubit, AuthState>(
         //   bloc: getIt<AuthCubit>(),
         //   listenWhen: (previous, current) =>

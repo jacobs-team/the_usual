@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
@@ -138,7 +140,7 @@ class _MonthSelector extends StatefulWidget {
 }
 
 class _MonthSelectorState extends State<_MonthSelector> {
-  final _selectedChipKey = GlobalKey();
+  final GlobalKey<State<StatefulWidget>> _selectedChipKey = GlobalKey();
 
   @override
   void initState() {
@@ -157,11 +159,13 @@ class _MonthSelectorState extends State<_MonthSelector> {
   void _revealSelected() {
     final selectedContext = _selectedChipKey.currentContext;
     if (selectedContext == null) return;
-    Scrollable.ensureVisible(
-      selectedContext,
-      alignment: 0.5,
-      duration: AppDesign.durations.fast,
-      curve: Curves.easeOut,
+    unawaited(
+      Scrollable.ensureVisible(
+        selectedContext,
+        alignment: 0.5,
+        duration: AppDesign.durations.fast,
+        curve: Curves.easeOut,
+      ),
     );
   }
 

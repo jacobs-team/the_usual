@@ -17,11 +17,14 @@ import 'package:the_usual/app/core/cubit/auth_cubit.dart' as _i335;
 import 'package:the_usual/app/core/cubit/connectivity_cubit.dart' as _i473;
 import 'package:the_usual/app/core/dependencies/modules/hydrated_bloc_module.dart'
     as _i316;
+import 'package:the_usual/app/core/dependencies/modules/notification_module.dart'
+    as _i833;
 import 'package:the_usual/app/core/networking/api/coffee_api.dart' as _i6;
 import 'package:the_usual/app/core/networking/api/rest_client.dart' as _i13;
 import 'package:the_usual/app/core/networking/repository/coffee_repository.dart'
     as _i83;
 import 'package:the_usual/app/core/service/file_cache_service.dart' as _i115;
+import 'package:the_usual/app/core/service/service.dart' as _i988;
 import 'package:the_usual/app/feature/coffee/bloc/coffee_bloc.dart' as _i1016;
 import 'package:the_usual/app/feature/dev_tools/cubit/dev_tools_cubit.dart'
     as _i818;
@@ -40,8 +43,13 @@ extension GetItInjectableX on _i174.GetIt {
   }) async {
     final gh = _i526.GetItHelper(this, environment, environmentFilter);
     final hydratedBlocModule = _$HydratedBlocModule();
+    final notificationModule = _$NotificationModule();
     await gh.factoryAsync<_i67.HydratedStorage>(
       () => hydratedBlocModule.init(),
+      preResolve: true,
+    );
+    await gh.factoryAsync<_i988.NotificationService>(
+      () => notificationModule.notificationService(),
       preResolve: true,
     );
     gh.singleton<_i335.AuthCubit>(() => _i335.AuthCubit());
@@ -70,3 +78,5 @@ extension GetItInjectableX on _i174.GetIt {
 }
 
 class _$HydratedBlocModule extends _i316.HydratedBlocModule {}
+
+class _$NotificationModule extends _i833.NotificationModule {}
