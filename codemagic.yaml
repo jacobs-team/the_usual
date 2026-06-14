@@ -16,7 +16,7 @@ workflows:
         - ios_signing
       vars:
         # Your app's numeric Apple ID: App Store Connect > your app >
-        # App Information > General Information > Apple ID.
+        # App Information > General Information > Apple ID..
         APP_STORE_APP_ID: "6780102501"
     triggering:
       events:
