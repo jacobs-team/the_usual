@@ -78,21 +78,33 @@ class _ExpandableNutritionState extends State<ExpandableNutrition> {
       shape: const Border(),
       collapsedShape: const Border(),
       expandedCrossAxisAlignment: CrossAxisAlignment.start,
-      title: Row(
-        crossAxisAlignment: CrossAxisAlignment.baseline,
-        textBaseline: TextBaseline.alphabetic,
-        children: [
-          Text(widget.name, style: theme.textTheme.bodyLarge),
-          if (!_expanded) ...[
-            SizedBox(width: AppDesign.spacing.sm),
-            Flexible(
-              child: Text(
-                widget.nutrition.summary,
-                style: theme.textTheme.bodyMedium,
+      title: LayoutBuilder(
+        builder: (context, constraints) {
+          return Wrap(
+            spacing: AppDesign.spacing.sm,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: constraints.maxWidth),
+                child: Text(
+                  widget.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    textBaseline: TextBaseline.alphabetic,
+                  ),
+                ),
               ),
-            ),
-          ],
-        ],
+              if (!_expanded)
+                Text(
+                  widget.nutrition.summary,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    textBaseline: TextBaseline.alphabetic,
+                  ),
+                ),
+            ],
+          );
+        },
       ),
       trailing: IconButton(
         icon: const Icon(Icons.remove),
