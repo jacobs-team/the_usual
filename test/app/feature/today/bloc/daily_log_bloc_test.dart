@@ -128,12 +128,12 @@ void main() {
       ],
     );
 
-    group('todayWeightChanged', () {
+    group('weightOnDayChanged', () {
       blocTest<DailyLogBloc, DailyLogState>(
         'adds a new entry when none exists for today',
         build: DailyLogBloc.new,
         act: (bloc) => bloc.add(
-          const DailyLogEvent.todayWeightChanged(170, WeightUnit.lb),
+          DailyLogEvent.weightOnDayChanged(DateTime.now(), 170, WeightUnit.lb),
         ),
         expect: () => [
           isA<DailyLogState>().having(
@@ -151,7 +151,7 @@ void main() {
           weightEntries: [weightEntry(id: 'today', loggedAt: DateTime.now())],
         ),
         act: (bloc) => bloc.add(
-          const DailyLogEvent.todayWeightChanged(172, WeightUnit.kg),
+          DailyLogEvent.weightOnDayChanged(DateTime.now(), 172, WeightUnit.kg),
         ),
         expect: () => [
           isA<DailyLogState>()
@@ -179,7 +179,7 @@ void main() {
           ],
         ),
         act: (bloc) => bloc.add(
-          const DailyLogEvent.todayWeightChanged(null, WeightUnit.lb),
+          DailyLogEvent.weightOnDayChanged(DateTime.now(), null, WeightUnit.lb),
         ),
         expect: () => [
           isA<DailyLogState>().having(
@@ -272,14 +272,14 @@ void main() {
               loggedAt: DateTime(2026, 5, 10, 8),
               mealOfTheDay: MealOfTheDay.breakfast,
               name: 'Eggs',
-              nutrition: Nutrition(calories: 300),
+              nutrition: const Nutrition(calories: 300),
             ),
             MealLogEntry(
               id: 'm2',
               loggedAt: DateTime(2026, 6, 14, 8),
               mealOfTheDay: MealOfTheDay.breakfast,
               name: 'Oats',
-              nutrition: Nutrition(calories: 500),
+              nutrition: const Nutrition(calories: 500),
             ),
           ],
           weightEntries: [weightEntry('w1', DateTime(2026, 6, 14, 7))],

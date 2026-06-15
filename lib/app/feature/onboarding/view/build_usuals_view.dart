@@ -73,6 +73,14 @@ class BuildUsualsView extends StatelessWidget {
                                         nutrition,
                                       ),
                                     ),
+                                onNameChanged: (id, name) =>
+                                    getIt<OnboardingBloc>().add(
+                                      OnboardingEvent.usualMealNameChanged(
+                                        mealOfTheDay,
+                                        id,
+                                        name,
+                                      ),
+                                    ),
                                 onRemoved: (id) => getIt<OnboardingBloc>().add(
                                   OnboardingEvent.usualMealRemoved(
                                     mealOfTheDay,

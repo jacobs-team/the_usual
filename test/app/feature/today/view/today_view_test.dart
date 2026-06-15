@@ -27,7 +27,7 @@ void main() {
       dailyLogBloc = MockDailyLogBloc();
       userSettingsBloc = MockUserSettingsBloc();
       registerFallbackValue(
-        const DailyLogEvent.todayWeightChanged(0, WeightUnit.lb),
+        DailyLogEvent.weightOnDayChanged(DateTime(2020), 0, WeightUnit.lb),
       );
     });
 
@@ -120,7 +120,11 @@ void main() {
 
       verify(
         () => dailyLogBloc.add(
-          const DailyLogEvent.todayWeightChanged(170, WeightUnit.lb),
+          any(
+            that: isA<WeightOnDayChanged>()
+                .having((event) => event.weight, 'weight', 170)
+                .having((event) => event.weightUnit, 'unit', WeightUnit.lb),
+          ),
         ),
       ).called(1);
     });

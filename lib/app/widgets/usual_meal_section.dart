@@ -15,6 +15,7 @@ class UsualMealSection extends StatelessWidget {
     required this.expandedByDefault,
     required this.onAdded,
     required this.onNutritionChanged,
+    required this.onNameChanged,
     required this.onRemoved,
     this.showHeader = true,
     super.key,
@@ -38,6 +39,9 @@ class UsualMealSection extends StatelessWidget {
 
   /// Called with a usual meal's id and its new nutrition.
   final void Function(String id, Nutrition nutrition) onNutritionChanged;
+
+  /// Called with a usual meal's id and its new name.
+  final void Function(String id, String name) onNameChanged;
 
   /// Called with the id of a usual meal to remove.
   final void Function(String id) onRemoved;
@@ -71,6 +75,7 @@ class UsualMealSection extends StatelessWidget {
                 expandedByDefault: expandedByDefault,
                 onChanged: (nutrition) =>
                     onNutritionChanged(usualMeal.id, nutrition),
+                onNameChanged: (name) => onNameChanged(usualMeal.id, name),
                 onRemoved: () => onRemoved(usualMeal.id),
               ),
             ),

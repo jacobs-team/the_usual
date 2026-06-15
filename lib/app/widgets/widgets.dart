@@ -14,5 +14,6 @@ export 'theme_mode_selector.dart';
 export 'usual_meal_composer.dart';
 export 'usual_meal_section.dart';
 export 'weight_checkin_frequency_chips.dart';
+export 'weight_entry_field.dart';
 export 'weight_input.dart';
 export 'weight_time_of_day_chips.dart';

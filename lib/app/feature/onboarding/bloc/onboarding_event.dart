@@ -20,6 +20,11 @@ sealed class OnboardingEvent with _$OnboardingEvent {
     String id,
     Nutrition nutrition,
   ) = UsualMealNutritionChanged;
+  const factory OnboardingEvent.usualMealNameChanged(
+    MealOfTheDay mealOfTheDay,
+    String id,
+    String name,
+  ) = UsualMealNameChanged;
   const factory OnboardingEvent.reminderStyleSelected(
     ReminderStyle reminderStyle,
   ) = ReminderStyleSelected;

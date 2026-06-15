@@ -17,6 +17,7 @@ class ExpandableNutrition extends StatefulWidget {
     required this.expandedByDefault,
     required this.onChanged,
     required this.onRemoved,
+    this.onNameChanged,
     this.expandedFooter,
     super.key,
   });
@@ -33,6 +34,10 @@ class ExpandableNutrition extends StatefulWidget {
   /// Called with the parsed nutrition whenever a field changes.
   final ValueChanged<Nutrition> onChanged;
 
+  /// Called with the new name whenever it changes. When null the name is shown
+  /// read-only; when provided it becomes an editable field.
+  final ValueChanged<String>? onNameChanged;
+
   /// Called when the remove button is pressed.
   final VoidCallback onRemoved;
 
@@ -45,11 +50,23 @@ class ExpandableNutrition extends StatefulWidget {
 
 class _ExpandableNutritionState extends State<ExpandableNutrition> {
   final _controller = ExpansibleController();
+  late final _nameController = TextEditingController(text: widget.name);
   late bool _expanded = widget.expandedByDefault;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
 
   @override
   void didUpdateWidget(ExpandableNutrition oldWidget) {
     super.didUpdateWidget(oldWidget);
+    // Reflect an externally changed name without disturbing the cursor while
+    // the user is typing into the field.
+    if (widget.name != oldWidget.name && _nameController.text != widget.name) {
+      _nameController.text = widget.name;
+    }
     // The default flipped: reflect it on the tile after this frame, since the
     // controller drives the already-built tile.
     if (widget.expandedByDefault != oldWidget.expandedByDefault) {
@@ -78,36 +95,63 @@ class _ExpandableNutritionState extends State<ExpandableNutrition> {
       shape: const Border(),
       collapsedShape: const Border(),
       expandedCrossAxisAlignment: CrossAxisAlignment.start,
-      title: LayoutBuilder(
-        builder: (context, constraints) {
-          return Wrap(
-            spacing: AppDesign.spacing.sm,
-            crossAxisAlignment: WrapCrossAlignment.center,
-            children: [
-              ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: constraints.maxWidth),
-                child: Text(
-                  widget.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodyLarge?.copyWith(
-                    textBaseline: TextBaseline.alphabetic,
+      title: widget.onNameChanged != null
+          ? Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _nameController,
+                    onChanged: widget.onNameChanged,
+                    textCapitalization: TextCapitalization.sentences,
+                    style: theme.textTheme.bodyLarge,
+                    decoration: const InputDecoration(
+                      isDense: true,
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.zero,
+                    ),
                   ),
                 ),
-              ),
-              if (!_expanded)
-                Text(
-                  widget.nutrition.summary,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    textBaseline: TextBaseline.alphabetic,
+                if (!_expanded) ...[
+                  SizedBox(width: AppDesign.spacing.sm),
+                  Text(
+                    widget.nutrition.summary,
+                    style: theme.textTheme.bodyMedium,
                   ),
-                ),
-            ],
-          );
-        },
-      ),
+                ],
+              ],
+            )
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                return Wrap(
+                  spacing: AppDesign.spacing.sm,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: constraints.maxWidth,
+                      ),
+                      child: Text(
+                        widget.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          textBaseline: TextBaseline.alphabetic,
+                        ),
+                      ),
+                    ),
+                    if (!_expanded)
+                      Text(
+                        widget.nutrition.summary,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          textBaseline: TextBaseline.alphabetic,
+                        ),
+                      ),
+                  ],
+                );
+              },
+            ),
       trailing: IconButton(
-        icon: const Icon(Icons.remove),
+        icon: const Icon(Icons.delete_forever_outlined),
         onPressed: widget.onRemoved,
       ),
       children: [

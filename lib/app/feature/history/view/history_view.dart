@@ -42,6 +42,20 @@ class _HistoryViewState extends State<HistoryView> {
     super.dispose();
   }
 
+  /// Snaps the selection to the nearest still-present month after the selected
+  /// one is deleted, keeping the page view and the month strip in range.
+  void _clampToAvailableMonth(List<HistoryMonth> history) {
+    if (!mounted || history.isEmpty) return;
+    final currentPage = _pageController.hasClients
+        ? (_pageController.page ?? _pageController.initialPage.toDouble())
+        : 0.0;
+    final targetIndex = currentPage.round().clamp(0, history.length - 1);
+    setState(() => _selectedMonth = history[targetIndex].month);
+    if (_pageController.hasClients) {
+      _pageController.jumpToPage(targetIndex);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,6 +76,18 @@ class _HistoryViewState extends State<HistoryView> {
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
                 ),
+              );
+            }
+
+            // The selected month can disappear when its last entry is deleted.
+            // Fall back to the nearest remaining page once the frame settles.
+            final selectedMonthExists = history.any(
+              (monthHistory) =>
+                  DateUtils.isSameMonth(monthHistory.month, _selectedMonth),
+            );
+            if (!selectedMonthExists) {
+              WidgetsBinding.instance.addPostFrameCallback(
+                (_) => _clampToAvailableMonth(history),
               );
             }
 
@@ -314,6 +340,13 @@ class _HistoryDayCard extends StatelessWidget {
         ),
         expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          Row(
+            children: [
+              const Expanded(child: SectionLabel('WEIGHT')),
+              WeightEntryField(day: historyDay.day),
+            ],
+          ),
+          SizedBox(height: AppDesign.spacing.sm),
           for (final mealOfTheDay in MealOfTheDay.values)
             if (historyDay.mealEntries.any(
               (mealLogEntry) => mealLogEntry.mealOfTheDay == mealOfTheDay,
@@ -321,32 +354,13 @@ class _HistoryDayCard extends StatelessWidget {
               SectionLabel(mealOfTheDay.label.toUpperCase()),
               for (final mealLogEntry in historyDay.mealEntries)
                 if (mealLogEntry.mealOfTheDay == mealOfTheDay)
-                  _HistoryEntryRow(mealLogEntry: mealLogEntry),
+                  LoggedEntryRow(
+                    key: ValueKey(mealLogEntry.id),
+                    mealLogEntry: mealLogEntry,
+                    expandedByDefault: false,
+                  ),
               SizedBox(height: AppDesign.spacing.sm),
             ],
-        ],
-      ),
-    );
-  }
-}
-
-/// A read-only logged meal: name and nutrition.
-class _HistoryEntryRow extends StatelessWidget {
-  const _HistoryEntryRow({required this.mealLogEntry});
-
-  final MealLogEntry mealLogEntry;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: AppDesign.spacing.xs),
-      child: Row(
-        children: [
-          Expanded(child: Text(mealLogEntry.name)),
-          Text(
-            mealLogEntry.nutrition.summary,
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
         ],
       ),
     );

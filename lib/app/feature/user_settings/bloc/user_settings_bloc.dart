@@ -69,6 +69,7 @@ class UserSettingsBloc
           event,
           emit,
         ),
+        SettingsUsualMealNameChanged() => _onUsualMealNameChanged(event, emit),
       },
     );
   }
@@ -160,6 +161,27 @@ class UserSettingsBloc
       for (final usualMeal in usualMeals)
         if (usualMeal.id == event.id)
           usualMeal.copyWith(nutrition: event.nutrition)
+        else
+          usualMeal,
+    ];
+
+    emit(
+      state.copyWith(
+        usuals: {...state.usuals, event.mealOfTheDay: updatedUsualMeals},
+      ),
+    );
+  }
+
+  void _onUsualMealNameChanged(
+    SettingsUsualMealNameChanged event,
+    Emitter<UserSettingsState> emit,
+  ) {
+    if (event.name.trim().isEmpty) return;
+    final usualMeals = state.usuals[event.mealOfTheDay] ?? <UsualMeal>[];
+    final updatedUsualMeals = [
+      for (final usualMeal in usualMeals)
+        if (usualMeal.id == event.id)
+          usualMeal.copyWith(name: event.name)
         else
           usualMeal,
     ];

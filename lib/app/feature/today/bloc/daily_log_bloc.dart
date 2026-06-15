@@ -33,8 +33,9 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
           event,
           emit,
         ),
+        MealEntryUsualMealLinked() => _onMealEntryUsualMealLinked(event, emit),
         WeightLogged() => _onWeightLogged(event, emit),
-        TodayWeightChanged() => _onTodayWeightChanged(event, emit),
+        WeightOnDayChanged() => _onWeightOnDayChanged(event, emit),
         SampleDataSeeded() => _onSampleDataSeeded(emit),
       },
     );
@@ -72,6 +73,20 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
     emit(state.copyWith(mealEntries: updatedEntries));
   }
 
+  void _onMealEntryUsualMealLinked(
+    MealEntryUsualMealLinked event,
+    Emitter<DailyLogState> emit,
+  ) {
+    final updatedEntries = [
+      for (final mealLogEntry in state.mealEntries)
+        if (mealLogEntry.id == event.id)
+          mealLogEntry.copyWith(usualMealId: event.usualMealId)
+        else
+          mealLogEntry,
+    ];
+    emit(state.copyWith(mealEntries: updatedEntries));
+  }
+
   void _onWeightLogged(WeightLogged event, Emitter<DailyLogState> emit) {
     final weightEntry = WeightEntry(
       id: _uuid.v4(),
@@ -82,13 +97,13 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
     emit(state.copyWith(weightEntries: [...state.weightEntries, weightEntry]));
   }
 
-  void _onTodayWeightChanged(
-    TodayWeightChanged event,
+  void _onWeightOnDayChanged(
+    WeightOnDayChanged event,
     Emitter<DailyLogState> emit,
   ) {
-    final now = DateTime.now();
+    final day = event.day;
     final otherDayEntries = state.weightEntries
-        .where((weightEntry) => !DateUtils.isSameDay(weightEntry.loggedAt, now))
+        .where((weightEntry) => !DateUtils.isSameDay(weightEntry.loggedAt, day))
         .toList();
 
     final weight = event.weight;
@@ -97,15 +112,15 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
       return;
     }
 
-    final todayWeightEntry = state.weightOn(now);
+    final existingWeightEntry = state.weightOn(day);
     final weightEntry =
-        todayWeightEntry?.copyWith(
+        existingWeightEntry?.copyWith(
           weight: weight,
           weightUnit: event.weightUnit,
         ) ??
         WeightEntry(
           id: _uuid.v4(),
-          loggedAt: now,
+          loggedAt: day,
           weight: weight,
           weightUnit: event.weightUnit,
         );

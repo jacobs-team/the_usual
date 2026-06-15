@@ -33,6 +33,7 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
           event,
           emit,
         ),
+        UsualMealNameChanged() => _onUsualMealNameChanged(event, emit),
         // TODO(onboarding): request OS notification permission when
         // ReminderStyle.notifications is picked, falling back to onAppOpen if
         // denied. Notification approach is an open item in docs/onboarding.
@@ -179,6 +180,33 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
       for (final usualMeal in usualMeals)
         if (usualMeal.id == event.id)
           usualMeal.copyWith(nutrition: event.nutrition)
+        else
+          usualMeal,
+    ];
+
+    emit(
+      state.copyWith(
+        settings: state.settings.copyWith(
+          usuals: {
+            ...state.settings.usuals,
+            event.mealOfTheDay: updatedUsualMeals,
+          },
+        ),
+      ),
+    );
+  }
+
+  void _onUsualMealNameChanged(
+    UsualMealNameChanged event,
+    Emitter<OnboardingState> emit,
+  ) {
+    if (event.name.trim().isEmpty) return;
+    final usualMeals =
+        state.settings.usuals[event.mealOfTheDay] ?? <UsualMeal>[];
+    final updatedUsualMeals = [
+      for (final usualMeal in usualMeals)
+        if (usualMeal.id == event.id)
+          usualMeal.copyWith(name: event.name)
         else
           usualMeal,
     ];

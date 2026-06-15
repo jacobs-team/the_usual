@@ -18,6 +18,7 @@ void main() {
           onAdded: (_, _) {},
           onNutritionChanged: (_, _) {},
           onRemoved: (_) {},
+          onNameChanged: (id, name) {},
         ),
       );
 
@@ -40,6 +41,7 @@ void main() {
             changedNutrition = nutrition;
           },
           onRemoved: (_) {},
+          onNameChanged: (id, name) {},
         ),
       );
 
@@ -59,6 +61,7 @@ void main() {
           onAdded: (_, _) {},
           onNutritionChanged: (_, _) {},
           onRemoved: (id) => removedId = id,
+          onNameChanged: (id, name) {},
         ),
       );
 

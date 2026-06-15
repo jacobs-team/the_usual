@@ -55,7 +55,7 @@ extension OnboardingEventPatterns on OnboardingEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( BackPressed value)?  backPressed,TResult Function( ResetPressed value)?  resetPressed,TResult Function( SkipPressed value)?  skipPressed,TResult Function( ContinuePressed value)?  continuePressed,TResult Function( UsualMealAdded value)?  usualMealAdded,TResult Function( UsualMealRemoved value)?  usualMealRemoved,TResult Function( UsualMealNutritionChanged value)?  usualMealNutritionChanged,TResult Function( ReminderStyleSelected value)?  reminderStyleSelected,TResult Function( MealCheckinScheduleModeChanged value)?  mealCheckinScheduleModeChanged,TResult Function( MealReminderToggled value)?  mealReminderToggled,TResult Function( MealReminderTimeChanged value)?  mealReminderTimeChanged,TResult Function( EndOfDayTimeChanged value)?  endOfDayTimeChanged,TResult Function( WeightCheckinFrequencySelected value)?  weightCheckinFrequencySelected,TResult Function( WeightTimeOfDaySelected value)?  weightTimeOfDaySelected,TResult Function( WeightUnitSelected value)?  weightUnitSelected,TResult Function( StartingWeightChanged value)?  startingWeightChanged,TResult Function( FirstLogItemToggled value)?  firstLogItemToggled,TResult Function( SomethingElseLogged value)?  somethingElseLogged,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( BackPressed value)?  backPressed,TResult Function( ResetPressed value)?  resetPressed,TResult Function( SkipPressed value)?  skipPressed,TResult Function( ContinuePressed value)?  continuePressed,TResult Function( UsualMealAdded value)?  usualMealAdded,TResult Function( UsualMealRemoved value)?  usualMealRemoved,TResult Function( UsualMealNutritionChanged value)?  usualMealNutritionChanged,TResult Function( UsualMealNameChanged value)?  usualMealNameChanged,TResult Function( ReminderStyleSelected value)?  reminderStyleSelected,TResult Function( MealCheckinScheduleModeChanged value)?  mealCheckinScheduleModeChanged,TResult Function( MealReminderToggled value)?  mealReminderToggled,TResult Function( MealReminderTimeChanged value)?  mealReminderTimeChanged,TResult Function( EndOfDayTimeChanged value)?  endOfDayTimeChanged,TResult Function( WeightCheckinFrequencySelected value)?  weightCheckinFrequencySelected,TResult Function( WeightTimeOfDaySelected value)?  weightTimeOfDaySelected,TResult Function( WeightUnitSelected value)?  weightUnitSelected,TResult Function( StartingWeightChanged value)?  startingWeightChanged,TResult Function( FirstLogItemToggled value)?  firstLogItemToggled,TResult Function( SomethingElseLogged value)?  somethingElseLogged,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case BackPressed() when backPressed != null:
@@ -65,7 +65,8 @@ return skipPressed(_that);case ContinuePressed() when continuePressed != null:
 return continuePressed(_that);case UsualMealAdded() when usualMealAdded != null:
 return usualMealAdded(_that);case UsualMealRemoved() when usualMealRemoved != null:
 return usualMealRemoved(_that);case UsualMealNutritionChanged() when usualMealNutritionChanged != null:
-return usualMealNutritionChanged(_that);case ReminderStyleSelected() when reminderStyleSelected != null:
+return usualMealNutritionChanged(_that);case UsualMealNameChanged() when usualMealNameChanged != null:
+return usualMealNameChanged(_that);case ReminderStyleSelected() when reminderStyleSelected != null:
 return reminderStyleSelected(_that);case MealCheckinScheduleModeChanged() when mealCheckinScheduleModeChanged != null:
 return mealCheckinScheduleModeChanged(_that);case MealReminderToggled() when mealReminderToggled != null:
 return mealReminderToggled(_that);case MealReminderTimeChanged() when mealReminderTimeChanged != null:
@@ -94,7 +95,7 @@ return somethingElseLogged(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( BackPressed value)  backPressed,required TResult Function( ResetPressed value)  resetPressed,required TResult Function( SkipPressed value)  skipPressed,required TResult Function( ContinuePressed value)  continuePressed,required TResult Function( UsualMealAdded value)  usualMealAdded,required TResult Function( UsualMealRemoved value)  usualMealRemoved,required TResult Function( UsualMealNutritionChanged value)  usualMealNutritionChanged,required TResult Function( ReminderStyleSelected value)  reminderStyleSelected,required TResult Function( MealCheckinScheduleModeChanged value)  mealCheckinScheduleModeChanged,required TResult Function( MealReminderToggled value)  mealReminderToggled,required TResult Function( MealReminderTimeChanged value)  mealReminderTimeChanged,required TResult Function( EndOfDayTimeChanged value)  endOfDayTimeChanged,required TResult Function( WeightCheckinFrequencySelected value)  weightCheckinFrequencySelected,required TResult Function( WeightTimeOfDaySelected value)  weightTimeOfDaySelected,required TResult Function( WeightUnitSelected value)  weightUnitSelected,required TResult Function( StartingWeightChanged value)  startingWeightChanged,required TResult Function( FirstLogItemToggled value)  firstLogItemToggled,required TResult Function( SomethingElseLogged value)  somethingElseLogged,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( BackPressed value)  backPressed,required TResult Function( ResetPressed value)  resetPressed,required TResult Function( SkipPressed value)  skipPressed,required TResult Function( ContinuePressed value)  continuePressed,required TResult Function( UsualMealAdded value)  usualMealAdded,required TResult Function( UsualMealRemoved value)  usualMealRemoved,required TResult Function( UsualMealNutritionChanged value)  usualMealNutritionChanged,required TResult Function( UsualMealNameChanged value)  usualMealNameChanged,required TResult Function( ReminderStyleSelected value)  reminderStyleSelected,required TResult Function( MealCheckinScheduleModeChanged value)  mealCheckinScheduleModeChanged,required TResult Function( MealReminderToggled value)  mealReminderToggled,required TResult Function( MealReminderTimeChanged value)  mealReminderTimeChanged,required TResult Function( EndOfDayTimeChanged value)  endOfDayTimeChanged,required TResult Function( WeightCheckinFrequencySelected value)  weightCheckinFrequencySelected,required TResult Function( WeightTimeOfDaySelected value)  weightTimeOfDaySelected,required TResult Function( WeightUnitSelected value)  weightUnitSelected,required TResult Function( StartingWeightChanged value)  startingWeightChanged,required TResult Function( FirstLogItemToggled value)  firstLogItemToggled,required TResult Function( SomethingElseLogged value)  somethingElseLogged,}){
 final _that = this;
 switch (_that) {
 case BackPressed():
@@ -104,7 +105,8 @@ return skipPressed(_that);case ContinuePressed():
 return continuePressed(_that);case UsualMealAdded():
 return usualMealAdded(_that);case UsualMealRemoved():
 return usualMealRemoved(_that);case UsualMealNutritionChanged():
-return usualMealNutritionChanged(_that);case ReminderStyleSelected():
+return usualMealNutritionChanged(_that);case UsualMealNameChanged():
+return usualMealNameChanged(_that);case ReminderStyleSelected():
 return reminderStyleSelected(_that);case MealCheckinScheduleModeChanged():
 return mealCheckinScheduleModeChanged(_that);case MealReminderToggled():
 return mealReminderToggled(_that);case MealReminderTimeChanged():
@@ -129,7 +131,7 @@ return somethingElseLogged(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( BackPressed value)?  backPressed,TResult? Function( ResetPressed value)?  resetPressed,TResult? Function( SkipPressed value)?  skipPressed,TResult? Function( ContinuePressed value)?  continuePressed,TResult? Function( UsualMealAdded value)?  usualMealAdded,TResult? Function( UsualMealRemoved value)?  usualMealRemoved,TResult? Function( UsualMealNutritionChanged value)?  usualMealNutritionChanged,TResult? Function( ReminderStyleSelected value)?  reminderStyleSelected,TResult? Function( MealCheckinScheduleModeChanged value)?  mealCheckinScheduleModeChanged,TResult? Function( MealReminderToggled value)?  mealReminderToggled,TResult? Function( MealReminderTimeChanged value)?  mealReminderTimeChanged,TResult? Function( EndOfDayTimeChanged value)?  endOfDayTimeChanged,TResult? Function( WeightCheckinFrequencySelected value)?  weightCheckinFrequencySelected,TResult? Function( WeightTimeOfDaySelected value)?  weightTimeOfDaySelected,TResult? Function( WeightUnitSelected value)?  weightUnitSelected,TResult? Function( StartingWeightChanged value)?  startingWeightChanged,TResult? Function( FirstLogItemToggled value)?  firstLogItemToggled,TResult? Function( SomethingElseLogged value)?  somethingElseLogged,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( BackPressed value)?  backPressed,TResult? Function( ResetPressed value)?  resetPressed,TResult? Function( SkipPressed value)?  skipPressed,TResult? Function( ContinuePressed value)?  continuePressed,TResult? Function( UsualMealAdded value)?  usualMealAdded,TResult? Function( UsualMealRemoved value)?  usualMealRemoved,TResult? Function( UsualMealNutritionChanged value)?  usualMealNutritionChanged,TResult? Function( UsualMealNameChanged value)?  usualMealNameChanged,TResult? Function( ReminderStyleSelected value)?  reminderStyleSelected,TResult? Function( MealCheckinScheduleModeChanged value)?  mealCheckinScheduleModeChanged,TResult? Function( MealReminderToggled value)?  mealReminderToggled,TResult? Function( MealReminderTimeChanged value)?  mealReminderTimeChanged,TResult? Function( EndOfDayTimeChanged value)?  endOfDayTimeChanged,TResult? Function( WeightCheckinFrequencySelected value)?  weightCheckinFrequencySelected,TResult? Function( WeightTimeOfDaySelected value)?  weightTimeOfDaySelected,TResult? Function( WeightUnitSelected value)?  weightUnitSelected,TResult? Function( StartingWeightChanged value)?  startingWeightChanged,TResult? Function( FirstLogItemToggled value)?  firstLogItemToggled,TResult? Function( SomethingElseLogged value)?  somethingElseLogged,}){
 final _that = this;
 switch (_that) {
 case BackPressed() when backPressed != null:
@@ -139,7 +141,8 @@ return skipPressed(_that);case ContinuePressed() when continuePressed != null:
 return continuePressed(_that);case UsualMealAdded() when usualMealAdded != null:
 return usualMealAdded(_that);case UsualMealRemoved() when usualMealRemoved != null:
 return usualMealRemoved(_that);case UsualMealNutritionChanged() when usualMealNutritionChanged != null:
-return usualMealNutritionChanged(_that);case ReminderStyleSelected() when reminderStyleSelected != null:
+return usualMealNutritionChanged(_that);case UsualMealNameChanged() when usualMealNameChanged != null:
+return usualMealNameChanged(_that);case ReminderStyleSelected() when reminderStyleSelected != null:
 return reminderStyleSelected(_that);case MealCheckinScheduleModeChanged() when mealCheckinScheduleModeChanged != null:
 return mealCheckinScheduleModeChanged(_that);case MealReminderToggled() when mealReminderToggled != null:
 return mealReminderToggled(_that);case MealReminderTimeChanged() when mealReminderTimeChanged != null:
@@ -167,7 +170,7 @@ return somethingElseLogged(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  backPressed,TResult Function()?  resetPressed,TResult Function()?  skipPressed,TResult Function()?  continuePressed,TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  usualMealAdded,TResult Function( MealOfTheDay mealOfTheDay,  String id)?  usualMealRemoved,TResult Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)?  usualMealNutritionChanged,TResult Function( ReminderStyle reminderStyle)?  reminderStyleSelected,TResult Function( MealCheckinScheduleMode mealCheckinScheduleMode)?  mealCheckinScheduleModeChanged,TResult Function( MealOfTheDay mealOfTheDay,  bool enabled)?  mealReminderToggled,TResult Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)?  mealReminderTimeChanged,TResult Function( TimeOfDay timeOfDay)?  endOfDayTimeChanged,TResult Function( WeightCheckinFrequency weightCheckinFrequency)?  weightCheckinFrequencySelected,TResult Function( WeightTimeOfDay weightTimeOfDay)?  weightTimeOfDaySelected,TResult Function( WeightUnit weightUnit)?  weightUnitSelected,TResult Function( double? weight)?  startingWeightChanged,TResult Function( String id)?  firstLogItemToggled,TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  somethingElseLogged,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  backPressed,TResult Function()?  resetPressed,TResult Function()?  skipPressed,TResult Function()?  continuePressed,TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  usualMealAdded,TResult Function( MealOfTheDay mealOfTheDay,  String id)?  usualMealRemoved,TResult Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)?  usualMealNutritionChanged,TResult Function( MealOfTheDay mealOfTheDay,  String id,  String name)?  usualMealNameChanged,TResult Function( ReminderStyle reminderStyle)?  reminderStyleSelected,TResult Function( MealCheckinScheduleMode mealCheckinScheduleMode)?  mealCheckinScheduleModeChanged,TResult Function( MealOfTheDay mealOfTheDay,  bool enabled)?  mealReminderToggled,TResult Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)?  mealReminderTimeChanged,TResult Function( TimeOfDay timeOfDay)?  endOfDayTimeChanged,TResult Function( WeightCheckinFrequency weightCheckinFrequency)?  weightCheckinFrequencySelected,TResult Function( WeightTimeOfDay weightTimeOfDay)?  weightTimeOfDaySelected,TResult Function( WeightUnit weightUnit)?  weightUnitSelected,TResult Function( double? weight)?  startingWeightChanged,TResult Function( String id)?  firstLogItemToggled,TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  somethingElseLogged,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case BackPressed() when backPressed != null:
 return backPressed();case ResetPressed() when resetPressed != null:
@@ -176,7 +179,8 @@ return skipPressed();case ContinuePressed() when continuePressed != null:
 return continuePressed();case UsualMealAdded() when usualMealAdded != null:
 return usualMealAdded(_that.mealOfTheDay,_that.name,_that.nutrition);case UsualMealRemoved() when usualMealRemoved != null:
 return usualMealRemoved(_that.mealOfTheDay,_that.id);case UsualMealNutritionChanged() when usualMealNutritionChanged != null:
-return usualMealNutritionChanged(_that.mealOfTheDay,_that.id,_that.nutrition);case ReminderStyleSelected() when reminderStyleSelected != null:
+return usualMealNutritionChanged(_that.mealOfTheDay,_that.id,_that.nutrition);case UsualMealNameChanged() when usualMealNameChanged != null:
+return usualMealNameChanged(_that.mealOfTheDay,_that.id,_that.name);case ReminderStyleSelected() when reminderStyleSelected != null:
 return reminderStyleSelected(_that.reminderStyle);case MealCheckinScheduleModeChanged() when mealCheckinScheduleModeChanged != null:
 return mealCheckinScheduleModeChanged(_that.mealCheckinScheduleMode);case MealReminderToggled() when mealReminderToggled != null:
 return mealReminderToggled(_that.mealOfTheDay,_that.enabled);case MealReminderTimeChanged() when mealReminderTimeChanged != null:
@@ -205,7 +209,7 @@ return somethingElseLogged(_that.mealOfTheDay,_that.name,_that.nutrition);case _
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  backPressed,required TResult Function()  resetPressed,required TResult Function()  skipPressed,required TResult Function()  continuePressed,required TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)  usualMealAdded,required TResult Function( MealOfTheDay mealOfTheDay,  String id)  usualMealRemoved,required TResult Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)  usualMealNutritionChanged,required TResult Function( ReminderStyle reminderStyle)  reminderStyleSelected,required TResult Function( MealCheckinScheduleMode mealCheckinScheduleMode)  mealCheckinScheduleModeChanged,required TResult Function( MealOfTheDay mealOfTheDay,  bool enabled)  mealReminderToggled,required TResult Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)  mealReminderTimeChanged,required TResult Function( TimeOfDay timeOfDay)  endOfDayTimeChanged,required TResult Function( WeightCheckinFrequency weightCheckinFrequency)  weightCheckinFrequencySelected,required TResult Function( WeightTimeOfDay weightTimeOfDay)  weightTimeOfDaySelected,required TResult Function( WeightUnit weightUnit)  weightUnitSelected,required TResult Function( double? weight)  startingWeightChanged,required TResult Function( String id)  firstLogItemToggled,required TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)  somethingElseLogged,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  backPressed,required TResult Function()  resetPressed,required TResult Function()  skipPressed,required TResult Function()  continuePressed,required TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)  usualMealAdded,required TResult Function( MealOfTheDay mealOfTheDay,  String id)  usualMealRemoved,required TResult Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)  usualMealNutritionChanged,required TResult Function( MealOfTheDay mealOfTheDay,  String id,  String name)  usualMealNameChanged,required TResult Function( ReminderStyle reminderStyle)  reminderStyleSelected,required TResult Function( MealCheckinScheduleMode mealCheckinScheduleMode)  mealCheckinScheduleModeChanged,required TResult Function( MealOfTheDay mealOfTheDay,  bool enabled)  mealReminderToggled,required TResult Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)  mealReminderTimeChanged,required TResult Function( TimeOfDay timeOfDay)  endOfDayTimeChanged,required TResult Function( WeightCheckinFrequency weightCheckinFrequency)  weightCheckinFrequencySelected,required TResult Function( WeightTimeOfDay weightTimeOfDay)  weightTimeOfDaySelected,required TResult Function( WeightUnit weightUnit)  weightUnitSelected,required TResult Function( double? weight)  startingWeightChanged,required TResult Function( String id)  firstLogItemToggled,required TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)  somethingElseLogged,}) {final _that = this;
 switch (_that) {
 case BackPressed():
 return backPressed();case ResetPressed():
@@ -214,7 +218,8 @@ return skipPressed();case ContinuePressed():
 return continuePressed();case UsualMealAdded():
 return usualMealAdded(_that.mealOfTheDay,_that.name,_that.nutrition);case UsualMealRemoved():
 return usualMealRemoved(_that.mealOfTheDay,_that.id);case UsualMealNutritionChanged():
-return usualMealNutritionChanged(_that.mealOfTheDay,_that.id,_that.nutrition);case ReminderStyleSelected():
+return usualMealNutritionChanged(_that.mealOfTheDay,_that.id,_that.nutrition);case UsualMealNameChanged():
+return usualMealNameChanged(_that.mealOfTheDay,_that.id,_that.name);case ReminderStyleSelected():
 return reminderStyleSelected(_that.reminderStyle);case MealCheckinScheduleModeChanged():
 return mealCheckinScheduleModeChanged(_that.mealCheckinScheduleMode);case MealReminderToggled():
 return mealReminderToggled(_that.mealOfTheDay,_that.enabled);case MealReminderTimeChanged():
@@ -239,7 +244,7 @@ return somethingElseLogged(_that.mealOfTheDay,_that.name,_that.nutrition);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  backPressed,TResult? Function()?  resetPressed,TResult? Function()?  skipPressed,TResult? Function()?  continuePressed,TResult? Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  usualMealAdded,TResult? Function( MealOfTheDay mealOfTheDay,  String id)?  usualMealRemoved,TResult? Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)?  usualMealNutritionChanged,TResult? Function( ReminderStyle reminderStyle)?  reminderStyleSelected,TResult? Function( MealCheckinScheduleMode mealCheckinScheduleMode)?  mealCheckinScheduleModeChanged,TResult? Function( MealOfTheDay mealOfTheDay,  bool enabled)?  mealReminderToggled,TResult? Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)?  mealReminderTimeChanged,TResult? Function( TimeOfDay timeOfDay)?  endOfDayTimeChanged,TResult? Function( WeightCheckinFrequency weightCheckinFrequency)?  weightCheckinFrequencySelected,TResult? Function( WeightTimeOfDay weightTimeOfDay)?  weightTimeOfDaySelected,TResult? Function( WeightUnit weightUnit)?  weightUnitSelected,TResult? Function( double? weight)?  startingWeightChanged,TResult? Function( String id)?  firstLogItemToggled,TResult? Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  somethingElseLogged,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  backPressed,TResult? Function()?  resetPressed,TResult? Function()?  skipPressed,TResult? Function()?  continuePressed,TResult? Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  usualMealAdded,TResult? Function( MealOfTheDay mealOfTheDay,  String id)?  usualMealRemoved,TResult? Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)?  usualMealNutritionChanged,TResult? Function( MealOfTheDay mealOfTheDay,  String id,  String name)?  usualMealNameChanged,TResult? Function( ReminderStyle reminderStyle)?  reminderStyleSelected,TResult? Function( MealCheckinScheduleMode mealCheckinScheduleMode)?  mealCheckinScheduleModeChanged,TResult? Function( MealOfTheDay mealOfTheDay,  bool enabled)?  mealReminderToggled,TResult? Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)?  mealReminderTimeChanged,TResult? Function( TimeOfDay timeOfDay)?  endOfDayTimeChanged,TResult? Function( WeightCheckinFrequency weightCheckinFrequency)?  weightCheckinFrequencySelected,TResult? Function( WeightTimeOfDay weightTimeOfDay)?  weightTimeOfDaySelected,TResult? Function( WeightUnit weightUnit)?  weightUnitSelected,TResult? Function( double? weight)?  startingWeightChanged,TResult? Function( String id)?  firstLogItemToggled,TResult? Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  somethingElseLogged,}) {final _that = this;
 switch (_that) {
 case BackPressed() when backPressed != null:
 return backPressed();case ResetPressed() when resetPressed != null:
@@ -248,7 +253,8 @@ return skipPressed();case ContinuePressed() when continuePressed != null:
 return continuePressed();case UsualMealAdded() when usualMealAdded != null:
 return usualMealAdded(_that.mealOfTheDay,_that.name,_that.nutrition);case UsualMealRemoved() when usualMealRemoved != null:
 return usualMealRemoved(_that.mealOfTheDay,_that.id);case UsualMealNutritionChanged() when usualMealNutritionChanged != null:
-return usualMealNutritionChanged(_that.mealOfTheDay,_that.id,_that.nutrition);case ReminderStyleSelected() when reminderStyleSelected != null:
+return usualMealNutritionChanged(_that.mealOfTheDay,_that.id,_that.nutrition);case UsualMealNameChanged() when usualMealNameChanged != null:
+return usualMealNameChanged(_that.mealOfTheDay,_that.id,_that.name);case ReminderStyleSelected() when reminderStyleSelected != null:
 return reminderStyleSelected(_that.reminderStyle);case MealCheckinScheduleModeChanged() when mealCheckinScheduleModeChanged != null:
 return mealCheckinScheduleModeChanged(_that.mealCheckinScheduleMode);case MealReminderToggled() when mealReminderToggled != null:
 return mealReminderToggled(_that.mealOfTheDay,_that.enabled);case MealReminderTimeChanged() when mealReminderTimeChanged != null:
@@ -619,6 +625,76 @@ $NutritionCopyWith<$Res> get nutrition {
     return _then(_self.copyWith(nutrition: value));
   });
 }
+}
+
+/// @nodoc
+
+
+class UsualMealNameChanged implements OnboardingEvent {
+  const UsualMealNameChanged(this.mealOfTheDay, this.id, this.name);
+  
+
+ final  MealOfTheDay mealOfTheDay;
+ final  String id;
+ final  String name;
+
+/// Create a copy of OnboardingEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$UsualMealNameChangedCopyWith<UsualMealNameChanged> get copyWith => _$UsualMealNameChangedCopyWithImpl<UsualMealNameChanged>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UsualMealNameChanged&&(identical(other.mealOfTheDay, mealOfTheDay) || other.mealOfTheDay == mealOfTheDay)&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,mealOfTheDay,id,name);
+
+@override
+String toString() {
+  return 'OnboardingEvent.usualMealNameChanged(mealOfTheDay: $mealOfTheDay, id: $id, name: $name)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $UsualMealNameChangedCopyWith<$Res> implements $OnboardingEventCopyWith<$Res> {
+  factory $UsualMealNameChangedCopyWith(UsualMealNameChanged value, $Res Function(UsualMealNameChanged) _then) = _$UsualMealNameChangedCopyWithImpl;
+@useResult
+$Res call({
+ MealOfTheDay mealOfTheDay, String id, String name
+});
+
+
+
+
+}
+/// @nodoc
+class _$UsualMealNameChangedCopyWithImpl<$Res>
+    implements $UsualMealNameChangedCopyWith<$Res> {
+  _$UsualMealNameChangedCopyWithImpl(this._self, this._then);
+
+  final UsualMealNameChanged _self;
+  final $Res Function(UsualMealNameChanged) _then;
+
+/// Create a copy of OnboardingEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? mealOfTheDay = null,Object? id = null,Object? name = null,}) {
+  return _then(UsualMealNameChanged(
+null == mealOfTheDay ? _self.mealOfTheDay : mealOfTheDay // ignore: cast_nullable_to_non_nullable
+as MealOfTheDay,null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,
+  ));
+}
+
+
 }
 
 /// @nodoc

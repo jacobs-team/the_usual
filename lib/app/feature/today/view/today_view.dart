@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:the_usual/app/app.dart';
@@ -133,50 +132,12 @@ class _WeightTracker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final today = DateTime.now();
-    final weightUnit = getIt<UserSettingsBloc>().state.weightUnit;
-    return BlocSelector<
-      DailyLogBloc,
-      DailyLogState,
-      (WeightEntry?, WeightEntry?)
-    >(
-      bloc: getIt<DailyLogBloc>(),
-      selector: (state) => (state.weightOn(today), state.latestWeight),
-      builder: (context, selected) {
-        final (todayWeight, latestWeight) = selected;
-        return Card(
-          margin: EdgeInsets.zero,
-          child: ListTile(
-            title: const Text('Weight'),
-            trailing: TheUsualTextField(
-              autoSize: true,
-              dense: true,
-              textAlign: TextAlign.right,
-              initialValue: todayWeight == null
-                  ? ''
-                  : todayWeight.weight.trimmedDecimal,
-              hintText: latestWeight == null
-                  ? '—'
-                  : latestWeight.weight.trimmedDecimal,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(
-                  RegExp(r'^\d{0,4}\.?\d{0,1}'),
-                ),
-              ],
-              suffixText: ' ${weightUnit.name}',
-              onChanged: (value) => getIt<DailyLogBloc>().add(
-                DailyLogEvent.todayWeightChanged(
-                  double.tryParse(value),
-                  weightUnit,
-                ),
-              ),
-            ),
-          ),
-        );
-      },
+    return Card(
+      margin: EdgeInsets.zero,
+      child: ListTile(
+        title: const Text('Weight'),
+        trailing: WeightEntryField(day: DateTime.now()),
+      ),
     );
   }
 }

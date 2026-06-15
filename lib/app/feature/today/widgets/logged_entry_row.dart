@@ -2,17 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template logged_entry_row}
 /// A single logged meal entry: name, a remove button, and inline-editable
 /// nutrition fields.
 ///
-/// If the entry came from a usual meal that had no nutrition yet, editing the
-/// nutrition here fills the usual meal's nutrition directly. If the usual meal
-/// already had nutrition and the logged values now differ, a labelled button
-/// appears to optionally push the new values to the usual meal.
+/// When linked to a usual meal the row shows that usual meal's current name, so
+/// renaming it in settings is reflected here. When the logged nutrition differs
+/// from the usual meal, a labelled button appears to push the logged values to
+/// it.
 /// {@endtemplate}
-class LoggedEntryRow extends StatefulWidget {
+class LoggedEntryRow extends StatelessWidget {
   /// {@macro logged_entry_row}
   const LoggedEntryRow({
     required this.mealLogEntry,
@@ -26,96 +27,86 @@ class LoggedEntryRow extends StatefulWidget {
   /// Whether the nutrition fields start expanded for editing.
   final bool expandedByDefault;
 
-  @override
-  State<LoggedEntryRow> createState() => _LoggedEntryRowState();
-}
-
-class _LoggedEntryRowState extends State<LoggedEntryRow> {
-  /// Whether the linked usual meal already had nutrition when this row first
-  /// appeared. When false, editing fills the usual meal's nutrition directly;
-  /// when true, edits offer the explicit update button instead.
-  late final bool _usualMealHadNutrition;
-
-  @override
-  void initState() {
-    super.initState();
-    final usualMeal = _linkedUsualMeal(getIt<UserSettingsBloc>().state);
-    _usualMealHadNutrition = usualMeal != null && !usualMeal.nutrition.isEmpty;
-  }
-
   UsualMeal? _linkedUsualMeal(UserSettingsState state) {
-    final mealLogEntry = widget.mealLogEntry;
-    if (mealLogEntry.usualMealId == null) return null;
     final usualMeals =
         state.usuals[mealLogEntry.mealOfTheDay] ?? const <UsualMeal>[];
     for (final usualMeal in usualMeals) {
-      if (usualMeal.id == mealLogEntry.usualMealId) return usualMeal;
+      if (usualMeal.id == mealLogEntry.usualMealId ||
+          usualMeal.name.toLowerCase() == mealLogEntry.name.toLowerCase()) {
+        return usualMeal;
+      }
     }
     return null;
   }
 
   @override
   Widget build(BuildContext context) {
-    final mealLogEntry = widget.mealLogEntry;
-    return ExpandableNutrition(
-      name: mealLogEntry.name,
-      nutrition: mealLogEntry.nutrition,
-      expandedByDefault: widget.expandedByDefault,
-      onChanged: (nutrition) {
-        getIt<DailyLogBloc>().add(
-          DailyLogEvent.mealEntryNutritionChanged(mealLogEntry.id, nutrition),
-        );
-        // Usual meal had no nutrition yet: fill it in directly.
-        if (!_usualMealHadNutrition && mealLogEntry.usualMealId != null) {
-          getIt<UserSettingsBloc>().add(
-            UserSettingsEvent.usualMealNutritionChanged(
-              mealLogEntry.mealOfTheDay,
-              mealLogEntry.usualMealId!,
-              nutrition,
-            ),
-          );
+    return BlocSelector<UserSettingsBloc, UserSettingsState, UsualMeal?>(
+      bloc: getIt<UserSettingsBloc>(),
+      selector: _linkedUsualMeal,
+      builder: (context, usualMeal) {
+        // When linked only by name (the stored id is stale or absent), stamp
+        // the usual meal's current id onto the entry so the link survives a
+        // later rename. Deferred to after the frame to keep build pure.
+        if (usualMeal != null && usualMeal.id != mealLogEntry.usualMealId) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            getIt<DailyLogBloc>().add(
+              DailyLogEvent.mealEntryUsualMealLinked(
+                mealLogEntry.id,
+                usualMeal.id,
+              ),
+            );
+          });
         }
-      },
-      onRemoved: () => getIt<DailyLogBloc>().add(
-        DailyLogEvent.mealEntryRemoved(mealLogEntry.id),
-      ),
-      expandedFooter: _usualMealHadNutrition
-          ? BlocSelector<UserSettingsBloc, UserSettingsState, UsualMeal?>(
-              bloc: getIt<UserSettingsBloc>(),
-              selector: _linkedUsualMeal,
-              builder: (context, usualMeal) {
-                final nutrition = mealLogEntry.nutrition;
-                final differsFromUsualMeal =
-                    usualMeal != null && usualMeal.nutrition != nutrition;
 
-                if (!differsFromUsualMeal) return const SizedBox.shrink();
-                return Align(
+        final nutrition = mealLogEntry.nutrition;
+        final differsFromUsualMeal =
+            usualMeal != null && usualMeal.nutrition != nutrition;
+
+        return ExpandableNutrition(
+          name: usualMeal?.name ?? mealLogEntry.name,
+          nutrition: nutrition,
+          expandedByDefault: expandedByDefault,
+          onChanged: (nutrition) => getIt<DailyLogBloc>().add(
+            DailyLogEvent.mealEntryNutritionChanged(mealLogEntry.id, nutrition),
+          ),
+          onRemoved: () => getIt<DailyLogBloc>().add(
+            DailyLogEvent.mealEntryRemoved(mealLogEntry.id),
+          ),
+          expandedFooter: differsFromUsualMeal
+              ? Align(
                   alignment: Alignment.centerLeft,
-                  child: TextButton.icon(
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      visualDensity: VisualDensity.compact,
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                      left: AppDesign.spacing.sm,
+                      top: AppDesign.spacing.sm,
                     ),
-                    icon: const Icon(Icons.sync, size: 16),
-                    label: Text(
-                      nutrition.isEmpty
-                          ? "Clear this usual meal's nutrition"
-                          : 'Update usual meal to match',
-                    ),
-                    onPressed: () => getIt<UserSettingsBloc>().add(
-                      UserSettingsEvent.usualMealNutritionChanged(
-                        mealLogEntry.mealOfTheDay,
-                        usualMeal.id,
-                        nutrition,
+                    child: TextButton.icon(
+                      style: TextButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        minimumSize: Size.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        visualDensity: VisualDensity.compact,
+                      ),
+                      icon: const Icon(Icons.sync, size: 16),
+                      label: Text(
+                        nutrition.isEmpty
+                            ? "Clear this usual meal's nutrition"
+                            : 'Update usual meal to match',
+                      ),
+                      onPressed: () => getIt<UserSettingsBloc>().add(
+                        UserSettingsEvent.usualMealNutritionChanged(
+                          mealLogEntry.mealOfTheDay,
+                          usualMeal.id,
+                          nutrition,
+                        ),
                       ),
                     ),
                   ),
-                );
-              },
-            )
-          : null,
+                )
+              : null,
+        );
+      },
     );
   }
 }

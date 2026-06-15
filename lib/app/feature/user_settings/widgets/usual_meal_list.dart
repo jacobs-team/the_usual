@@ -60,6 +60,9 @@ class _UsualMealListState extends State<UsualMealList>
                       nutrition,
                     ),
                   ),
+              onNameChanged: (id, name) => getIt<UserSettingsBloc>().add(
+                UserSettingsEvent.usualMealNameChanged(mealOfTheDay, id, name),
+              ),
               onRemoved: (id) => getIt<UserSettingsBloc>().add(
                 UserSettingsEvent.usualMealRemoved(mealOfTheDay, id),
               ),
