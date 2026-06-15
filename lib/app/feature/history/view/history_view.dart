@@ -128,9 +128,7 @@ class _HistoryViewState extends State<HistoryView> {
                               bottom: MediaQuery.paddingOf(context).bottom,
                             ),
                         children: [
-                          MonthWeightChart(
-                            weightEntries: monthHistory.weightEntries,
-                          ),
+                          MonthTrendsChart(monthHistory: monthHistory),
                           Padding(
                             padding: EdgeInsets.only(
                               bottom: AppDesign.spacing.sm,

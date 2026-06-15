@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -150,76 +152,186 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
   void _onSampleDataSeeded(Emitter<DailyLogState> emit) {
     // Each sample is (name, calories, protein, fat, carbs).
     const breakfasts = [
-      ('Eggs & toast', 350, 18, 14, 30),
-      ('Oatmeal', 300, 10, 6, 54),
-      ('Greek yogurt bowl', 320, 22, 8, 38),
-      ('Smoothie', 280, 12, 4, 50),
+      ('Scrambled eggs & toast', 350, 20, 16, 28),
+      ('Oatmeal with banana', 320, 9, 6, 60),
+      ('Greek yogurt & granola', 300, 20, 8, 38),
+      ('Avocado toast', 380, 12, 20, 38),
+      ('Protein shake', 260, 30, 5, 22),
+      ('Bagel & cream cheese', 420, 13, 16, 55),
+      ('Pancakes & syrup', 480, 12, 14, 78),
     ];
     const lunches = [
-      ('Chicken bowl', 600, 45, 18, 55),
-      ('Sandwich', 450, 25, 16, 48),
-      ('Salad', 380, 20, 22, 24),
-      ('Leftovers', 520, 30, 20, 50),
+      ('Chicken & rice bowl', 620, 45, 16, 65),
+      ('Turkey sandwich', 480, 28, 18, 50),
+      ('Caesar salad w/ chicken', 430, 35, 24, 18),
+      ('Burrito', 700, 32, 26, 80),
+      ('Leftover pasta', 560, 22, 18, 78),
+      ('Sushi rolls', 520, 24, 12, 78),
+      ('Soup & sourdough', 400, 16, 12, 58),
     ];
     const dinners = [
-      ('Pasta', 700, 26, 20, 100),
-      ('Tacos', 620, 32, 28, 58),
-      ('Stir fry', 560, 30, 18, 62),
-      ('Pizza', 820, 34, 36, 88),
+      ('Salmon & veggies', 560, 40, 28, 24),
+      ('Spaghetti bolognese', 720, 34, 24, 92),
+      ('Steak & potatoes', 780, 48, 38, 52),
+      ('Chicken stir fry', 600, 38, 20, 60),
+      ('Tacos', 650, 30, 30, 62),
+      ('Homemade pizza', 850, 34, 38, 92),
+      ('Veggie curry & rice', 580, 16, 18, 88),
     ];
     const snacks = [
-      ('Protein bar', 200, 20, 7, 22),
-      ('Almonds', 180, 6, 15, 6),
-      ('Apple', 95, 0, 0, 25),
+      ('Protein bar', 210, 20, 7, 24),
+      ('Apple & peanut butter', 270, 7, 16, 28),
+      ('Handful of almonds', 180, 6, 16, 6),
+      ('Greek yogurt', 130, 15, 0, 12),
+      ('Dark chocolate', 160, 2, 11, 16),
+      ('Banana', 105, 1, 0, 27),
     ];
-    const daysAgoSamples = [0, 1, 3, 8, 16, 27, 41, 58, 74, 92];
+
+    // Each month trends between a start and end weight, and consecutive months
+    // join up so the overall line drifts down, back up, then down again. The
+    // month two back is deliberately sparse: fewer logged days and more
+    // skipped meals, the way real logging tapers off.
+    const monthPlans = [
+      (
+        monthsAgo: 4,
+        startWeight: 178.0,
+        endWeight: 173.0,
+        logEveryDay: true,
+        sparseMeals: false,
+        weighInChance: 0.80,
+      ),
+      (
+        monthsAgo: 3,
+        startWeight: 173.0,
+        endWeight: 170.0,
+        logEveryDay: true,
+        sparseMeals: false,
+        weighInChance: 0.88,
+      ),
+      (
+        monthsAgo: 2,
+        startWeight: 170.0,
+        endWeight: 172.5,
+        logEveryDay: false,
+        sparseMeals: true,
+        weighInChance: 0.55,
+      ),
+      (
+        monthsAgo: 1,
+        startWeight: 172.5,
+        endWeight: 167.0,
+        logEveryDay: true,
+        sparseMeals: false,
+        weighInChance: 0.90,
+      ),
+      (
+        monthsAgo: 0,
+        startWeight: 167.0,
+        endWeight: 164.5,
+        logEveryDay: true,
+        sparseMeals: false,
+        weighInChance: 0.82,
+      ),
+    ];
 
     final now = clock.now();
+    final random = Random(2026);
     final mealEntries = <MealLogEntry>[];
     final weightEntries = <WeightEntry>[];
 
-    for (var i = 0; i < daysAgoSamples.length; i++) {
-      final day = DateUtils.dateOnly(
-        now.subtract(Duration(days: daysAgoSamples[i])),
-      );
-
-      void addMeal(
-        MealOfTheDay mealOfTheDay,
-        (String, int, int, int, int) record,
-        int hour,
-      ) {
-        mealEntries.add(
-          MealLogEntry(
-            id: _uuid.v4(),
-            loggedAt: day.add(Duration(hours: hour)),
-            mealOfTheDay: mealOfTheDay,
-            name: record.$1,
-            nutrition: Nutrition(
-              calories: record.$2,
-              protein: record.$3,
-              fat: record.$4,
-              carbs: record.$5,
-            ),
-          ),
-        );
-      }
-
-      addMeal(MealOfTheDay.breakfast, breakfasts[i % breakfasts.length], 8);
-      addMeal(MealOfTheDay.lunch, lunches[i % lunches.length], 13);
-      addMeal(MealOfTheDay.dinner, dinners[i % dinners.length], 19);
-      if (i.isEven) {
-        addMeal(MealOfTheDay.snacks, snacks[i % snacks.length], 16);
-      }
-
-      weightEntries.add(
-        WeightEntry(
+    void maybeAddMeal(
+      DateTime day,
+      MealOfTheDay mealOfTheDay,
+      List<(String, int, int, int, int)> pool,
+      int hour,
+      double skipChance,
+    ) {
+      if (random.nextDouble() < skipChance) return;
+      final sample = pool[random.nextInt(pool.length)];
+      final quantity = random.nextDouble() < 0.12 ? 2 : 1;
+      // Now and then only the calorie count was entered, leaving macros blank.
+      final macrosEntered = random.nextDouble() > 0.08;
+      mealEntries.add(
+        MealLogEntry(
           id: _uuid.v4(),
-          loggedAt: day.add(const Duration(hours: 7)),
-          // Older days are heavier, trending down toward today.
-          weight: 165 + daysAgoSamples[i] * 0.08,
-          weightUnit: WeightUnit.lb,
+          loggedAt: day.add(Duration(hours: hour)),
+          mealOfTheDay: mealOfTheDay,
+          name: sample.$1,
+          nutrition: Nutrition(
+            calories: sample.$2,
+            protein: macrosEntered ? sample.$3 : null,
+            fat: macrosEntered ? sample.$4 : null,
+            carbs: macrosEntered ? sample.$5 : null,
+          ),
+          quantity: quantity,
         ),
       );
+    }
+
+    for (final plan in monthPlans) {
+      final monthStart = DateTime(now.year, now.month - plan.monthsAgo, 1);
+      final daysInMonth = DateTime(
+        monthStart.year,
+        monthStart.month + 1,
+        0,
+      ).day;
+      final lastDay = plan.monthsAgo == 0 ? now.day : daysInMonth;
+      final span = lastDay <= 1 ? 1 : lastDay - 1;
+
+      for (var dayOfMonth = 1; dayOfMonth <= lastDay; dayOfMonth++) {
+        // The sparse month logs only some days; full months log every day.
+        final logsThisDay = plan.logEveryDay || random.nextDouble() < 0.66;
+        if (!logsThisDay) continue;
+
+        final day = DateTime(monthStart.year, monthStart.month, dayOfMonth);
+
+        maybeAddMeal(
+          day,
+          MealOfTheDay.breakfast,
+          breakfasts,
+          8,
+          plan.sparseMeals ? 0.40 : 0.12,
+        );
+        maybeAddMeal(
+          day,
+          MealOfTheDay.lunch,
+          lunches,
+          13,
+          plan.sparseMeals ? 0.30 : 0.05,
+        );
+        maybeAddMeal(
+          day,
+          MealOfTheDay.dinner,
+          dinners,
+          19,
+          plan.sparseMeals ? 0.25 : 0.03,
+        );
+        maybeAddMeal(
+          day,
+          MealOfTheDay.snacks,
+          snacks,
+          16,
+          plan.sparseMeals ? 0.70 : 0.50,
+        );
+
+        if (random.nextDouble() < plan.weighInChance) {
+          final progress = (dayOfMonth - 1) / span;
+          final trend =
+              plan.startWeight +
+              (plan.endWeight - plan.startWeight) * progress;
+          // A little daily noise on top of the trend so the line wavers.
+          final noise = (random.nextDouble() - 0.5) * 1.6;
+          final weight = ((trend + noise) * 10).round() / 10;
+          weightEntries.add(
+            WeightEntry(
+              id: _uuid.v4(),
+              loggedAt: day.add(const Duration(hours: 7)),
+              weight: weight,
+              weightUnit: WeightUnit.lb,
+            ),
+          );
+        }
+      }
     }
 
     emit(
