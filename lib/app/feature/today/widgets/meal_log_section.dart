@@ -101,8 +101,8 @@ class MealLogSection extends StatelessWidget {
                 runSpacing: AppDesign.spacing.sm,
                 children: [
                   for (final usualMeal in quickPicks)
-                    ActionChip(
-                      label: Text('+ ${usualMeal.name}'),
+                    _QuickPickChip(
+                      label: '+ ${usualMeal.name}',
                       onPressed: () => getIt<DailyLogBloc>().add(
                         DailyLogEvent.mealLogged(
                           mealOfTheDay,
@@ -158,6 +158,40 @@ class MealLogSection extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+/// A quick pick for a usual meal not yet logged: a dashed border and a muted
+/// fill mark it as available to add rather than already on the day.
+class _QuickPickChip extends StatelessWidget {
+  const _QuickPickChip({required this.label, required this.onPressed});
+
+  final String label;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final borderRadius = BorderRadius.circular(AppDesign.radius.lg);
+
+    return DashedBorder(
+      color: theme.colorScheme.outlineVariant,
+      radius: AppDesign.radius.lg,
+      child: Material(
+        borderRadius: borderRadius,
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onPressed,
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: AppDesign.spacing.md,
+              vertical: AppDesign.spacing.sm,
+            ),
+            child: Text(label, style: theme.textTheme.labelLarge),
+          ),
         ),
       ),
     );

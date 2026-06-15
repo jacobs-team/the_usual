@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:the_usual/app/app.dart';
 import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template info_box}
@@ -15,8 +16,8 @@ class InfoBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return CustomPaint(
-      painter: _DashedBorderPainter(color: theme.colorScheme.outlineVariant),
+    return DashedBorder(
+      color: theme.colorScheme.outlineVariant,
       child: Container(
         width: double.infinity,
         padding: EdgeInsets.all(AppDesign.spacing.lg),
@@ -24,44 +25,4 @@ class InfoBox extends StatelessWidget {
       ),
     );
   }
-}
-
-class _DashedBorderPainter extends CustomPainter {
-  const _DashedBorderPainter({required this.color});
-
-  final Color color;
-
-  static const _dashLength = 5.0;
-  static const _gapLength = 4.0;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1;
-
-    final border = Path()
-      ..addRRect(
-        RRect.fromRectAndRadius(
-          Offset.zero & size,
-          Radius.circular(AppDesign.radius.sm),
-        ),
-      );
-
-    for (final metric in border.computeMetrics()) {
-      var distance = 0.0;
-      while (distance < metric.length) {
-        canvas.drawPath(
-          metric.extractPath(distance, distance + _dashLength),
-          paint,
-        );
-        distance += _dashLength + _gapLength;
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(_DashedBorderPainter oldDelegate) =>
-      color != oldDelegate.color;
 }

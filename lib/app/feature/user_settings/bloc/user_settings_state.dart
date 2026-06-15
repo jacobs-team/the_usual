@@ -76,20 +76,23 @@ abstract class UserSettingsState with _$UserSettingsState {
 
   /// The meal section to highlight as current at [now].
   ///
-  /// With per-meal reminders on, it is the earliest meal whose reminder time
-  /// hasn't passed yet — so the highlight sits on each meal up until its
-  /// reminder fires — and stays on the last meal once all have passed. With no
-  /// per-meal reminders it falls back to typical meal times.
+  /// With per-meal reminders on, it is the latest meal whose reminder time has
+  /// passed — so once a meal's reminder fires the highlight moves to it, ready
+  /// for the user to log what they just ate, and stays there until the next
+  /// meal's reminder. Before any reminder has fired it rests on the first meal,
+  /// since nothing precedes breakfast after midnight. With no per-meal
+  /// reminders it falls back to typical meal times.
   MealOfTheDay currentMeal(DateTime now) {
     final boundaries = _mealBoundaries;
     if (boundaries.isEmpty) {
       return MealOfTheDay.fromTime(TimeOfDay.fromDateTime(now));
     }
     final nowMinutes = now.hour * 60 + now.minute;
+    var currentMeal = boundaries.first.$1;
     for (final (meal, minutes) in boundaries) {
-      if (nowMinutes < minutes) return meal;
+      if (nowMinutes >= minutes) currentMeal = meal;
     }
-    return boundaries.last.$1;
+    return currentMeal;
   }
 
   /// The next instant after [now] when [currentMeal] changes, so the Today
@@ -103,11 +106,14 @@ abstract class UserSettingsState with _$UserSettingsState {
       return DateTime(now.year, now.month, now.day, now.hour + 1);
     }
     final nowMinutes = now.hour * 60 + now.minute;
-    for (final (_, minutes) in boundaries) {
+    // The first reminder isn't a change point: before it the highlight already
+    // rests on the first meal, and crossing it leaves the highlight there. Only
+    // later reminders move it.
+    for (final (_, minutes) in boundaries.skip(1)) {
       if (minutes > nowMinutes) return today.add(Duration(minutes: minutes));
     }
-    // Every reminder has passed; the highlight next changes at midnight, when
-    // the earliest meal is upcoming again.
+    // Every later reminder has passed; the highlight next changes at midnight,
+    // when the highlight returns to the first meal.
     return today.add(const Duration(days: 1));
   }
 
