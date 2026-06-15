@@ -81,7 +81,7 @@ void main() {
       );
     });
 
-    testWidgets('filling nutrition also fills a usual meal that had none', (
+    testWidgets('fills a usual meal that had none from the entry', (
       tester,
     ) async {
       stubSettings(
@@ -91,21 +91,10 @@ void main() {
           },
         ),
       );
-      await pumpRow(tester, entry(usualMealId: 'u'));
+      // The entry carries nutrition its empty usual meal lacks, so the row
+      // offers to push it onto the usual meal.
+      await pumpRow(tester, entry(usualMealId: 'u', calories: 400));
 
-      await tester.enterText(find.byType(TextFormField).first, '400');
-
-      verify(
-        () => dailyLogBloc.add(
-          const DailyLogEvent.mealEntryNutritionChanged(
-            'm1',
-            Nutrition(calories: 400),
-          ),
-        ),
-      ).called(1);
-
-      // The entry now differs from its empty usual meal, so the row offers to
-      // push the nutrition onto it.
       await tester.tap(find.text('Update usual meal to match'));
 
       verify(

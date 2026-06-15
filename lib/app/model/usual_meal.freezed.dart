@@ -218,8 +218,8 @@ return $default(_that.id,_that.name,_that.photoPath,_that.nutrition);case _:
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(explicitToJson: true)
 class _UsualMeal implements UsualMeal {
   const _UsualMeal({required this.id, required this.name, this.photoPath, this.nutrition = const Nutrition()});
   factory _UsualMeal.fromJson(Map<String, dynamic> json) => _$UsualMealFromJson(json);

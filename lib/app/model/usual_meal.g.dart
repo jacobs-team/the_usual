@@ -20,5 +20,5 @@ Map<String, dynamic> _$UsualMealToJson(_UsualMeal instance) =>
       'id': instance.id,
       'name': instance.name,
       'photoPath': instance.photoPath,
-      'nutrition': instance.nutrition,
+      'nutrition': instance.nutrition.toJson(),
     };

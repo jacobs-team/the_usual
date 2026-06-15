@@ -26,7 +26,7 @@ Map<String, dynamic> _$MealLogEntryToJson(_MealLogEntry instance) =>
       'loggedAt': instance.loggedAt.toIso8601String(),
       'mealOfTheDay': _$MealOfTheDayEnumMap[instance.mealOfTheDay]!,
       'name': instance.name,
-      'nutrition': instance.nutrition,
+      'nutrition': instance.nutrition.toJson(),
       'quantity': instance.quantity,
       'usualMealId': instance.usualMealId,
       'photoPath': instance.photoPath,

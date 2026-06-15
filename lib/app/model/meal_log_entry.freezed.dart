@@ -222,8 +222,8 @@ return $default(_that.id,_that.loggedAt,_that.mealOfTheDay,_that.name,_that.nutr
 }
 
 /// @nodoc
-@JsonSerializable()
 
+@JsonSerializable(explicitToJson: true)
 class _MealLogEntry extends MealLogEntry {
   const _MealLogEntry({required this.id, required this.loggedAt, required this.mealOfTheDay, required this.name, this.nutrition = const Nutrition(), this.quantity = 1, this.usualMealId, this.photoPath}): super._();
   factory _MealLogEntry.fromJson(Map<String, dynamic> json) => _$MealLogEntryFromJson(json);

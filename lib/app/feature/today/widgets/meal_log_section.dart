@@ -41,15 +41,23 @@ class MealLogSection extends StatelessWidget {
     final loggedNames = mealLogEntries
         .map((mealLogEntry) => mealLogEntry.name.toLowerCase())
         .toSet();
+    final loggedUsualMealIds = mealLogEntries
+        .map((mealLogEntry) => mealLogEntry.usualMealId)
+        .whereType<String>()
+        .toSet();
     // TODO(today): order quick picks with the most recently logged usual meal
     // first, then by how often each has been logged. Compute this from log
     // history in the bloc/state, not here — it shouldn't recompute on every
     // build.
-    final quickPicks = usualMeals
-        .where(
-          (usualMeal) => !loggedNames.contains(usualMeal.name.toLowerCase()),
-        )
-        .toList();
+    final quickPicks = usualMeals.where((usualMeal) {
+      // A logged entry keeps its original name, so after a rename match on the
+      // linked id too, otherwise the renamed usual reappears as a quick pick.
+      final alreadyLoggedByName = loggedNames.contains(
+        usualMeal.name.toLowerCase(),
+      );
+      final alreadyLoggedById = loggedUsualMealIds.contains(usualMeal.id);
+      return !alreadyLoggedByName && !alreadyLoggedById;
+    }).toList();
 
     return Card(
       margin: EdgeInsets.only(bottom: AppDesign.spacing.md),

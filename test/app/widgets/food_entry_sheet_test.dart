@@ -95,6 +95,7 @@ void main() {
 
       await tester.enterText(find.byType(TextFormField).first, 'Salad');
       await tester.tap(find.byIcon(Icons.add));
+      await tester.pump();
       await tester.tap(find.byIcon(Icons.add));
       await tester.pump();
       await tester.tap(find.text('Log'));
