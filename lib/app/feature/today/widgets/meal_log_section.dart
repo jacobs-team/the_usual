@@ -114,7 +114,9 @@ class MealLogSection extends StatelessWidget {
               child: TextButton.icon(
                 onPressed: () async {
                   final result =
-                      await showModalBottomSheet<(String, Nutrition, bool)>(
+                      await showModalBottomSheet<
+                        (String, Nutrition, int, bool)
+                      >(
                         context: context,
                         isScrollControlled: true,
                         builder: (context) => const FoodEntrySheet(
@@ -124,7 +126,7 @@ class MealLogSection extends StatelessWidget {
                         ),
                       );
                   if (result == null) return;
-                  final (name, nutrition, addToUsualMeals) = result;
+                  final (name, nutrition, quantity, addToUsualMeals) = result;
                   if (addToUsualMeals) {
                     getIt<UserSettingsBloc>().add(
                       UserSettingsEvent.usualMealAdded(
@@ -139,6 +141,7 @@ class MealLogSection extends StatelessWidget {
                       mealOfTheDay,
                       name,
                       nutrition: nutrition,
+                      quantity: quantity,
                     ),
                   );
                 },

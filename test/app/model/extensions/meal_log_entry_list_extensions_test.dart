@@ -29,8 +29,8 @@ void main() {
         expect(entries.totalNutrition.calories, equals(500));
       });
 
-      test('is zero for an empty list', () {
-        expect(<MealLogEntry>[].totalNutrition.calories, equals(0));
+      test('leaves calories unset for an empty list', () {
+        expect(<MealLogEntry>[].totalNutrition.calories, isNull);
       });
     });
 
@@ -82,7 +82,7 @@ void main() {
 
         final breakdown = entries.breakdownOn(DateTime(2026, 6, 14));
 
-        expect(breakdown.nutrition.calories, equals(0));
+        expect(breakdown.nutrition.calories, isNull);
         expect(breakdown.entriesByMeal, isEmpty);
       });
     });

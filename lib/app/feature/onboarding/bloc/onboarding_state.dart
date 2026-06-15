@@ -15,6 +15,10 @@ abstract class OnboardingState with _$OnboardingState {
     /// [UserSettingsBloc] when onboarding completes.
     @Default(UserSettingsState()) UserSettingsState settings,
     @Default(<String>[]) List<String> firstLogSelectedIds,
+
+    /// How many of each selected first-log item the user had, keyed by usual
+    /// meal id. An item absent from the map defaults to one.
+    @Default(<String, int>{}) Map<String, int> firstLogQuantities,
   }) = _OnboardingState;
 
   const OnboardingState._();

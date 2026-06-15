@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$MealLogEntry {
 
- String get id; DateTime get loggedAt; MealOfTheDay get mealOfTheDay; String get name; Nutrition get nutrition; String? get usualMealId; String? get photoPath;
+ String get id; DateTime get loggedAt; MealOfTheDay get mealOfTheDay; String get name; Nutrition get nutrition; int get quantity; String? get usualMealId; String? get photoPath;
 /// Create a copy of MealLogEntry
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $MealLogEntryCopyWith<MealLogEntry> get copyWith => _$MealLogEntryCopyWithImpl<M
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MealLogEntry&&(identical(other.id, id) || other.id == id)&&(identical(other.loggedAt, loggedAt) || other.loggedAt == loggedAt)&&(identical(other.mealOfTheDay, mealOfTheDay) || other.mealOfTheDay == mealOfTheDay)&&(identical(other.name, name) || other.name == name)&&(identical(other.nutrition, nutrition) || other.nutrition == nutrition)&&(identical(other.usualMealId, usualMealId) || other.usualMealId == usualMealId)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MealLogEntry&&(identical(other.id, id) || other.id == id)&&(identical(other.loggedAt, loggedAt) || other.loggedAt == loggedAt)&&(identical(other.mealOfTheDay, mealOfTheDay) || other.mealOfTheDay == mealOfTheDay)&&(identical(other.name, name) || other.name == name)&&(identical(other.nutrition, nutrition) || other.nutrition == nutrition)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.usualMealId, usualMealId) || other.usualMealId == usualMealId)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,loggedAt,mealOfTheDay,name,nutrition,usualMealId,photoPath);
+int get hashCode => Object.hash(runtimeType,id,loggedAt,mealOfTheDay,name,nutrition,quantity,usualMealId,photoPath);
 
 @override
 String toString() {
-  return 'MealLogEntry(id: $id, loggedAt: $loggedAt, mealOfTheDay: $mealOfTheDay, name: $name, nutrition: $nutrition, usualMealId: $usualMealId, photoPath: $photoPath)';
+  return 'MealLogEntry(id: $id, loggedAt: $loggedAt, mealOfTheDay: $mealOfTheDay, name: $name, nutrition: $nutrition, quantity: $quantity, usualMealId: $usualMealId, photoPath: $photoPath)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $MealLogEntryCopyWith<$Res>  {
   factory $MealLogEntryCopyWith(MealLogEntry value, $Res Function(MealLogEntry) _then) = _$MealLogEntryCopyWithImpl;
 @useResult
 $Res call({
- String id, DateTime loggedAt, MealOfTheDay mealOfTheDay, String name, Nutrition nutrition, String? usualMealId, String? photoPath
+ String id, DateTime loggedAt, MealOfTheDay mealOfTheDay, String name, Nutrition nutrition, int quantity, String? usualMealId, String? photoPath
 });
 
 
@@ -65,14 +65,15 @@ class _$MealLogEntryCopyWithImpl<$Res>
 
 /// Create a copy of MealLogEntry
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? loggedAt = null,Object? mealOfTheDay = null,Object? name = null,Object? nutrition = null,Object? usualMealId = freezed,Object? photoPath = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? loggedAt = null,Object? mealOfTheDay = null,Object? name = null,Object? nutrition = null,Object? quantity = null,Object? usualMealId = freezed,Object? photoPath = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,loggedAt: null == loggedAt ? _self.loggedAt : loggedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,mealOfTheDay: null == mealOfTheDay ? _self.mealOfTheDay : mealOfTheDay // ignore: cast_nullable_to_non_nullable
 as MealOfTheDay,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,nutrition: null == nutrition ? _self.nutrition : nutrition // ignore: cast_nullable_to_non_nullable
-as Nutrition,usualMealId: freezed == usualMealId ? _self.usualMealId : usualMealId // ignore: cast_nullable_to_non_nullable
+as Nutrition,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
+as int,usualMealId: freezed == usualMealId ? _self.usualMealId : usualMealId // ignore: cast_nullable_to_non_nullable
 as String?,photoPath: freezed == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
@@ -168,10 +169,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  DateTime loggedAt,  MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  String? usualMealId,  String? photoPath)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  DateTime loggedAt,  MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  int quantity,  String? usualMealId,  String? photoPath)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _MealLogEntry() when $default != null:
-return $default(_that.id,_that.loggedAt,_that.mealOfTheDay,_that.name,_that.nutrition,_that.usualMealId,_that.photoPath);case _:
+return $default(_that.id,_that.loggedAt,_that.mealOfTheDay,_that.name,_that.nutrition,_that.quantity,_that.usualMealId,_that.photoPath);case _:
   return orElse();
 
 }
@@ -189,10 +190,10 @@ return $default(_that.id,_that.loggedAt,_that.mealOfTheDay,_that.name,_that.nutr
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  DateTime loggedAt,  MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  String? usualMealId,  String? photoPath)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  DateTime loggedAt,  MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  int quantity,  String? usualMealId,  String? photoPath)  $default,) {final _that = this;
 switch (_that) {
 case _MealLogEntry():
-return $default(_that.id,_that.loggedAt,_that.mealOfTheDay,_that.name,_that.nutrition,_that.usualMealId,_that.photoPath);case _:
+return $default(_that.id,_that.loggedAt,_that.mealOfTheDay,_that.name,_that.nutrition,_that.quantity,_that.usualMealId,_that.photoPath);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -209,10 +210,10 @@ return $default(_that.id,_that.loggedAt,_that.mealOfTheDay,_that.name,_that.nutr
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  DateTime loggedAt,  MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  String? usualMealId,  String? photoPath)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  DateTime loggedAt,  MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  int quantity,  String? usualMealId,  String? photoPath)?  $default,) {final _that = this;
 switch (_that) {
 case _MealLogEntry() when $default != null:
-return $default(_that.id,_that.loggedAt,_that.mealOfTheDay,_that.name,_that.nutrition,_that.usualMealId,_that.photoPath);case _:
+return $default(_that.id,_that.loggedAt,_that.mealOfTheDay,_that.name,_that.nutrition,_that.quantity,_that.usualMealId,_that.photoPath);case _:
   return null;
 
 }
@@ -223,8 +224,8 @@ return $default(_that.id,_that.loggedAt,_that.mealOfTheDay,_that.name,_that.nutr
 /// @nodoc
 @JsonSerializable()
 
-class _MealLogEntry implements MealLogEntry {
-  const _MealLogEntry({required this.id, required this.loggedAt, required this.mealOfTheDay, required this.name, this.nutrition = const Nutrition(), this.usualMealId, this.photoPath});
+class _MealLogEntry extends MealLogEntry {
+  const _MealLogEntry({required this.id, required this.loggedAt, required this.mealOfTheDay, required this.name, this.nutrition = const Nutrition(), this.quantity = 1, this.usualMealId, this.photoPath}): super._();
   factory _MealLogEntry.fromJson(Map<String, dynamic> json) => _$MealLogEntryFromJson(json);
 
 @override final  String id;
@@ -232,6 +233,7 @@ class _MealLogEntry implements MealLogEntry {
 @override final  MealOfTheDay mealOfTheDay;
 @override final  String name;
 @override@JsonKey() final  Nutrition nutrition;
+@override@JsonKey() final  int quantity;
 @override final  String? usualMealId;
 @override final  String? photoPath;
 
@@ -248,16 +250,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MealLogEntry&&(identical(other.id, id) || other.id == id)&&(identical(other.loggedAt, loggedAt) || other.loggedAt == loggedAt)&&(identical(other.mealOfTheDay, mealOfTheDay) || other.mealOfTheDay == mealOfTheDay)&&(identical(other.name, name) || other.name == name)&&(identical(other.nutrition, nutrition) || other.nutrition == nutrition)&&(identical(other.usualMealId, usualMealId) || other.usualMealId == usualMealId)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _MealLogEntry&&(identical(other.id, id) || other.id == id)&&(identical(other.loggedAt, loggedAt) || other.loggedAt == loggedAt)&&(identical(other.mealOfTheDay, mealOfTheDay) || other.mealOfTheDay == mealOfTheDay)&&(identical(other.name, name) || other.name == name)&&(identical(other.nutrition, nutrition) || other.nutrition == nutrition)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.usualMealId, usualMealId) || other.usualMealId == usualMealId)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,loggedAt,mealOfTheDay,name,nutrition,usualMealId,photoPath);
+int get hashCode => Object.hash(runtimeType,id,loggedAt,mealOfTheDay,name,nutrition,quantity,usualMealId,photoPath);
 
 @override
 String toString() {
-  return 'MealLogEntry(id: $id, loggedAt: $loggedAt, mealOfTheDay: $mealOfTheDay, name: $name, nutrition: $nutrition, usualMealId: $usualMealId, photoPath: $photoPath)';
+  return 'MealLogEntry(id: $id, loggedAt: $loggedAt, mealOfTheDay: $mealOfTheDay, name: $name, nutrition: $nutrition, quantity: $quantity, usualMealId: $usualMealId, photoPath: $photoPath)';
 }
 
 
@@ -268,7 +270,7 @@ abstract mixin class _$MealLogEntryCopyWith<$Res> implements $MealLogEntryCopyWi
   factory _$MealLogEntryCopyWith(_MealLogEntry value, $Res Function(_MealLogEntry) _then) = __$MealLogEntryCopyWithImpl;
 @override @useResult
 $Res call({
- String id, DateTime loggedAt, MealOfTheDay mealOfTheDay, String name, Nutrition nutrition, String? usualMealId, String? photoPath
+ String id, DateTime loggedAt, MealOfTheDay mealOfTheDay, String name, Nutrition nutrition, int quantity, String? usualMealId, String? photoPath
 });
 
 
@@ -285,14 +287,15 @@ class __$MealLogEntryCopyWithImpl<$Res>
 
 /// Create a copy of MealLogEntry
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? loggedAt = null,Object? mealOfTheDay = null,Object? name = null,Object? nutrition = null,Object? usualMealId = freezed,Object? photoPath = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? loggedAt = null,Object? mealOfTheDay = null,Object? name = null,Object? nutrition = null,Object? quantity = null,Object? usualMealId = freezed,Object? photoPath = freezed,}) {
   return _then(_MealLogEntry(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,loggedAt: null == loggedAt ? _self.loggedAt : loggedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,mealOfTheDay: null == mealOfTheDay ? _self.mealOfTheDay : mealOfTheDay // ignore: cast_nullable_to_non_nullable
 as MealOfTheDay,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,nutrition: null == nutrition ? _self.nutrition : nutrition // ignore: cast_nullable_to_non_nullable
-as Nutrition,usualMealId: freezed == usualMealId ? _self.usualMealId : usualMealId // ignore: cast_nullable_to_non_nullable
+as Nutrition,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
+as int,usualMealId: freezed == usualMealId ? _self.usualMealId : usualMealId // ignore: cast_nullable_to_non_nullable
 as String?,photoPath: freezed == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable
 as String?,
   ));

@@ -10,6 +10,7 @@ part 'usual_meal.g.dart';
 @freezed
 abstract class UsualMeal with _$UsualMeal {
   /// {@macro usual_meal}
+  @JsonSerializable(explicitToJson: true)
   const factory UsualMeal({
     required String id,
     required String name,

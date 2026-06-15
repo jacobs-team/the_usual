@@ -15,6 +15,7 @@ _MealLogEntry _$MealLogEntryFromJson(Map<String, dynamic> json) =>
       nutrition: json['nutrition'] == null
           ? const Nutrition()
           : Nutrition.fromJson(json['nutrition'] as Map<String, dynamic>),
+      quantity: (json['quantity'] as num?)?.toInt() ?? 1,
       usualMealId: json['usualMealId'] as String?,
       photoPath: json['photoPath'] as String?,
     );
@@ -26,6 +27,7 @@ Map<String, dynamic> _$MealLogEntryToJson(_MealLogEntry instance) =>
       'mealOfTheDay': _$MealOfTheDayEnumMap[instance.mealOfTheDay]!,
       'name': instance.name,
       'nutrition': instance.nutrition,
+      'quantity': instance.quantity,
       'usualMealId': instance.usualMealId,
       'photoPath': instance.photoPath,
     };

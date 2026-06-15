@@ -66,6 +66,10 @@ class LoggedEntryRow extends StatelessWidget {
         return ExpandableNutrition(
           name: usualMeal?.name ?? mealLogEntry.name,
           nutrition: nutrition,
+          quantity: mealLogEntry.quantity,
+          onQuantityChanged: (quantity) => getIt<DailyLogBloc>().add(
+            DailyLogEvent.mealEntryQuantityChanged(mealLogEntry.id, quantity),
+          ),
           expandedByDefault: expandedByDefault,
           onChanged: (nutrition) => getIt<DailyLogBloc>().add(
             DailyLogEvent.mealEntryNutritionChanged(mealLogEntry.id, nutrition),

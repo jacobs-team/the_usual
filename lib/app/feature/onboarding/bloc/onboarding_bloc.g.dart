@@ -19,6 +19,11 @@ _OnboardingState _$OnboardingStateFromJson(Map<String, dynamic> json) =>
               ?.map((e) => e as String)
               .toList() ??
           const <String>[],
+      firstLogQuantities:
+          (json['firstLogQuantities'] as Map<String, dynamic>?)?.map(
+            (k, e) => MapEntry(k, (e as num).toInt()),
+          ) ??
+          const <String, int>{},
     );
 
 Map<String, dynamic> _$OnboardingStateToJson(_OnboardingState instance) =>
@@ -26,4 +31,5 @@ Map<String, dynamic> _$OnboardingStateToJson(_OnboardingState instance) =>
       'activeStepIndex': instance.activeStepIndex,
       'settings': instance.settings.toJson(),
       'firstLogSelectedIds': instance.firstLogSelectedIds,
+      'firstLogQuantities': instance.firstLogQuantities,
     };

@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:clock/clock.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,15 +14,60 @@ import 'package:the_usual/l10n/l10n.dart';
 /// The Today view: tracks the day's weight and logs the day's meals from the
 /// user's usuals, with a running calorie total.
 /// {@endtemplate}
-class TodayView extends StatelessWidget {
+class TodayView extends StatefulWidget {
   /// {@macro today_view}
   const TodayView({super.key});
 
   @override
+  State<TodayView> createState() => _TodayViewState();
+}
+
+class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
+  Timer? _refreshTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _scheduleNextRefresh();
+  }
+
+  @override
+  void dispose() {
+    _refreshTimer?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // The app may have been backgrounded across a meal boundary or midnight;
+    // rebuild and reschedule against the current time on resume.
+    if (state == AppLifecycleState.resumed) {
+      setState(() {});
+      _scheduleNextRefresh();
+    }
+  }
+
+  /// Rebuilds when the highlighted meal next changes — its reminder time, or
+  /// the time-of-day boundary — so it stays current while the app is open.
+  void _scheduleNextRefresh() {
+    final now = clock.now();
+    final next = getIt<UserSettingsBloc>().state.nextMealBoundary(now);
+    _refreshTimer?.cancel();
+    _refreshTimer = Timer(next.difference(now), () {
+      if (!mounted) return;
+      setState(() {});
+      _scheduleNextRefresh();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final today = DateTime.now();
-    final currentMeal = MealOfTheDay.fromTime(TimeOfDay.fromDateTime(today));
+    final now = clock.now();
+    final today = DateUtils.dateOnly(now);
+    final currentMeal = getIt<UserSettingsBloc>().state.currentMeal(now);
 
     return Scaffold(
       appBar: AppBar(
@@ -93,7 +141,7 @@ class TodayView extends StatelessWidget {
                       children: [
                         const SectionLabel('WEIGHT'),
                         SizedBox(height: AppDesign.spacing.sm),
-                        const _WeightTracker(),
+                        _WeightTracker(day: today),
                         SizedBox(height: AppDesign.spacing.xl),
                         const SectionLabel('MEALS'),
                         SizedBox(height: AppDesign.spacing.sm),
@@ -125,10 +173,13 @@ class TodayView extends StatelessWidget {
   }
 }
 
-/// Today's weight tracker: an inline field for today's weigh-in, prefilled
+/// Today's weight tracker: an inline field for [day]'s weigh-in, prefilled
 /// with the last recorded weight as a hint.
 class _WeightTracker extends StatelessWidget {
-  const _WeightTracker();
+  const _WeightTracker({required this.day});
+
+  /// The day whose weigh-in this field records.
+  final DateTime day;
 
   @override
   Widget build(BuildContext context) {
@@ -136,7 +187,7 @@ class _WeightTracker extends StatelessWidget {
       margin: EdgeInsets.zero,
       child: ListTile(
         title: const Text('Weight'),
-        trailing: WeightEntryField(day: DateTime.now()),
+        trailing: WeightEntryField(day: day),
       ),
     );
   }

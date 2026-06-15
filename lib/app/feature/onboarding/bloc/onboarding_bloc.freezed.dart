@@ -55,7 +55,7 @@ extension OnboardingEventPatterns on OnboardingEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( BackPressed value)?  backPressed,TResult Function( ResetPressed value)?  resetPressed,TResult Function( SkipPressed value)?  skipPressed,TResult Function( ContinuePressed value)?  continuePressed,TResult Function( UsualMealAdded value)?  usualMealAdded,TResult Function( UsualMealRemoved value)?  usualMealRemoved,TResult Function( UsualMealNutritionChanged value)?  usualMealNutritionChanged,TResult Function( UsualMealNameChanged value)?  usualMealNameChanged,TResult Function( ReminderStyleSelected value)?  reminderStyleSelected,TResult Function( MealCheckinScheduleModeChanged value)?  mealCheckinScheduleModeChanged,TResult Function( MealReminderToggled value)?  mealReminderToggled,TResult Function( MealReminderTimeChanged value)?  mealReminderTimeChanged,TResult Function( EndOfDayTimeChanged value)?  endOfDayTimeChanged,TResult Function( WeightCheckinFrequencySelected value)?  weightCheckinFrequencySelected,TResult Function( WeightTimeOfDaySelected value)?  weightTimeOfDaySelected,TResult Function( WeightUnitSelected value)?  weightUnitSelected,TResult Function( StartingWeightChanged value)?  startingWeightChanged,TResult Function( FirstLogItemToggled value)?  firstLogItemToggled,TResult Function( SomethingElseLogged value)?  somethingElseLogged,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( BackPressed value)?  backPressed,TResult Function( ResetPressed value)?  resetPressed,TResult Function( SkipPressed value)?  skipPressed,TResult Function( ContinuePressed value)?  continuePressed,TResult Function( UsualMealAdded value)?  usualMealAdded,TResult Function( UsualMealRemoved value)?  usualMealRemoved,TResult Function( UsualMealNutritionChanged value)?  usualMealNutritionChanged,TResult Function( UsualMealNameChanged value)?  usualMealNameChanged,TResult Function( ReminderStyleSelected value)?  reminderStyleSelected,TResult Function( MealCheckinScheduleModeChanged value)?  mealCheckinScheduleModeChanged,TResult Function( MealReminderToggled value)?  mealReminderToggled,TResult Function( MealReminderTimeChanged value)?  mealReminderTimeChanged,TResult Function( EndOfDayTimeChanged value)?  endOfDayTimeChanged,TResult Function( WeightCheckinFrequencySelected value)?  weightCheckinFrequencySelected,TResult Function( WeightTimeOfDaySelected value)?  weightTimeOfDaySelected,TResult Function( WeightUnitSelected value)?  weightUnitSelected,TResult Function( StartingWeightChanged value)?  startingWeightChanged,TResult Function( FirstLogItemToggled value)?  firstLogItemToggled,TResult Function( FirstLogItemQuantityChanged value)?  firstLogItemQuantityChanged,TResult Function( SomethingElseLogged value)?  somethingElseLogged,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case BackPressed() when backPressed != null:
@@ -76,7 +76,8 @@ return weightCheckinFrequencySelected(_that);case WeightTimeOfDaySelected() when
 return weightTimeOfDaySelected(_that);case WeightUnitSelected() when weightUnitSelected != null:
 return weightUnitSelected(_that);case StartingWeightChanged() when startingWeightChanged != null:
 return startingWeightChanged(_that);case FirstLogItemToggled() when firstLogItemToggled != null:
-return firstLogItemToggled(_that);case SomethingElseLogged() when somethingElseLogged != null:
+return firstLogItemToggled(_that);case FirstLogItemQuantityChanged() when firstLogItemQuantityChanged != null:
+return firstLogItemQuantityChanged(_that);case SomethingElseLogged() when somethingElseLogged != null:
 return somethingElseLogged(_that);case _:
   return orElse();
 
@@ -95,7 +96,7 @@ return somethingElseLogged(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( BackPressed value)  backPressed,required TResult Function( ResetPressed value)  resetPressed,required TResult Function( SkipPressed value)  skipPressed,required TResult Function( ContinuePressed value)  continuePressed,required TResult Function( UsualMealAdded value)  usualMealAdded,required TResult Function( UsualMealRemoved value)  usualMealRemoved,required TResult Function( UsualMealNutritionChanged value)  usualMealNutritionChanged,required TResult Function( UsualMealNameChanged value)  usualMealNameChanged,required TResult Function( ReminderStyleSelected value)  reminderStyleSelected,required TResult Function( MealCheckinScheduleModeChanged value)  mealCheckinScheduleModeChanged,required TResult Function( MealReminderToggled value)  mealReminderToggled,required TResult Function( MealReminderTimeChanged value)  mealReminderTimeChanged,required TResult Function( EndOfDayTimeChanged value)  endOfDayTimeChanged,required TResult Function( WeightCheckinFrequencySelected value)  weightCheckinFrequencySelected,required TResult Function( WeightTimeOfDaySelected value)  weightTimeOfDaySelected,required TResult Function( WeightUnitSelected value)  weightUnitSelected,required TResult Function( StartingWeightChanged value)  startingWeightChanged,required TResult Function( FirstLogItemToggled value)  firstLogItemToggled,required TResult Function( SomethingElseLogged value)  somethingElseLogged,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( BackPressed value)  backPressed,required TResult Function( ResetPressed value)  resetPressed,required TResult Function( SkipPressed value)  skipPressed,required TResult Function( ContinuePressed value)  continuePressed,required TResult Function( UsualMealAdded value)  usualMealAdded,required TResult Function( UsualMealRemoved value)  usualMealRemoved,required TResult Function( UsualMealNutritionChanged value)  usualMealNutritionChanged,required TResult Function( UsualMealNameChanged value)  usualMealNameChanged,required TResult Function( ReminderStyleSelected value)  reminderStyleSelected,required TResult Function( MealCheckinScheduleModeChanged value)  mealCheckinScheduleModeChanged,required TResult Function( MealReminderToggled value)  mealReminderToggled,required TResult Function( MealReminderTimeChanged value)  mealReminderTimeChanged,required TResult Function( EndOfDayTimeChanged value)  endOfDayTimeChanged,required TResult Function( WeightCheckinFrequencySelected value)  weightCheckinFrequencySelected,required TResult Function( WeightTimeOfDaySelected value)  weightTimeOfDaySelected,required TResult Function( WeightUnitSelected value)  weightUnitSelected,required TResult Function( StartingWeightChanged value)  startingWeightChanged,required TResult Function( FirstLogItemToggled value)  firstLogItemToggled,required TResult Function( FirstLogItemQuantityChanged value)  firstLogItemQuantityChanged,required TResult Function( SomethingElseLogged value)  somethingElseLogged,}){
 final _that = this;
 switch (_that) {
 case BackPressed():
@@ -116,7 +117,8 @@ return weightCheckinFrequencySelected(_that);case WeightTimeOfDaySelected():
 return weightTimeOfDaySelected(_that);case WeightUnitSelected():
 return weightUnitSelected(_that);case StartingWeightChanged():
 return startingWeightChanged(_that);case FirstLogItemToggled():
-return firstLogItemToggled(_that);case SomethingElseLogged():
+return firstLogItemToggled(_that);case FirstLogItemQuantityChanged():
+return firstLogItemQuantityChanged(_that);case SomethingElseLogged():
 return somethingElseLogged(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
@@ -131,7 +133,7 @@ return somethingElseLogged(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( BackPressed value)?  backPressed,TResult? Function( ResetPressed value)?  resetPressed,TResult? Function( SkipPressed value)?  skipPressed,TResult? Function( ContinuePressed value)?  continuePressed,TResult? Function( UsualMealAdded value)?  usualMealAdded,TResult? Function( UsualMealRemoved value)?  usualMealRemoved,TResult? Function( UsualMealNutritionChanged value)?  usualMealNutritionChanged,TResult? Function( UsualMealNameChanged value)?  usualMealNameChanged,TResult? Function( ReminderStyleSelected value)?  reminderStyleSelected,TResult? Function( MealCheckinScheduleModeChanged value)?  mealCheckinScheduleModeChanged,TResult? Function( MealReminderToggled value)?  mealReminderToggled,TResult? Function( MealReminderTimeChanged value)?  mealReminderTimeChanged,TResult? Function( EndOfDayTimeChanged value)?  endOfDayTimeChanged,TResult? Function( WeightCheckinFrequencySelected value)?  weightCheckinFrequencySelected,TResult? Function( WeightTimeOfDaySelected value)?  weightTimeOfDaySelected,TResult? Function( WeightUnitSelected value)?  weightUnitSelected,TResult? Function( StartingWeightChanged value)?  startingWeightChanged,TResult? Function( FirstLogItemToggled value)?  firstLogItemToggled,TResult? Function( SomethingElseLogged value)?  somethingElseLogged,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( BackPressed value)?  backPressed,TResult? Function( ResetPressed value)?  resetPressed,TResult? Function( SkipPressed value)?  skipPressed,TResult? Function( ContinuePressed value)?  continuePressed,TResult? Function( UsualMealAdded value)?  usualMealAdded,TResult? Function( UsualMealRemoved value)?  usualMealRemoved,TResult? Function( UsualMealNutritionChanged value)?  usualMealNutritionChanged,TResult? Function( UsualMealNameChanged value)?  usualMealNameChanged,TResult? Function( ReminderStyleSelected value)?  reminderStyleSelected,TResult? Function( MealCheckinScheduleModeChanged value)?  mealCheckinScheduleModeChanged,TResult? Function( MealReminderToggled value)?  mealReminderToggled,TResult? Function( MealReminderTimeChanged value)?  mealReminderTimeChanged,TResult? Function( EndOfDayTimeChanged value)?  endOfDayTimeChanged,TResult? Function( WeightCheckinFrequencySelected value)?  weightCheckinFrequencySelected,TResult? Function( WeightTimeOfDaySelected value)?  weightTimeOfDaySelected,TResult? Function( WeightUnitSelected value)?  weightUnitSelected,TResult? Function( StartingWeightChanged value)?  startingWeightChanged,TResult? Function( FirstLogItemToggled value)?  firstLogItemToggled,TResult? Function( FirstLogItemQuantityChanged value)?  firstLogItemQuantityChanged,TResult? Function( SomethingElseLogged value)?  somethingElseLogged,}){
 final _that = this;
 switch (_that) {
 case BackPressed() when backPressed != null:
@@ -152,7 +154,8 @@ return weightCheckinFrequencySelected(_that);case WeightTimeOfDaySelected() when
 return weightTimeOfDaySelected(_that);case WeightUnitSelected() when weightUnitSelected != null:
 return weightUnitSelected(_that);case StartingWeightChanged() when startingWeightChanged != null:
 return startingWeightChanged(_that);case FirstLogItemToggled() when firstLogItemToggled != null:
-return firstLogItemToggled(_that);case SomethingElseLogged() when somethingElseLogged != null:
+return firstLogItemToggled(_that);case FirstLogItemQuantityChanged() when firstLogItemQuantityChanged != null:
+return firstLogItemQuantityChanged(_that);case SomethingElseLogged() when somethingElseLogged != null:
 return somethingElseLogged(_that);case _:
   return null;
 
@@ -170,7 +173,7 @@ return somethingElseLogged(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  backPressed,TResult Function()?  resetPressed,TResult Function()?  skipPressed,TResult Function()?  continuePressed,TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  usualMealAdded,TResult Function( MealOfTheDay mealOfTheDay,  String id)?  usualMealRemoved,TResult Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)?  usualMealNutritionChanged,TResult Function( MealOfTheDay mealOfTheDay,  String id,  String name)?  usualMealNameChanged,TResult Function( ReminderStyle reminderStyle)?  reminderStyleSelected,TResult Function( MealCheckinScheduleMode mealCheckinScheduleMode)?  mealCheckinScheduleModeChanged,TResult Function( MealOfTheDay mealOfTheDay,  bool enabled)?  mealReminderToggled,TResult Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)?  mealReminderTimeChanged,TResult Function( TimeOfDay timeOfDay)?  endOfDayTimeChanged,TResult Function( WeightCheckinFrequency weightCheckinFrequency)?  weightCheckinFrequencySelected,TResult Function( WeightTimeOfDay weightTimeOfDay)?  weightTimeOfDaySelected,TResult Function( WeightUnit weightUnit)?  weightUnitSelected,TResult Function( double? weight)?  startingWeightChanged,TResult Function( String id)?  firstLogItemToggled,TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  somethingElseLogged,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  backPressed,TResult Function()?  resetPressed,TResult Function()?  skipPressed,TResult Function()?  continuePressed,TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  usualMealAdded,TResult Function( MealOfTheDay mealOfTheDay,  String id)?  usualMealRemoved,TResult Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)?  usualMealNutritionChanged,TResult Function( MealOfTheDay mealOfTheDay,  String id,  String name)?  usualMealNameChanged,TResult Function( ReminderStyle reminderStyle)?  reminderStyleSelected,TResult Function( MealCheckinScheduleMode mealCheckinScheduleMode)?  mealCheckinScheduleModeChanged,TResult Function( MealOfTheDay mealOfTheDay,  bool enabled)?  mealReminderToggled,TResult Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)?  mealReminderTimeChanged,TResult Function( TimeOfDay timeOfDay)?  endOfDayTimeChanged,TResult Function( WeightCheckinFrequency weightCheckinFrequency)?  weightCheckinFrequencySelected,TResult Function( WeightTimeOfDay weightTimeOfDay)?  weightTimeOfDaySelected,TResult Function( WeightUnit weightUnit)?  weightUnitSelected,TResult Function( double? weight)?  startingWeightChanged,TResult Function( String id)?  firstLogItemToggled,TResult Function( String id,  int quantity)?  firstLogItemQuantityChanged,TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  int quantity)?  somethingElseLogged,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case BackPressed() when backPressed != null:
 return backPressed();case ResetPressed() when resetPressed != null:
@@ -190,8 +193,9 @@ return weightCheckinFrequencySelected(_that.weightCheckinFrequency);case WeightT
 return weightTimeOfDaySelected(_that.weightTimeOfDay);case WeightUnitSelected() when weightUnitSelected != null:
 return weightUnitSelected(_that.weightUnit);case StartingWeightChanged() when startingWeightChanged != null:
 return startingWeightChanged(_that.weight);case FirstLogItemToggled() when firstLogItemToggled != null:
-return firstLogItemToggled(_that.id);case SomethingElseLogged() when somethingElseLogged != null:
-return somethingElseLogged(_that.mealOfTheDay,_that.name,_that.nutrition);case _:
+return firstLogItemToggled(_that.id);case FirstLogItemQuantityChanged() when firstLogItemQuantityChanged != null:
+return firstLogItemQuantityChanged(_that.id,_that.quantity);case SomethingElseLogged() when somethingElseLogged != null:
+return somethingElseLogged(_that.mealOfTheDay,_that.name,_that.nutrition,_that.quantity);case _:
   return orElse();
 
 }
@@ -209,7 +213,7 @@ return somethingElseLogged(_that.mealOfTheDay,_that.name,_that.nutrition);case _
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  backPressed,required TResult Function()  resetPressed,required TResult Function()  skipPressed,required TResult Function()  continuePressed,required TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)  usualMealAdded,required TResult Function( MealOfTheDay mealOfTheDay,  String id)  usualMealRemoved,required TResult Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)  usualMealNutritionChanged,required TResult Function( MealOfTheDay mealOfTheDay,  String id,  String name)  usualMealNameChanged,required TResult Function( ReminderStyle reminderStyle)  reminderStyleSelected,required TResult Function( MealCheckinScheduleMode mealCheckinScheduleMode)  mealCheckinScheduleModeChanged,required TResult Function( MealOfTheDay mealOfTheDay,  bool enabled)  mealReminderToggled,required TResult Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)  mealReminderTimeChanged,required TResult Function( TimeOfDay timeOfDay)  endOfDayTimeChanged,required TResult Function( WeightCheckinFrequency weightCheckinFrequency)  weightCheckinFrequencySelected,required TResult Function( WeightTimeOfDay weightTimeOfDay)  weightTimeOfDaySelected,required TResult Function( WeightUnit weightUnit)  weightUnitSelected,required TResult Function( double? weight)  startingWeightChanged,required TResult Function( String id)  firstLogItemToggled,required TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)  somethingElseLogged,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  backPressed,required TResult Function()  resetPressed,required TResult Function()  skipPressed,required TResult Function()  continuePressed,required TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)  usualMealAdded,required TResult Function( MealOfTheDay mealOfTheDay,  String id)  usualMealRemoved,required TResult Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)  usualMealNutritionChanged,required TResult Function( MealOfTheDay mealOfTheDay,  String id,  String name)  usualMealNameChanged,required TResult Function( ReminderStyle reminderStyle)  reminderStyleSelected,required TResult Function( MealCheckinScheduleMode mealCheckinScheduleMode)  mealCheckinScheduleModeChanged,required TResult Function( MealOfTheDay mealOfTheDay,  bool enabled)  mealReminderToggled,required TResult Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)  mealReminderTimeChanged,required TResult Function( TimeOfDay timeOfDay)  endOfDayTimeChanged,required TResult Function( WeightCheckinFrequency weightCheckinFrequency)  weightCheckinFrequencySelected,required TResult Function( WeightTimeOfDay weightTimeOfDay)  weightTimeOfDaySelected,required TResult Function( WeightUnit weightUnit)  weightUnitSelected,required TResult Function( double? weight)  startingWeightChanged,required TResult Function( String id)  firstLogItemToggled,required TResult Function( String id,  int quantity)  firstLogItemQuantityChanged,required TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  int quantity)  somethingElseLogged,}) {final _that = this;
 switch (_that) {
 case BackPressed():
 return backPressed();case ResetPressed():
@@ -229,8 +233,9 @@ return weightCheckinFrequencySelected(_that.weightCheckinFrequency);case WeightT
 return weightTimeOfDaySelected(_that.weightTimeOfDay);case WeightUnitSelected():
 return weightUnitSelected(_that.weightUnit);case StartingWeightChanged():
 return startingWeightChanged(_that.weight);case FirstLogItemToggled():
-return firstLogItemToggled(_that.id);case SomethingElseLogged():
-return somethingElseLogged(_that.mealOfTheDay,_that.name,_that.nutrition);}
+return firstLogItemToggled(_that.id);case FirstLogItemQuantityChanged():
+return firstLogItemQuantityChanged(_that.id,_that.quantity);case SomethingElseLogged():
+return somethingElseLogged(_that.mealOfTheDay,_that.name,_that.nutrition,_that.quantity);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -244,7 +249,7 @@ return somethingElseLogged(_that.mealOfTheDay,_that.name,_that.nutrition);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  backPressed,TResult? Function()?  resetPressed,TResult? Function()?  skipPressed,TResult? Function()?  continuePressed,TResult? Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  usualMealAdded,TResult? Function( MealOfTheDay mealOfTheDay,  String id)?  usualMealRemoved,TResult? Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)?  usualMealNutritionChanged,TResult? Function( MealOfTheDay mealOfTheDay,  String id,  String name)?  usualMealNameChanged,TResult? Function( ReminderStyle reminderStyle)?  reminderStyleSelected,TResult? Function( MealCheckinScheduleMode mealCheckinScheduleMode)?  mealCheckinScheduleModeChanged,TResult? Function( MealOfTheDay mealOfTheDay,  bool enabled)?  mealReminderToggled,TResult? Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)?  mealReminderTimeChanged,TResult? Function( TimeOfDay timeOfDay)?  endOfDayTimeChanged,TResult? Function( WeightCheckinFrequency weightCheckinFrequency)?  weightCheckinFrequencySelected,TResult? Function( WeightTimeOfDay weightTimeOfDay)?  weightTimeOfDaySelected,TResult? Function( WeightUnit weightUnit)?  weightUnitSelected,TResult? Function( double? weight)?  startingWeightChanged,TResult? Function( String id)?  firstLogItemToggled,TResult? Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  somethingElseLogged,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  backPressed,TResult? Function()?  resetPressed,TResult? Function()?  skipPressed,TResult? Function()?  continuePressed,TResult? Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  usualMealAdded,TResult? Function( MealOfTheDay mealOfTheDay,  String id)?  usualMealRemoved,TResult? Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)?  usualMealNutritionChanged,TResult? Function( MealOfTheDay mealOfTheDay,  String id,  String name)?  usualMealNameChanged,TResult? Function( ReminderStyle reminderStyle)?  reminderStyleSelected,TResult? Function( MealCheckinScheduleMode mealCheckinScheduleMode)?  mealCheckinScheduleModeChanged,TResult? Function( MealOfTheDay mealOfTheDay,  bool enabled)?  mealReminderToggled,TResult? Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)?  mealReminderTimeChanged,TResult? Function( TimeOfDay timeOfDay)?  endOfDayTimeChanged,TResult? Function( WeightCheckinFrequency weightCheckinFrequency)?  weightCheckinFrequencySelected,TResult? Function( WeightTimeOfDay weightTimeOfDay)?  weightTimeOfDaySelected,TResult? Function( WeightUnit weightUnit)?  weightUnitSelected,TResult? Function( double? weight)?  startingWeightChanged,TResult? Function( String id)?  firstLogItemToggled,TResult? Function( String id,  int quantity)?  firstLogItemQuantityChanged,TResult? Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  int quantity)?  somethingElseLogged,}) {final _that = this;
 switch (_that) {
 case BackPressed() when backPressed != null:
 return backPressed();case ResetPressed() when resetPressed != null:
@@ -264,8 +269,9 @@ return weightCheckinFrequencySelected(_that.weightCheckinFrequency);case WeightT
 return weightTimeOfDaySelected(_that.weightTimeOfDay);case WeightUnitSelected() when weightUnitSelected != null:
 return weightUnitSelected(_that.weightUnit);case StartingWeightChanged() when startingWeightChanged != null:
 return startingWeightChanged(_that.weight);case FirstLogItemToggled() when firstLogItemToggled != null:
-return firstLogItemToggled(_that.id);case SomethingElseLogged() when somethingElseLogged != null:
-return somethingElseLogged(_that.mealOfTheDay,_that.name,_that.nutrition);case _:
+return firstLogItemToggled(_that.id);case FirstLogItemQuantityChanged() when firstLogItemQuantityChanged != null:
+return firstLogItemQuantityChanged(_that.id,_that.quantity);case SomethingElseLogged() when somethingElseLogged != null:
+return somethingElseLogged(_that.mealOfTheDay,_that.name,_that.nutrition,_that.quantity);case _:
   return null;
 
 }
@@ -1364,13 +1370,82 @@ as String,
 /// @nodoc
 
 
+class FirstLogItemQuantityChanged implements OnboardingEvent {
+  const FirstLogItemQuantityChanged(this.id, this.quantity);
+  
+
+ final  String id;
+ final  int quantity;
+
+/// Create a copy of OnboardingEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$FirstLogItemQuantityChangedCopyWith<FirstLogItemQuantityChanged> get copyWith => _$FirstLogItemQuantityChangedCopyWithImpl<FirstLogItemQuantityChanged>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FirstLogItemQuantityChanged&&(identical(other.id, id) || other.id == id)&&(identical(other.quantity, quantity) || other.quantity == quantity));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,id,quantity);
+
+@override
+String toString() {
+  return 'OnboardingEvent.firstLogItemQuantityChanged(id: $id, quantity: $quantity)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $FirstLogItemQuantityChangedCopyWith<$Res> implements $OnboardingEventCopyWith<$Res> {
+  factory $FirstLogItemQuantityChangedCopyWith(FirstLogItemQuantityChanged value, $Res Function(FirstLogItemQuantityChanged) _then) = _$FirstLogItemQuantityChangedCopyWithImpl;
+@useResult
+$Res call({
+ String id, int quantity
+});
+
+
+
+
+}
+/// @nodoc
+class _$FirstLogItemQuantityChangedCopyWithImpl<$Res>
+    implements $FirstLogItemQuantityChangedCopyWith<$Res> {
+  _$FirstLogItemQuantityChangedCopyWithImpl(this._self, this._then);
+
+  final FirstLogItemQuantityChanged _self;
+  final $Res Function(FirstLogItemQuantityChanged) _then;
+
+/// Create a copy of OnboardingEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? id = null,Object? quantity = null,}) {
+  return _then(FirstLogItemQuantityChanged(
+null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
+as int,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
 class SomethingElseLogged implements OnboardingEvent {
-  const SomethingElseLogged(this.mealOfTheDay, this.name, {this.nutrition = const Nutrition()});
+  const SomethingElseLogged(this.mealOfTheDay, this.name, {this.nutrition = const Nutrition(), this.quantity = 1});
   
 
  final  MealOfTheDay mealOfTheDay;
  final  String name;
 @JsonKey() final  Nutrition nutrition;
+@JsonKey() final  int quantity;
 
 /// Create a copy of OnboardingEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -1382,16 +1457,16 @@ $SomethingElseLoggedCopyWith<SomethingElseLogged> get copyWith => _$SomethingEls
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SomethingElseLogged&&(identical(other.mealOfTheDay, mealOfTheDay) || other.mealOfTheDay == mealOfTheDay)&&(identical(other.name, name) || other.name == name)&&(identical(other.nutrition, nutrition) || other.nutrition == nutrition));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SomethingElseLogged&&(identical(other.mealOfTheDay, mealOfTheDay) || other.mealOfTheDay == mealOfTheDay)&&(identical(other.name, name) || other.name == name)&&(identical(other.nutrition, nutrition) || other.nutrition == nutrition)&&(identical(other.quantity, quantity) || other.quantity == quantity));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,mealOfTheDay,name,nutrition);
+int get hashCode => Object.hash(runtimeType,mealOfTheDay,name,nutrition,quantity);
 
 @override
 String toString() {
-  return 'OnboardingEvent.somethingElseLogged(mealOfTheDay: $mealOfTheDay, name: $name, nutrition: $nutrition)';
+  return 'OnboardingEvent.somethingElseLogged(mealOfTheDay: $mealOfTheDay, name: $name, nutrition: $nutrition, quantity: $quantity)';
 }
 
 
@@ -1402,7 +1477,7 @@ abstract mixin class $SomethingElseLoggedCopyWith<$Res> implements $OnboardingEv
   factory $SomethingElseLoggedCopyWith(SomethingElseLogged value, $Res Function(SomethingElseLogged) _then) = _$SomethingElseLoggedCopyWithImpl;
 @useResult
 $Res call({
- MealOfTheDay mealOfTheDay, String name, Nutrition nutrition
+ MealOfTheDay mealOfTheDay, String name, Nutrition nutrition, int quantity
 });
 
 
@@ -1419,12 +1494,13 @@ class _$SomethingElseLoggedCopyWithImpl<$Res>
 
 /// Create a copy of OnboardingEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? mealOfTheDay = null,Object? name = null,Object? nutrition = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? mealOfTheDay = null,Object? name = null,Object? nutrition = null,Object? quantity = null,}) {
   return _then(SomethingElseLogged(
 null == mealOfTheDay ? _self.mealOfTheDay : mealOfTheDay // ignore: cast_nullable_to_non_nullable
 as MealOfTheDay,null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,nutrition: null == nutrition ? _self.nutrition : nutrition // ignore: cast_nullable_to_non_nullable
-as Nutrition,
+as Nutrition,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 
@@ -1447,7 +1523,9 @@ mixin _$OnboardingState {
 /// Position within [activeSteps], not a raw [OnboardingStep] index.
  int get activeStepIndex;/// Draft of the user's settings and usuals, committed to
 /// [UserSettingsBloc] when onboarding completes.
- UserSettingsState get settings; List<String> get firstLogSelectedIds;
+ UserSettingsState get settings; List<String> get firstLogSelectedIds;/// How many of each selected first-log item the user had, keyed by usual
+/// meal id. An item absent from the map defaults to one.
+ Map<String, int> get firstLogQuantities;
 /// Create a copy of OnboardingState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1460,16 +1538,16 @@ $OnboardingStateCopyWith<OnboardingState> get copyWith => _$OnboardingStateCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OnboardingState&&(identical(other.activeStepIndex, activeStepIndex) || other.activeStepIndex == activeStepIndex)&&(identical(other.settings, settings) || other.settings == settings)&&const DeepCollectionEquality().equals(other.firstLogSelectedIds, firstLogSelectedIds));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OnboardingState&&(identical(other.activeStepIndex, activeStepIndex) || other.activeStepIndex == activeStepIndex)&&(identical(other.settings, settings) || other.settings == settings)&&const DeepCollectionEquality().equals(other.firstLogSelectedIds, firstLogSelectedIds)&&const DeepCollectionEquality().equals(other.firstLogQuantities, firstLogQuantities));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,activeStepIndex,settings,const DeepCollectionEquality().hash(firstLogSelectedIds));
+int get hashCode => Object.hash(runtimeType,activeStepIndex,settings,const DeepCollectionEquality().hash(firstLogSelectedIds),const DeepCollectionEquality().hash(firstLogQuantities));
 
 @override
 String toString() {
-  return 'OnboardingState(activeStepIndex: $activeStepIndex, settings: $settings, firstLogSelectedIds: $firstLogSelectedIds)';
+  return 'OnboardingState(activeStepIndex: $activeStepIndex, settings: $settings, firstLogSelectedIds: $firstLogSelectedIds, firstLogQuantities: $firstLogQuantities)';
 }
 
 
@@ -1480,7 +1558,7 @@ abstract mixin class $OnboardingStateCopyWith<$Res>  {
   factory $OnboardingStateCopyWith(OnboardingState value, $Res Function(OnboardingState) _then) = _$OnboardingStateCopyWithImpl;
 @useResult
 $Res call({
- int activeStepIndex, UserSettingsState settings, List<String> firstLogSelectedIds
+ int activeStepIndex, UserSettingsState settings, List<String> firstLogSelectedIds, Map<String, int> firstLogQuantities
 });
 
 
@@ -1497,12 +1575,13 @@ class _$OnboardingStateCopyWithImpl<$Res>
 
 /// Create a copy of OnboardingState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? activeStepIndex = null,Object? settings = null,Object? firstLogSelectedIds = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? activeStepIndex = null,Object? settings = null,Object? firstLogSelectedIds = null,Object? firstLogQuantities = null,}) {
   return _then(_self.copyWith(
 activeStepIndex: null == activeStepIndex ? _self.activeStepIndex : activeStepIndex // ignore: cast_nullable_to_non_nullable
 as int,settings: null == settings ? _self.settings : settings // ignore: cast_nullable_to_non_nullable
 as UserSettingsState,firstLogSelectedIds: null == firstLogSelectedIds ? _self.firstLogSelectedIds : firstLogSelectedIds // ignore: cast_nullable_to_non_nullable
-as List<String>,
+as List<String>,firstLogQuantities: null == firstLogQuantities ? _self.firstLogQuantities : firstLogQuantities // ignore: cast_nullable_to_non_nullable
+as Map<String, int>,
   ));
 }
 /// Create a copy of OnboardingState
@@ -1596,10 +1675,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int activeStepIndex,  UserSettingsState settings,  List<String> firstLogSelectedIds)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int activeStepIndex,  UserSettingsState settings,  List<String> firstLogSelectedIds,  Map<String, int> firstLogQuantities)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _OnboardingState() when $default != null:
-return $default(_that.activeStepIndex,_that.settings,_that.firstLogSelectedIds);case _:
+return $default(_that.activeStepIndex,_that.settings,_that.firstLogSelectedIds,_that.firstLogQuantities);case _:
   return orElse();
 
 }
@@ -1617,10 +1696,10 @@ return $default(_that.activeStepIndex,_that.settings,_that.firstLogSelectedIds);
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int activeStepIndex,  UserSettingsState settings,  List<String> firstLogSelectedIds)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int activeStepIndex,  UserSettingsState settings,  List<String> firstLogSelectedIds,  Map<String, int> firstLogQuantities)  $default,) {final _that = this;
 switch (_that) {
 case _OnboardingState():
-return $default(_that.activeStepIndex,_that.settings,_that.firstLogSelectedIds);case _:
+return $default(_that.activeStepIndex,_that.settings,_that.firstLogSelectedIds,_that.firstLogQuantities);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1637,10 +1716,10 @@ return $default(_that.activeStepIndex,_that.settings,_that.firstLogSelectedIds);
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int activeStepIndex,  UserSettingsState settings,  List<String> firstLogSelectedIds)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int activeStepIndex,  UserSettingsState settings,  List<String> firstLogSelectedIds,  Map<String, int> firstLogQuantities)?  $default,) {final _that = this;
 switch (_that) {
 case _OnboardingState() when $default != null:
-return $default(_that.activeStepIndex,_that.settings,_that.firstLogSelectedIds);case _:
+return $default(_that.activeStepIndex,_that.settings,_that.firstLogSelectedIds,_that.firstLogQuantities);case _:
   return null;
 
 }
@@ -1652,7 +1731,7 @@ return $default(_that.activeStepIndex,_that.settings,_that.firstLogSelectedIds);
 
 @JsonSerializable(explicitToJson: true)
 class _OnboardingState extends OnboardingState {
-  const _OnboardingState({this.activeStepIndex = 0, this.settings = const UserSettingsState(), final  List<String> firstLogSelectedIds = const <String>[]}): _firstLogSelectedIds = firstLogSelectedIds,super._();
+  const _OnboardingState({this.activeStepIndex = 0, this.settings = const UserSettingsState(), final  List<String> firstLogSelectedIds = const <String>[], final  Map<String, int> firstLogQuantities = const <String, int>{}}): _firstLogSelectedIds = firstLogSelectedIds,_firstLogQuantities = firstLogQuantities,super._();
   factory _OnboardingState.fromJson(Map<String, dynamic> json) => _$OnboardingStateFromJson(json);
 
 /// Position within [activeSteps], not a raw [OnboardingStep] index.
@@ -1665,6 +1744,17 @@ class _OnboardingState extends OnboardingState {
   if (_firstLogSelectedIds is EqualUnmodifiableListView) return _firstLogSelectedIds;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_firstLogSelectedIds);
+}
+
+/// How many of each selected first-log item the user had, keyed by usual
+/// meal id. An item absent from the map defaults to one.
+ final  Map<String, int> _firstLogQuantities;
+/// How many of each selected first-log item the user had, keyed by usual
+/// meal id. An item absent from the map defaults to one.
+@override@JsonKey() Map<String, int> get firstLogQuantities {
+  if (_firstLogQuantities is EqualUnmodifiableMapView) return _firstLogQuantities;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(_firstLogQuantities);
 }
 
 
@@ -1681,16 +1771,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OnboardingState&&(identical(other.activeStepIndex, activeStepIndex) || other.activeStepIndex == activeStepIndex)&&(identical(other.settings, settings) || other.settings == settings)&&const DeepCollectionEquality().equals(other._firstLogSelectedIds, _firstLogSelectedIds));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OnboardingState&&(identical(other.activeStepIndex, activeStepIndex) || other.activeStepIndex == activeStepIndex)&&(identical(other.settings, settings) || other.settings == settings)&&const DeepCollectionEquality().equals(other._firstLogSelectedIds, _firstLogSelectedIds)&&const DeepCollectionEquality().equals(other._firstLogQuantities, _firstLogQuantities));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,activeStepIndex,settings,const DeepCollectionEquality().hash(_firstLogSelectedIds));
+int get hashCode => Object.hash(runtimeType,activeStepIndex,settings,const DeepCollectionEquality().hash(_firstLogSelectedIds),const DeepCollectionEquality().hash(_firstLogQuantities));
 
 @override
 String toString() {
-  return 'OnboardingState(activeStepIndex: $activeStepIndex, settings: $settings, firstLogSelectedIds: $firstLogSelectedIds)';
+  return 'OnboardingState(activeStepIndex: $activeStepIndex, settings: $settings, firstLogSelectedIds: $firstLogSelectedIds, firstLogQuantities: $firstLogQuantities)';
 }
 
 
@@ -1701,7 +1791,7 @@ abstract mixin class _$OnboardingStateCopyWith<$Res> implements $OnboardingState
   factory _$OnboardingStateCopyWith(_OnboardingState value, $Res Function(_OnboardingState) _then) = __$OnboardingStateCopyWithImpl;
 @override @useResult
 $Res call({
- int activeStepIndex, UserSettingsState settings, List<String> firstLogSelectedIds
+ int activeStepIndex, UserSettingsState settings, List<String> firstLogSelectedIds, Map<String, int> firstLogQuantities
 });
 
 
@@ -1718,12 +1808,13 @@ class __$OnboardingStateCopyWithImpl<$Res>
 
 /// Create a copy of OnboardingState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? activeStepIndex = null,Object? settings = null,Object? firstLogSelectedIds = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? activeStepIndex = null,Object? settings = null,Object? firstLogSelectedIds = null,Object? firstLogQuantities = null,}) {
   return _then(_OnboardingState(
 activeStepIndex: null == activeStepIndex ? _self.activeStepIndex : activeStepIndex // ignore: cast_nullable_to_non_nullable
 as int,settings: null == settings ? _self.settings : settings // ignore: cast_nullable_to_non_nullable
 as UserSettingsState,firstLogSelectedIds: null == firstLogSelectedIds ? _self._firstLogSelectedIds : firstLogSelectedIds // ignore: cast_nullable_to_non_nullable
-as List<String>,
+as List<String>,firstLogQuantities: null == firstLogQuantities ? _self._firstLogQuantities : firstLogQuantities // ignore: cast_nullable_to_non_nullable
+as Map<String, int>,
   ));
 }
 

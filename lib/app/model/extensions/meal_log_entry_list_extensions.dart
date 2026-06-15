@@ -9,25 +9,25 @@ typedef DailyMealBreakdown = ({
 });
 
 extension MealLogEntryListFormatting on List<MealLogEntry> {
-  /// Total known nutrition across these entries. Values an entry leaves unset
-  /// add nothing to the total.
+  /// Total known nutrition across these entries, each scaled by its quantity.
+  /// Values an entry leaves unset add nothing to the total.
   Nutrition get totalNutrition {
     var nutrition = const Nutrition();
     for (final mealLogEntry in this) {
-      nutrition += mealLogEntry.nutrition;
+      nutrition += mealLogEntry.scaledNutrition;
     }
     return nutrition;
   }
 
   /// Groups the entries logged on [day] by meal of the day and sums their
-  /// known nutrition in a single pass. Values an entry leaves unset add nothing
-  /// to the total.
+  /// known nutrition, each scaled by its quantity, in a single pass. Values an
+  /// entry leaves unset add nothing to the total.
   DailyMealBreakdown breakdownOn(DateTime day) {
     var nutrition = const Nutrition();
     final entriesByMeal = <MealOfTheDay, List<MealLogEntry>>{};
     for (final mealLogEntry in this) {
       if (!DateUtils.isSameDay(mealLogEntry.loggedAt, day)) continue;
-      nutrition += mealLogEntry.nutrition;
+      nutrition += mealLogEntry.scaledNutrition;
       entriesByMeal
           .putIfAbsent(mealLogEntry.mealOfTheDay, () => <MealLogEntry>[])
           .add(mealLogEntry);

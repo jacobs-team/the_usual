@@ -87,6 +87,7 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
                       mealOfTheDay,
                       usualMeal.name,
                       nutrition: usualMeal.nutrition,
+                      quantity: state.firstLogQuantities[usualMeal.id] ?? 1,
                       usualMealId: usualMeal.id,
                       photoPath: usualMeal.photoPath,
                     ),

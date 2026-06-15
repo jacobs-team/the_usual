@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
@@ -22,7 +23,7 @@ class _FirstLogViewState extends State<FirstLogView> {
   @override
   void initState() {
     super.initState();
-    _mealOfTheDay = MealOfTheDay.fromTime(TimeOfDay.now());
+    _mealOfTheDay = MealOfTheDay.fromTime(TimeOfDay.fromDateTime(clock.now()));
   }
 
   @override
@@ -40,15 +41,16 @@ class _FirstLogViewState extends State<FirstLogView> {
               BlocSelector<
                 OnboardingBloc,
                 OnboardingState,
-                (List<UsualMeal>, List<String>)
+                (List<UsualMeal>, List<String>, Map<String, int>)
               >(
                 bloc: getIt<OnboardingBloc>(),
                 selector: (state) => (
                   state.settings.usuals[_mealOfTheDay] ?? <UsualMeal>[],
                   state.firstLogSelectedIds,
+                  state.firstLogQuantities,
                 ),
                 builder: (context, selected) {
-                  final (usualMeals, selectedIds) = selected;
+                  final (usualMeals, selectedIds, quantities) = selected;
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -81,6 +83,7 @@ class _FirstLogViewState extends State<FirstLogView> {
                                       selected: selectedIds.contains(
                                         usualMeal.id,
                                       ),
+                                      quantity: quantities[usualMeal.id] ?? 1,
                                     ),
                                 ],
                               ),
@@ -91,7 +94,7 @@ class _FirstLogViewState extends State<FirstLogView> {
                           onPressed: () async {
                             final result =
                                 await showModalBottomSheet<
-                                  (String, Nutrition, bool)
+                                  (String, Nutrition, int, bool)
                                 >(
                                   context: context,
                                   isScrollControlled: true,
@@ -101,12 +104,13 @@ class _FirstLogViewState extends State<FirstLogView> {
                                   ),
                                 );
                             if (result == null) return;
-                            final (name, nutrition, _) = result;
+                            final (name, nutrition, quantity, _) = result;
                             getIt<OnboardingBloc>().add(
                               OnboardingEvent.somethingElseLogged(
                                 _mealOfTheDay,
                                 name,
                                 nutrition: nutrition,
+                                quantity: quantity,
                               ),
                             );
                           },
@@ -139,10 +143,15 @@ class _FirstLogViewState extends State<FirstLogView> {
 }
 
 class _FoodCard extends StatelessWidget {
-  const _FoodCard({required this.usualMeal, required this.selected});
+  const _FoodCard({
+    required this.usualMeal,
+    required this.selected,
+    required this.quantity,
+  });
 
   final UsualMeal usualMeal;
   final bool selected;
+  final int quantity;
 
   @override
   Widget build(BuildContext context) {
@@ -183,6 +192,19 @@ class _FoodCard extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
+            if (selected) ...[
+              SizedBox(height: AppDesign.spacing.sm),
+              QuantityStepper(
+                dense: true,
+                quantity: quantity,
+                onChanged: (quantity) => getIt<OnboardingBloc>().add(
+                  OnboardingEvent.firstLogItemQuantityChanged(
+                    usualMeal.id,
+                    quantity,
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),

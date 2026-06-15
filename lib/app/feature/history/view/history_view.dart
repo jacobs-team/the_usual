@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
@@ -29,7 +30,7 @@ class _HistoryViewState extends State<HistoryView> {
     super.initState();
     final history = _dailyLogBloc.state.historyByMonth;
     final initialIndex = history.isEmpty ? 0 : history.length - 1;
-    final now = DateTime.now();
+    final now = clock.now();
     _selectedMonth = history.isEmpty
         ? DateTime(now.year, now.month)
         : history[initialIndex].month;

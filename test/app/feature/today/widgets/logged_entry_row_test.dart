@@ -51,7 +51,7 @@ void main() {
       stubSettings(const UserSettingsState());
       await pumpRow(tester, entry());
 
-      await tester.tap(find.byIcon(Icons.remove));
+      await tester.tap(find.byIcon(Icons.delete_forever_outlined));
 
       verify(
         () => dailyLogBloc.add(const DailyLogEvent.mealEntryRemoved('m1')),
@@ -103,6 +103,11 @@ void main() {
           ),
         ),
       ).called(1);
+
+      // The entry now differs from its empty usual meal, so the row offers to
+      // push the nutrition onto it.
+      await tester.tap(find.text('Update usual meal to match'));
+
       verify(
         () => userSettingsBloc.add(
           const UserSettingsEvent.usualMealNutritionChanged(

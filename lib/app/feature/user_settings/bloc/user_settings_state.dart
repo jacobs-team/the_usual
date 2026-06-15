@@ -69,6 +69,62 @@ abstract class UserSettingsState with _$UserSettingsState {
     Map<MealOfTheDay, List<UsualMeal>> usuals,
   }) = _UserSettingsState;
 
+  const UserSettingsState._();
+
   factory UserSettingsState.fromJson(Map<String, dynamic> json) =>
       _$UserSettingsStateFromJson(json);
+
+  /// The meal section to highlight as current at [now].
+  ///
+  /// With per-meal reminders on, it is the earliest meal whose reminder time
+  /// hasn't passed yet — so the highlight sits on each meal up until its
+  /// reminder fires — and stays on the last meal once all have passed. With no
+  /// per-meal reminders it falls back to typical meal times.
+  MealOfTheDay currentMeal(DateTime now) {
+    final boundaries = _mealBoundaries;
+    if (boundaries.isEmpty) {
+      return MealOfTheDay.fromTime(TimeOfDay.fromDateTime(now));
+    }
+    final nowMinutes = now.hour * 60 + now.minute;
+    for (final (meal, minutes) in boundaries) {
+      if (nowMinutes < minutes) return meal;
+    }
+    return boundaries.last.$1;
+  }
+
+  /// The next instant after [now] when [currentMeal] changes, so the Today
+  /// view can refresh exactly when the highlighted meal does.
+  DateTime nextMealBoundary(DateTime now) {
+    final boundaries = _mealBoundaries;
+    final today = DateUtils.dateOnly(now);
+    if (boundaries.isEmpty) {
+      // The fallback only changes on the hour (see [MealOfTheDay.fromTime]),
+      // so the next change is the top of the next hour.
+      return DateTime(now.year, now.month, now.day, now.hour + 1);
+    }
+    final nowMinutes = now.hour * 60 + now.minute;
+    for (final (_, minutes) in boundaries) {
+      if (minutes > nowMinutes) return today.add(Duration(minutes: minutes));
+    }
+    // Every reminder has passed; the highlight next changes at midnight, when
+    // the earliest meal is upcoming again.
+    return today.add(const Duration(days: 1));
+  }
+
+  /// Enabled per-meal reminders as (meal, minutes-since-midnight), earliest
+  /// first. Empty when per-meal reminders don't apply, which signals the
+  /// time-of-day fallback.
+  List<(MealOfTheDay, int)> get _mealBoundaries {
+    if (mealCheckinScheduleMode != MealCheckinScheduleMode.perMeal) {
+      return const [];
+    }
+    return [
+      for (final entry in mealReminders.entries)
+        if (entry.value.enabled)
+          (
+            entry.key,
+            entry.value.timeOfDay.hour * 60 + entry.value.timeOfDay.minute,
+          ),
+    ]..sort((a, b) => a.$2.compareTo(b.$2));
+  }
 }

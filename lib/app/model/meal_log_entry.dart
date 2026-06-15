@@ -10,16 +10,24 @@ part 'meal_log_entry.g.dart';
 @freezed
 abstract class MealLogEntry with _$MealLogEntry {
   /// {@macro meal_log_entry}
+  @JsonSerializable(explicitToJson: true)
   const factory MealLogEntry({
     required String id,
     required DateTime loggedAt,
     required MealOfTheDay mealOfTheDay,
     required String name,
     @Default(Nutrition()) Nutrition nutrition,
+    @Default(1) int quantity,
     String? usualMealId,
     String? photoPath,
   }) = _MealLogEntry;
 
+  const MealLogEntry._();
+
   factory MealLogEntry.fromJson(Map<String, dynamic> json) =>
       _$MealLogEntryFromJson(Nutrition.migrateLegacyJson(json));
+
+  /// The entry's nutrition with its [quantity] applied. The stored [nutrition]
+  /// is per unit; this is what every total and summary uses.
+  Nutrition get scaledNutrition => nutrition * quantity;
 }

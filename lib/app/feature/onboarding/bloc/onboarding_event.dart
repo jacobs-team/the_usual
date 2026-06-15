@@ -53,9 +53,14 @@ sealed class OnboardingEvent with _$OnboardingEvent {
       StartingWeightChanged;
   const factory OnboardingEvent.firstLogItemToggled(String id) =
       FirstLogItemToggled;
+  const factory OnboardingEvent.firstLogItemQuantityChanged(
+    String id,
+    int quantity,
+  ) = FirstLogItemQuantityChanged;
   const factory OnboardingEvent.somethingElseLogged(
     MealOfTheDay mealOfTheDay,
     String name, {
     @Default(Nutrition()) Nutrition nutrition,
+    @Default(1) int quantity,
   }) = SomethingElseLogged;
 }

@@ -7,7 +7,7 @@ import '../../helpers/helpers.dart';
 void main() {
   group(FoodEntrySheet, () {
     /// Opens the sheet from a button and records whatever it pops with.
-    Future<List<(String, int?, bool)?>> showSheet(
+    Future<List<(String, Nutrition, int, bool)?>> showSheet(
       WidgetTester tester, {
       bool showAddToUsualMeals = false,
     }) async {
@@ -16,19 +16,20 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
 
-      final results = <(String, int?, bool)?>[];
+      final results = <(String, Nutrition, int, bool)?>[];
       await tester.pumpPumpPumpItUP(
         Builder(
           builder: (context) => ElevatedButton(
             onPressed: () async {
-              final result = await showModalBottomSheet<(String, int?, bool)>(
-                context: context,
-                builder: (_) => FoodEntrySheet(
-                  title: 'Log food',
-                  confirmLabel: 'Log',
-                  showAddToUsualMeals: showAddToUsualMeals,
-                ),
-              );
+              final result =
+                  await showModalBottomSheet<(String, Nutrition, int, bool)>(
+                    context: context,
+                    builder: (_) => FoodEntrySheet(
+                      title: 'Log food',
+                      confirmLabel: 'Log',
+                      showAddToUsualMeals: showAddToUsualMeals,
+                    ),
+                  );
               results.add(result);
             },
             child: const Text('open'),
@@ -41,12 +42,20 @@ void main() {
       return results;
     }
 
+    Finder caloriesField() => find
+        .descendant(
+          of: find.byType(NutritionFields),
+          matching: find.byType(TextFormField),
+        )
+        .first;
+
     testWidgets('renders title and sections', (tester) async {
       await showSheet(tester);
 
       expect(find.text('Log food'), findsOneWidget);
       expect(find.text('NAME'), findsOneWidget);
-      expect(find.text('CALORIES · OPTIONAL'), findsOneWidget);
+      expect(find.text('QUANTITY'), findsOneWidget);
+      expect(find.text('NUTRITION · OPTIONAL'), findsOneWidget);
     });
 
     testWidgets('confirm is disabled until a name is entered', (tester) async {
@@ -70,12 +79,28 @@ void main() {
       final results = await showSheet(tester, showAddToUsualMeals: true);
 
       await tester.enterText(find.byType(TextFormField).first, 'Salad');
-      await tester.enterText(find.byType(TextFormField).last, '380');
+      await tester.enterText(caloriesField(), '380');
       await tester.pump();
       await tester.tap(find.text('Log'));
       await tester.pumpAndSettle();
 
-      expect(results.single, equals(('Salad', 380, true)));
+      expect(
+        results.single,
+        equals(('Salad', const Nutrition(calories: 380), 1, true)),
+      );
+    });
+
+    testWidgets('steps the quantity up before logging', (tester) async {
+      final results = await showSheet(tester, showAddToUsualMeals: true);
+
+      await tester.enterText(find.byType(TextFormField).first, 'Salad');
+      await tester.tap(find.byIcon(Icons.add));
+      await tester.tap(find.byIcon(Icons.add));
+      await tester.pump();
+      await tester.tap(find.text('Log'));
+      await tester.pumpAndSettle();
+
+      expect(results.single, equals(('Salad', const Nutrition(), 3, true)));
     });
 
     testWidgets('toggling the checkbox flips the add-to-usuals flag', (
@@ -90,7 +115,7 @@ void main() {
       await tester.tap(find.text('Log'));
       await tester.pumpAndSettle();
 
-      expect(results.single, equals(('Salad', null, false)));
+      expect(results.single, equals(('Salad', const Nutrition(), 1, false)));
     });
 
     testWidgets('cancel pops with null', (tester) async {

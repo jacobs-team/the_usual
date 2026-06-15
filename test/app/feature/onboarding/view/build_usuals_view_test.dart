@@ -105,7 +105,7 @@ void main() {
           )
           .first;
       await tester.enterText(rowCalories, '275');
-      await tester.tap(find.byIcon(Icons.remove).first);
+      await tester.tap(find.byIcon(Icons.delete_forever_outlined).first);
 
       verify(
         () => onboardingBloc.add(

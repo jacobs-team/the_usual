@@ -87,6 +87,10 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
           ),
         ),
         FirstLogItemToggled() => _onFirstLogItemToggled(event, emit),
+        FirstLogItemQuantityChanged() => _onFirstLogItemQuantityChanged(
+          event,
+          emit,
+        ),
         SomethingElseLogged() => _onSomethingElseLogged(event, emit),
       },
     );
@@ -265,10 +269,31 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
     FirstLogItemToggled event,
     Emitter<OnboardingState> emit,
   ) {
-    final selected = state.firstLogSelectedIds.contains(event.id)
+    final wasSelected = state.firstLogSelectedIds.contains(event.id);
+    final selected = wasSelected
         ? state.firstLogSelectedIds.where((id) => id != event.id).toList()
         : [...state.firstLogSelectedIds, event.id];
-    emit(state.copyWith(firstLogSelectedIds: selected));
+    // Drop any quantity for an item that was just deselected so it resets to
+    // one if reselected.
+    final quantities = {...state.firstLogQuantities}..remove(event.id);
+    emit(
+      state.copyWith(
+        firstLogSelectedIds: selected,
+        firstLogQuantities: quantities,
+      ),
+    );
+  }
+
+  void _onFirstLogItemQuantityChanged(
+    FirstLogItemQuantityChanged event,
+    Emitter<OnboardingState> emit,
+  ) {
+    final quantity = event.quantity < 1 ? 1 : event.quantity;
+    emit(
+      state.copyWith(
+        firstLogQuantities: {...state.firstLogQuantities, event.id: quantity},
+      ),
+    );
   }
 
   void _onSomethingElseLogged(
@@ -285,6 +310,7 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
       name: name,
       nutrition: event.nutrition,
     );
+    final quantity = event.quantity < 1 ? 1 : event.quantity;
     emit(
       state.copyWith(
         settings: state.settings.copyWith(
@@ -294,6 +320,10 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
           },
         ),
         firstLogSelectedIds: [...state.firstLogSelectedIds, usualMeal.id],
+        firstLogQuantities: {
+          ...state.firstLogQuantities,
+          usualMeal.id: quantity,
+        },
       ),
     );
   }

@@ -63,8 +63,9 @@ void main() {
     testWidgets('shows the calorie total and logged rows when current', (
       tester,
     ) async {
-      // Expanded so the only "350 cal" text is the section total, not also the
-      // collapsed row summary.
+      // Expanded so the section total is the only place the summary renders,
+      // not also the collapsed row summary. The total zero-fills the macros it
+      // sums.
       await pumpSection(
         tester,
         mealLogEntries: [logged('a', 'Eggs', calories: 350)],
@@ -72,7 +73,7 @@ void main() {
         nutritionExpandedByDefault: true,
       );
 
-      expect(find.text('350 cal'), findsOneWidget);
+      expect(find.text('350 cal · 0P · 0F · 0C'), findsOneWidget);
       expect(find.byType(LoggedEntryRow), findsOneWidget);
     });
 

@@ -65,7 +65,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.byIcon(Icons.remove));
+      await tester.tap(find.byIcon(Icons.delete_forever_outlined));
 
       expect(removedId, equals('a'));
     });

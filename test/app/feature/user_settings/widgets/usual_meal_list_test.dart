@@ -70,7 +70,7 @@ void main() {
         ),
       ).called(1);
 
-      await tester.tap(find.byIcon(Icons.remove).first);
+      await tester.tap(find.byIcon(Icons.delete_forever_outlined).first);
       verify(
         () => userSettingsBloc.add(
           const UserSettingsEvent.usualMealRemoved(MealOfTheDay.breakfast, 'a'),

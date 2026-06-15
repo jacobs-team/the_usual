@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -33,6 +34,7 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
           event,
           emit,
         ),
+        MealEntryQuantityChanged() => _onMealEntryQuantityChanged(event, emit),
         MealEntryUsualMealLinked() => _onMealEntryUsualMealLinked(event, emit),
         WeightLogged() => _onWeightLogged(event, emit),
         WeightOnDayChanged() => _onWeightOnDayChanged(event, emit),
@@ -49,10 +51,11 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
 
     final mealLogEntry = MealLogEntry(
       id: _uuid.v4(),
-      loggedAt: DateTime.now(),
+      loggedAt: clock.now(),
       mealOfTheDay: event.mealOfTheDay,
       name: name,
       nutrition: event.nutrition,
+      quantity: event.quantity,
       usualMealId: event.usualMealId,
       photoPath: event.photoPath,
     );
@@ -67,6 +70,21 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
       for (final mealLogEntry in state.mealEntries)
         if (mealLogEntry.id == event.id)
           mealLogEntry.copyWith(nutrition: event.nutrition)
+        else
+          mealLogEntry,
+    ];
+    emit(state.copyWith(mealEntries: updatedEntries));
+  }
+
+  void _onMealEntryQuantityChanged(
+    MealEntryQuantityChanged event,
+    Emitter<DailyLogState> emit,
+  ) {
+    final quantity = event.quantity < 1 ? 1 : event.quantity;
+    final updatedEntries = [
+      for (final mealLogEntry in state.mealEntries)
+        if (mealLogEntry.id == event.id)
+          mealLogEntry.copyWith(quantity: quantity)
         else
           mealLogEntry,
     ];
@@ -90,7 +108,7 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
   void _onWeightLogged(WeightLogged event, Emitter<DailyLogState> emit) {
     final weightEntry = WeightEntry(
       id: _uuid.v4(),
-      loggedAt: DateTime.now(),
+      loggedAt: clock.now(),
       weight: event.weight,
       weightUnit: event.weightUnit,
     );
@@ -156,7 +174,7 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
     ];
     const daysAgoSamples = [0, 1, 3, 8, 16, 27, 41, 58, 74, 92];
 
-    final now = DateTime.now();
+    final now = clock.now();
     final mealEntries = <MealLogEntry>[];
     final weightEntries = <WeightEntry>[];
 

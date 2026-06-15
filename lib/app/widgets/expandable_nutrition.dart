@@ -8,6 +8,12 @@ import 'package:the_usual/design_system/design_system.dart';
 /// leading chevron animates and a trailing button removes the entry. Starts in
 /// [expandedByDefault] and follows that value when it changes (e.g. the user
 /// flips the default), while keeping any manual toggle in between.
+///
+/// When [quantity] is supplied the stored [nutrition] is treated as per unit:
+/// the summary shows it scaled by the quantity, the name gains a `×N` prefix
+/// once the quantity passes one, and a [QuantityStepper] appears above the
+/// fields while expanded. Leave [quantity] null for foods that have no count,
+/// such as usual meals.
 /// {@endtemplate}
 class ExpandableNutrition extends StatefulWidget {
   /// {@macro expandable_nutrition}
@@ -18,6 +24,8 @@ class ExpandableNutrition extends StatefulWidget {
     required this.onChanged,
     required this.onRemoved,
     this.onNameChanged,
+    this.quantity,
+    this.onQuantityChanged,
     this.expandedFooter,
     super.key,
   });
@@ -25,7 +33,8 @@ class ExpandableNutrition extends StatefulWidget {
   /// The food's name.
   final String name;
 
-  /// The nutrition to summarize when collapsed and seed the fields when open.
+  /// The per-unit nutrition to summarize when collapsed and seed the fields
+  /// when open. When [quantity] is set the summary shows this scaled.
   final Nutrition nutrition;
 
   /// Whether the fields start expanded for editing.
@@ -37,6 +46,13 @@ class ExpandableNutrition extends StatefulWidget {
   /// Called with the new name whenever it changes. When null the name is shown
   /// read-only; when provided it becomes an editable field.
   final ValueChanged<String>? onNameChanged;
+
+  /// How many of this food was logged. Null hides the stepper and shows the
+  /// nutrition unscaled, for foods that have no count.
+  final int? quantity;
+
+  /// Called with the new quantity when the stepper is used.
+  final ValueChanged<int>? onQuantityChanged;
 
   /// Called when the remove button is pressed.
   final VoidCallback onRemoved;
@@ -84,6 +100,13 @@ class _ExpandableNutritionState extends State<ExpandableNutrition> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final quantity = widget.quantity;
+    final displayNutrition = quantity == null
+        ? widget.nutrition
+        : widget.nutrition * quantity;
+    final displayName = quantity != null && quantity > 1
+        ? '×$quantity ${widget.name}'
+        : widget.name;
     return ExpansionTile(
       dense: true,
       controller: _controller,
@@ -114,7 +137,7 @@ class _ExpandableNutritionState extends State<ExpandableNutrition> {
                 if (!_expanded) ...[
                   SizedBox(width: AppDesign.spacing.sm),
                   Text(
-                    widget.nutrition.summary,
+                    displayNutrition.summary,
                     style: theme.textTheme.bodyMedium,
                   ),
                 ],
@@ -131,7 +154,7 @@ class _ExpandableNutritionState extends State<ExpandableNutrition> {
                         maxWidth: constraints.maxWidth,
                       ),
                       child: Text(
-                        widget.name,
+                        displayName,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.bodyLarge?.copyWith(
@@ -141,7 +164,7 @@ class _ExpandableNutritionState extends State<ExpandableNutrition> {
                     ),
                     if (!_expanded)
                       Text(
-                        widget.nutrition.summary,
+                        displayNutrition.summary,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           textBaseline: TextBaseline.alphabetic,
                         ),
@@ -155,6 +178,25 @@ class _ExpandableNutritionState extends State<ExpandableNutrition> {
         onPressed: widget.onRemoved,
       ),
       children: [
+        if (quantity != null && widget.onQuantityChanged != null) ...[
+          const SectionLabel('QUANTITY'),
+          SizedBox(height: AppDesign.spacing.xs),
+          QuantityStepper(
+            dense: true,
+            quantity: quantity,
+            onChanged: widget.onQuantityChanged!,
+          ),
+          if (quantity > 1 && !widget.nutrition.isEmpty) ...[
+            SizedBox(height: AppDesign.spacing.xs),
+            Text(
+              '×$quantity = ${displayNutrition.summary}',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+          SizedBox(height: AppDesign.spacing.md),
+        ],
         NutritionFields(
           dense: true,
           initial: widget.nutrition,
