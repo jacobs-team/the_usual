@@ -152,7 +152,7 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
 
       void addMeal(
         MealOfTheDay mealOfTheDay,
-        (String, int, int, int, int) sample,
+        (String, int, int, int, int) record,
         int hour,
       ) {
         mealEntries.add(
@@ -160,12 +160,12 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
             id: _uuid.v4(),
             loggedAt: day.add(Duration(hours: hour)),
             mealOfTheDay: mealOfTheDay,
-            name: sample.$1,
+            name: record.$1,
             nutrition: Nutrition(
-              calories: sample.$2,
-              protein: sample.$3,
-              fat: sample.$4,
-              carbs: sample.$5,
+              calories: record.$2,
+              protein: record.$3,
+              fat: record.$4,
+              carbs: record.$5,
             ),
           ),
         );
