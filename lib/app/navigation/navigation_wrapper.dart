@@ -27,7 +27,26 @@ class NavigationWrapper extends StatelessWidget {
     final expandRail = context.layout > LayoutData.large;
     const destinations = AppRouter.destinations;
 
+    // The floating nav bar overlays the content instead of taking layout space,
+    // this reserves room for scrolling above it.
+    final mediaQuery = MediaQuery.of(context);
+    final floatingNavClearance =
+        AppDesign.spacing.sm + kMinInteractiveDimension;
+    final content = showRail
+        ? navigationShell
+        : MediaQuery(
+            data: mediaQuery.copyWith(
+              padding: mediaQuery.padding.copyWith(
+                bottom: mediaQuery.padding.bottom == 0
+                    ? 0
+                    : mediaQuery.padding.bottom + floatingNavClearance,
+              ),
+            ),
+            child: navigationShell,
+          );
+
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Stack(
         children: [
           Column(
@@ -50,12 +69,13 @@ class NavigationWrapper extends StatelessWidget {
                         selectedIndex: navigationShell.currentIndex,
                         onDestinationSelected: _goToBranch,
                       ),
-                    Expanded(child: navigationShell),
+                    Expanded(child: content),
                   ],
                 ),
               ),
             ],
           ),
+
           if (!showRail)
             Positioned(
               bottom: AppDesign.spacing.xxl,

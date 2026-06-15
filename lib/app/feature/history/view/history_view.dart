@@ -62,6 +62,9 @@ class _HistoryViewState extends State<HistoryView> {
     return Scaffold(
       appBar: AppBar(centerTitle: true, title: const Text('History')),
       body: SafeArea(
+        // The floating nav bar overlays the bottom of the content, so let the
+        // list flow behind it rather than reserving space for it here.
+        bottom: false,
         child: BlocBuilder<DailyLogBloc, DailyLogState>(
           bloc: _dailyLogBloc,
           builder: (context, state) {
@@ -116,12 +119,19 @@ class _HistoryViewState extends State<HistoryView> {
                       final localizations = MaterialLocalizations.of(context);
 
                       return ListView(
-                        padding: EdgeInsets.fromLTRB(
-                          AppDesign.spacing.lg,
-                          AppDesign.spacing.sm,
-                          AppDesign.spacing.lg,
-                          AppDesign.spacing.xl,
-                        ),
+                        // The bottom inset carries the floating nav bar's
+                        // height (injected by NavigationWrapper) so the last
+                        // day can scroll clear of it.
+                        padding:
+                            EdgeInsets.fromLTRB(
+                              AppDesign.spacing.lg,
+                              AppDesign.spacing.sm,
+                              AppDesign.spacing.lg,
+                              AppDesign.spacing.xl,
+                            ) +
+                            EdgeInsets.only(
+                              bottom: MediaQuery.paddingOf(context).bottom,
+                            ),
                         children: [
                           Padding(
                             padding: EdgeInsets.only(

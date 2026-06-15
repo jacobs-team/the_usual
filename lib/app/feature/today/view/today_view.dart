@@ -88,6 +88,9 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
         ],
       ),
       body: SafeArea(
+        // The floating nav bar overlays the bottom of the content, so let the
+        // list flow behind it rather than reserving space for it here.
+        bottom: false,
         child:
             BlocSelector<
               UserSettingsBloc,
@@ -111,7 +114,14 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
                   builder: (context, mealEntries) {
                     final breakdown = mealEntries.breakdownOn(today);
                     return ListView(
-                      padding: EdgeInsets.all(AppDesign.spacing.lg),
+                      // The bottom inset carries the floating nav bar's height
+                      // (injected by NavigationWrapper) so the last meal can
+                      // scroll clear of it.
+                      padding:
+                          EdgeInsets.all(AppDesign.spacing.lg) +
+                          EdgeInsets.only(
+                            bottom: MediaQuery.paddingOf(context).bottom,
+                          ),
                       children: [
                         const SectionLabel('WEIGHT'),
                         SizedBox(height: AppDesign.spacing.sm),
