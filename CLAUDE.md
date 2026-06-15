@@ -34,6 +34,7 @@
 ## Views & Widgets
 
 - Always prefer extracted widgets over builder functions or static methods that return widgets.
+- Do not extract a single-use widget into its own file just to shrink a build method — that adds an unnecessary abstraction layer. Rule of thumb: only pull a single-use widget into a separate file when the current file is over ~250 lines or genuinely hard to read. Below that, keep it inline (or as a private widget class in the same file). Extract to a shared file only when the widget is reused by more than one caller.
 - Feature-specific widgets go in the feature's `widgets/` folder. App-wide widgets go in the apps `widgets/` folder.
 - Get bloc instances via `getIt<T>()` in views — do not use `context.read<T>()`.
 

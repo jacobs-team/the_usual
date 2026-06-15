@@ -15,8 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UsualMeal {
 
- String get id; String get name; String? get photoPath;/// User-entered calories, null when not set yet.
- int? get calories;
+ String get id; String get name; String? get photoPath; Nutrition get nutrition;
 /// Create a copy of UsualMeal
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +28,16 @@ $UsualMealCopyWith<UsualMeal> get copyWith => _$UsualMealCopyWithImpl<UsualMeal>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UsualMeal&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath)&&(identical(other.calories, calories) || other.calories == calories));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UsualMeal&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath)&&(identical(other.nutrition, nutrition) || other.nutrition == nutrition));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,photoPath,calories);
+int get hashCode => Object.hash(runtimeType,id,name,photoPath,nutrition);
 
 @override
 String toString() {
-  return 'UsualMeal(id: $id, name: $name, photoPath: $photoPath, calories: $calories)';
+  return 'UsualMeal(id: $id, name: $name, photoPath: $photoPath, nutrition: $nutrition)';
 }
 
 
@@ -49,11 +48,11 @@ abstract mixin class $UsualMealCopyWith<$Res>  {
   factory $UsualMealCopyWith(UsualMeal value, $Res Function(UsualMeal) _then) = _$UsualMealCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String? photoPath, int? calories
+ String id, String name, String? photoPath, Nutrition nutrition
 });
 
 
-
+$NutritionCopyWith<$Res> get nutrition;
 
 }
 /// @nodoc
@@ -66,16 +65,25 @@ class _$UsualMealCopyWithImpl<$Res>
 
 /// Create a copy of UsualMeal
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? photoPath = freezed,Object? calories = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? photoPath = freezed,Object? nutrition = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,photoPath: freezed == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable
-as String?,calories: freezed == calories ? _self.calories : calories // ignore: cast_nullable_to_non_nullable
-as int?,
+as String?,nutrition: null == nutrition ? _self.nutrition : nutrition // ignore: cast_nullable_to_non_nullable
+as Nutrition,
   ));
 }
-
+/// Create a copy of UsualMeal
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$NutritionCopyWith<$Res> get nutrition {
+  
+  return $NutritionCopyWith<$Res>(_self.nutrition, (value) {
+    return _then(_self.copyWith(nutrition: value));
+  });
+}
 }
 
 
@@ -157,10 +165,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String? photoPath,  int? calories)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String? photoPath,  Nutrition nutrition)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UsualMeal() when $default != null:
-return $default(_that.id,_that.name,_that.photoPath,_that.calories);case _:
+return $default(_that.id,_that.name,_that.photoPath,_that.nutrition);case _:
   return orElse();
 
 }
@@ -178,10 +186,10 @@ return $default(_that.id,_that.name,_that.photoPath,_that.calories);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String? photoPath,  int? calories)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String? photoPath,  Nutrition nutrition)  $default,) {final _that = this;
 switch (_that) {
 case _UsualMeal():
-return $default(_that.id,_that.name,_that.photoPath,_that.calories);case _:
+return $default(_that.id,_that.name,_that.photoPath,_that.nutrition);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +206,10 @@ return $default(_that.id,_that.name,_that.photoPath,_that.calories);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String? photoPath,  int? calories)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String? photoPath,  Nutrition nutrition)?  $default,) {final _that = this;
 switch (_that) {
 case _UsualMeal() when $default != null:
-return $default(_that.id,_that.name,_that.photoPath,_that.calories);case _:
+return $default(_that.id,_that.name,_that.photoPath,_that.nutrition);case _:
   return null;
 
 }
@@ -213,14 +221,13 @@ return $default(_that.id,_that.name,_that.photoPath,_that.calories);case _:
 @JsonSerializable()
 
 class _UsualMeal implements UsualMeal {
-  const _UsualMeal({required this.id, required this.name, this.photoPath, this.calories});
+  const _UsualMeal({required this.id, required this.name, this.photoPath, this.nutrition = const Nutrition()});
   factory _UsualMeal.fromJson(Map<String, dynamic> json) => _$UsualMealFromJson(json);
 
 @override final  String id;
 @override final  String name;
 @override final  String? photoPath;
-/// User-entered calories, null when not set yet.
-@override final  int? calories;
+@override@JsonKey() final  Nutrition nutrition;
 
 /// Create a copy of UsualMeal
 /// with the given fields replaced by the non-null parameter values.
@@ -235,16 +242,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UsualMeal&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath)&&(identical(other.calories, calories) || other.calories == calories));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UsualMeal&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath)&&(identical(other.nutrition, nutrition) || other.nutrition == nutrition));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,photoPath,calories);
+int get hashCode => Object.hash(runtimeType,id,name,photoPath,nutrition);
 
 @override
 String toString() {
-  return 'UsualMeal(id: $id, name: $name, photoPath: $photoPath, calories: $calories)';
+  return 'UsualMeal(id: $id, name: $name, photoPath: $photoPath, nutrition: $nutrition)';
 }
 
 
@@ -255,11 +262,11 @@ abstract mixin class _$UsualMealCopyWith<$Res> implements $UsualMealCopyWith<$Re
   factory _$UsualMealCopyWith(_UsualMeal value, $Res Function(_UsualMeal) _then) = __$UsualMealCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String? photoPath, int? calories
+ String id, String name, String? photoPath, Nutrition nutrition
 });
 
 
-
+@override $NutritionCopyWith<$Res> get nutrition;
 
 }
 /// @nodoc
@@ -272,17 +279,26 @@ class __$UsualMealCopyWithImpl<$Res>
 
 /// Create a copy of UsualMeal
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? photoPath = freezed,Object? calories = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? photoPath = freezed,Object? nutrition = null,}) {
   return _then(_UsualMeal(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,photoPath: freezed == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable
-as String?,calories: freezed == calories ? _self.calories : calories // ignore: cast_nullable_to_non_nullable
-as int?,
+as String?,nutrition: null == nutrition ? _self.nutrition : nutrition // ignore: cast_nullable_to_non_nullable
+as Nutrition,
   ));
 }
 
-
+/// Create a copy of UsualMeal
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$NutritionCopyWith<$Res> get nutrition {
+  
+  return $NutritionCopyWith<$Res>(_self.nutrition, (value) {
+    return _then(_self.copyWith(nutrition: value));
+  });
+}
 }
 
 // dart format on

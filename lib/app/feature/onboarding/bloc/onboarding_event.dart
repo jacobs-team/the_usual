@@ -9,17 +9,17 @@ sealed class OnboardingEvent with _$OnboardingEvent {
   const factory OnboardingEvent.usualMealAdded(
     MealOfTheDay mealOfTheDay,
     String name,
-    int? calories,
+    Nutrition nutrition,
   ) = UsualMealAdded;
   const factory OnboardingEvent.usualMealRemoved(
     MealOfTheDay mealOfTheDay,
     String id,
   ) = UsualMealRemoved;
-  const factory OnboardingEvent.usualMealCaloriesChanged(
+  const factory OnboardingEvent.usualMealNutritionChanged(
     MealOfTheDay mealOfTheDay,
     String id,
-    int? calories,
-  ) = UsualMealCaloriesChanged;
+    Nutrition nutrition,
+  ) = UsualMealNutritionChanged;
   const factory OnboardingEvent.reminderStyleSelected(
     ReminderStyle reminderStyle,
   ) = ReminderStyleSelected;
@@ -51,6 +51,6 @@ sealed class OnboardingEvent with _$OnboardingEvent {
   const factory OnboardingEvent.somethingElseLogged(
     MealOfTheDay mealOfTheDay,
     String name, {
-    int? calories,
+    @Default(Nutrition()) Nutrition nutrition,
   }) = SomethingElseLogged;
 }

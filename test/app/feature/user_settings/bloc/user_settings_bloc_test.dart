@@ -227,7 +227,7 @@ void main() {
           const UserSettingsEvent.usualMealAdded(
             MealOfTheDay.breakfast,
             'Eggs',
-            350,
+            Nutrition(calories: 350),
           ),
         ),
         expect: () => [
@@ -246,7 +246,7 @@ void main() {
           const UserSettingsEvent.usualMealAdded(
             MealOfTheDay.breakfast,
             '   ',
-            0,
+            Nutrition(),
           ),
         ),
         expect: () => <UserSettingsState>[],
@@ -264,7 +264,7 @@ void main() {
           const UserSettingsEvent.usualMealAdded(
             MealOfTheDay.breakfast,
             'EGGS',
-            100,
+            Nutrition(calories: 100),
           ),
         ),
         expect: () => <UserSettingsState>[],
@@ -294,7 +294,7 @@ void main() {
       );
 
       blocTest<UserSettingsBloc, UserSettingsState>(
-        'usualMealCaloriesChanged updates the matching meal only',
+        'usualMealNutritionChanged updates the matching meal only',
         build: UserSettingsBloc.new,
         seed: () => const UserSettingsState(
           usuals: {
@@ -305,15 +305,15 @@ void main() {
           },
         ),
         act: (bloc) => bloc.add(
-          const UserSettingsEvent.usualMealCaloriesChanged(
+          const UserSettingsEvent.usualMealNutritionChanged(
             MealOfTheDay.breakfast,
             'b',
-            420,
+            Nutrition(calories: 420),
           ),
         ),
         expect: () => [
           isA<UserSettingsState>().having(
-            (s) => s.usuals[MealOfTheDay.breakfast]!.last.calories,
+            (s) => s.usuals[MealOfTheDay.breakfast]!.last.nutrition.calories,
             'updated calories',
             420,
           ),

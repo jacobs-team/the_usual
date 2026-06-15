@@ -13,12 +13,12 @@ void main() {
       loggedAt: loggedAt,
       mealOfTheDay: mealOfTheDay,
       name: id,
-      calories: calories,
+      nutrition: Nutrition(calories: calories),
     );
   }
 
   group('MealLogEntryListFormatting', () {
-    group('totalCalories', () {
+    group('totalNutrition', () {
       test('sums known calories and ignores entries without them', () {
         final entries = [
           entry(id: 'a', loggedAt: DateTime(2026, 6, 14), calories: 200),
@@ -26,11 +26,11 @@ void main() {
           entry(id: 'c', loggedAt: DateTime(2026, 6, 14)),
         ];
 
-        expect(entries.totalCalories, equals(500));
+        expect(entries.totalNutrition.calories, equals(500));
       });
 
       test('is zero for an empty list', () {
-        expect(<MealLogEntry>[].totalCalories, equals(0));
+        expect(<MealLogEntry>[].totalNutrition.calories, equals(0));
       });
     });
 
@@ -63,7 +63,7 @@ void main() {
 
         final breakdown = entries.breakdownOn(day);
 
-        expect(breakdown.calories, equals(850));
+        expect(breakdown.nutrition.calories, equals(850));
         expect(
           breakdown.entriesByMeal[MealOfTheDay.breakfast],
           hasLength(1),
@@ -82,7 +82,7 @@ void main() {
 
         final breakdown = entries.breakdownOn(DateTime(2026, 6, 14));
 
-        expect(breakdown.calories, equals(0));
+        expect(breakdown.nutrition.calories, equals(0));
         expect(breakdown.entriesByMeal, isEmpty);
       });
     });

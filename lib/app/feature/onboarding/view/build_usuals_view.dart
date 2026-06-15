@@ -28,11 +28,15 @@ class BuildUsualsView extends StatelessWidget {
                     BlocSelector<
                       OnboardingBloc,
                       OnboardingState,
-                      Map<MealOfTheDay, List<UsualMeal>>
+                      (Map<MealOfTheDay, List<UsualMeal>>, bool)
                     >(
                       bloc: getIt<OnboardingBloc>(),
-                      selector: (state) => state.settings.usuals,
-                      builder: (context, usuals) {
+                      selector: (state) => (
+                        state.settings.usuals,
+                        state.settings.expandNutritionByDefault,
+                      ),
+                      builder: (context, selected) {
+                        final (usuals, expandNutritionByDefault) = selected;
                         return ListView(
                           children: [
                             Text(
@@ -52,20 +56,21 @@ class BuildUsualsView extends StatelessWidget {
                                 mealOfTheDay: mealOfTheDay,
                                 usualMeals:
                                     usuals[mealOfTheDay] ?? const <UsualMeal>[],
-                                onAdded: (name, calories) =>
+                                expandedByDefault: expandNutritionByDefault,
+                                onAdded: (name, nutrition) =>
                                     getIt<OnboardingBloc>().add(
                                       OnboardingEvent.usualMealAdded(
                                         mealOfTheDay,
                                         name,
-                                        calories,
+                                        nutrition,
                                       ),
                                     ),
-                                onCaloriesChanged: (id, calories) =>
+                                onNutritionChanged: (id, nutrition) =>
                                     getIt<OnboardingBloc>().add(
-                                      OnboardingEvent.usualMealCaloriesChanged(
+                                      OnboardingEvent.usualMealNutritionChanged(
                                         mealOfTheDay,
                                         id,
-                                        calories,
+                                        nutrition,
                                       ),
                                     ),
                                 onRemoved: (id) => getIt<OnboardingBloc>().add(

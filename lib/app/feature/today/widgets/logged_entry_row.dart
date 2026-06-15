@@ -4,36 +4,43 @@ import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
 
 /// {@template logged_entry_row}
-/// A single logged meal entry: name, an inline-editable calories field, and a
-/// remove button.
+/// A single logged meal entry: name, a remove button, and inline-editable
+/// nutrition fields.
 ///
-/// If the entry came from a usual meal that had no calories yet, editing the
-/// calories here fills the usual meal's calories directly. If the usual meal
-/// already had calories and the logged value now differs, a labelled button
-/// appears to optionally push the new value to the usual meal.
+/// If the entry came from a usual meal that had no nutrition yet, editing the
+/// nutrition here fills the usual meal's nutrition directly. If the usual meal
+/// already had nutrition and the logged values now differ, a labelled button
+/// appears to optionally push the new values to the usual meal.
 /// {@endtemplate}
 class LoggedEntryRow extends StatefulWidget {
   /// {@macro logged_entry_row}
-  const LoggedEntryRow({required this.mealLogEntry, super.key});
+  const LoggedEntryRow({
+    required this.mealLogEntry,
+    required this.expandedByDefault,
+    super.key,
+  });
 
   /// The logged entry to show.
   final MealLogEntry mealLogEntry;
+
+  /// Whether the nutrition fields start expanded for editing.
+  final bool expandedByDefault;
 
   @override
   State<LoggedEntryRow> createState() => _LoggedEntryRowState();
 }
 
 class _LoggedEntryRowState extends State<LoggedEntryRow> {
-  /// Whether the linked usual meal already had calories when this row first
-  /// appeared. When false, editing fills the usual meal's calories directly;
+  /// Whether the linked usual meal already had nutrition when this row first
+  /// appeared. When false, editing fills the usual meal's nutrition directly;
   /// when true, edits offer the explicit update button instead.
-  late final bool _usualMealHadCalories;
+  late final bool _usualMealHadNutrition;
 
   @override
   void initState() {
     super.initState();
     final usualMeal = _linkedUsualMeal(getIt<UserSettingsBloc>().state);
-    _usualMealHadCalories = usualMeal?.calories != null;
+    _usualMealHadNutrition = usualMeal != null && !usualMeal.nutrition.isEmpty;
   }
 
   UsualMeal? _linkedUsualMeal(UserSettingsState state) {
@@ -50,82 +57,65 @@ class _LoggedEntryRowState extends State<LoggedEntryRow> {
   @override
   Widget build(BuildContext context) {
     final mealLogEntry = widget.mealLogEntry;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(child: Text(mealLogEntry.name)),
-            CalorieField(
-              autoSize: true,
-              dense: true,
-              textAlign: TextAlign.right,
-              initialValue: mealLogEntry.calories?.toString() ?? '',
-              onChanged: (calories) {
-                getIt<DailyLogBloc>().add(
-                  DailyLogEvent.mealEntryCaloriesChanged(
-                    mealLogEntry.id,
-                    calories,
+    return ExpandableNutrition(
+      name: mealLogEntry.name,
+      nutrition: mealLogEntry.nutrition,
+      expandedByDefault: widget.expandedByDefault,
+      onChanged: (nutrition) {
+        getIt<DailyLogBloc>().add(
+          DailyLogEvent.mealEntryNutritionChanged(mealLogEntry.id, nutrition),
+        );
+        // Usual meal had no nutrition yet: fill it in directly.
+        if (!_usualMealHadNutrition && mealLogEntry.usualMealId != null) {
+          getIt<UserSettingsBloc>().add(
+            UserSettingsEvent.usualMealNutritionChanged(
+              mealLogEntry.mealOfTheDay,
+              mealLogEntry.usualMealId!,
+              nutrition,
+            ),
+          );
+        }
+      },
+      onRemoved: () => getIt<DailyLogBloc>().add(
+        DailyLogEvent.mealEntryRemoved(mealLogEntry.id),
+      ),
+      expandedFooter: _usualMealHadNutrition
+          ? BlocSelector<UserSettingsBloc, UserSettingsState, UsualMeal?>(
+              bloc: getIt<UserSettingsBloc>(),
+              selector: _linkedUsualMeal,
+              builder: (context, usualMeal) {
+                final nutrition = mealLogEntry.nutrition;
+                final differsFromUsualMeal =
+                    usualMeal != null && usualMeal.nutrition != nutrition;
+
+                if (!differsFromUsualMeal) return const SizedBox.shrink();
+                return Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      visualDensity: VisualDensity.compact,
+                    ),
+                    icon: const Icon(Icons.sync, size: 16),
+                    label: Text(
+                      nutrition.isEmpty
+                          ? "Clear this usual meal's nutrition"
+                          : 'Update usual meal to match',
+                    ),
+                    onPressed: () => getIt<UserSettingsBloc>().add(
+                      UserSettingsEvent.usualMealNutritionChanged(
+                        mealLogEntry.mealOfTheDay,
+                        usualMeal.id,
+                        nutrition,
+                      ),
+                    ),
                   ),
                 );
-                // Usual meal had no calories yet: fill them in directly.
-                if (!_usualMealHadCalories &&
-                    mealLogEntry.usualMealId != null) {
-                  getIt<UserSettingsBloc>().add(
-                    UserSettingsEvent.usualMealCaloriesChanged(
-                      mealLogEntry.mealOfTheDay,
-                      mealLogEntry.usualMealId!,
-                      calories,
-                    ),
-                  );
-                }
               },
-            ),
-            IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () => getIt<DailyLogBloc>().add(
-                DailyLogEvent.mealEntryRemoved(mealLogEntry.id),
-              ),
-            ),
-          ],
-        ),
-        if (_usualMealHadCalories)
-          BlocSelector<UserSettingsBloc, UserSettingsState, UsualMeal?>(
-            bloc: getIt<UserSettingsBloc>(),
-            selector: _linkedUsualMeal,
-            builder: (context, usualMeal) {
-              final calories = mealLogEntry.calories;
-              final differsFromUsualMeal =
-                  usualMeal != null && usualMeal.calories != calories;
-
-              if (!differsFromUsualMeal) return const SizedBox.shrink();
-              return Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton.icon(
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    visualDensity: VisualDensity.compact,
-                  ),
-                  icon: const Icon(Icons.sync, size: 16),
-                  label: Text(
-                    calories == null
-                        ? "Clear this usual meal's calories"
-                        : 'Update usual meal to $calories cal',
-                  ),
-                  onPressed: () => getIt<UserSettingsBloc>().add(
-                    UserSettingsEvent.usualMealCaloriesChanged(
-                      mealLogEntry.mealOfTheDay,
-                      usualMeal.id,
-                      calories,
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-      ],
+            )
+          : null,
     );
   }
 }

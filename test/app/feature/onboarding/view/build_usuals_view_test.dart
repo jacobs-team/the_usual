@@ -76,7 +76,7 @@ void main() {
           const OnboardingEvent.usualMealAdded(
             MealOfTheDay.breakfast,
             'Eggs',
-            null,
+            Nutrition(),
           ),
         ),
       ).called(1);
@@ -86,6 +86,7 @@ void main() {
       final onboardingBloc = blocWith(
         const OnboardingState(
           settings: UserSettingsState(
+            expandNutritionByDefault: true,
             usuals: {
               MealOfTheDay.breakfast: [UsualMeal(id: 'a', name: 'Eggs')],
             },
@@ -99,19 +100,19 @@ void main() {
 
       final rowCalories = find
           .descendant(
-            of: find.byType(UsualMealRow),
+            of: find.byType(ExpandableNutrition),
             matching: find.byType(TextFormField),
           )
           .first;
       await tester.enterText(rowCalories, '275');
-      await tester.tap(find.byIcon(Icons.close).first);
+      await tester.tap(find.byIcon(Icons.remove).first);
 
       verify(
         () => onboardingBloc.add(
-          const OnboardingEvent.usualMealCaloriesChanged(
+          const OnboardingEvent.usualMealNutritionChanged(
             MealOfTheDay.breakfast,
             'a',
-            275,
+            Nutrition(calories: 275),
           ),
         ),
       ).called(1);

@@ -60,6 +60,10 @@ abstract class UserSettingsState with _$UserSettingsState {
     /// Whether the app follows the system theme or is forced light or dark.
     @Default(ThemeMode.system) ThemeMode themeMode,
 
+    /// Whether a meal's nutrition fields start expanded for editing rather than
+    /// collapsed to a summary.
+    @Default(false) bool expandNutritionByDefault,
+
     /// The user's usuals library, keyed by meal timing.
     @Default(<MealOfTheDay, List<UsualMeal>>{})
     Map<MealOfTheDay, List<UsualMeal>> usuals,

@@ -5,11 +5,11 @@ import 'package:the_usual/app/app.dart';
 import '../../helpers/helpers.dart';
 
 void main() {
-  group(CalorieField, () {
+  group(MacroField, () {
     testWidgets('renders without callbacks', (tester) async {
-      await tester.pumpPumpPumpItUP(const CalorieField());
+      await tester.pumpPumpPumpItUP(const MacroField(unit: 'cal'));
 
-      expect(find.byType(CalorieField), findsOneWidget);
+      expect(find.byType(MacroField), findsOneWidget);
       expect(find.byType(TheUsualTextField), findsOneWidget);
     });
 
@@ -18,7 +18,7 @@ void main() {
     ) async {
       int? changed;
       await tester.pumpPumpPumpItUP(
-        CalorieField(onChanged: (value) => changed = value),
+        MacroField(unit: 'cal', onChanged: (value) => changed = value),
       );
 
       await tester.enterText(find.byType(TextFormField), '350');
@@ -31,7 +31,7 @@ void main() {
     ) async {
       int? submitted;
       await tester.pumpPumpPumpItUP(
-        CalorieField(onSubmitted: (value) => submitted = value),
+        MacroField(unit: 'cal', onSubmitted: (value) => submitted = value),
       );
 
       await tester.enterText(find.byType(TextFormField), '420');

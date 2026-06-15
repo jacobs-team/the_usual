@@ -6,26 +6,27 @@ import '../../helpers/helpers.dart';
 
 void main() {
   group(UsualMealComposer, () {
-    testWidgets('adds a meal with name and calories from the add button', (
+    testWidgets('adds a meal with name and nutrition from the add button', (
       tester,
     ) async {
       String? name;
-      int? calories;
+      Nutrition? nutrition;
       await tester.pumpPumpPumpItUP(
         UsualMealComposer(
-          onAdd: (n, c) {
+          onAdd: (n, nutr) {
             name = n;
-            calories = c;
+            nutrition = nutr;
           },
         ),
       );
 
       await tester.enterText(find.byType(TextFormField).first, 'Eggs');
-      await tester.enterText(find.byType(TextFormField).last, '350');
+      // The first nutrition field is calories; the name field is index 0.
+      await tester.enterText(find.byType(TextFormField).at(1), '350');
       await tester.tap(find.byIcon(Icons.add));
 
       expect(name, equals('Eggs'));
-      expect(calories, equals(350));
+      expect(nutrition?.calories, equals(350));
     });
 
     testWidgets('clears the fields after adding', (tester) async {
@@ -49,33 +50,6 @@ void main() {
       await tester.tap(find.byIcon(Icons.add));
 
       expect(added, isFalse);
-    });
-
-    testWidgets('submitting the name field advances to calories', (
-      tester,
-    ) async {
-      await tester.pumpPumpPumpItUP(
-        UsualMealComposer(onAdd: (_, _) {}),
-      );
-
-      await tester.enterText(find.byType(TextFormField).first, 'Eggs');
-      await tester.testTextInput.receiveAction(TextInputAction.next);
-      await tester.pump();
-
-      expect(tester.takeException(), isNull);
-    });
-
-    testWidgets('submitting the calories field adds the meal', (tester) async {
-      var added = false;
-      await tester.pumpPumpPumpItUP(
-        UsualMealComposer(onAdd: (_, _) => added = true),
-      );
-
-      await tester.enterText(find.byType(TextFormField).first, 'Eggs');
-      await tester.enterText(find.byType(TextFormField).last, '350');
-      await tester.testTextInput.receiveAction(TextInputAction.done);
-
-      expect(added, isTrue);
     });
   });
 }

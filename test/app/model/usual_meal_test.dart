@@ -8,7 +8,7 @@ void main() {
         id: 'usual-1',
         name: 'Oatmeal',
         photoPath: '/tmp/oat.png',
-        calories: 300,
+        nutrition: Nutrition(calories: 300),
       );
 
       final decoded = UsualMeal.fromJson(usualMeal.toJson());
@@ -22,7 +22,7 @@ void main() {
         'name': 'Apple',
       });
 
-      expect(usualMeal.calories, isNull);
+      expect(usualMeal.nutrition, equals(const Nutrition()));
       expect(usualMeal.photoPath, isNull);
     });
   });

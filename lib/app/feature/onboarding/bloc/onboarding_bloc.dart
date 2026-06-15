@@ -29,7 +29,10 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
         ),
         UsualMealAdded() => _onUsualMealAdded(event, emit),
         UsualMealRemoved() => _onUsualMealRemoved(event, emit),
-        UsualMealCaloriesChanged() => _onUsualMealCaloriesChanged(event, emit),
+        UsualMealNutritionChanged() => _onUsualMealNutritionChanged(
+          event,
+          emit,
+        ),
         // TODO(onboarding): request OS notification permission when
         // ReminderStyle.notifications is picked, falling back to onAppOpen if
         // denied. Notification approach is an open item in docs/onboarding.
@@ -132,7 +135,7 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
             ...state.settings.usuals,
             event.mealOfTheDay: [
               ...usualMeals,
-              UsualMeal(id: _uuid.v4(), name: name, calories: event.calories),
+              UsualMeal(id: _uuid.v4(), name: name, nutrition: event.nutrition),
             ],
           },
         ),
@@ -166,8 +169,8 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
     );
   }
 
-  void _onUsualMealCaloriesChanged(
-    UsualMealCaloriesChanged event,
+  void _onUsualMealNutritionChanged(
+    UsualMealNutritionChanged event,
     Emitter<OnboardingState> emit,
   ) {
     final usualMeals =
@@ -175,7 +178,7 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
     final updatedUsualMeals = [
       for (final usualMeal in usualMeals)
         if (usualMeal.id == event.id)
-          usualMeal.copyWith(calories: event.calories)
+          usualMeal.copyWith(nutrition: event.nutrition)
         else
           usualMeal,
     ];
@@ -252,7 +255,7 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
     final usualMeal = UsualMeal(
       id: _uuid.v4(),
       name: name,
-      calories: event.calories,
+      nutrition: event.nutrition,
     );
     emit(
       state.copyWith(

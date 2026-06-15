@@ -3,10 +3,10 @@ import 'package:the_usual/app/app.dart';
 import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template food_entry_sheet}
-/// Bottom sheet capturing a food name plus optional calories, used both for
+/// Bottom sheet capturing a food name plus optional nutrition, used both for
 /// adding a usual meal and logging a one-off. Pops with a
-/// ([String], [int]?, [bool]) record of name, calories, and whether to add it
-/// to the usual meals, or null when cancelled.
+/// ([String], [Nutrition], [bool]) record of name, nutrition, and whether to
+/// add it to the usual meals, or null when cancelled.
 /// {@endtemplate}
 class FoodEntrySheet extends StatefulWidget {
   /// {@macro food_entry_sheet}
@@ -32,13 +32,12 @@ class FoodEntrySheet extends StatefulWidget {
 
 class _FoodEntrySheetState extends State<FoodEntrySheet> {
   final _nameController = TextEditingController();
-  final _caloriesController = TextEditingController();
+  Nutrition _nutrition = const Nutrition();
   bool _addToUsualMeals = true;
 
   @override
   void dispose() {
     _nameController.dispose();
-    _caloriesController.dispose();
     super.dispose();
   }
 
@@ -70,10 +69,10 @@ class _FoodEntrySheetState extends State<FoodEntrySheet> {
                 onChanged: (_) => setState(() {}),
               ),
               SizedBox(height: AppDesign.spacing.md),
-              const SectionLabel('CALORIES · OPTIONAL'),
+              const SectionLabel('NUTRITION · OPTIONAL'),
               SizedBox(height: AppDesign.spacing.sm),
-              CalorieField(
-                controller: _caloriesController,
+              NutritionFields(
+                onChanged: (nutrition) => _nutrition = nutrition,
               ),
               if (widget.showAddToUsualMeals)
                 CheckboxListTile(
@@ -101,7 +100,7 @@ class _FoodEntrySheetState extends State<FoodEntrySheet> {
                           ? null
                           : () => Navigator.of(context).pop((
                               _nameController.text,
-                              int.tryParse(_caloriesController.text),
+                              _nutrition,
                               _addToUsualMeals,
                             )),
                       child: Text(widget.confirmLabel),

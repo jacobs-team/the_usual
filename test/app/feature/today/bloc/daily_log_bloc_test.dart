@@ -32,7 +32,7 @@ void main() {
         loggedAt: loggedAt,
         mealOfTheDay: mealOfTheDay,
         name: id,
-        calories: calories,
+        nutrition: Nutrition(calories: calories),
       );
     }
 
@@ -48,7 +48,7 @@ void main() {
           const DailyLogEvent.mealLogged(
             MealOfTheDay.lunch,
             'Sandwich',
-            calories: 450,
+            nutrition: Nutrition(calories: 450),
             usualMealId: 'usual-1',
             photoPath: '/tmp/p.png',
           ),
@@ -91,7 +91,7 @@ void main() {
     );
 
     blocTest<DailyLogBloc, DailyLogState>(
-      'mealEntryCaloriesChanged updates the matching entry only',
+      'mealEntryNutritionChanged updates the matching entry only',
       build: DailyLogBloc.new,
       seed: () => DailyLogState(
         mealEntries: [
@@ -99,11 +99,15 @@ void main() {
           mealEntry(id: 'b', loggedAt: DateTime(2026, 6, 14), calories: 200),
         ],
       ),
-      act: (bloc) =>
-          bloc.add(const DailyLogEvent.mealEntryCaloriesChanged('a', 175)),
+      act: (bloc) => bloc.add(
+        const DailyLogEvent.mealEntryNutritionChanged(
+          'a',
+          Nutrition(calories: 175),
+        ),
+      ),
       expect: () => [
         isA<DailyLogState>().having(
-          (s) => s.mealEntries.first.calories,
+          (s) => s.mealEntries.first.nutrition.calories,
           'updated calories',
           175,
         ),
@@ -268,14 +272,14 @@ void main() {
               loggedAt: DateTime(2026, 5, 10, 8),
               mealOfTheDay: MealOfTheDay.breakfast,
               name: 'Eggs',
-              calories: 300,
+              nutrition: Nutrition(calories: 300),
             ),
             MealLogEntry(
               id: 'm2',
               loggedAt: DateTime(2026, 6, 14, 8),
               mealOfTheDay: MealOfTheDay.breakfast,
               name: 'Oats',
-              calories: 500,
+              nutrition: Nutrition(calories: 500),
             ),
           ],
           weightEntries: [weightEntry('w1', DateTime(2026, 6, 14, 7))],
@@ -286,9 +290,9 @@ void main() {
         expect(history, hasLength(2));
         // Oldest month first.
         expect(history.first.month, equals(DateTime(2026, 5)));
-        expect(history.first.averageDailyCalories, equals(300));
+        expect(history.first.averageNutrition.calories, equals(300));
         expect(history.last.month, equals(DateTime(2026, 6)));
-        expect(history.last.averageDailyCalories, equals(500));
+        expect(history.last.averageNutrition.calories, equals(500));
         expect(history.last.days.single.weightEntry?.id, equals('w1'));
       });
     });

@@ -12,7 +12,9 @@ _MealLogEntry _$MealLogEntryFromJson(Map<String, dynamic> json) =>
       loggedAt: DateTime.parse(json['loggedAt'] as String),
       mealOfTheDay: $enumDecode(_$MealOfTheDayEnumMap, json['mealOfTheDay']),
       name: json['name'] as String,
-      calories: (json['calories'] as num?)?.toInt(),
+      nutrition: json['nutrition'] == null
+          ? const Nutrition()
+          : Nutrition.fromJson(json['nutrition'] as Map<String, dynamic>),
       usualMealId: json['usualMealId'] as String?,
       photoPath: json['photoPath'] as String?,
     );
@@ -23,7 +25,7 @@ Map<String, dynamic> _$MealLogEntryToJson(_MealLogEntry instance) =>
       'loggedAt': instance.loggedAt.toIso8601String(),
       'mealOfTheDay': _$MealOfTheDayEnumMap[instance.mealOfTheDay]!,
       'name': instance.name,
-      'calories': instance.calories,
+      'nutrition': instance.nutrition,
       'usualMealId': instance.usualMealId,
       'photoPath': instance.photoPath,
     };

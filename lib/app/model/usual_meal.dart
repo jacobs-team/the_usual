@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:the_usual/app/model/model.dart';
 
 part 'usual_meal.freezed.dart';
 part 'usual_meal.g.dart';
@@ -13,11 +14,9 @@ abstract class UsualMeal with _$UsualMeal {
     required String id,
     required String name,
     String? photoPath,
-
-    /// User-entered calories, null when not set yet.
-    int? calories,
+    @Default(Nutrition()) Nutrition nutrition,
   }) = _UsualMeal;
 
   factory UsualMeal.fromJson(Map<String, dynamic> json) =>
-      _$UsualMealFromJson(json);
+      _$UsualMealFromJson(Nutrition.migrateLegacyJson(json));
 }

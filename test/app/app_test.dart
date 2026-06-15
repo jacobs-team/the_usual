@@ -21,7 +21,11 @@ void main() {
         startingWeight: 165,
         usuals: {
           MealOfTheDay.breakfast: [
-            UsualMeal(id: 'u', name: 'Eggs', calories: 300),
+            UsualMeal(
+              id: 'u',
+              name: 'Eggs',
+              nutrition: Nutrition(calories: 300),
+            ),
           ],
         },
       ),
@@ -154,7 +158,7 @@ void main() {
           const DailyLogEvent.mealLogged(
             MealOfTheDay.breakfast,
             'Eggs',
-            calories: 300,
+            nutrition: Nutrition(calories: 300),
             usualMealId: 'u',
           ),
         ),

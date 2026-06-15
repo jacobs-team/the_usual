@@ -33,18 +33,21 @@ sealed class UserSettingsEvent with _$UserSettingsEvent {
       SettingsStartingWeightChanged;
   const factory UserSettingsEvent.themeModeSelected(ThemeMode themeMode) =
       SettingsThemeModeSelected;
+  const factory UserSettingsEvent.expandNutritionByDefaultChanged({
+    required bool expandNutritionByDefault,
+  }) = SettingsExpandNutritionByDefaultChanged;
   const factory UserSettingsEvent.usualMealAdded(
     MealOfTheDay mealOfTheDay,
     String name,
-    int? calories,
+    Nutrition nutrition,
   ) = SettingsUsualMealAdded;
   const factory UserSettingsEvent.usualMealRemoved(
     MealOfTheDay mealOfTheDay,
     String id,
   ) = SettingsUsualMealRemoved;
-  const factory UserSettingsEvent.usualMealCaloriesChanged(
+  const factory UserSettingsEvent.usualMealNutritionChanged(
     MealOfTheDay mealOfTheDay,
     String id,
-    int? calories,
-  ) = SettingsUsualMealCaloriesChanged;
+    Nutrition nutrition,
+  ) = SettingsUsualMealNutritionChanged;
 }

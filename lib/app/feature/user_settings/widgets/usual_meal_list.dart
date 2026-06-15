@@ -29,25 +29,35 @@ class _UsualMealListState extends State<UsualMealList>
   Widget build(BuildContext context) {
     super.build(context);
     final mealOfTheDay = widget.mealOfTheDay;
-    return BlocSelector<UserSettingsBloc, UserSettingsState, List<UsualMeal>>(
+    return BlocSelector<
+      UserSettingsBloc,
+      UserSettingsState,
+      (List<UsualMeal>, bool)
+    >(
       bloc: getIt<UserSettingsBloc>(),
-      selector: (state) => state.usuals[mealOfTheDay] ?? <UsualMeal>[],
-      builder: (context, usualMeals) {
+      selector: (state) => (
+        state.usuals[mealOfTheDay] ?? <UsualMeal>[],
+        state.expandNutritionByDefault,
+      ),
+      builder: (context, selected) {
+        final (usualMeals, expandNutritionByDefault) = selected;
         return ListView(
           padding: EdgeInsets.all(AppDesign.spacing.lg),
           children: [
             UsualMealSection(
               mealOfTheDay: mealOfTheDay,
               usualMeals: usualMeals,
-              onAdded: (name, calories) => getIt<UserSettingsBloc>().add(
-                UserSettingsEvent.usualMealAdded(mealOfTheDay, name, calories),
+              expandedByDefault: expandNutritionByDefault,
+              showHeader: false,
+              onAdded: (name, nutrition) => getIt<UserSettingsBloc>().add(
+                UserSettingsEvent.usualMealAdded(mealOfTheDay, name, nutrition),
               ),
-              onCaloriesChanged: (id, calories) =>
+              onNutritionChanged: (id, nutrition) =>
                   getIt<UserSettingsBloc>().add(
-                    UserSettingsEvent.usualMealCaloriesChanged(
+                    UserSettingsEvent.usualMealNutritionChanged(
                       mealOfTheDay,
                       id,
-                      calories,
+                      nutrition,
                     ),
                   ),
               onRemoved: (id) => getIt<UserSettingsBloc>().add(

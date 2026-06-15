@@ -29,7 +29,10 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
                 .toList(),
           ),
         ),
-        MealEntryCaloriesChanged() => _onMealEntryCaloriesChanged(event, emit),
+        MealEntryNutritionChanged() => _onMealEntryNutritionChanged(
+          event,
+          emit,
+        ),
         WeightLogged() => _onWeightLogged(event, emit),
         TodayWeightChanged() => _onTodayWeightChanged(event, emit),
         SampleDataSeeded() => _onSampleDataSeeded(emit),
@@ -48,21 +51,21 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
       loggedAt: DateTime.now(),
       mealOfTheDay: event.mealOfTheDay,
       name: name,
-      calories: event.calories,
+      nutrition: event.nutrition,
       usualMealId: event.usualMealId,
       photoPath: event.photoPath,
     );
     emit(state.copyWith(mealEntries: [...state.mealEntries, mealLogEntry]));
   }
 
-  void _onMealEntryCaloriesChanged(
-    MealEntryCaloriesChanged event,
+  void _onMealEntryNutritionChanged(
+    MealEntryNutritionChanged event,
     Emitter<DailyLogState> emit,
   ) {
     final updatedEntries = [
       for (final mealLogEntry in state.mealEntries)
         if (mealLogEntry.id == event.id)
-          mealLogEntry.copyWith(calories: event.calories)
+          mealLogEntry.copyWith(nutrition: event.nutrition)
         else
           mealLogEntry,
     ];
@@ -112,28 +115,29 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
   // TODO(dev): temporary sample data for the history screen. Remove before
   // ship along with the SampleDataSeeded event.
   void _onSampleDataSeeded(Emitter<DailyLogState> emit) {
+    // Each sample is (name, calories, protein, fat, carbs).
     const breakfasts = [
-      ('Eggs & toast', 350),
-      ('Oatmeal', 300),
-      ('Greek yogurt bowl', 320),
-      ('Smoothie', 280),
+      ('Eggs & toast', 350, 18, 14, 30),
+      ('Oatmeal', 300, 10, 6, 54),
+      ('Greek yogurt bowl', 320, 22, 8, 38),
+      ('Smoothie', 280, 12, 4, 50),
     ];
     const lunches = [
-      ('Chicken bowl', 600),
-      ('Sandwich', 450),
-      ('Salad', 380),
-      ('Leftovers', 520),
+      ('Chicken bowl', 600, 45, 18, 55),
+      ('Sandwich', 450, 25, 16, 48),
+      ('Salad', 380, 20, 22, 24),
+      ('Leftovers', 520, 30, 20, 50),
     ];
     const dinners = [
-      ('Pasta', 700),
-      ('Tacos', 620),
-      ('Stir fry', 560),
-      ('Pizza', 820),
+      ('Pasta', 700, 26, 20, 100),
+      ('Tacos', 620, 32, 28, 58),
+      ('Stir fry', 560, 30, 18, 62),
+      ('Pizza', 820, 34, 36, 88),
     ];
     const snacks = [
-      ('Protein bar', 200),
-      ('Almonds', 180),
-      ('Apple', 95),
+      ('Protein bar', 200, 20, 7, 22),
+      ('Almonds', 180, 6, 15, 6),
+      ('Apple', 95, 0, 0, 25),
     ];
     const daysAgoSamples = [0, 1, 3, 8, 16, 27, 41, 58, 74, 92];
 
@@ -146,14 +150,23 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
         now.subtract(Duration(days: daysAgoSamples[i])),
       );
 
-      void addMeal(MealOfTheDay mealOfTheDay, (String, int) sample, int hour) {
+      void addMeal(
+        MealOfTheDay mealOfTheDay,
+        (String, int, int, int, int) record,
+        int hour,
+      ) {
         mealEntries.add(
           MealLogEntry(
             id: _uuid.v4(),
             loggedAt: day.add(Duration(hours: hour)),
             mealOfTheDay: mealOfTheDay,
-            name: sample.$1,
-            calories: sample.$2,
+            name: record.$1,
+            nutrition: Nutrition(
+              calories: record.$2,
+              protein: record.$3,
+              fat: record.$4,
+              carbs: record.$5,
+            ),
           ),
         );
       }

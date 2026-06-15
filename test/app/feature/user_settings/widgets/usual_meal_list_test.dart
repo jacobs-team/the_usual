@@ -42,6 +42,7 @@ void main() {
     ) async {
       stub(
         const UserSettingsState(
+          expandNutritionByDefault: true,
           usuals: {
             MealOfTheDay.breakfast: [UsualMeal(id: 'a', name: 'Eggs')],
           },
@@ -54,22 +55,22 @@ void main() {
 
       final rowCalories = find
           .descendant(
-            of: find.byType(UsualMealRow),
+            of: find.byType(ExpandableNutrition),
             matching: find.byType(TextFormField),
           )
           .first;
       await tester.enterText(rowCalories, '300');
       verify(
         () => userSettingsBloc.add(
-          const UserSettingsEvent.usualMealCaloriesChanged(
+          const UserSettingsEvent.usualMealNutritionChanged(
             MealOfTheDay.breakfast,
             'a',
-            300,
+            Nutrition(calories: 300),
           ),
         ),
       ).called(1);
 
-      await tester.tap(find.byIcon(Icons.close).first);
+      await tester.tap(find.byIcon(Icons.remove).first);
       verify(
         () => userSettingsBloc.add(
           const UserSettingsEvent.usualMealRemoved(MealOfTheDay.breakfast, 'a'),
@@ -89,7 +90,7 @@ void main() {
           const UserSettingsEvent.usualMealAdded(
             MealOfTheDay.breakfast,
             'Oats',
-            null,
+            Nutrition(),
           ),
         ),
       ).called(1);

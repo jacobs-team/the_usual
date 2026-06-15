@@ -5,15 +5,15 @@ sealed class DailyLogEvent with _$DailyLogEvent {
   const factory DailyLogEvent.mealLogged(
     MealOfTheDay mealOfTheDay,
     String name, {
-    int? calories,
+    @Default(Nutrition()) Nutrition nutrition,
     String? usualMealId,
     String? photoPath,
   }) = MealLogged;
   const factory DailyLogEvent.mealEntryRemoved(String id) = MealEntryRemoved;
-  const factory DailyLogEvent.mealEntryCaloriesChanged(
+  const factory DailyLogEvent.mealEntryNutritionChanged(
     String id,
-    int? calories,
-  ) = MealEntryCaloriesChanged;
+    Nutrition nutrition,
+  ) = MealEntryNutritionChanged;
   const factory DailyLogEvent.weightLogged(
     double weight,
     WeightUnit weightUnit,
