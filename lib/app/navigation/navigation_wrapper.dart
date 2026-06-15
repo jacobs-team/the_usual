@@ -1,24 +1,25 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:the_usual/app/app.dart';
-import 'package:the_usual/app/core/dependencies/dependencies.dart';
 import 'package:the_usual/design_system/design_system.dart';
-import 'package:the_usual/l10n/l10n.dart';
 
 /// {@template navigation_wrapper}
-/// Route wrapper that dynamically switches between a [NavigationBar]
-/// for mobile layouts and a [NavigationRail] for tablet and desktop layouts
-/// based on [LayoutData].
+/// Shell for the primary tabs (Today and History). On small screens it shows a
+/// floating [GlassContainer] nav bar over each tab's content; on larger screens
+/// it switches to a [NavigationRail]. Each tab keeps its own navigation stack.
 /// {@endtemplate}
 class NavigationWrapper extends StatelessWidget {
   /// {@macro navigation_wrapper}
   const NavigationWrapper({required this.navigationShell, super.key});
 
-  /// The navigation shell managed by [GoRouter] that maintains the
+  /// The navigation shell managed by [GoRouter] that maintains each tab's
   /// navigation stack.
   final StatefulNavigationShell navigationShell;
+
+  void _goToBranch(int index) => navigationShell.goBranch(
+    index,
+    initialLocation: index == navigationShell.currentIndex,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -27,34 +28,6 @@ class NavigationWrapper extends StatelessWidget {
     const destinations = AppRouter.destinations;
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: Row(
-          children: [
-            const Icon(Icons.coffee_outlined),
-            SizedBox(width: AppDesign.spacing.sm),
-            Flexible(
-              child: Text(
-                destinations(context.l10n)[navigationShell.currentIndex].label,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            onPressed: getIt<AuthCubit>().logout,
-            tooltip: context.l10n.logoutTooltip,
-            icon: const Icon(Icons.logout),
-          ),
-          if (kDebugMode)
-            IconButton(
-              onPressed: () => context.push(Routes.devTools),
-              tooltip: context.l10n.devToolsTooltip,
-              icon: const Icon(Icons.code),
-            ),
-        ],
-      ),
       body: Stack(
         children: [
           Column(
@@ -65,7 +38,7 @@ class NavigationWrapper extends StatelessWidget {
                     if (showRail)
                       NavigationRail(
                         extended: expandRail,
-                        destinations: destinations(context.l10n)
+                        destinations: destinations
                             .map(
                               (d) => NavigationRailDestination(
                                 icon: d.icon,
@@ -75,41 +48,11 @@ class NavigationWrapper extends StatelessWidget {
                             )
                             .toList(),
                         selectedIndex: navigationShell.currentIndex,
-                        onDestinationSelected: (index) =>
-                            navigationShell.goBranch(
-                              index,
-                              initialLocation:
-                                  index == navigationShell.currentIndex,
-                            ),
+                        onDestinationSelected: _goToBranch,
                       ),
-                    Expanded(
-                      child: navigationShell,
-                    ),
+                    Expanded(child: navigationShell),
                   ],
                 ),
-              ),
-              BlocSelector<ConnectivityCubit, bool, bool>(
-                bloc: getIt<ConnectivityCubit>(),
-                selector: (state) {
-                  return state;
-                },
-                builder: (context, connected) {
-                  return connected
-                      ? const SizedBox.shrink()
-                      : Padding(
-                          padding: EdgeInsets.all(AppDesign.spacing.md),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.signal_cellular_nodata,
-                                color: Theme.of(context).colorScheme.error,
-                              ),
-                              SizedBox(width: AppDesign.spacing.md),
-                              Text(context.l10n.noConnection),
-                            ],
-                          ),
-                        );
-                },
               ),
             ],
           ),
@@ -120,12 +63,9 @@ class NavigationWrapper extends StatelessWidget {
               right: 0,
               child: Center(
                 child: _FloatingNavBar(
-                  destinations: destinations(context.l10n),
+                  destinations: destinations,
                   selectedIndex: navigationShell.currentIndex,
-                  onDestinationSelected: (index) => navigationShell.goBranch(
-                    index,
-                    initialLocation: index == navigationShell.currentIndex,
-                  ),
+                  onDestinationSelected: _goToBranch,
                 ),
               ),
             ),
@@ -165,9 +105,7 @@ class _FloatingNavBar extends StatelessWidget {
                 ? colorScheme.onPrimary
                 : colorScheme.onSurfaceVariant,
             style: isSelected
-                ? IconButton.styleFrom(
-                    backgroundColor: colorScheme.primary,
-                  )
+                ? IconButton.styleFrom(backgroundColor: colorScheme.primary)
                 : null,
           );
         }).toList(),

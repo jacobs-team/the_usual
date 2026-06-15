@@ -40,10 +40,6 @@ void main() {
             builder: (_, _) => const TodayView(),
           ),
           GoRoute(
-            path: Routes.history,
-            builder: (_, _) => const Text('history-page'),
-          ),
-          GoRoute(
             path: Routes.settings,
             builder: (_, _) => const Text('settings-page'),
           ),
@@ -127,18 +123,6 @@ void main() {
           ),
         ),
       ).called(1);
-    });
-
-    testWidgets('navigates to history, settings, and dev tools', (
-      tester,
-    ) async {
-      stubDailyLog(const DailyLogState());
-      stubSettings(const UserSettingsState());
-      await pumpView(tester);
-
-      await tester.tap(find.byIcon(Icons.history));
-      await tester.pumpAndSettle();
-      expect(find.text('history-page'), findsOneWidget);
     });
 
     testWidgets('navigates to settings from the gear icon', (tester) async {

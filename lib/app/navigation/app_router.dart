@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:injectable/injectable.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
-import 'package:the_usual/l10n/l10n.dart';
 
 /// {@template app_router}
 /// Central navigation configuration using [GoRouter].
@@ -47,17 +46,31 @@ class AppRouter {
         return const NoTransitionPage(child: OnboardingView());
       },
     ),
-    GoRoute(
-      path: Routes.today,
-      pageBuilder: (context, state) {
-        return const NoTransitionPage(child: TodayView());
-      },
-    ),
-    GoRoute(
-      path: Routes.history,
-      pageBuilder: (context, state) {
-        return const NoTransitionPage(child: HistoryView());
-      },
+    StatefulShellRoute.indexedStack(
+      branches: [
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Routes.today,
+              pageBuilder: (context, state) {
+                return const NoTransitionPage(child: TodayView());
+              },
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: Routes.history,
+              pageBuilder: (context, state) {
+                return const NoTransitionPage(child: HistoryView());
+              },
+            ),
+          ],
+        ),
+      ],
+      builder: (context, state, navigationShell) =>
+          NavigationWrapper(navigationShell: navigationShell),
     ),
     GoRoute(
       path: Routes.settings,
@@ -73,12 +86,6 @@ class AppRouter {
         ),
       ],
     ),
-    // GoRoute(
-    //   path: Routes.signIn,
-    //   pageBuilder: (context, state) {
-    //     return const NoTransitionPage(child: SignInView());
-    //   },
-    // ),
     if (kDebugMode)
       GoRoute(
         path: Routes.devTools,
@@ -88,17 +95,17 @@ class AppRouter {
       ),
   ];
 
-  /// Data for rendering navigation bars or rails.
-  static List<NavigationDestination> destinations(AppLocalizations l10n) => [
+  /// Destinations for the Today and History bottom navigation bar.
+  static const List<NavigationDestination> destinations = [
     NavigationDestination(
-      icon: const Icon(Icons.coffee_outlined),
-      selectedIcon: const Icon(Icons.coffee),
-      label: l10n.coffeeTitle,
+      icon: Icon(Icons.today_outlined),
+      selectedIcon: Icon(Icons.today),
+      label: 'Today',
     ),
     NavigationDestination(
-      icon: const Icon(Icons.favorite_outline),
-      selectedIcon: const Icon(Icons.favorite),
-      label: l10n.favoritesTitle,
+      icon: Icon(Icons.history_outlined),
+      selectedIcon: Icon(Icons.history),
+      label: 'History',
     ),
   ];
 }

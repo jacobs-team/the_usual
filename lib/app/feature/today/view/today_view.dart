@@ -75,35 +75,9 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
         title: const Text('Today'),
         actions: [
           IconButton(
-            onPressed: () => context.push(Routes.history),
-            tooltip: context.l10n.historyTooltip,
-            icon: const Icon(Icons.history),
-          ),
-          IconButton(
             onPressed: () => context.go(Routes.settings),
             tooltip: context.l10n.settingsTooltip,
             icon: const Icon(Icons.settings_outlined),
-          ),
-          BlocSelector<UserSettingsBloc, UserSettingsState, bool>(
-            bloc: getIt<UserSettingsBloc>(),
-            selector: (state) => state.expandNutritionByDefault,
-            builder: (context, expandNutritionByDefault) {
-              return PopupMenuButton<void>(
-                tooltip: 'Display options',
-                icon: const Icon(Icons.more_vert),
-                itemBuilder: (context) => [
-                  CheckedPopupMenuItem<void>(
-                    checked: expandNutritionByDefault,
-                    onTap: () => getIt<UserSettingsBloc>().add(
-                      UserSettingsEvent.expandNutritionByDefaultChanged(
-                        expandNutritionByDefault: !expandNutritionByDefault,
-                      ),
-                    ),
-                    child: const Text('Expand nutrition by default'),
-                  ),
-                ],
-              );
-            },
           ),
           if (kDebugMode)
             IconButton(
@@ -145,9 +119,18 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
                         SizedBox(height: AppDesign.spacing.xl),
                         const SectionLabel('MEALS'),
                         SizedBox(height: AppDesign.spacing.sm),
-                        Text(
-                          breakdown.nutrition.summary,
-                          style: textTheme.headlineSmall,
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Text(
+                                breakdown.nutrition.summary,
+                                style: textTheme.headlineSmall,
+                              ),
+                            ),
+                            _NutritionExpansionToggle(
+                              expanded: expandNutritionByDefault,
+                            ),
+                          ],
                         ),
                         SizedBox(height: AppDesign.spacing.md),
                         for (final mealOfTheDay in MealOfTheDay.values)
@@ -168,6 +151,36 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
                 );
               },
             ),
+      ),
+    );
+  }
+}
+
+/// Toggles whether every meal's nutrition starts expanded, swapping between
+/// the expand and collapse icons with a short animation as the setting flips.
+class _NutritionExpansionToggle extends StatelessWidget {
+  const _NutritionExpansionToggle({required this.expanded});
+
+  /// Whether nutrition currently starts expanded.
+  final bool expanded;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      tooltip: expanded ? 'Minimize nutrition' : 'Expand nutrition',
+      onPressed: () => getIt<UserSettingsBloc>().add(
+        UserSettingsEvent.expandNutritionByDefaultChanged(
+          expandNutritionByDefault: !expanded,
+        ),
+      ),
+      icon: AnimatedSwitcher(
+        duration: AppDesign.durations.fast,
+        transitionBuilder: (child, animation) =>
+            ScaleTransition(scale: animation, child: child),
+        child: Icon(
+          expanded ? Icons.unfold_less : Icons.unfold_more,
+          key: ValueKey(expanded),
+        ),
       ),
     );
   }
