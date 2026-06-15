@@ -58,6 +58,11 @@ class UserSettingsBloc
         SettingsThemeModeSelected() => emit(
           state.copyWith(themeMode: event.themeMode),
         ),
+        SettingsExpandNutritionByDefaultChanged() => emit(
+          state.copyWith(
+            expandNutritionByDefault: event.expandNutritionByDefault,
+          ),
+        ),
         SettingsUsualMealAdded() => _onUsualMealAdded(event, emit),
         SettingsUsualMealRemoved() => _onUsualMealRemoved(event, emit),
         SettingsUsualMealNutritionChanged() => _onUsualMealNutritionChanged(

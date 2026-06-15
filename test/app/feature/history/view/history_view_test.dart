@@ -24,7 +24,7 @@ void main() {
         loggedAt: day,
         mealOfTheDay: MealOfTheDay.breakfast,
         name: 'Eggs',
-        calories: calories,
+        nutrition: Nutrition(calories: calories),
       );
     }
 

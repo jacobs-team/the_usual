@@ -15,6 +15,7 @@ class MealLogSection extends StatelessWidget {
     required this.mealLogEntries,
     required this.usualMeals,
     required this.isCurrent,
+    required this.nutritionExpandedByDefault,
     super.key,
   });
 
@@ -29,6 +30,9 @@ class MealLogSection extends StatelessWidget {
 
   /// Whether this is the meal nearest the current time.
   final bool isCurrent;
+
+  /// Whether each logged entry's nutrition fields start expanded for editing.
+  final bool nutritionExpandedByDefault;
 
   @override
   Widget build(BuildContext context) {
@@ -69,16 +73,18 @@ class MealLogSection extends StatelessWidget {
                   ),
                 ),
                 if (mealLogEntries.isNotEmpty)
-                  NutritionSummary(
-                    nutrition: nutrition,
+                  Text(
+                    nutrition.summary,
                     style: theme.textTheme.bodyMedium,
                   ),
               ],
             ),
+            SizedBox(height: AppDesign.spacing.sm),
             for (final mealLogEntry in mealLogEntries)
               LoggedEntryRow(
                 key: ValueKey(mealLogEntry.id),
                 mealLogEntry: mealLogEntry,
+                expandedByDefault: nutritionExpandedByDefault,
               ),
             if (quickPicks.isNotEmpty) ...[
               SizedBox(height: AppDesign.spacing.sm),

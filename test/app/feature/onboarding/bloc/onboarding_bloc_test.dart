@@ -114,7 +114,7 @@ void main() {
           const OnboardingEvent.usualMealAdded(
             MealOfTheDay.breakfast,
             'Eggs',
-            350,
+            Nutrition(calories: 350),
           ),
         ),
         expect: () => [
@@ -130,7 +130,11 @@ void main() {
         'usualMealAdded ignores a blank name',
         build: OnboardingBloc.new,
         act: (bloc) => bloc.add(
-          const OnboardingEvent.usualMealAdded(MealOfTheDay.breakfast, '  ', 0),
+          const OnboardingEvent.usualMealAdded(
+            MealOfTheDay.breakfast,
+            '  ',
+            Nutrition(),
+          ),
         ),
         expect: () => <OnboardingState>[],
       );
@@ -149,7 +153,7 @@ void main() {
           const OnboardingEvent.usualMealAdded(
             MealOfTheDay.breakfast,
             'eggs',
-            100,
+            Nutrition(calories: 100),
           ),
         ),
         expect: () => <OnboardingState>[],
@@ -188,7 +192,7 @@ void main() {
       );
 
       blocTest<OnboardingBloc, OnboardingState>(
-        'usualMealCaloriesChanged updates the matching meal only',
+        'usualMealNutritionChanged updates the matching meal only',
         build: OnboardingBloc.new,
         seed: () => const OnboardingState(
           settings: UserSettingsState(
@@ -201,15 +205,20 @@ void main() {
           ),
         ),
         act: (bloc) => bloc.add(
-          const OnboardingEvent.usualMealCaloriesChanged(
+          const OnboardingEvent.usualMealNutritionChanged(
             MealOfTheDay.breakfast,
             'a',
-            400,
+            Nutrition(calories: 400),
           ),
         ),
         expect: () => [
           isA<OnboardingState>().having(
-            (s) => s.settings.usuals[MealOfTheDay.breakfast]!.first.calories,
+            (s) => s
+                .settings
+                .usuals[MealOfTheDay.breakfast]!
+                .first
+                .nutrition
+                .calories,
             'updated calories',
             400,
           ),
@@ -432,7 +441,7 @@ void main() {
           const OnboardingEvent.somethingElseLogged(
             MealOfTheDay.dinner,
             'Tacos',
-            calories: 620,
+            nutrition: Nutrition(calories: 620),
           ),
         ),
         expect: () => [

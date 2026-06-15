@@ -14,28 +14,30 @@ void main() {
             UsualMeal(id: 'a', name: 'Eggs'),
             UsualMeal(id: 'b', name: 'Oats'),
           ],
+          expandedByDefault: false,
           onAdded: (_, _) {},
-          onCaloriesChanged: (_, _) {},
+          onNutritionChanged: (_, _) {},
           onRemoved: (_) {},
         ),
       );
 
-      expect(find.text('BREAKFAST (2)'), findsOneWidget);
-      expect(find.byType(UsualMealRow), findsNWidgets(2));
+      expect(find.text('Breakfast (2)'), findsOneWidget);
+      expect(find.byType(ExpandableNutrition), findsNWidgets(2));
       expect(find.byType(UsualMealComposer), findsOneWidget);
     });
 
-    testWidgets('forwards calorie edits with the meal id', (tester) async {
+    testWidgets('forwards nutrition edits with the meal id', (tester) async {
       String? changedId;
-      int? changedCalories;
+      Nutrition? changedNutrition;
       await tester.pumpPumpPumpItUP(
         UsualMealSection(
           mealOfTheDay: MealOfTheDay.breakfast,
           usualMeals: const [UsualMeal(id: 'a', name: 'Eggs')],
+          expandedByDefault: true,
           onAdded: (_, _) {},
-          onCaloriesChanged: (id, calories) {
+          onNutritionChanged: (id, nutrition) {
             changedId = id;
-            changedCalories = calories;
+            changedNutrition = nutrition;
           },
           onRemoved: (_) {},
         ),
@@ -44,7 +46,7 @@ void main() {
       await tester.enterText(find.byType(TextFormField).first, '275');
 
       expect(changedId, equals('a'));
-      expect(changedCalories, equals(275));
+      expect(changedNutrition?.calories, equals(275));
     });
 
     testWidgets('forwards removal with the meal id', (tester) async {
@@ -53,13 +55,14 @@ void main() {
         UsualMealSection(
           mealOfTheDay: MealOfTheDay.breakfast,
           usualMeals: const [UsualMeal(id: 'a', name: 'Eggs')],
+          expandedByDefault: false,
           onAdded: (_, _) {},
-          onCaloriesChanged: (_, _) {},
+          onNutritionChanged: (_, _) {},
           onRemoved: (id) => removedId = id,
         ),
       );
 
-      await tester.tap(find.byIcon(Icons.close));
+      await tester.tap(find.byIcon(Icons.remove));
 
       expect(removedId, equals('a'));
     });

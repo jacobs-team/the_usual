@@ -37,6 +37,27 @@ class TodayView extends StatelessWidget {
             tooltip: context.l10n.settingsTooltip,
             icon: const Icon(Icons.settings_outlined),
           ),
+          BlocSelector<UserSettingsBloc, UserSettingsState, bool>(
+            bloc: getIt<UserSettingsBloc>(),
+            selector: (state) => state.expandNutritionByDefault,
+            builder: (context, expandNutritionByDefault) {
+              return PopupMenuButton<void>(
+                tooltip: 'Display options',
+                icon: const Icon(Icons.more_vert),
+                itemBuilder: (context) => [
+                  CheckedPopupMenuItem<void>(
+                    checked: expandNutritionByDefault,
+                    onTap: () => getIt<UserSettingsBloc>().add(
+                      UserSettingsEvent.expandNutritionByDefaultChanged(
+                        expandNutritionByDefault: !expandNutritionByDefault,
+                      ),
+                    ),
+                    child: const Text('Expand nutrition by default'),
+                  ),
+                ],
+              );
+            },
+          ),
           if (kDebugMode)
             IconButton(
               onPressed: () => context.push(Routes.devTools),
@@ -50,11 +71,15 @@ class TodayView extends StatelessWidget {
             BlocSelector<
               UserSettingsBloc,
               UserSettingsState,
-              Map<MealOfTheDay, List<UsualMeal>>
+              (Map<MealOfTheDay, List<UsualMeal>>, bool)
             >(
               bloc: getIt<UserSettingsBloc>(),
-              selector: (state) => state.usuals,
-              builder: (context, usualMeals) {
+              selector: (state) => (
+                state.usuals,
+                state.expandNutritionByDefault,
+              ),
+              builder: (context, selected) {
+                final (usualMeals, expandNutritionByDefault) = selected;
                 return BlocSelector<
                   DailyLogBloc,
                   DailyLogState,
@@ -73,8 +98,8 @@ class TodayView extends StatelessWidget {
                         SizedBox(height: AppDesign.spacing.xl),
                         const SectionLabel('MEALS'),
                         SizedBox(height: AppDesign.spacing.sm),
-                        NutritionSummary(
-                          nutrition: breakdown.nutrition,
+                        Text(
+                          breakdown.nutrition.summary,
                           style: textTheme.headlineSmall,
                         ),
                         SizedBox(height: AppDesign.spacing.md),
@@ -87,6 +112,8 @@ class TodayView extends StatelessWidget {
                             usualMeals:
                                 usualMeals[mealOfTheDay] ?? <UsualMeal>[],
                             isCurrent: mealOfTheDay == currentMeal,
+                            nutritionExpandedByDefault:
+                                expandNutritionByDefault,
                           ),
                       ],
                     );

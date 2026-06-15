@@ -26,6 +26,18 @@ abstract class Nutrition with _$Nutrition {
   bool get isEmpty =>
       calories == null && protein == null && fat == null && carbs == null;
 
+  /// A one-line summary for display, e.g. "420 cal · 28P · 14F · 60C". Unset
+  /// values are dropped; an em dash is shown when none are set.
+  String get summary {
+    final parts = [
+      if (calories != null) '$calories cal',
+      if (protein != null) '${protein}P',
+      if (fat != null) '${fat}F',
+      if (carbs != null) '${carbs}C',
+    ];
+    return parts.isEmpty ? '—' : parts.join(' · ');
+  }
+
   /// Adds two sets of facts, counting an unset value as zero. Used to total a
   /// list of entries, so every summed value is non-null.
   Nutrition operator +(Nutrition other) => Nutrition(

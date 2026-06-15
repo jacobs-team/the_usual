@@ -265,9 +265,8 @@ class _MonthChip extends StatelessWidget {
                 ),
               ),
               SizedBox(height: AppDesign.spacing.xs),
-              NutritionSummary(
-                nutrition: averageNutrition,
-                compact: true,
+              Text(
+                averageNutrition.summary,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: foregroundColor.withValues(alpha: 0.7),
                 ),
@@ -301,10 +300,7 @@ class _HistoryDayCard extends StatelessWidget {
         subtitle: Row(
           children: [
             Flexible(
-              child: NutritionSummary(
-                nutrition: historyDay.nutrition,
-                style: bodySmall,
-              ),
+              child: Text(historyDay.nutrition.summary, style: bodySmall),
             ),
             if (weightEntry != null)
               Text(' · ${weightEntry.label}', style: bodySmall),
@@ -347,8 +343,8 @@ class _HistoryEntryRow extends StatelessWidget {
       child: Row(
         children: [
           Expanded(child: Text(mealLogEntry.name)),
-          NutritionSummary(
-            nutrition: mealLogEntry.nutrition,
+          Text(
+            mealLogEntry.nutrition.summary,
             style: Theme.of(context).textTheme.bodySmall,
           ),
         ],

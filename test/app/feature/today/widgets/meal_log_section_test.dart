@@ -33,7 +33,7 @@ void main() {
         loggedAt: DateTime.now(),
         mealOfTheDay: MealOfTheDay.breakfast,
         name: name,
-        calories: calories,
+        nutrition: Nutrition(calories: calories),
       );
     }
 
@@ -42,6 +42,7 @@ void main() {
       List<MealLogEntry> mealLogEntries = const [],
       List<UsualMeal> usualMeals = const [],
       bool isCurrent = false,
+      bool nutritionExpandedByDefault = false,
     }) {
       tester.view.physicalSize = const Size(1200, 3000);
       tester.view.devicePixelRatio = 1.0;
@@ -54,6 +55,7 @@ void main() {
           mealLogEntries: mealLogEntries,
           usualMeals: usualMeals,
           isCurrent: isCurrent,
+          nutritionExpandedByDefault: nutritionExpandedByDefault,
         ),
       );
     }
@@ -61,10 +63,13 @@ void main() {
     testWidgets('shows the calorie total and logged rows when current', (
       tester,
     ) async {
+      // Expanded so the only "350 cal" text is the section total, not also the
+      // collapsed row summary.
       await pumpSection(
         tester,
         mealLogEntries: [logged('a', 'Eggs', calories: 350)],
         isCurrent: true,
+        nutritionExpandedByDefault: true,
       );
 
       expect(find.text('350 cal'), findsOneWidget);
@@ -74,7 +79,13 @@ void main() {
     testWidgets('offers quick picks for usuals not yet logged', (tester) async {
       await pumpSection(
         tester,
-        usualMeals: const [UsualMeal(id: 'u', name: 'Oatmeal', calories: 300)],
+        usualMeals: const [
+          UsualMeal(
+            id: 'u',
+            name: 'Oatmeal',
+            nutrition: Nutrition(calories: 300),
+          ),
+        ],
       );
 
       expect(find.text('+ Oatmeal'), findsOneWidget);
@@ -86,7 +97,7 @@ void main() {
           const DailyLogEvent.mealLogged(
             MealOfTheDay.breakfast,
             'Oatmeal',
-            calories: 300,
+            nutrition: Nutrition(calories: 300),
             usualMealId: 'u',
           ),
         ),
@@ -120,7 +131,7 @@ void main() {
           const UserSettingsEvent.usualMealAdded(
             MealOfTheDay.breakfast,
             'Burrito',
-            null,
+            Nutrition(),
           ),
         ),
       ).called(1);

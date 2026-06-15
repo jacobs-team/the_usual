@@ -14,10 +14,17 @@ import 'package:the_usual/app/core/dependencies/dependencies.dart';
 /// {@endtemplate}
 class LoggedEntryRow extends StatefulWidget {
   /// {@macro logged_entry_row}
-  const LoggedEntryRow({required this.mealLogEntry, super.key});
+  const LoggedEntryRow({
+    required this.mealLogEntry,
+    required this.expandedByDefault,
+    super.key,
+  });
 
   /// The logged entry to show.
   final MealLogEntry mealLogEntry;
+
+  /// Whether the nutrition fields start expanded for editing.
+  final bool expandedByDefault;
 
   @override
   State<LoggedEntryRow> createState() => _LoggedEntryRowState();
@@ -50,84 +57,65 @@ class _LoggedEntryRowState extends State<LoggedEntryRow> {
   @override
   Widget build(BuildContext context) {
     final mealLogEntry = widget.mealLogEntry;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                mealLogEntry.name,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
+    return ExpandableNutrition(
+      name: mealLogEntry.name,
+      nutrition: mealLogEntry.nutrition,
+      expandedByDefault: widget.expandedByDefault,
+      onChanged: (nutrition) {
+        getIt<DailyLogBloc>().add(
+          DailyLogEvent.mealEntryNutritionChanged(mealLogEntry.id, nutrition),
+        );
+        // Usual meal had no nutrition yet: fill it in directly.
+        if (!_usualMealHadNutrition && mealLogEntry.usualMealId != null) {
+          getIt<UserSettingsBloc>().add(
+            UserSettingsEvent.usualMealNutritionChanged(
+              mealLogEntry.mealOfTheDay,
+              mealLogEntry.usualMealId!,
+              nutrition,
             ),
-            IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () => getIt<DailyLogBloc>().add(
-                DailyLogEvent.mealEntryRemoved(mealLogEntry.id),
-              ),
-            ),
-          ],
-        ),
-        NutritionFields(
-          dense: true,
-          initial: mealLogEntry.nutrition,
-          onChanged: (nutrition) {
-            getIt<DailyLogBloc>().add(
-              DailyLogEvent.mealEntryNutritionChanged(
-                mealLogEntry.id,
-                nutrition,
-              ),
-            );
-            // Usual meal had no nutrition yet: fill it in directly.
-            if (!_usualMealHadNutrition && mealLogEntry.usualMealId != null) {
-              getIt<UserSettingsBloc>().add(
-                UserSettingsEvent.usualMealNutritionChanged(
-                  mealLogEntry.mealOfTheDay,
-                  mealLogEntry.usualMealId!,
-                  nutrition,
-                ),
-              );
-            }
-          },
-        ),
-        if (_usualMealHadNutrition)
-          BlocSelector<UserSettingsBloc, UserSettingsState, UsualMeal?>(
-            bloc: getIt<UserSettingsBloc>(),
-            selector: _linkedUsualMeal,
-            builder: (context, usualMeal) {
-              final nutrition = mealLogEntry.nutrition;
-              final differsFromUsualMeal =
-                  usualMeal != null && usualMeal.nutrition != nutrition;
+          );
+        }
+      },
+      onRemoved: () => getIt<DailyLogBloc>().add(
+        DailyLogEvent.mealEntryRemoved(mealLogEntry.id),
+      ),
+      expandedFooter: _usualMealHadNutrition
+          ? BlocSelector<UserSettingsBloc, UserSettingsState, UsualMeal?>(
+              bloc: getIt<UserSettingsBloc>(),
+              selector: _linkedUsualMeal,
+              builder: (context, usualMeal) {
+                final nutrition = mealLogEntry.nutrition;
+                final differsFromUsualMeal =
+                    usualMeal != null && usualMeal.nutrition != nutrition;
 
-              if (!differsFromUsualMeal) return const SizedBox.shrink();
-              return Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton.icon(
-                  style: TextButton.styleFrom(
-                    padding: EdgeInsets.zero,
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    visualDensity: VisualDensity.compact,
-                  ),
-                  icon: const Icon(Icons.sync, size: 16),
-                  label: Text(
-                    nutrition.isEmpty
-                        ? "Clear this usual meal's nutrition"
-                        : 'Update usual meal to match',
-                  ),
-                  onPressed: () => getIt<UserSettingsBloc>().add(
-                    UserSettingsEvent.usualMealNutritionChanged(
-                      mealLogEntry.mealOfTheDay,
-                      usualMeal.id,
-                      nutrition,
+                if (!differsFromUsualMeal) return const SizedBox.shrink();
+                return Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      visualDensity: VisualDensity.compact,
+                    ),
+                    icon: const Icon(Icons.sync, size: 16),
+                    label: Text(
+                      nutrition.isEmpty
+                          ? "Clear this usual meal's nutrition"
+                          : 'Update usual meal to match',
+                    ),
+                    onPressed: () => getIt<UserSettingsBloc>().add(
+                      UserSettingsEvent.usualMealNutritionChanged(
+                        mealLogEntry.mealOfTheDay,
+                        usualMeal.id,
+                        nutrition,
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
-          ),
-      ],
+                );
+              },
+            )
+          : null,
     );
   }
 }

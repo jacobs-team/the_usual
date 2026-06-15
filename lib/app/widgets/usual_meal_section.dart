@@ -12,9 +12,11 @@ class UsualMealSection extends StatelessWidget {
   const UsualMealSection({
     required this.mealOfTheDay,
     required this.usualMeals,
+    required this.expandedByDefault,
     required this.onAdded,
     required this.onNutritionChanged,
     required this.onRemoved,
+    this.showHeader = true,
     super.key,
   });
 
@@ -23,6 +25,13 @@ class UsualMealSection extends StatelessWidget {
 
   /// The saved usual meals for this meal.
   final List<UsualMeal> usualMeals;
+
+  /// Whether each meal's nutrition fields start expanded for editing.
+  final bool expandedByDefault;
+
+  /// Whether to show the meal-name header. Hidden where the surrounding UI
+  /// already names the meal, e.g. the settings tab bar.
+  final bool showHeader;
 
   /// Called with the name and nutrition of a new usual meal.
   final void Function(String name, Nutrition nutrition) onAdded;
@@ -38,18 +47,33 @@ class UsualMealSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          '${mealOfTheDay.label} (${usualMeals.length})',
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
-        SizedBox(height: AppDesign.spacing.sm),
+        if (showHeader) ...[
+          Text(
+            '${mealOfTheDay.label} (${usualMeals.length})',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          SizedBox(height: AppDesign.spacing.sm),
+        ],
         for (final usualMeal in usualMeals)
-          UsualMealRow(
+          Card(
             key: ValueKey(usualMeal.id),
-            usualMeal: usualMeal,
-            onNutritionChanged: (nutrition) =>
-                onNutritionChanged(usualMeal.id, nutrition),
-            onRemoved: () => onRemoved(usualMeal.id),
+            margin: EdgeInsets.only(bottom: AppDesign.spacing.sm),
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(
+                AppDesign.spacing.lg,
+                AppDesign.spacing.sm,
+                AppDesign.spacing.sm,
+                AppDesign.spacing.md,
+              ),
+              child: ExpandableNutrition(
+                name: usualMeal.name,
+                nutrition: usualMeal.nutrition,
+                expandedByDefault: expandedByDefault,
+                onChanged: (nutrition) =>
+                    onNutritionChanged(usualMeal.id, nutrition),
+                onRemoved: () => onRemoved(usualMeal.id),
+              ),
+            ),
           ),
         SizedBox(height: AppDesign.spacing.sm),
         UsualMealComposer(onAdd: onAdded),

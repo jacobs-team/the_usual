@@ -34,15 +34,16 @@ void main() {
         loggedAt: DateTime.now(),
         mealOfTheDay: MealOfTheDay.breakfast,
         name: 'Eggs',
-        calories: calories,
+        nutrition: Nutrition(calories: calories),
         usualMealId: usualMealId,
       );
     }
 
+    // Expanded so the nutrition fields and any sync action are reachable.
     Future<void> pumpRow(WidgetTester tester, MealLogEntry mealLogEntry) {
       return tester.pumpPumpPumpItUP(
         deps: [dailyLogBloc, userSettingsBloc],
-        LoggedEntryRow(mealLogEntry: mealLogEntry),
+        LoggedEntryRow(mealLogEntry: mealLogEntry, expandedByDefault: true),
       );
     }
 
@@ -50,7 +51,7 @@ void main() {
       stubSettings(const UserSettingsState());
       await pumpRow(tester, entry());
 
-      await tester.tap(find.byIcon(Icons.close));
+      await tester.tap(find.byIcon(Icons.remove));
 
       verify(
         () => dailyLogBloc.add(const DailyLogEvent.mealEntryRemoved('m1')),
@@ -63,21 +64,24 @@ void main() {
       stubSettings(const UserSettingsState());
       await pumpRow(tester, entry());
 
-      await tester.enterText(find.byType(TextFormField), '400');
+      await tester.enterText(find.byType(TextFormField).first, '400');
 
       verify(
         () => dailyLogBloc.add(
-          const DailyLogEvent.mealEntryCaloriesChanged('m1', 400),
+          const DailyLogEvent.mealEntryNutritionChanged(
+            'm1',
+            Nutrition(calories: 400),
+          ),
         ),
       ).called(1);
       verifyNever(
         () => userSettingsBloc.add(
-          any(that: isA<SettingsUsualMealCaloriesChanged>()),
+          any(that: isA<SettingsUsualMealNutritionChanged>()),
         ),
       );
     });
 
-    testWidgets('filling calories also fills a usual meal that had none', (
+    testWidgets('filling nutrition also fills a usual meal that had none', (
       tester,
     ) async {
       stubSettings(
@@ -89,61 +93,72 @@ void main() {
       );
       await pumpRow(tester, entry(usualMealId: 'u'));
 
-      await tester.enterText(find.byType(TextFormField), '400');
+      await tester.enterText(find.byType(TextFormField).first, '400');
 
       verify(
         () => dailyLogBloc.add(
-          const DailyLogEvent.mealEntryCaloriesChanged('m1', 400),
+          const DailyLogEvent.mealEntryNutritionChanged(
+            'm1',
+            Nutrition(calories: 400),
+          ),
         ),
       ).called(1);
       verify(
         () => userSettingsBloc.add(
-          const UserSettingsEvent.usualMealCaloriesChanged(
+          const UserSettingsEvent.usualMealNutritionChanged(
             MealOfTheDay.breakfast,
             'u',
-            400,
+            Nutrition(calories: 400),
           ),
         ),
       ).called(1);
     });
 
-    testWidgets('offers to update a usual meal whose calories now differ', (
+    testWidgets('offers to update a usual meal whose nutrition now differs', (
       tester,
     ) async {
       stubSettings(
         const UserSettingsState(
           usuals: {
             MealOfTheDay.breakfast: [
-              UsualMeal(id: 'u', name: 'Eggs', calories: 300),
+              UsualMeal(
+                id: 'u',
+                name: 'Eggs',
+                nutrition: Nutrition(calories: 300),
+              ),
             ],
           },
         ),
       );
       await pumpRow(tester, entry(usualMealId: 'u', calories: 350));
 
-      expect(find.text('Update usual meal to 350 cal'), findsOneWidget);
+      expect(find.text('Update usual meal to match'), findsOneWidget);
 
-      await tester.tap(find.text('Update usual meal to 350 cal'));
+      await tester.tap(find.text('Update usual meal to match'));
 
       verify(
         () => userSettingsBloc.add(
-          const UserSettingsEvent.usualMealCaloriesChanged(
+          const UserSettingsEvent.usualMealNutritionChanged(
             MealOfTheDay.breakfast,
             'u',
-            350,
+            Nutrition(calories: 350),
           ),
         ),
       ).called(1);
     });
 
-    testWidgets('offers to clear a usual meal when the entry has no calories', (
+    testWidgets('offers to clear a usual meal when the entry is empty', (
       tester,
     ) async {
       stubSettings(
         const UserSettingsState(
           usuals: {
             MealOfTheDay.breakfast: [
-              UsualMeal(id: 'u', name: 'Eggs', calories: 300),
+              UsualMeal(
+                id: 'u',
+                name: 'Eggs',
+                nutrition: Nutrition(calories: 300),
+              ),
             ],
           },
         ),
@@ -151,19 +166,23 @@ void main() {
       await pumpRow(tester, entry(usualMealId: 'u'));
 
       expect(
-        find.text("Clear this usual meal's calories"),
+        find.text("Clear this usual meal's nutrition"),
         findsOneWidget,
       );
     });
 
-    testWidgets('shows no update button when calories already match', (
+    testWidgets('shows no update button when nutrition already matches', (
       tester,
     ) async {
       stubSettings(
         const UserSettingsState(
           usuals: {
             MealOfTheDay.breakfast: [
-              UsualMeal(id: 'u', name: 'Eggs', calories: 350),
+              UsualMeal(
+                id: 'u',
+                name: 'Eggs',
+                nutrition: Nutrition(calories: 350),
+              ),
             ],
           },
         ),

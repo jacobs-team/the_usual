@@ -11,7 +11,12 @@ void main() {
         loggedAt: loggedAt,
         mealOfTheDay: MealOfTheDay.breakfast,
         name: 'Eggs',
-        calories: 350,
+        nutrition: const Nutrition(
+          calories: 350,
+          protein: 18,
+          fat: 14,
+          carbs: 30,
+        ),
         usualMealId: 'usual-1',
         photoPath: '/tmp/photo.png',
       );
@@ -29,7 +34,7 @@ void main() {
         'name': 'Sandwich',
       });
 
-      expect(mealLogEntry.calories, isNull);
+      expect(mealLogEntry.nutrition, equals(const Nutrition()));
       expect(mealLogEntry.usualMealId, isNull);
       expect(mealLogEntry.photoPath, isNull);
       expect(mealLogEntry.mealOfTheDay, equals(MealOfTheDay.lunch));

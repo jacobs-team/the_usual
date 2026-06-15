@@ -33,6 +33,9 @@ sealed class UserSettingsEvent with _$UserSettingsEvent {
       SettingsStartingWeightChanged;
   const factory UserSettingsEvent.themeModeSelected(ThemeMode themeMode) =
       SettingsThemeModeSelected;
+  const factory UserSettingsEvent.expandNutritionByDefaultChanged({
+    required bool expandNutritionByDefault,
+  }) = SettingsExpandNutritionByDefaultChanged;
   const factory UserSettingsEvent.usualMealAdded(
     MealOfTheDay mealOfTheDay,
     String name,
