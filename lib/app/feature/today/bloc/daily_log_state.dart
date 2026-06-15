@@ -9,12 +9,13 @@ typedef HistoryDay = ({
   List<MealLogEntry> mealEntries,
 });
 
-/// One month of history: its logged days (newest first) and the average daily
-/// nutrition across them.
+/// One month of history: its logged days (newest first), the average daily
+/// nutrition across them, and its weigh-ins (oldest first).
 typedef HistoryMonth = ({
   DateTime month,
   Nutrition averageNutrition,
   List<HistoryDay> days,
+  List<WeightEntry> weightEntries,
 });
 
 /// {@template daily_log_state}
@@ -94,10 +95,15 @@ abstract class DailyLogState with _$DailyLogState {
         fat: ((monthTotal.fat ?? 0) / days.length).round(),
         carbs: ((monthTotal.carbs ?? 0) / days.length).round(),
       );
+      final weightEntries = [
+        for (final historyDay in days.reversed)
+          if (historyDay.weightEntry != null) historyDay.weightEntry!,
+      ];
       history.add((
         month: month,
         averageNutrition: averageNutrition,
         days: days,
+        weightEntries: weightEntries,
       ));
     }
     return history;

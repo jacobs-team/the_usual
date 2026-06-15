@@ -1,0 +1,150 @@
+<style>
+  :root{
+    --surface:#FAF9F5; --surface-low:#F4F4F0; --surface-lowest:#FFFFFF;
+    --container:#EEEDE9; --container-highest:#E2E3DF;
+    --primary:#271310; --on-primary:#FAF9F5;--primary-container:#3E2723;
+    --on-surface:#1A1C1A; --variant:#504442; --outline-variant:#D3C3C0;
+    --secondary-container:#D3C3C0;
+  }
+  .stage{display:flex;gap:40px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+  .col{display:flex;flex-direction:column;align-items:center;max-width:340px}
+  .col h3{margin:16px 0 4px;font-size:16px}
+  .col p{margin:0;text-align:center;color:var(--variant);font-size:13px;line-height:1.45}
+  .phone{width:300px;height:600px;background:var(--surface);border-radius:34px;border:10px solid #1A1C1A;overflow:hidden;font-family:'Manrope',system-ui,sans-serif;color:var(--on-surface);box-shadow:0 18px 40px rgba(39,19,16,.18)}
+  .scr{padding:18px 16px;height:100%;box-sizing:border-box;overflow:hidden}
+  .ttl{text-align:center;font-weight:700;font-size:15px;margin:4px 0 14px}
+  .lbl{font-size:10px;letter-spacing:.12em;color:var(--variant);font-weight:700;text-transform:uppercase}
+  .muted{color:var(--variant)}
+  .row{display:flex;align-items:center}
+
+  /* chevron stepper */
+  .stepper{display:flex;align-items:center;justify-content:space-between;background:var(--container);border-radius:18px;padding:6px 10px;margin-bottom:14px}
+  .stepper .nav{width:30px;height:30px;border-radius:50%;background:var(--surface-lowest);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--primary);font-weight:700}
+  .stepper b{font-size:14px}
+
+  /* hero */
+  .dash{background:var(--primary);color:var(--on-primary);border-radius:20px;padding:16px;margin-bottom:14px}
+  .spark{height:64px;margin-top:6px;position:relative}
+  .spark .endlbl{position:absolute;right:0;top:-2px;font-size:11px;color:#fff;font-weight:700}
+  .spark .startlbl{position:absolute;left:0;bottom:-4px;font-size:10px;color:#D3C3C0}
+  .spark .delta{position:absolute;right:0;bottom:-4px;font-size:10px;color:#D3C3C0}
+  .statrow{display:flex;justify-content:space-between;align-items:flex-end;border-top:1px solid rgba(255,255,255,.15);margin-top:14px;padding-top:12px}
+  .statrow .big{font-size:22px;font-weight:700;line-height:1}
+  .avgmacro{height:7px;border-radius:4px;overflow:hidden;display:flex;width:120px;margin-top:6px}
+  .avgmacro>.p{background:#D3C3C0}.avgmacro>.f{background:#A89896}.avgmacro>.c{background:#6D5750}
+
+  /* day rows */
+  .daycard{background:var(--surface-lowest);border-radius:16px;padding:12px 14px;margin-top:10px;box-shadow:0 1px 0 var(--outline-variant)}
+  .wtag{font-size:10px;font-weight:700;background:var(--secondary-container);color:var(--primary-container);padding:2px 8px;border-radius:10px}
+  .macro{height:6px;border-radius:3px;overflow:hidden;display:flex;margin-top:9px}
+  .macro>.p{background:#5D4037}.macro>.f{background:#A89896}.macro>.c{background:#D3C3C0}
+  .legend{display:flex;gap:12px;margin-top:8px;font-size:10px;color:var(--variant)}
+  .legend i{display:inline-block;width:8px;height:8px;border-radius:2px;margin-right:4px;vertical-align:middle}
+</style>
+
+<h2>B, fixed — no goal-implying bars, reachable months</h2>
+<p class="subtitle">Calorie progress bar removed. Day rows keep only the macro-split bar (a proportion, meaningful with no goal). Month switch is now a stepper that pages back as far as data goes. Tell me which navigation you prefer.</p>
+
+<div class="stage">
+
+  <div class="col">
+    <div class="phone"><div class="scr">
+      <div class="ttl">History</div>
+      <div class="stepper">
+        <div class="nav">‹</div>
+        <b>June 2026</b>
+        <div class="nav">›</div>
+      </div>
+
+      <div class="dash">
+        <span class="lbl" style="color:#D3C3C0">Weight this month</span>
+        <div class="spark">
+          <svg viewBox="0 0 250 64" width="100%" height="64" preserveAspectRatio="none">
+            <polyline points="0,40 42,34 84,44 126,24 168,30 210,14 250,20" fill="none" stroke="#FAF9F5" stroke-width="2.5" stroke-linejoin="round"/>
+            <circle cx="250" cy="20" r="3.5" fill="#FAF9F5"/>
+          </svg>
+          <span class="endlbl">100 lb</span>
+          <span class="startlbl">102 lb</span>
+          <span class="delta">▼ 2 lb</span>
+        </div>
+        <div class="statrow">
+          <div><div class="big">2604</div><span style="font-size:11px;color:#D3C3C0">avg cal / day</span></div>
+          <div style="text-align:right">
+            <span style="font-size:11px;color:#D3C3C0">avg macros</span>
+            <div class="avgmacro"><span class="c" style="width:40%"></span><span class="f" style="width:18%"></span><span class="p" style="width:42%"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lbl">15 DAYS LOGGED</div>
+
+      <div class="daycard">
+        <div class="row" style="justify-content:space-between"><b style="font-size:14px">Mon, Jun 15</b><span class="wtag">100 lb</span></div>
+        <div class="muted" style="font-size:12px;margin-top:3px">2604 cal · 271P · 120F · 360C</div>
+        <div class="macro"><span class="p" style="width:42%"></span><span class="f" style="width:18%"></span><span class="c" style="width:40%"></span></div>
+      </div>
+      <div class="daycard">
+        <div class="row" style="justify-content:space-between"><b style="font-size:14px">Sun, Jun 14</b></div>
+        <div class="muted" style="font-size:12px;margin-top:3px">2310 cal · 240P · 110F · 300C</div>
+        <div class="macro"><span class="p" style="width:36%"></span><span class="f" style="width:22%"></span><span class="c" style="width:42%"></span></div>
+      </div>
+      <div class="legend"><span><i style="background:#5D4037"></i>Protein</span><span><i style="background:#A89896"></i>Fat</span><span><i style="background:#D3C3C0"></i>Carbs</span></div>
+    </div></div>
+    <h3>Stepper ‹ June 2026 ›</h3>
+    <p>One month at a time. Arrows (and swipe) page back through every logged month — March is just two taps left. Compact, gives the hero room. Arrows disable at the oldest/newest month.</p>
+  </div>
+
+  <div class="col">
+    <div class="phone"><div class="scr">
+      <div class="ttl">History</div>
+      <div class="row" style="gap:6px;overflow:hidden;margin-bottom:14px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 88%,transparent)">
+        <span class="lbl" style="background:var(--container);padding:8px 12px;border-radius:14px;color:var(--variant)">JAN</span>
+        <span class="lbl" style="background:var(--container);padding:8px 12px;border-radius:14px;color:var(--variant)">FEB</span>
+        <span class="lbl" style="background:var(--container);padding:8px 12px;border-radius:14px;color:var(--variant)">MAR</span>
+        <span class="lbl" style="background:var(--container);padding:8px 12px;border-radius:14px;color:var(--variant)">APR</span>
+        <span class="lbl" style="background:var(--container);padding:8px 12px;border-radius:14px;color:var(--variant)">MAY</span>
+        <span class="lbl" style="background:var(--primary);color:#fff;padding:8px 12px;border-radius:14px">JUN</span>
+      </div>
+
+      <div class="dash">
+        <span class="lbl" style="color:#D3C3C0">Weight this month</span>
+        <div class="spark">
+          <svg viewBox="0 0 250 64" width="100%" height="64" preserveAspectRatio="none">
+            <polyline points="0,40 42,34 84,44 126,24 168,30 210,14 250,20" fill="none" stroke="#FAF9F5" stroke-width="2.5" stroke-linejoin="round"/>
+            <circle cx="250" cy="20" r="3.5" fill="#FAF9F5"/>
+          </svg>
+          <span class="endlbl">100 lb</span>
+          <span class="startlbl">102 lb</span>
+          <span class="delta">▼ 2 lb</span>
+        </div>
+        <div class="statrow">
+          <div><div class="big">2604</div><span style="font-size:11px;color:#D3C3C0">avg cal / day</span></div>
+          <div style="text-align:right">
+            <span style="font-size:11px;color:#D3C3C0">avg macros</span>
+            <div class="avgmacro"><span class="c" style="width:40%"></span><span class="f" style="width:18%"></span><span class="p" style="width:42%"></span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lbl">15 DAYS LOGGED</div>
+      <div class="daycard">
+        <div class="row" style="justify-content:space-between"><b style="font-size:14px">Mon, Jun 15</b><span class="wtag">100 lb</span></div>
+        <div class="muted" style="font-size:12px;margin-top:3px">2604 cal · 271P · 120F · 360C</div>
+        <div class="macro"><span class="p" style="width:42%"></span><span class="f" style="width:18%"></span><span class="c" style="width:40%"></span></div>
+      </div>
+      <div class="daycard">
+        <div class="row" style="justify-content:space-between"><b style="font-size:14px">Sun, Jun 14</b></div>
+        <div class="muted" style="font-size:12px;margin-top:3px">2310 cal · 240P · 110F · 300C</div>
+        <div class="macro"><span class="p" style="width:36%"></span><span class="f" style="width:22%"></span><span class="c" style="width:42%"></span></div>
+      </div>
+    </div></div>
+    <h3>Polished scroll strip (today's pattern)</h3>
+    <p>Keep the horizontal month strip you have now, just cleaner. It scrolls — every month is reachable by scrolling left, and the fade edge hints there's more. Better for jumping across many months; uses a row of vertical space.</p>
+  </div>
+
+</div>
+
+<div class="options" style="margin-top:8px">
+  <div class="option" data-choice="stepper" onclick="toggleSelect(this)"><div class="letter">1</div><div class="content"><h3>Stepper</h3><p>‹ June 2026 › arrows + swipe</p></div></div>
+  <div class="option" data-choice="strip" onclick="toggleSelect(this)"><div class="letter">2</div><div class="content"><h3>Scroll strip</h3><p>Polished version of today's chips</p></div></div>
+</div>
