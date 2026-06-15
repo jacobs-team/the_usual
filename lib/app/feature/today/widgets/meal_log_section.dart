@@ -116,7 +116,7 @@ class MealLogSection extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     if (quickPicks.isNotEmpty) ...[
-                      SizedBox(height: AppDesign.spacing.sm),
+                      SizedBox(height: AppDesign.spacing.md),
                       Wrap(
                         spacing: AppDesign.spacing.sm,
                         runSpacing: AppDesign.spacing.sm,

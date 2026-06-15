@@ -108,6 +108,7 @@ class _ExpandableNutritionState extends State<ExpandableNutrition> {
         ? '×$quantity ${widget.name}'
         : widget.name;
     return ExpansionTile(
+      expandedAlignment: Alignment.centerRight,
       dense: true,
       controller: _controller,
       initiallyExpanded: widget.expandedByDefault,

@@ -48,6 +48,8 @@ class LoggedEntryRow extends StatelessWidget {
         // When linked only by name (the stored id is stale or absent), stamp
         // the usual meal's current id onto the entry so the link survives a
         // later rename. Deferred to after the frame to keep build pure.
+
+        // TODO: fix this trash later.
         if (usualMeal != null && usualMeal.id != mealLogEntry.usualMealId) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             getIt<DailyLogBloc>().add(
@@ -78,32 +80,29 @@ class LoggedEntryRow extends StatelessWidget {
             DailyLogEvent.mealEntryRemoved(mealLogEntry.id),
           ),
           expandedFooter: differsFromUsualMeal
-              ? Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      left: AppDesign.spacing.sm,
-                      top: AppDesign.spacing.sm,
+              ? Padding(
+                  padding: EdgeInsets.only(
+                    left: AppDesign.spacing.sm,
+                    top: AppDesign.spacing.sm,
+                  ),
+                  child: TextButton.icon(
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: Size.zero,
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      visualDensity: VisualDensity.compact,
                     ),
-                    child: TextButton.icon(
-                      style: TextButton.styleFrom(
-                        padding: EdgeInsets.zero,
-                        minimumSize: Size.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        visualDensity: VisualDensity.compact,
-                      ),
-                      icon: const Icon(Icons.sync, size: 16),
-                      label: Text(
-                        nutrition.isEmpty
-                            ? "Clear this usual meal's nutrition"
-                            : 'Update usual meal to match',
-                      ),
-                      onPressed: () => getIt<UserSettingsBloc>().add(
-                        UserSettingsEvent.usualMealNutritionChanged(
-                          mealLogEntry.mealOfTheDay,
-                          usualMeal.id,
-                          nutrition,
-                        ),
+                    icon: const Icon(Icons.sync, size: 16),
+                    label: Text(
+                      nutrition.isEmpty
+                          ? "Clear this usual meal's nutrition"
+                          : 'Update usual meal to match',
+                    ),
+                    onPressed: () => getIt<UserSettingsBloc>().add(
+                      UserSettingsEvent.usualMealNutritionChanged(
+                        mealLogEntry.mealOfTheDay,
+                        usualMeal.id,
+                        nutrition,
                       ),
                     ),
                   ),
