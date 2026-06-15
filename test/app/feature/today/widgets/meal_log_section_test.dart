@@ -50,12 +50,16 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
       return tester.pumpPumpPumpItUP(
         deps: [dailyLogBloc, userSettingsBloc],
-        MealLogSection(
-          mealOfTheDay: MealOfTheDay.breakfast,
-          mealLogEntries: mealLogEntries,
-          usualMeals: usualMeals,
-          isCurrent: isCurrent,
-          nutritionExpandedByDefault: nutritionExpandedByDefault,
+        CustomScrollView(
+          slivers: [
+            MealLogSection(
+              mealOfTheDay: MealOfTheDay.breakfast,
+              mealLogEntries: mealLogEntries,
+              usualMeals: usualMeals,
+              isCurrent: isCurrent,
+              nutritionExpandedByDefault: nutritionExpandedByDefault,
+            ),
+          ],
         ),
       );
     }

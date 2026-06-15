@@ -27,8 +27,6 @@ class NavigationWrapper extends StatelessWidget {
     final expandRail = context.layout > LayoutData.large;
     const destinations = AppRouter.destinations;
 
-    // The floating nav bar overlays the content instead of taking layout space,
-    // this reserves room for scrolling above it.
     final mediaQuery = MediaQuery.of(context);
     final floatingNavClearance =
         AppDesign.spacing.sm + kMinInteractiveDimension;

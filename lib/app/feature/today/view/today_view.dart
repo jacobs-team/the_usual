@@ -88,8 +88,6 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
         ],
       ),
       body: SafeArea(
-        // The floating nav bar overlays the bottom of the content, so let the
-        // list flow behind it rather than reserving space for it here.
         bottom: false,
         child:
             BlocSelector<
@@ -113,36 +111,42 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
                   selector: (state) => state.mealEntries,
                   builder: (context, mealEntries) {
                     final breakdown = mealEntries.breakdownOn(today);
-                    return ListView(
-                      // The bottom inset carries the floating nav bar's height
-                      // (injected by NavigationWrapper) so the last meal can
-                      // scroll clear of it.
-                      padding:
-                          EdgeInsets.all(AppDesign.spacing.lg) +
-                          EdgeInsets.only(
-                            bottom: MediaQuery.paddingOf(context).bottom,
+                    return CustomScrollView(
+                      slivers: [
+                        SliverPadding(
+                          padding: EdgeInsets.fromLTRB(
+                            AppDesign.spacing.lg,
+                            AppDesign.spacing.lg,
+                            AppDesign.spacing.lg,
+                            AppDesign.spacing.md,
                           ),
-                      children: [
-                        const SectionLabel('WEIGHT'),
-                        SizedBox(height: AppDesign.spacing.sm),
-                        _WeightTracker(day: today),
-                        SizedBox(height: AppDesign.spacing.xl),
-                        const SectionLabel('MEALS'),
-                        SizedBox(height: AppDesign.spacing.sm),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                breakdown.nutrition.summary,
-                                style: textTheme.headlineSmall,
-                              ),
+                          sliver: SliverToBoxAdapter(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                const SectionLabel('WEIGHT'),
+                                SizedBox(height: AppDesign.spacing.sm),
+                                _WeightTracker(day: today),
+                                SizedBox(height: AppDesign.spacing.xl),
+                                const SectionLabel('MEALS'),
+                                SizedBox(height: AppDesign.spacing.sm),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        breakdown.nutrition.summary,
+                                        style: textTheme.headlineSmall,
+                                      ),
+                                    ),
+                                    _NutritionExpansionToggle(
+                                      expanded: expandNutritionByDefault,
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                            _NutritionExpansionToggle(
-                              expanded: expandNutritionByDefault,
-                            ),
-                          ],
+                          ),
                         ),
-                        SizedBox(height: AppDesign.spacing.md),
                         for (final mealOfTheDay in MealOfTheDay.values)
                           MealLogSection(
                             mealOfTheDay: mealOfTheDay,
@@ -155,6 +159,11 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
                             nutritionExpandedByDefault:
                                 expandNutritionByDefault,
                           ),
+                        SliverToBoxAdapter(
+                          child: SizedBox(
+                            height: MediaQuery.paddingOf(context).bottom,
+                          ),
+                        ),
                       ],
                     );
                   },

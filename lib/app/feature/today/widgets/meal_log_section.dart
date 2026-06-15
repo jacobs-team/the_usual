@@ -6,7 +6,7 @@ import 'package:the_usual/design_system/design_system.dart';
 /// {@template meal_log_section}
 /// One meal's slice of the Today view: what's been logged for it so far,
 /// quick-pick chips for the user's usuals not yet logged, and an entry point
-/// for logging something off-menu.
+/// for logging something off-menu. Builds as a sliver for a [CustomScrollView].
 /// {@endtemplate}
 class MealLogSection extends StatelessWidget {
   /// {@macro meal_log_section}
@@ -59,105 +59,131 @@ class MealLogSection extends StatelessWidget {
       return !alreadyLoggedByName && !alreadyLoggedById;
     }).toList();
 
-    return Card(
-      margin: EdgeInsets.only(bottom: AppDesign.spacing.md),
-      shape: isCurrent
-          ? RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppDesign.radius.sm),
-              side: BorderSide(color: theme.colorScheme.primary, width: 2),
-            )
-          : null,
-      child: Padding(
-        padding: EdgeInsets.all(AppDesign.spacing.lg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    mealOfTheDay.label,
-                    style: theme.textTheme.titleMedium,
+    return SliverPadding(
+      padding: EdgeInsets.fromLTRB(
+        AppDesign.spacing.lg,
+        0,
+        AppDesign.spacing.lg,
+        AppDesign.spacing.md,
+      ),
+      sliver: DecoratedSliver(
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(
+            isCurrent ? AppDesign.radius.sm : AppDesign.radius.md,
+          ),
+          border: isCurrent
+              ? Border.all(color: theme.colorScheme.primary, width: 2)
+              : null,
+        ),
+        sliver: SliverPadding(
+          padding: EdgeInsets.all(AppDesign.spacing.lg),
+          sliver: SliverMainAxisGroup(
+            slivers: [
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: AppDesign.spacing.sm),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          mealOfTheDay.label,
+                          style: theme.textTheme.titleMedium,
+                        ),
+                      ),
+                      if (mealLogEntries.isNotEmpty)
+                        Text(
+                          nutrition.summary,
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                    ],
                   ),
                 ),
-                if (mealLogEntries.isNotEmpty)
-                  Text(
-                    nutrition.summary,
-                    style: theme.textTheme.bodyMedium,
-                  ),
-              ],
-            ),
-            SizedBox(height: AppDesign.spacing.sm),
-            for (final mealLogEntry in mealLogEntries)
-              LoggedEntryRow(
-                key: ValueKey(mealLogEntry.id),
-                mealLogEntry: mealLogEntry,
-                expandedByDefault: nutritionExpandedByDefault,
               ),
-            if (quickPicks.isNotEmpty) ...[
-              SizedBox(height: AppDesign.spacing.sm),
-              Wrap(
-                spacing: AppDesign.spacing.sm,
-                runSpacing: AppDesign.spacing.sm,
-                children: [
-                  for (final usualMeal in quickPicks)
-                    _QuickPickChip(
-                      label: '+ ${usualMeal.name}',
-                      onPressed: () => getIt<DailyLogBloc>().add(
-                        DailyLogEvent.mealLogged(
-                          mealOfTheDay,
-                          usualMeal.name,
-                          nutrition: usualMeal.nutrition,
-                          usualMealId: usualMeal.id,
-                          photoPath: usualMeal.photoPath,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ],
-            SizedBox(height: AppDesign.spacing.sm),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: TextButton.icon(
-                onPressed: () async {
-                  final result =
-                      await showModalBottomSheet<
-                        (String, Nutrition, int, bool)
-                      >(
-                        context: context,
-                        isScrollControlled: true,
-                        builder: (context) => const FoodEntrySheet(
-                          title: 'Log something else',
-                          confirmLabel: 'Log',
-                          showAddToUsualMeals: true,
-                        ),
-                      );
-                  if (result == null) return;
-                  final (name, nutrition, quantity, addToUsualMeals) = result;
-                  if (addToUsualMeals) {
-                    getIt<UserSettingsBloc>().add(
-                      UserSettingsEvent.usualMealAdded(
-                        mealOfTheDay,
-                        name,
-                        nutrition,
-                      ),
-                    );
-                  }
-                  getIt<DailyLogBloc>().add(
-                    DailyLogEvent.mealLogged(
-                      mealOfTheDay,
-                      name,
-                      nutrition: nutrition,
-                      quantity: quantity,
-                    ),
+              SliverList.builder(
+                itemCount: mealLogEntries.length,
+                itemBuilder: (context, index) {
+                  final mealLogEntry = mealLogEntries[index];
+                  return LoggedEntryRow(
+                    key: ValueKey(mealLogEntry.id),
+                    mealLogEntry: mealLogEntry,
+                    expandedByDefault: nutritionExpandedByDefault,
                   );
                 },
-                icon: const Icon(Icons.add),
-                label: const Text('I ate something else'),
               ),
-            ),
-          ],
+              SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (quickPicks.isNotEmpty) ...[
+                      SizedBox(height: AppDesign.spacing.sm),
+                      Wrap(
+                        spacing: AppDesign.spacing.sm,
+                        runSpacing: AppDesign.spacing.sm,
+                        children: [
+                          for (final usualMeal in quickPicks)
+                            _QuickPickChip(
+                              label: '+ ${usualMeal.name}',
+                              onPressed: () => getIt<DailyLogBloc>().add(
+                                DailyLogEvent.mealLogged(
+                                  mealOfTheDay,
+                                  usualMeal.name,
+                                  nutrition: usualMeal.nutrition,
+                                  usualMealId: usualMeal.id,
+                                  photoPath: usualMeal.photoPath,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
+                    SizedBox(height: AppDesign.spacing.sm),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: TextButton.icon(
+                        onPressed: () async {
+                          final result =
+                              await showModalBottomSheet<
+                                (String, Nutrition, int, bool)
+                              >(
+                                context: context,
+                                isScrollControlled: true,
+                                builder: (context) => const FoodEntrySheet(
+                                  title: 'Log something else',
+                                  confirmLabel: 'Log',
+                                  showAddToUsualMeals: true,
+                                ),
+                              );
+                          if (result == null) return;
+                          final (name, nutrition, quantity, addToUsualMeals) =
+                              result;
+                          if (addToUsualMeals) {
+                            getIt<UserSettingsBloc>().add(
+                              UserSettingsEvent.usualMealAdded(
+                                mealOfTheDay,
+                                name,
+                                nutrition,
+                              ),
+                            );
+                          }
+                          getIt<DailyLogBloc>().add(
+                            DailyLogEvent.mealLogged(
+                              mealOfTheDay,
+                              name,
+                              nutrition: nutrition,
+                              quantity: quantity,
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.add),
+                        label: const Text('I ate something else'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
