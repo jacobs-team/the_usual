@@ -152,38 +152,38 @@ class MealLogSection extends StatelessWidget {
                       alignment: Alignment.centerLeft,
                       child: TextButton.icon(
                         onPressed: () async {
-                          final result =
-                              await showModalBottomSheet<
-                                (String, Nutrition, int, bool)
-                              >(
+                          final results =
+                              await showModalBottomSheet<List<FoodEntryResult>>(
                                 context: context,
                                 isScrollControlled: true,
+                                useSafeArea: true,
+                                showDragHandle: true,
                                 builder: (context) => const FoodEntrySheet(
                                   title: 'Log something else',
                                   confirmLabel: 'Log',
                                   showAddToUsualMeals: true,
                                 ),
                               );
-                          if (result == null) return;
-                          final (name, nutrition, quantity, addToUsualMeals) =
-                              result;
-                          if (addToUsualMeals) {
-                            getIt<UserSettingsBloc>().add(
-                              UserSettingsEvent.usualMealAdded(
+                          if (results == null) return;
+                          for (final result in results) {
+                            if (result.addToUsualMeals) {
+                              getIt<UserSettingsBloc>().add(
+                                UserSettingsEvent.usualMealAdded(
+                                  mealOfTheDay,
+                                  result.name,
+                                  result.nutrition,
+                                ),
+                              );
+                            }
+                            getIt<DailyLogBloc>().add(
+                              DailyLogEvent.mealLogged(
                                 mealOfTheDay,
-                                name,
-                                nutrition,
+                                result.name,
+                                nutrition: result.nutrition,
+                                quantity: result.quantity,
                               ),
                             );
                           }
-                          getIt<DailyLogBloc>().add(
-                            DailyLogEvent.mealLogged(
-                              mealOfTheDay,
-                              name,
-                              nutrition: nutrition,
-                              quantity: quantity,
-                            ),
-                          );
                         },
                         icon: const Icon(Icons.add),
                         label: const Text('I ate something else'),

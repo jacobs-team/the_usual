@@ -4,6 +4,7 @@ export 'display/section_label.dart';
 export 'display/usual_meal_section.dart';
 export 'inputs/food_entry_sheet.dart';
 export 'inputs/macro_field.dart';
+export 'inputs/meal_photo_picker.dart';
 export 'inputs/nutrition_fields.dart';
 export 'inputs/quantity_stepper.dart';
 export 'inputs/radio_option_card.dart';

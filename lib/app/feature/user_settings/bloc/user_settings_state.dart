@@ -82,6 +82,11 @@ abstract class UserSettingsState with _$UserSettingsState {
     /// logged entry. When false, reminders fire regardless of what's logged.
     @Default(false) bool skipLoggedMealReminders,
 
+    /// How AI-assisted entry turns a meal into log entries: one combined item
+    /// or a breakdown into individual foods. Remembered as the user's default
+    /// and switchable per entry from the food entry sheet.
+    @Default(MealEntryMode.wholeMeal) MealEntryMode mealEntryMode,
+
     /// The user's usuals library, keyed by meal timing.
     @Default(<MealOfTheDay, List<UsualMeal>>{})
     Map<MealOfTheDay, List<UsualMeal>> usuals,

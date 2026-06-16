@@ -92,27 +92,30 @@ class _FirstLogViewState extends State<FirstLogView> {
                       OnboardingActions(
                         above: OutlinedButton.icon(
                           onPressed: () async {
-                            final result =
+                            final results =
                                 await showModalBottomSheet<
-                                  (String, Nutrition, int, bool)
+                                  List<FoodEntryResult>
                                 >(
                                   context: context,
                                   isScrollControlled: true,
+                                  useSafeArea: true,
+                                  showDragHandle: true,
                                   builder: (context) => const FoodEntrySheet(
                                     title: 'Log something else',
                                     confirmLabel: 'Log',
                                   ),
                                 );
-                            if (result == null) return;
-                            final (name, nutrition, quantity, _) = result;
-                            getIt<OnboardingBloc>().add(
-                              OnboardingEvent.somethingElseLogged(
-                                _mealOfTheDay,
-                                name,
-                                nutrition: nutrition,
-                                quantity: quantity,
-                              ),
-                            );
+                            if (results == null) return;
+                            for (final result in results) {
+                              getIt<OnboardingBloc>().add(
+                                OnboardingEvent.somethingElseLogged(
+                                  _mealOfTheDay,
+                                  result.name,
+                                  nutrition: result.nutrition,
+                                  quantity: result.quantity,
+                                ),
+                              );
+                            }
                           },
                           icon: const Icon(Icons.camera_alt_outlined),
                           label: const Text('I ate something else'),

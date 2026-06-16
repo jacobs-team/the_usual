@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:the_usual/app/app.dart';
+import 'package:the_usual/app/core/dependencies/dependencies.dart';
 import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template usual_meal_section}
@@ -81,6 +82,30 @@ class UsualMealSection extends StatelessWidget {
             ),
           ),
         SizedBox(height: AppDesign.spacing.sm),
+        if (getIt<MealAiRepository>().isConfigured) ...[
+          FilledButton.tonalIcon(
+            onPressed: () async {
+              final results = await showModalBottomSheet<List<FoodEntryResult>>(
+                context: context,
+                isScrollControlled: true,
+                useSafeArea: true,
+                showDragHandle: true,
+                builder: (context) => const FoodEntrySheet(
+                  title: 'Add usual meals',
+                  confirmLabel: 'Add',
+                  showQuantity: false,
+                ),
+              );
+              if (results == null) return;
+              for (final result in results) {
+                onAdded(result.name, result.nutrition);
+              }
+            },
+            icon: const Icon(Icons.auto_awesome_outlined),
+            label: const Text('Add with a photo or description'),
+          ),
+          SizedBox(height: AppDesign.spacing.sm),
+        ],
         UsualMealComposer(onAdd: onAdded),
       ],
     );

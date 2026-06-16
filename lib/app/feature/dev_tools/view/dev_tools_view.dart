@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
 
@@ -125,12 +124,14 @@ class DevToolsView extends StatelessWidget {
                 const SnackBar(content: Text('Estimating…')),
               );
               try {
-                final suggestion = await repository.suggestFromDescription(
+                final suggestions = await repository.suggestFromDescription(
                   'two large eggs and a slice of sourdough toast',
+                  mode: MealEntryMode.itemized,
                 );
-                final summary =
-                    '×${suggestion.quantity} ${suggestion.name} — '
-                    '${suggestion.nutrition.summary}';
+                final summary = [
+                  for (final s in suggestions)
+                    '×${s.quantity} ${s.name} (${s.nutrition.summary})',
+                ].join('  •  ');
                 log('CLAUDE suggestion: $summary');
                 messenger.showSnackBar(SnackBar(content: Text(summary)));
               } catch (error, stackTrace) {
@@ -163,46 +164,22 @@ class DevToolsView extends StatelessWidget {
                 return;
               }
 
-              final source = await showDialog<ImageSource>(
-                context: context,
-                builder: (context) => SimpleDialog(
-                  title: const Text('Photo source'),
-                  children: [
-                    SimpleDialogOption(
-                      onPressed: () =>
-                          Navigator.pop(context, ImageSource.camera),
-                      child: const Text('Camera'),
-                    ),
-                    SimpleDialogOption(
-                      onPressed: () =>
-                          Navigator.pop(context, ImageSource.gallery),
-                      child: const Text('Photo library'),
-                    ),
-                  ],
-                ),
-              );
-              if (source == null) return;
+              final photo = await pickMealPhoto(context);
+              if (photo == null) return;
 
-              final picked = await ImagePicker().pickImage(
-                source: source,
-                maxWidth: 1568,
-                maxHeight: 1568,
-                imageQuality: 85,
-              );
-              if (picked == null) return;
-
-              final bytes = await picked.readAsBytes();
               messenger.showSnackBar(
                 const SnackBar(content: Text('Estimating…')),
               );
               try {
-                final suggestion = await repository.suggestFromPhoto(
-                  bytes,
-                  imageMediaType: _imageMediaType(picked),
+                final suggestions = await repository.suggestFromPhoto(
+                  photo.bytes,
+                  mode: MealEntryMode.wholeMeal,
+                  imageMediaType: photo.mediaType,
                 );
-                final summary =
-                    '×${suggestion.quantity} ${suggestion.name} — '
-                    '${suggestion.nutrition.summary}';
+                final summary = [
+                  for (final s in suggestions)
+                    '×${s.quantity} ${s.name} (${s.nutrition.summary})',
+                ].join('  •  ');
                 log('CLAUDE photo suggestion: $summary');
                 messenger.showSnackBar(SnackBar(content: Text(summary)));
               } catch (error, stackTrace) {
@@ -305,19 +282,4 @@ class DevToolsView extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Resolves an [XFile]'s MIME type to one Claude accepts, defaulting to
-/// `image/jpeg` when the picker reports nothing usable.
-String _imageMediaType(XFile file) {
-  final reportedMimeType = file.mimeType;
-  if (reportedMimeType != null && reportedMimeType.startsWith('image/')) {
-    return reportedMimeType;
-  }
-
-  final name = file.name.toLowerCase();
-  if (name.endsWith('.png')) return 'image/png';
-  if (name.endsWith('.webp')) return 'image/webp';
-  if (name.endsWith('.gif')) return 'image/gif';
-  return 'image/jpeg';
 }
