@@ -14,6 +14,9 @@ workflows:
         # Codemagic env group holding CERTIFICATE_PRIVATE_KEY (a PEM RSA key,
         # marked secure). Used to mint a persistent signing certificate.
         - ios_signing
+        # Codemagic env group holding ANTHROPIC_API_KEY (marked secure),
+        # compiled into the build below so the in-app Claude client works.
+        - anthropic
       vars:
         # Your app's numeric Apple ID: App Store Connect > your app >
         # App Information > General Information > Apple ID..
@@ -54,6 +57,7 @@ workflows:
           fvm flutter build ipa --release \
             --flavor production \
             --target lib/main_production.dart \
+            --dart-define=ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY \
             --build-number=$BUILD_NUMBER \
             --export-options-plist=/Users/builder/export_options.plist
     artifacts:
