@@ -219,7 +219,7 @@ class _WeightTracker extends StatelessWidget {
       margin: EdgeInsets.zero,
       child: ListTile(
         title: const Text('Weight'),
-        trailing: WeightEntryField(day: day),
+        trailing: WeightEntryField(day: day, showLastWeightButton: true),
       ),
     );
   }

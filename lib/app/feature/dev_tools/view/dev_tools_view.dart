@@ -84,6 +84,54 @@ class DevToolsView extends StatelessWidget {
           const Divider(),
           ListTile(
             title: Text(
+              'Restore usuals from log',
+              style: theme.textTheme.bodyLarge,
+            ),
+            subtitle: const Text(
+              'Rebuilds the usuals library from logged meals',
+            ),
+            trailing: const Icon(Icons.restore),
+            onTap: () {
+              final userSettingsBloc = getIt<UserSettingsBloc>();
+              final dailyLogBloc = getIt<DailyLogBloc>();
+
+              final usuals = {
+                for (final entry in userSettingsBloc.state.usuals.entries)
+                  entry.key: [...entry.value],
+              };
+
+              for (final mealLogEntry in dailyLogBloc.state.mealEntries) {
+                final usualMealId = mealLogEntry.usualMealId;
+                if (usualMealId == null) continue;
+
+                final usualMeals = usuals.putIfAbsent(
+                  mealLogEntry.mealOfTheDay,
+                  () => <UsualMeal>[],
+                );
+                final alreadyRestored = usualMeals.any(
+                  (usualMeal) => usualMeal.id == usualMealId,
+                );
+                if (alreadyRestored) continue;
+
+                usualMeals.add(
+                  UsualMeal(
+                    id: usualMealId,
+                    name: mealLogEntry.name,
+                    nutrition: mealLogEntry.nutrition,
+                  ),
+                );
+              }
+
+              userSettingsBloc.add(
+                UserSettingsEvent.settingsCommitted(
+                  userSettingsBloc.state.copyWith(usuals: usuals),
+                ),
+              );
+            },
+          ),
+          const Divider(),
+          ListTile(
+            title: Text(
               'Reset app state',
               style: theme.textTheme.bodyLarge,
             ),
