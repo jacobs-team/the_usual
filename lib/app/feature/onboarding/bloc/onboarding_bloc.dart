@@ -62,6 +62,13 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
             ),
           ),
         ),
+        SkipLoggedMealRemindersChanged() => emit(
+          state.copyWith(
+            settings: state.settings.copyWith(
+              skipLoggedMealReminders: event.skipLoggedMealReminders,
+            ),
+          ),
+        ),
         WeightCheckinFrequencySelected() => emit(
           state.copyWith(
             settings: state.settings.copyWith(

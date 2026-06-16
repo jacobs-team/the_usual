@@ -28,6 +28,7 @@ class MealScheduleView extends StatelessWidget {
                   MealCheckinScheduleMode,
                   Map<MealOfTheDay, MealReminder>,
                   MealReminder,
+                  bool,
                 )
               >(
                 bloc: getIt<OnboardingBloc>(),
@@ -35,12 +36,14 @@ class MealScheduleView extends StatelessWidget {
                   state.settings.mealCheckinScheduleMode,
                   state.settings.mealReminders,
                   state.settings.endOfDayReminder,
+                  state.settings.skipLoggedMealReminders,
                 ),
                 builder: (context, selected) {
                   final (
                     mealCheckinScheduleMode,
                     mealReminders,
                     endOfDayReminder,
+                    skipLoggedMealReminders,
                   ) = selected;
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -71,7 +74,7 @@ class MealScheduleView extends StatelessWidget {
                       ),
                       SizedBox(height: AppDesign.spacing.xl),
                       if (mealCheckinScheduleMode ==
-                          MealCheckinScheduleMode.perMeal)
+                          MealCheckinScheduleMode.perMeal) ...[
                         for (final mealOfTheDay in MealOfTheDay.values)
                           if (mealReminders[mealOfTheDay]
                               case final mealReminder?)
@@ -93,6 +96,15 @@ class MealScheduleView extends StatelessWidget {
                                     ),
                                   ),
                             ),
+                        SkipLoggedRemindersTile(
+                          skipLoggedMealReminders: skipLoggedMealReminders,
+                          onChanged: (value) => getIt<OnboardingBloc>().add(
+                            OnboardingEvent.skipLoggedMealRemindersChanged(
+                              skipLoggedMealReminders: value,
+                            ),
+                          ),
+                        ),
+                      ],
                       if (mealCheckinScheduleMode ==
                           MealCheckinScheduleMode.endOfDay)
                         EndOfDayReminderRow(

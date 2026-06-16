@@ -69,6 +69,11 @@ class UserSettingsBloc
             expandNutritionByDefault: event.expandNutritionByDefault,
           ),
         ),
+        SettingsSkipLoggedMealRemindersChanged() => emit(
+          state.copyWith(
+            skipLoggedMealReminders: event.skipLoggedMealReminders,
+          ),
+        ),
         SettingsUsualMealAdded() => _onUsualMealAdded(event, emit),
         SettingsUsualMealRemoved() => _onUsualMealRemoved(event, emit),
         SettingsUsualMealNutritionChanged() => _onUsualMealNutritionChanged(

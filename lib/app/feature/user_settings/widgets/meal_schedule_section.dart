@@ -24,6 +24,7 @@ class MealScheduleSection extends StatelessWidget {
         MealCheckinScheduleMode,
         Map<MealOfTheDay, MealReminder>,
         MealReminder,
+        bool,
       )
     >(
       bloc: getIt<UserSettingsBloc>(),
@@ -32,6 +33,7 @@ class MealScheduleSection extends StatelessWidget {
         state.mealCheckinScheduleMode,
         state.mealReminders,
         state.endOfDayReminder,
+        state.skipLoggedMealReminders,
       ),
       builder: (context, selected) {
         final (
@@ -39,6 +41,7 @@ class MealScheduleSection extends StatelessWidget {
           mealCheckinScheduleMode,
           mealReminders,
           endOfDayReminder,
+          skipLoggedMealReminders,
         ) = selected;
 
         if (reminderStyle == ReminderStyle.none) {
@@ -68,7 +71,7 @@ class MealScheduleSection extends StatelessWidget {
               style: textTheme.bodySmall,
             ),
             SizedBox(height: AppDesign.spacing.md),
-            if (mealCheckinScheduleMode == MealCheckinScheduleMode.perMeal)
+            if (mealCheckinScheduleMode == MealCheckinScheduleMode.perMeal) ...[
               for (final mealOfTheDay in MealOfTheDay.values)
                 if (mealReminders[mealOfTheDay] case final mealReminder?)
                   MealReminderRow(
@@ -87,6 +90,15 @@ class MealScheduleSection extends StatelessWidget {
                       ),
                     ),
                   ),
+              SkipLoggedRemindersTile(
+                skipLoggedMealReminders: skipLoggedMealReminders,
+                onChanged: (value) => getIt<UserSettingsBloc>().add(
+                  UserSettingsEvent.skipLoggedMealRemindersChanged(
+                    skipLoggedMealReminders: value,
+                  ),
+                ),
+              ),
+            ],
             if (mealCheckinScheduleMode == MealCheckinScheduleMode.endOfDay)
               EndOfDayReminderRow(
                 mealReminder: endOfDayReminder,

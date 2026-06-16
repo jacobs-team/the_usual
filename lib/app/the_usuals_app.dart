@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
@@ -28,13 +29,23 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
   @override
   void initState() {
     super.initState();
-    _syncNotifications(getIt<UserSettingsBloc>().state);
+    _syncNotifications();
     // Tapping a reminder takes the user to Today, where they log meals.
     getIt<NotificationService>().onReminderTapped = () =>
         getIt<AppRouter>().router.go(Routes.today);
   }
 
-  void _syncNotifications(UserSettingsState settings) {
+  /// Reschedules reminders from the current settings, suppressing today's
+  /// per-meal reminders for meals already logged today when the user enabled
+  /// that. Reads both blocs so it can run on a settings change or a log change.
+  void _syncNotifications() {
+    final settings = getIt<UserSettingsBloc>().state;
+    final today = DateUtils.dateOnly(clock.now());
+    final mealsLoggedToday = getIt<DailyLogBloc>().state.mealEntries
+        .breakdownOn(today)
+        .entriesByMeal
+        .keys
+        .toSet();
     unawaited(
       getIt<NotificationService>().sync(
         reminderStyle: settings.reminderStyle,
@@ -43,6 +54,8 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
         endOfDayReminder: settings.endOfDayReminder,
         weightCheckinFrequency: settings.weightCheckinFrequency,
         weightTimeOfDay: settings.weightTimeOfDay,
+        skipLoggedMealReminders: settings.skipLoggedMealReminders,
+        mealsLoggedToday: mealsLoggedToday,
       ),
     );
   }
@@ -53,7 +66,12 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
       listeners: [
         BlocListener<UserSettingsBloc, UserSettingsState>(
           bloc: getIt<UserSettingsBloc>(),
-          listener: (context, state) => _syncNotifications(state),
+          listener: (context, state) => _syncNotifications(),
+        ),
+        // Logging a meal can suppress today's reminder for that meal timing.
+        BlocListener<DailyLogBloc, DailyLogState>(
+          bloc: getIt<DailyLogBloc>(),
+          listener: (context, state) => _syncNotifications(),
         ),
         // BlocListener<AuthCubit, AuthState>(
         //   bloc: getIt<AuthCubit>(),

@@ -87,6 +87,8 @@ class NotificationService {
     required MealReminder endOfDayReminder,
     required WeightCheckinFrequency weightCheckinFrequency,
     required WeightTimeOfDay weightTimeOfDay,
+    bool skipLoggedMealReminders = false,
+    Set<MealOfTheDay> mealsLoggedToday = const {},
   }) async {
     await _plugin.cancelAll();
     if (reminderStyle != ReminderStyle.notifications) return;
@@ -96,11 +98,18 @@ class NotificationService {
         for (final MapEntry(key: mealOfTheDay, value: mealReminder)
             in mealReminders.entries) {
           if (!mealReminder.enabled) continue;
+          // When the meal is already logged today, start the daily repeat
+          // tomorrow so today's reminder is skipped while later days fire as
+          // usual.
+          final skipToday =
+              skipLoggedMealReminders &&
+              mealsLoggedToday.contains(mealOfTheDay);
           await _scheduleDaily(
             id: mealOfTheDay.index,
             title: 'Did you eat ${mealOfTheDay.label.toLowerCase()}?',
             body: 'Tap to log it in The Usual.',
             time: mealReminder.timeOfDay,
+            skipToday: skipToday,
           );
         }
       case MealCheckinScheduleMode.endOfDay:
@@ -156,12 +165,13 @@ class NotificationService {
     required String title,
     required String body,
     required TimeOfDay time,
+    bool skipToday = false,
   }) {
     return _plugin.zonedSchedule(
       id: id,
       title: title,
       body: body,
-      scheduledDate: _nextInstanceOf(time),
+      scheduledDate: _nextInstanceOf(time, skipToday: skipToday),
       notificationDetails: _details,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time,
@@ -169,8 +179,9 @@ class NotificationService {
   }
 
   /// The next occurrence of [time] in the device's local timezone, today if it
-  /// hasn't passed yet, otherwise tomorrow.
-  tz.TZDateTime _nextInstanceOf(TimeOfDay time) {
+  /// hasn't passed yet, otherwise tomorrow. When [skipToday] is true, today's
+  /// occurrence is always passed over so the first fire lands tomorrow.
+  tz.TZDateTime _nextInstanceOf(TimeOfDay time, {bool skipToday = false}) {
     final now = tz.TZDateTime.now(tz.local);
     var scheduled = tz.TZDateTime(
       tz.local,
@@ -180,7 +191,7 @@ class NotificationService {
       time.hour,
       time.minute,
     );
-    if (!scheduled.isAfter(now)) {
+    if (skipToday || !scheduled.isAfter(now)) {
       scheduled = scheduled.add(const Duration(days: 1));
     }
     return scheduled;

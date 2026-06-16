@@ -78,6 +78,10 @@ abstract class UserSettingsState with _$UserSettingsState {
     /// collapsed to a summary.
     @Default(false) bool expandNutritionByDefault,
 
+    /// Whether a per-meal reminder is skipped on a day that meal already has a
+    /// logged entry. When false, reminders fire regardless of what's logged.
+    @Default(false) bool skipLoggedMealReminders,
+
     /// The user's usuals library, keyed by meal timing.
     @Default(<MealOfTheDay, List<UsualMeal>>{})
     Map<MealOfTheDay, List<UsualMeal>> usuals,

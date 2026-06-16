@@ -41,6 +41,9 @@ sealed class OnboardingEvent with _$OnboardingEvent {
   ) = MealReminderTimeChanged;
   const factory OnboardingEvent.endOfDayTimeChanged(TimeOfDay timeOfDay) =
       EndOfDayTimeChanged;
+  const factory OnboardingEvent.skipLoggedMealRemindersChanged({
+    required bool skipLoggedMealReminders,
+  }) = SkipLoggedMealRemindersChanged;
   const factory OnboardingEvent.weightCheckinFrequencySelected(
     WeightCheckinFrequency weightCheckinFrequency,
   ) = WeightCheckinFrequencySelected;

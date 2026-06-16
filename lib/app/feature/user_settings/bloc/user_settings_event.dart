@@ -40,6 +40,9 @@ sealed class UserSettingsEvent with _$UserSettingsEvent {
   const factory UserSettingsEvent.expandNutritionByDefaultChanged({
     required bool expandNutritionByDefault,
   }) = SettingsExpandNutritionByDefaultChanged;
+  const factory UserSettingsEvent.skipLoggedMealRemindersChanged({
+    required bool skipLoggedMealReminders,
+  }) = SettingsSkipLoggedMealRemindersChanged;
   const factory UserSettingsEvent.usualMealAdded(
     MealOfTheDay mealOfTheDay,
     String name,
