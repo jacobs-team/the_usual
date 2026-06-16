@@ -69,15 +69,41 @@ class AuthCubit extends HydratedCubit<AuthState> implements Listenable {
 abstract class AuthState with _$AuthState {
   /// {@macro auth_state}
   const factory AuthState({
+    /// Schema version of the persisted state. Bump it and add a `fromJson`
+    /// case whenever the persisted shape changes in a way old stored data
+    /// can't be read as-is, so existing users are migrated instead of reset.
+    @Default(1) int version,
     String? user,
     String? token,
   }) = _AuthState;
 
   const AuthState._();
 
+  /// The version written by the current app.
+  static const _currentVersion = 1;
+
   /// Returns true if both [user] and [token] are present.
   bool get signedIn => user != null && token != null;
 
   factory AuthState.fromJson(Map<String, dynamic> json) =>
-      _$AuthStateFromJson(json);
+      AuthState._fromVersionedJson(json);
+
+  factory AuthState._fromVersionedJson(Map<String, dynamic> json) {
+    final version = json['version'] as int? ?? 0;
+    switch (version) {
+      // No migrations yet. v0 is unversioned data written before this field
+      // existed; it has the current shape and reads straight through. When the
+      // shape changes, bump [_currentVersion] and add a case that migrates
+      // older versions up to the current one before this case.
+      case 0:
+      case _currentVersion:
+        return _$AuthStateFromJson(json);
+      default:
+        // A newer, unknown version, e.g. after the user downgrades the app.
+        // Read it with the current schema as a best effort rather than
+        // discarding the session and forcing a logout: unknown keys are
+        // ignored and missing ones fall back to defaults.
+        return _$AuthStateFromJson(json);
+    }
+  }
 }

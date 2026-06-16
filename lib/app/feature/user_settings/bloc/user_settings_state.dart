@@ -9,6 +9,11 @@ abstract class UserSettingsState with _$UserSettingsState {
   /// {@macro user_settings_state}
   @JsonSerializable(explicitToJson: true)
   const factory UserSettingsState({
+    /// Schema version of the persisted state. Bump it and add a `fromJson`
+    /// case whenever the persisted shape changes in a way old stored data
+    /// can't be read as-is, so existing users are migrated instead of reset.
+    @Default(1) int version,
+
     /// How the app checks in about meals.
     @Default(ReminderStyle.notifications) ReminderStyle reminderStyle,
 
@@ -80,8 +85,30 @@ abstract class UserSettingsState with _$UserSettingsState {
 
   const UserSettingsState._();
 
+  /// The version written by the current app.
+  static const _currentVersion = 1;
+
   factory UserSettingsState.fromJson(Map<String, dynamic> json) =>
-      _$UserSettingsStateFromJson(json);
+      UserSettingsState._fromVersionedJson(json);
+
+  factory UserSettingsState._fromVersionedJson(Map<String, dynamic> json) {
+    final version = json['version'] as int? ?? 0;
+    switch (version) {
+      // No migrations yet. v0 is unversioned data written before this field
+      // existed; it has the current shape and reads straight through. When the
+      // shape changes, bump [_currentVersion] and add a case that migrates
+      // older versions up to the current one before this case.
+      case 0:
+      case _currentVersion:
+        return _$UserSettingsStateFromJson(json);
+      default:
+        // A newer, unknown version, e.g. after the user downgrades the app.
+        // Read it with the current schema as a best effort rather than
+        // discarding the user's settings: unknown keys are ignored and missing
+        // ones fall back to defaults.
+        return _$UserSettingsStateFromJson(json);
+    }
+  }
 
   /// The meal section to highlight as current at [now].
   ///

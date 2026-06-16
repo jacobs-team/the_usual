@@ -1504,7 +1504,10 @@ as String,
 /// @nodoc
 mixin _$UserSettingsState {
 
-/// How the app checks in about meals.
+/// Schema version of the persisted state. Bump it and add a `fromJson`
+/// case whenever the persisted shape changes in a way old stored data
+/// can't be read as-is, so existing users are migrated instead of reset.
+ int get version;/// How the app checks in about meals.
  ReminderStyle get reminderStyle;/// Whether meal check-ins happen per meal or once at the end of the day.
  MealCheckinScheduleMode get mealCheckinScheduleMode;/// Per-meal check-in reminders, used in
 /// [MealCheckinScheduleMode.perMeal].
@@ -1536,16 +1539,16 @@ $UserSettingsStateCopyWith<UserSettingsState> get copyWith => _$UserSettingsStat
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserSettingsState&&(identical(other.reminderStyle, reminderStyle) || other.reminderStyle == reminderStyle)&&(identical(other.mealCheckinScheduleMode, mealCheckinScheduleMode) || other.mealCheckinScheduleMode == mealCheckinScheduleMode)&&const DeepCollectionEquality().equals(other.mealReminders, mealReminders)&&(identical(other.endOfDayReminder, endOfDayReminder) || other.endOfDayReminder == endOfDayReminder)&&(identical(other.weightCheckinFrequency, weightCheckinFrequency) || other.weightCheckinFrequency == weightCheckinFrequency)&&(identical(other.weightTimeOfDay, weightTimeOfDay) || other.weightTimeOfDay == weightTimeOfDay)&&(identical(other.weightUnit, weightUnit) || other.weightUnit == weightUnit)&&(identical(other.startingWeight, startingWeight) || other.startingWeight == startingWeight)&&(identical(other.calorieGoal, calorieGoal) || other.calorieGoal == calorieGoal)&&(identical(other.weightGoal, weightGoal) || other.weightGoal == weightGoal)&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.expandNutritionByDefault, expandNutritionByDefault) || other.expandNutritionByDefault == expandNutritionByDefault)&&const DeepCollectionEquality().equals(other.usuals, usuals));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserSettingsState&&(identical(other.version, version) || other.version == version)&&(identical(other.reminderStyle, reminderStyle) || other.reminderStyle == reminderStyle)&&(identical(other.mealCheckinScheduleMode, mealCheckinScheduleMode) || other.mealCheckinScheduleMode == mealCheckinScheduleMode)&&const DeepCollectionEquality().equals(other.mealReminders, mealReminders)&&(identical(other.endOfDayReminder, endOfDayReminder) || other.endOfDayReminder == endOfDayReminder)&&(identical(other.weightCheckinFrequency, weightCheckinFrequency) || other.weightCheckinFrequency == weightCheckinFrequency)&&(identical(other.weightTimeOfDay, weightTimeOfDay) || other.weightTimeOfDay == weightTimeOfDay)&&(identical(other.weightUnit, weightUnit) || other.weightUnit == weightUnit)&&(identical(other.startingWeight, startingWeight) || other.startingWeight == startingWeight)&&(identical(other.calorieGoal, calorieGoal) || other.calorieGoal == calorieGoal)&&(identical(other.weightGoal, weightGoal) || other.weightGoal == weightGoal)&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.expandNutritionByDefault, expandNutritionByDefault) || other.expandNutritionByDefault == expandNutritionByDefault)&&const DeepCollectionEquality().equals(other.usuals, usuals));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,reminderStyle,mealCheckinScheduleMode,const DeepCollectionEquality().hash(mealReminders),endOfDayReminder,weightCheckinFrequency,weightTimeOfDay,weightUnit,startingWeight,calorieGoal,weightGoal,themeMode,expandNutritionByDefault,const DeepCollectionEquality().hash(usuals));
+int get hashCode => Object.hash(runtimeType,version,reminderStyle,mealCheckinScheduleMode,const DeepCollectionEquality().hash(mealReminders),endOfDayReminder,weightCheckinFrequency,weightTimeOfDay,weightUnit,startingWeight,calorieGoal,weightGoal,themeMode,expandNutritionByDefault,const DeepCollectionEquality().hash(usuals));
 
 @override
 String toString() {
-  return 'UserSettingsState(reminderStyle: $reminderStyle, mealCheckinScheduleMode: $mealCheckinScheduleMode, mealReminders: $mealReminders, endOfDayReminder: $endOfDayReminder, weightCheckinFrequency: $weightCheckinFrequency, weightTimeOfDay: $weightTimeOfDay, weightUnit: $weightUnit, startingWeight: $startingWeight, calorieGoal: $calorieGoal, weightGoal: $weightGoal, themeMode: $themeMode, expandNutritionByDefault: $expandNutritionByDefault, usuals: $usuals)';
+  return 'UserSettingsState(version: $version, reminderStyle: $reminderStyle, mealCheckinScheduleMode: $mealCheckinScheduleMode, mealReminders: $mealReminders, endOfDayReminder: $endOfDayReminder, weightCheckinFrequency: $weightCheckinFrequency, weightTimeOfDay: $weightTimeOfDay, weightUnit: $weightUnit, startingWeight: $startingWeight, calorieGoal: $calorieGoal, weightGoal: $weightGoal, themeMode: $themeMode, expandNutritionByDefault: $expandNutritionByDefault, usuals: $usuals)';
 }
 
 
@@ -1556,7 +1559,7 @@ abstract mixin class $UserSettingsStateCopyWith<$Res>  {
   factory $UserSettingsStateCopyWith(UserSettingsState value, $Res Function(UserSettingsState) _then) = _$UserSettingsStateCopyWithImpl;
 @useResult
 $Res call({
- ReminderStyle reminderStyle, MealCheckinScheduleMode mealCheckinScheduleMode, Map<MealOfTheDay, MealReminder> mealReminders, MealReminder endOfDayReminder, WeightCheckinFrequency weightCheckinFrequency, WeightTimeOfDay weightTimeOfDay, WeightUnit weightUnit, double? startingWeight, int? calorieGoal, double? weightGoal, ThemeMode themeMode, bool expandNutritionByDefault, Map<MealOfTheDay, List<UsualMeal>> usuals
+ int version, ReminderStyle reminderStyle, MealCheckinScheduleMode mealCheckinScheduleMode, Map<MealOfTheDay, MealReminder> mealReminders, MealReminder endOfDayReminder, WeightCheckinFrequency weightCheckinFrequency, WeightTimeOfDay weightTimeOfDay, WeightUnit weightUnit, double? startingWeight, int? calorieGoal, double? weightGoal, ThemeMode themeMode, bool expandNutritionByDefault, Map<MealOfTheDay, List<UsualMeal>> usuals
 });
 
 
@@ -1573,9 +1576,10 @@ class _$UserSettingsStateCopyWithImpl<$Res>
 
 /// Create a copy of UserSettingsState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? reminderStyle = null,Object? mealCheckinScheduleMode = null,Object? mealReminders = null,Object? endOfDayReminder = null,Object? weightCheckinFrequency = null,Object? weightTimeOfDay = null,Object? weightUnit = null,Object? startingWeight = freezed,Object? calorieGoal = freezed,Object? weightGoal = freezed,Object? themeMode = null,Object? expandNutritionByDefault = null,Object? usuals = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? version = null,Object? reminderStyle = null,Object? mealCheckinScheduleMode = null,Object? mealReminders = null,Object? endOfDayReminder = null,Object? weightCheckinFrequency = null,Object? weightTimeOfDay = null,Object? weightUnit = null,Object? startingWeight = freezed,Object? calorieGoal = freezed,Object? weightGoal = freezed,Object? themeMode = null,Object? expandNutritionByDefault = null,Object? usuals = null,}) {
   return _then(_self.copyWith(
-reminderStyle: null == reminderStyle ? _self.reminderStyle : reminderStyle // ignore: cast_nullable_to_non_nullable
+version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as int,reminderStyle: null == reminderStyle ? _self.reminderStyle : reminderStyle // ignore: cast_nullable_to_non_nullable
 as ReminderStyle,mealCheckinScheduleMode: null == mealCheckinScheduleMode ? _self.mealCheckinScheduleMode : mealCheckinScheduleMode // ignore: cast_nullable_to_non_nullable
 as MealCheckinScheduleMode,mealReminders: null == mealReminders ? _self.mealReminders : mealReminders // ignore: cast_nullable_to_non_nullable
 as Map<MealOfTheDay, MealReminder>,endOfDayReminder: null == endOfDayReminder ? _self.endOfDayReminder : endOfDayReminder // ignore: cast_nullable_to_non_nullable
@@ -1682,10 +1686,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( ReminderStyle reminderStyle,  MealCheckinScheduleMode mealCheckinScheduleMode,  Map<MealOfTheDay, MealReminder> mealReminders,  MealReminder endOfDayReminder,  WeightCheckinFrequency weightCheckinFrequency,  WeightTimeOfDay weightTimeOfDay,  WeightUnit weightUnit,  double? startingWeight,  int? calorieGoal,  double? weightGoal,  ThemeMode themeMode,  bool expandNutritionByDefault,  Map<MealOfTheDay, List<UsualMeal>> usuals)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int version,  ReminderStyle reminderStyle,  MealCheckinScheduleMode mealCheckinScheduleMode,  Map<MealOfTheDay, MealReminder> mealReminders,  MealReminder endOfDayReminder,  WeightCheckinFrequency weightCheckinFrequency,  WeightTimeOfDay weightTimeOfDay,  WeightUnit weightUnit,  double? startingWeight,  int? calorieGoal,  double? weightGoal,  ThemeMode themeMode,  bool expandNutritionByDefault,  Map<MealOfTheDay, List<UsualMeal>> usuals)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserSettingsState() when $default != null:
-return $default(_that.reminderStyle,_that.mealCheckinScheduleMode,_that.mealReminders,_that.endOfDayReminder,_that.weightCheckinFrequency,_that.weightTimeOfDay,_that.weightUnit,_that.startingWeight,_that.calorieGoal,_that.weightGoal,_that.themeMode,_that.expandNutritionByDefault,_that.usuals);case _:
+return $default(_that.version,_that.reminderStyle,_that.mealCheckinScheduleMode,_that.mealReminders,_that.endOfDayReminder,_that.weightCheckinFrequency,_that.weightTimeOfDay,_that.weightUnit,_that.startingWeight,_that.calorieGoal,_that.weightGoal,_that.themeMode,_that.expandNutritionByDefault,_that.usuals);case _:
   return orElse();
 
 }
@@ -1703,10 +1707,10 @@ return $default(_that.reminderStyle,_that.mealCheckinScheduleMode,_that.mealRemi
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( ReminderStyle reminderStyle,  MealCheckinScheduleMode mealCheckinScheduleMode,  Map<MealOfTheDay, MealReminder> mealReminders,  MealReminder endOfDayReminder,  WeightCheckinFrequency weightCheckinFrequency,  WeightTimeOfDay weightTimeOfDay,  WeightUnit weightUnit,  double? startingWeight,  int? calorieGoal,  double? weightGoal,  ThemeMode themeMode,  bool expandNutritionByDefault,  Map<MealOfTheDay, List<UsualMeal>> usuals)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int version,  ReminderStyle reminderStyle,  MealCheckinScheduleMode mealCheckinScheduleMode,  Map<MealOfTheDay, MealReminder> mealReminders,  MealReminder endOfDayReminder,  WeightCheckinFrequency weightCheckinFrequency,  WeightTimeOfDay weightTimeOfDay,  WeightUnit weightUnit,  double? startingWeight,  int? calorieGoal,  double? weightGoal,  ThemeMode themeMode,  bool expandNutritionByDefault,  Map<MealOfTheDay, List<UsualMeal>> usuals)  $default,) {final _that = this;
 switch (_that) {
 case _UserSettingsState():
-return $default(_that.reminderStyle,_that.mealCheckinScheduleMode,_that.mealReminders,_that.endOfDayReminder,_that.weightCheckinFrequency,_that.weightTimeOfDay,_that.weightUnit,_that.startingWeight,_that.calorieGoal,_that.weightGoal,_that.themeMode,_that.expandNutritionByDefault,_that.usuals);case _:
+return $default(_that.version,_that.reminderStyle,_that.mealCheckinScheduleMode,_that.mealReminders,_that.endOfDayReminder,_that.weightCheckinFrequency,_that.weightTimeOfDay,_that.weightUnit,_that.startingWeight,_that.calorieGoal,_that.weightGoal,_that.themeMode,_that.expandNutritionByDefault,_that.usuals);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1723,10 +1727,10 @@ return $default(_that.reminderStyle,_that.mealCheckinScheduleMode,_that.mealRemi
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( ReminderStyle reminderStyle,  MealCheckinScheduleMode mealCheckinScheduleMode,  Map<MealOfTheDay, MealReminder> mealReminders,  MealReminder endOfDayReminder,  WeightCheckinFrequency weightCheckinFrequency,  WeightTimeOfDay weightTimeOfDay,  WeightUnit weightUnit,  double? startingWeight,  int? calorieGoal,  double? weightGoal,  ThemeMode themeMode,  bool expandNutritionByDefault,  Map<MealOfTheDay, List<UsualMeal>> usuals)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int version,  ReminderStyle reminderStyle,  MealCheckinScheduleMode mealCheckinScheduleMode,  Map<MealOfTheDay, MealReminder> mealReminders,  MealReminder endOfDayReminder,  WeightCheckinFrequency weightCheckinFrequency,  WeightTimeOfDay weightTimeOfDay,  WeightUnit weightUnit,  double? startingWeight,  int? calorieGoal,  double? weightGoal,  ThemeMode themeMode,  bool expandNutritionByDefault,  Map<MealOfTheDay, List<UsualMeal>> usuals)?  $default,) {final _that = this;
 switch (_that) {
 case _UserSettingsState() when $default != null:
-return $default(_that.reminderStyle,_that.mealCheckinScheduleMode,_that.mealReminders,_that.endOfDayReminder,_that.weightCheckinFrequency,_that.weightTimeOfDay,_that.weightUnit,_that.startingWeight,_that.calorieGoal,_that.weightGoal,_that.themeMode,_that.expandNutritionByDefault,_that.usuals);case _:
+return $default(_that.version,_that.reminderStyle,_that.mealCheckinScheduleMode,_that.mealReminders,_that.endOfDayReminder,_that.weightCheckinFrequency,_that.weightTimeOfDay,_that.weightUnit,_that.startingWeight,_that.calorieGoal,_that.weightGoal,_that.themeMode,_that.expandNutritionByDefault,_that.usuals);case _:
   return null;
 
 }
@@ -1738,9 +1742,13 @@ return $default(_that.reminderStyle,_that.mealCheckinScheduleMode,_that.mealRemi
 
 @JsonSerializable(explicitToJson: true)
 class _UserSettingsState extends UserSettingsState {
-  const _UserSettingsState({this.reminderStyle = ReminderStyle.notifications, this.mealCheckinScheduleMode = MealCheckinScheduleMode.perMeal, final  Map<MealOfTheDay, MealReminder> mealReminders = const {MealOfTheDay.breakfast : MealReminder(enabled: true, timeOfDay: TimeOfDay(hour: 9, minute: 0)), MealOfTheDay.lunch : MealReminder(enabled: true, timeOfDay: TimeOfDay(hour: 14, minute: 0)), MealOfTheDay.dinner : MealReminder(enabled: true, timeOfDay: TimeOfDay(hour: 19, minute: 30)), MealOfTheDay.snacks : MealReminder(enabled: false, timeOfDay: TimeOfDay(hour: 15, minute: 0))}, this.endOfDayReminder = const MealReminder(enabled: true, timeOfDay: TimeOfDay(hour: 20, minute: 0)), this.weightCheckinFrequency = WeightCheckinFrequency.daily, this.weightTimeOfDay = WeightTimeOfDay.morning, this.weightUnit = WeightUnit.lb, this.startingWeight, this.calorieGoal, this.weightGoal, this.themeMode = ThemeMode.system, this.expandNutritionByDefault = false, final  Map<MealOfTheDay, List<UsualMeal>> usuals = const <MealOfTheDay, List<UsualMeal>>{}}): _mealReminders = mealReminders,_usuals = usuals,super._();
+  const _UserSettingsState({this.version = 1, this.reminderStyle = ReminderStyle.notifications, this.mealCheckinScheduleMode = MealCheckinScheduleMode.perMeal, final  Map<MealOfTheDay, MealReminder> mealReminders = const {MealOfTheDay.breakfast : MealReminder(enabled: true, timeOfDay: TimeOfDay(hour: 9, minute: 0)), MealOfTheDay.lunch : MealReminder(enabled: true, timeOfDay: TimeOfDay(hour: 14, minute: 0)), MealOfTheDay.dinner : MealReminder(enabled: true, timeOfDay: TimeOfDay(hour: 19, minute: 30)), MealOfTheDay.snacks : MealReminder(enabled: false, timeOfDay: TimeOfDay(hour: 15, minute: 0))}, this.endOfDayReminder = const MealReminder(enabled: true, timeOfDay: TimeOfDay(hour: 20, minute: 0)), this.weightCheckinFrequency = WeightCheckinFrequency.daily, this.weightTimeOfDay = WeightTimeOfDay.morning, this.weightUnit = WeightUnit.lb, this.startingWeight, this.calorieGoal, this.weightGoal, this.themeMode = ThemeMode.system, this.expandNutritionByDefault = false, final  Map<MealOfTheDay, List<UsualMeal>> usuals = const <MealOfTheDay, List<UsualMeal>>{}}): _mealReminders = mealReminders,_usuals = usuals,super._();
   factory _UserSettingsState.fromJson(Map<String, dynamic> json) => _$UserSettingsStateFromJson(json);
 
+/// Schema version of the persisted state. Bump it and add a `fromJson`
+/// case whenever the persisted shape changes in a way old stored data
+/// can't be read as-is, so existing users are migrated instead of reset.
+@override@JsonKey() final  int version;
 /// How the app checks in about meals.
 @override@JsonKey() final  ReminderStyle reminderStyle;
 /// Whether meal check-ins happen per meal or once at the end of the day.
@@ -1802,16 +1810,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserSettingsState&&(identical(other.reminderStyle, reminderStyle) || other.reminderStyle == reminderStyle)&&(identical(other.mealCheckinScheduleMode, mealCheckinScheduleMode) || other.mealCheckinScheduleMode == mealCheckinScheduleMode)&&const DeepCollectionEquality().equals(other._mealReminders, _mealReminders)&&(identical(other.endOfDayReminder, endOfDayReminder) || other.endOfDayReminder == endOfDayReminder)&&(identical(other.weightCheckinFrequency, weightCheckinFrequency) || other.weightCheckinFrequency == weightCheckinFrequency)&&(identical(other.weightTimeOfDay, weightTimeOfDay) || other.weightTimeOfDay == weightTimeOfDay)&&(identical(other.weightUnit, weightUnit) || other.weightUnit == weightUnit)&&(identical(other.startingWeight, startingWeight) || other.startingWeight == startingWeight)&&(identical(other.calorieGoal, calorieGoal) || other.calorieGoal == calorieGoal)&&(identical(other.weightGoal, weightGoal) || other.weightGoal == weightGoal)&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.expandNutritionByDefault, expandNutritionByDefault) || other.expandNutritionByDefault == expandNutritionByDefault)&&const DeepCollectionEquality().equals(other._usuals, _usuals));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserSettingsState&&(identical(other.version, version) || other.version == version)&&(identical(other.reminderStyle, reminderStyle) || other.reminderStyle == reminderStyle)&&(identical(other.mealCheckinScheduleMode, mealCheckinScheduleMode) || other.mealCheckinScheduleMode == mealCheckinScheduleMode)&&const DeepCollectionEquality().equals(other._mealReminders, _mealReminders)&&(identical(other.endOfDayReminder, endOfDayReminder) || other.endOfDayReminder == endOfDayReminder)&&(identical(other.weightCheckinFrequency, weightCheckinFrequency) || other.weightCheckinFrequency == weightCheckinFrequency)&&(identical(other.weightTimeOfDay, weightTimeOfDay) || other.weightTimeOfDay == weightTimeOfDay)&&(identical(other.weightUnit, weightUnit) || other.weightUnit == weightUnit)&&(identical(other.startingWeight, startingWeight) || other.startingWeight == startingWeight)&&(identical(other.calorieGoal, calorieGoal) || other.calorieGoal == calorieGoal)&&(identical(other.weightGoal, weightGoal) || other.weightGoal == weightGoal)&&(identical(other.themeMode, themeMode) || other.themeMode == themeMode)&&(identical(other.expandNutritionByDefault, expandNutritionByDefault) || other.expandNutritionByDefault == expandNutritionByDefault)&&const DeepCollectionEquality().equals(other._usuals, _usuals));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,reminderStyle,mealCheckinScheduleMode,const DeepCollectionEquality().hash(_mealReminders),endOfDayReminder,weightCheckinFrequency,weightTimeOfDay,weightUnit,startingWeight,calorieGoal,weightGoal,themeMode,expandNutritionByDefault,const DeepCollectionEquality().hash(_usuals));
+int get hashCode => Object.hash(runtimeType,version,reminderStyle,mealCheckinScheduleMode,const DeepCollectionEquality().hash(_mealReminders),endOfDayReminder,weightCheckinFrequency,weightTimeOfDay,weightUnit,startingWeight,calorieGoal,weightGoal,themeMode,expandNutritionByDefault,const DeepCollectionEquality().hash(_usuals));
 
 @override
 String toString() {
-  return 'UserSettingsState(reminderStyle: $reminderStyle, mealCheckinScheduleMode: $mealCheckinScheduleMode, mealReminders: $mealReminders, endOfDayReminder: $endOfDayReminder, weightCheckinFrequency: $weightCheckinFrequency, weightTimeOfDay: $weightTimeOfDay, weightUnit: $weightUnit, startingWeight: $startingWeight, calorieGoal: $calorieGoal, weightGoal: $weightGoal, themeMode: $themeMode, expandNutritionByDefault: $expandNutritionByDefault, usuals: $usuals)';
+  return 'UserSettingsState(version: $version, reminderStyle: $reminderStyle, mealCheckinScheduleMode: $mealCheckinScheduleMode, mealReminders: $mealReminders, endOfDayReminder: $endOfDayReminder, weightCheckinFrequency: $weightCheckinFrequency, weightTimeOfDay: $weightTimeOfDay, weightUnit: $weightUnit, startingWeight: $startingWeight, calorieGoal: $calorieGoal, weightGoal: $weightGoal, themeMode: $themeMode, expandNutritionByDefault: $expandNutritionByDefault, usuals: $usuals)';
 }
 
 
@@ -1822,7 +1830,7 @@ abstract mixin class _$UserSettingsStateCopyWith<$Res> implements $UserSettingsS
   factory _$UserSettingsStateCopyWith(_UserSettingsState value, $Res Function(_UserSettingsState) _then) = __$UserSettingsStateCopyWithImpl;
 @override @useResult
 $Res call({
- ReminderStyle reminderStyle, MealCheckinScheduleMode mealCheckinScheduleMode, Map<MealOfTheDay, MealReminder> mealReminders, MealReminder endOfDayReminder, WeightCheckinFrequency weightCheckinFrequency, WeightTimeOfDay weightTimeOfDay, WeightUnit weightUnit, double? startingWeight, int? calorieGoal, double? weightGoal, ThemeMode themeMode, bool expandNutritionByDefault, Map<MealOfTheDay, List<UsualMeal>> usuals
+ int version, ReminderStyle reminderStyle, MealCheckinScheduleMode mealCheckinScheduleMode, Map<MealOfTheDay, MealReminder> mealReminders, MealReminder endOfDayReminder, WeightCheckinFrequency weightCheckinFrequency, WeightTimeOfDay weightTimeOfDay, WeightUnit weightUnit, double? startingWeight, int? calorieGoal, double? weightGoal, ThemeMode themeMode, bool expandNutritionByDefault, Map<MealOfTheDay, List<UsualMeal>> usuals
 });
 
 
@@ -1839,9 +1847,10 @@ class __$UserSettingsStateCopyWithImpl<$Res>
 
 /// Create a copy of UserSettingsState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? reminderStyle = null,Object? mealCheckinScheduleMode = null,Object? mealReminders = null,Object? endOfDayReminder = null,Object? weightCheckinFrequency = null,Object? weightTimeOfDay = null,Object? weightUnit = null,Object? startingWeight = freezed,Object? calorieGoal = freezed,Object? weightGoal = freezed,Object? themeMode = null,Object? expandNutritionByDefault = null,Object? usuals = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? version = null,Object? reminderStyle = null,Object? mealCheckinScheduleMode = null,Object? mealReminders = null,Object? endOfDayReminder = null,Object? weightCheckinFrequency = null,Object? weightTimeOfDay = null,Object? weightUnit = null,Object? startingWeight = freezed,Object? calorieGoal = freezed,Object? weightGoal = freezed,Object? themeMode = null,Object? expandNutritionByDefault = null,Object? usuals = null,}) {
   return _then(_UserSettingsState(
-reminderStyle: null == reminderStyle ? _self.reminderStyle : reminderStyle // ignore: cast_nullable_to_non_nullable
+version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as int,reminderStyle: null == reminderStyle ? _self.reminderStyle : reminderStyle // ignore: cast_nullable_to_non_nullable
 as ReminderStyle,mealCheckinScheduleMode: null == mealCheckinScheduleMode ? _self.mealCheckinScheduleMode : mealCheckinScheduleMode // ignore: cast_nullable_to_non_nullable
 as MealCheckinScheduleMode,mealReminders: null == mealReminders ? _self._mealReminders : mealReminders // ignore: cast_nullable_to_non_nullable
 as Map<MealOfTheDay, MealReminder>,endOfDayReminder: null == endOfDayReminder ? _self.endOfDayReminder : endOfDayReminder // ignore: cast_nullable_to_non_nullable

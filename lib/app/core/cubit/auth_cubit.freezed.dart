@@ -15,7 +15,10 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AuthState implements DiagnosticableTreeMixin {
 
- String? get user; String? get token;
+/// Schema version of the persisted state. Bump it and add a `fromJson`
+/// case whenever the persisted shape changes in a way old stored data
+/// can't be read as-is, so existing users are migrated instead of reset.
+ int get version; String? get user; String? get token;
 /// Create a copy of AuthState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,21 +32,21 @@ $AuthStateCopyWith<AuthState> get copyWith => _$AuthStateCopyWithImpl<AuthState>
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'AuthState'))
-    ..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('token', token));
+    ..add(DiagnosticsProperty('version', version))..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('token', token));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AuthState&&(identical(other.user, user) || other.user == user)&&(identical(other.token, token) || other.token == token));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AuthState&&(identical(other.version, version) || other.version == version)&&(identical(other.user, user) || other.user == user)&&(identical(other.token, token) || other.token == token));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,user,token);
+int get hashCode => Object.hash(runtimeType,version,user,token);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'AuthState(user: $user, token: $token)';
+  return 'AuthState(version: $version, user: $user, token: $token)';
 }
 
 
@@ -54,7 +57,7 @@ abstract mixin class $AuthStateCopyWith<$Res>  {
   factory $AuthStateCopyWith(AuthState value, $Res Function(AuthState) _then) = _$AuthStateCopyWithImpl;
 @useResult
 $Res call({
- String? user, String? token
+ int version, String? user, String? token
 });
 
 
@@ -71,9 +74,10 @@ class _$AuthStateCopyWithImpl<$Res>
 
 /// Create a copy of AuthState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? user = freezed,Object? token = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? version = null,Object? user = freezed,Object? token = freezed,}) {
   return _then(_self.copyWith(
-user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
+version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as int,user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as String?,token: freezed == token ? _self.token : token // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
@@ -160,10 +164,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? user,  String? token)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int version,  String? user,  String? token)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AuthState() when $default != null:
-return $default(_that.user,_that.token);case _:
+return $default(_that.version,_that.user,_that.token);case _:
   return orElse();
 
 }
@@ -181,10 +185,10 @@ return $default(_that.user,_that.token);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? user,  String? token)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int version,  String? user,  String? token)  $default,) {final _that = this;
 switch (_that) {
 case _AuthState():
-return $default(_that.user,_that.token);case _:
+return $default(_that.version,_that.user,_that.token);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -201,10 +205,10 @@ return $default(_that.user,_that.token);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? user,  String? token)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int version,  String? user,  String? token)?  $default,) {final _that = this;
 switch (_that) {
 case _AuthState() when $default != null:
-return $default(_that.user,_that.token);case _:
+return $default(_that.version,_that.user,_that.token);case _:
   return null;
 
 }
@@ -216,9 +220,13 @@ return $default(_that.user,_that.token);case _:
 @JsonSerializable()
 
 class _AuthState extends AuthState with DiagnosticableTreeMixin {
-  const _AuthState({this.user, this.token}): super._();
+  const _AuthState({this.version = 1, this.user, this.token}): super._();
   factory _AuthState.fromJson(Map<String, dynamic> json) => _$AuthStateFromJson(json);
 
+/// Schema version of the persisted state. Bump it and add a `fromJson`
+/// case whenever the persisted shape changes in a way old stored data
+/// can't be read as-is, so existing users are migrated instead of reset.
+@override@JsonKey() final  int version;
 @override final  String? user;
 @override final  String? token;
 
@@ -236,21 +244,21 @@ Map<String, dynamic> toJson() {
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'AuthState'))
-    ..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('token', token));
+    ..add(DiagnosticsProperty('version', version))..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('token', token));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AuthState&&(identical(other.user, user) || other.user == user)&&(identical(other.token, token) || other.token == token));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AuthState&&(identical(other.version, version) || other.version == version)&&(identical(other.user, user) || other.user == user)&&(identical(other.token, token) || other.token == token));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,user,token);
+int get hashCode => Object.hash(runtimeType,version,user,token);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'AuthState(user: $user, token: $token)';
+  return 'AuthState(version: $version, user: $user, token: $token)';
 }
 
 
@@ -261,7 +269,7 @@ abstract mixin class _$AuthStateCopyWith<$Res> implements $AuthStateCopyWith<$Re
   factory _$AuthStateCopyWith(_AuthState value, $Res Function(_AuthState) _then) = __$AuthStateCopyWithImpl;
 @override @useResult
 $Res call({
- String? user, String? token
+ int version, String? user, String? token
 });
 
 
@@ -278,9 +286,10 @@ class __$AuthStateCopyWithImpl<$Res>
 
 /// Create a copy of AuthState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? user = freezed,Object? token = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? version = null,Object? user = freezed,Object? token = freezed,}) {
   return _then(_AuthState(
-user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
+version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as int,user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as String?,token: freezed == token ? _self.token : token // ignore: cast_nullable_to_non_nullable
 as String?,
   ));

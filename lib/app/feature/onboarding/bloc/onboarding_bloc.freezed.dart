@@ -1664,7 +1664,10 @@ $NutritionCopyWith<$Res> get nutrition {
 /// @nodoc
 mixin _$OnboardingState {
 
-/// Position within [activeSteps], not a raw [OnboardingStep] index.
+/// Schema version of the persisted state. Bump it and add a `fromJson`
+/// case whenever the persisted shape changes in a way old stored data
+/// can't be read as-is, so existing users are migrated instead of reset.
+ int get version;/// Position within [activeSteps], not a raw [OnboardingStep] index.
  int get activeStepIndex;/// Draft of the user's settings and usuals, committed to
 /// [UserSettingsBloc] when onboarding completes.
  UserSettingsState get settings; List<String> get firstLogSelectedIds;/// How many of each selected first-log item the user had, keyed by usual
@@ -1682,16 +1685,16 @@ $OnboardingStateCopyWith<OnboardingState> get copyWith => _$OnboardingStateCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OnboardingState&&(identical(other.activeStepIndex, activeStepIndex) || other.activeStepIndex == activeStepIndex)&&(identical(other.settings, settings) || other.settings == settings)&&const DeepCollectionEquality().equals(other.firstLogSelectedIds, firstLogSelectedIds)&&const DeepCollectionEquality().equals(other.firstLogQuantities, firstLogQuantities));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OnboardingState&&(identical(other.version, version) || other.version == version)&&(identical(other.activeStepIndex, activeStepIndex) || other.activeStepIndex == activeStepIndex)&&(identical(other.settings, settings) || other.settings == settings)&&const DeepCollectionEquality().equals(other.firstLogSelectedIds, firstLogSelectedIds)&&const DeepCollectionEquality().equals(other.firstLogQuantities, firstLogQuantities));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,activeStepIndex,settings,const DeepCollectionEquality().hash(firstLogSelectedIds),const DeepCollectionEquality().hash(firstLogQuantities));
+int get hashCode => Object.hash(runtimeType,version,activeStepIndex,settings,const DeepCollectionEquality().hash(firstLogSelectedIds),const DeepCollectionEquality().hash(firstLogQuantities));
 
 @override
 String toString() {
-  return 'OnboardingState(activeStepIndex: $activeStepIndex, settings: $settings, firstLogSelectedIds: $firstLogSelectedIds, firstLogQuantities: $firstLogQuantities)';
+  return 'OnboardingState(version: $version, activeStepIndex: $activeStepIndex, settings: $settings, firstLogSelectedIds: $firstLogSelectedIds, firstLogQuantities: $firstLogQuantities)';
 }
 
 
@@ -1702,7 +1705,7 @@ abstract mixin class $OnboardingStateCopyWith<$Res>  {
   factory $OnboardingStateCopyWith(OnboardingState value, $Res Function(OnboardingState) _then) = _$OnboardingStateCopyWithImpl;
 @useResult
 $Res call({
- int activeStepIndex, UserSettingsState settings, List<String> firstLogSelectedIds, Map<String, int> firstLogQuantities
+ int version, int activeStepIndex, UserSettingsState settings, List<String> firstLogSelectedIds, Map<String, int> firstLogQuantities
 });
 
 
@@ -1719,9 +1722,10 @@ class _$OnboardingStateCopyWithImpl<$Res>
 
 /// Create a copy of OnboardingState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? activeStepIndex = null,Object? settings = null,Object? firstLogSelectedIds = null,Object? firstLogQuantities = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? version = null,Object? activeStepIndex = null,Object? settings = null,Object? firstLogSelectedIds = null,Object? firstLogQuantities = null,}) {
   return _then(_self.copyWith(
-activeStepIndex: null == activeStepIndex ? _self.activeStepIndex : activeStepIndex // ignore: cast_nullable_to_non_nullable
+version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as int,activeStepIndex: null == activeStepIndex ? _self.activeStepIndex : activeStepIndex // ignore: cast_nullable_to_non_nullable
 as int,settings: null == settings ? _self.settings : settings // ignore: cast_nullable_to_non_nullable
 as UserSettingsState,firstLogSelectedIds: null == firstLogSelectedIds ? _self.firstLogSelectedIds : firstLogSelectedIds // ignore: cast_nullable_to_non_nullable
 as List<String>,firstLogQuantities: null == firstLogQuantities ? _self.firstLogQuantities : firstLogQuantities // ignore: cast_nullable_to_non_nullable
@@ -1819,10 +1823,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int activeStepIndex,  UserSettingsState settings,  List<String> firstLogSelectedIds,  Map<String, int> firstLogQuantities)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int version,  int activeStepIndex,  UserSettingsState settings,  List<String> firstLogSelectedIds,  Map<String, int> firstLogQuantities)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _OnboardingState() when $default != null:
-return $default(_that.activeStepIndex,_that.settings,_that.firstLogSelectedIds,_that.firstLogQuantities);case _:
+return $default(_that.version,_that.activeStepIndex,_that.settings,_that.firstLogSelectedIds,_that.firstLogQuantities);case _:
   return orElse();
 
 }
@@ -1840,10 +1844,10 @@ return $default(_that.activeStepIndex,_that.settings,_that.firstLogSelectedIds,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int activeStepIndex,  UserSettingsState settings,  List<String> firstLogSelectedIds,  Map<String, int> firstLogQuantities)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int version,  int activeStepIndex,  UserSettingsState settings,  List<String> firstLogSelectedIds,  Map<String, int> firstLogQuantities)  $default,) {final _that = this;
 switch (_that) {
 case _OnboardingState():
-return $default(_that.activeStepIndex,_that.settings,_that.firstLogSelectedIds,_that.firstLogQuantities);case _:
+return $default(_that.version,_that.activeStepIndex,_that.settings,_that.firstLogSelectedIds,_that.firstLogQuantities);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1860,10 +1864,10 @@ return $default(_that.activeStepIndex,_that.settings,_that.firstLogSelectedIds,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int activeStepIndex,  UserSettingsState settings,  List<String> firstLogSelectedIds,  Map<String, int> firstLogQuantities)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int version,  int activeStepIndex,  UserSettingsState settings,  List<String> firstLogSelectedIds,  Map<String, int> firstLogQuantities)?  $default,) {final _that = this;
 switch (_that) {
 case _OnboardingState() when $default != null:
-return $default(_that.activeStepIndex,_that.settings,_that.firstLogSelectedIds,_that.firstLogQuantities);case _:
+return $default(_that.version,_that.activeStepIndex,_that.settings,_that.firstLogSelectedIds,_that.firstLogQuantities);case _:
   return null;
 
 }
@@ -1875,9 +1879,13 @@ return $default(_that.activeStepIndex,_that.settings,_that.firstLogSelectedIds,_
 
 @JsonSerializable(explicitToJson: true)
 class _OnboardingState extends OnboardingState {
-  const _OnboardingState({this.activeStepIndex = 0, this.settings = const UserSettingsState(), final  List<String> firstLogSelectedIds = const <String>[], final  Map<String, int> firstLogQuantities = const <String, int>{}}): _firstLogSelectedIds = firstLogSelectedIds,_firstLogQuantities = firstLogQuantities,super._();
+  const _OnboardingState({this.version = 1, this.activeStepIndex = 0, this.settings = const UserSettingsState(), final  List<String> firstLogSelectedIds = const <String>[], final  Map<String, int> firstLogQuantities = const <String, int>{}}): _firstLogSelectedIds = firstLogSelectedIds,_firstLogQuantities = firstLogQuantities,super._();
   factory _OnboardingState.fromJson(Map<String, dynamic> json) => _$OnboardingStateFromJson(json);
 
+/// Schema version of the persisted state. Bump it and add a `fromJson`
+/// case whenever the persisted shape changes in a way old stored data
+/// can't be read as-is, so existing users are migrated instead of reset.
+@override@JsonKey() final  int version;
 /// Position within [activeSteps], not a raw [OnboardingStep] index.
 @override@JsonKey() final  int activeStepIndex;
 /// Draft of the user's settings and usuals, committed to
@@ -1915,16 +1923,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OnboardingState&&(identical(other.activeStepIndex, activeStepIndex) || other.activeStepIndex == activeStepIndex)&&(identical(other.settings, settings) || other.settings == settings)&&const DeepCollectionEquality().equals(other._firstLogSelectedIds, _firstLogSelectedIds)&&const DeepCollectionEquality().equals(other._firstLogQuantities, _firstLogQuantities));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OnboardingState&&(identical(other.version, version) || other.version == version)&&(identical(other.activeStepIndex, activeStepIndex) || other.activeStepIndex == activeStepIndex)&&(identical(other.settings, settings) || other.settings == settings)&&const DeepCollectionEquality().equals(other._firstLogSelectedIds, _firstLogSelectedIds)&&const DeepCollectionEquality().equals(other._firstLogQuantities, _firstLogQuantities));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,activeStepIndex,settings,const DeepCollectionEquality().hash(_firstLogSelectedIds),const DeepCollectionEquality().hash(_firstLogQuantities));
+int get hashCode => Object.hash(runtimeType,version,activeStepIndex,settings,const DeepCollectionEquality().hash(_firstLogSelectedIds),const DeepCollectionEquality().hash(_firstLogQuantities));
 
 @override
 String toString() {
-  return 'OnboardingState(activeStepIndex: $activeStepIndex, settings: $settings, firstLogSelectedIds: $firstLogSelectedIds, firstLogQuantities: $firstLogQuantities)';
+  return 'OnboardingState(version: $version, activeStepIndex: $activeStepIndex, settings: $settings, firstLogSelectedIds: $firstLogSelectedIds, firstLogQuantities: $firstLogQuantities)';
 }
 
 
@@ -1935,7 +1943,7 @@ abstract mixin class _$OnboardingStateCopyWith<$Res> implements $OnboardingState
   factory _$OnboardingStateCopyWith(_OnboardingState value, $Res Function(_OnboardingState) _then) = __$OnboardingStateCopyWithImpl;
 @override @useResult
 $Res call({
- int activeStepIndex, UserSettingsState settings, List<String> firstLogSelectedIds, Map<String, int> firstLogQuantities
+ int version, int activeStepIndex, UserSettingsState settings, List<String> firstLogSelectedIds, Map<String, int> firstLogQuantities
 });
 
 
@@ -1952,9 +1960,10 @@ class __$OnboardingStateCopyWithImpl<$Res>
 
 /// Create a copy of OnboardingState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? activeStepIndex = null,Object? settings = null,Object? firstLogSelectedIds = null,Object? firstLogQuantities = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? version = null,Object? activeStepIndex = null,Object? settings = null,Object? firstLogSelectedIds = null,Object? firstLogQuantities = null,}) {
   return _then(_OnboardingState(
-activeStepIndex: null == activeStepIndex ? _self.activeStepIndex : activeStepIndex // ignore: cast_nullable_to_non_nullable
+version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as int,activeStepIndex: null == activeStepIndex ? _self.activeStepIndex : activeStepIndex // ignore: cast_nullable_to_non_nullable
 as int,settings: null == settings ? _self.settings : settings // ignore: cast_nullable_to_non_nullable
 as UserSettingsState,firstLogSelectedIds: null == firstLogSelectedIds ? _self._firstLogSelectedIds : firstLogSelectedIds // ignore: cast_nullable_to_non_nullable
 as List<String>,firstLogQuantities: null == firstLogQuantities ? _self._firstLogQuantities : firstLogQuantities // ignore: cast_nullable_to_non_nullable

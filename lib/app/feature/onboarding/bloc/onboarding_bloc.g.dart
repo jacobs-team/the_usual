@@ -8,6 +8,7 @@ part of 'onboarding_bloc.dart';
 
 _OnboardingState _$OnboardingStateFromJson(Map<String, dynamic> json) =>
     _OnboardingState(
+      version: (json['version'] as num?)?.toInt() ?? 1,
       activeStepIndex: (json['activeStepIndex'] as num?)?.toInt() ?? 0,
       settings: json['settings'] == null
           ? const UserSettingsState()
@@ -28,6 +29,7 @@ _OnboardingState _$OnboardingStateFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$OnboardingStateToJson(_OnboardingState instance) =>
     <String, dynamic>{
+      'version': instance.version,
       'activeStepIndex': instance.activeStepIndex,
       'settings': instance.settings.toJson(),
       'firstLogSelectedIds': instance.firstLogSelectedIds,

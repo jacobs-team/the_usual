@@ -8,6 +8,7 @@ part of 'daily_log_bloc.dart';
 
 _DailyLogState _$DailyLogStateFromJson(Map<String, dynamic> json) =>
     _DailyLogState(
+      version: (json['version'] as num?)?.toInt() ?? 1,
       mealEntries:
           (json['mealEntries'] as List<dynamic>?)
               ?.map((e) => MealLogEntry.fromJson(e as Map<String, dynamic>))
@@ -22,6 +23,7 @@ _DailyLogState _$DailyLogStateFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$DailyLogStateToJson(_DailyLogState instance) =>
     <String, dynamic>{
+      'version': instance.version,
       'mealEntries': instance.mealEntries.map((e) => e.toJson()).toList(),
       'weightEntries': instance.weightEntries.map((e) => e.toJson()).toList(),
     };

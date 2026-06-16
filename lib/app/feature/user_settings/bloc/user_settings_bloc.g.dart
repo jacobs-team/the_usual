@@ -9,6 +9,7 @@ part of 'user_settings_bloc.dart';
 _UserSettingsState _$UserSettingsStateFromJson(
   Map<String, dynamic> json,
 ) => _UserSettingsState(
+  version: (json['version'] as num?)?.toInt() ?? 1,
   reminderStyle:
       $enumDecodeNullable(_$ReminderStyleEnumMap, json['reminderStyle']) ??
       ReminderStyle.notifications,
@@ -83,6 +84,7 @@ _UserSettingsState _$UserSettingsStateFromJson(
 Map<String, dynamic> _$UserSettingsStateToJson(
   _UserSettingsState instance,
 ) => <String, dynamic>{
+  'version': instance.version,
   'reminderStyle': _$ReminderStyleEnumMap[instance.reminderStyle]!,
   'mealCheckinScheduleMode':
       _$MealCheckinScheduleModeEnumMap[instance.mealCheckinScheduleMode]!,

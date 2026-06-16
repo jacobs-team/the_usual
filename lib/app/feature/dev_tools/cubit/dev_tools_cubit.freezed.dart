@@ -15,7 +15,10 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$DevToolsState {
 
- bool get isApiDebug;
+/// Schema version of the persisted state. Bump it and add a `fromJson`
+/// case whenever the persisted shape changes in a way old stored data
+/// can't be read as-is, so existing users are migrated instead of reset.
+ int get version; bool get isApiDebug;
 /// Create a copy of DevToolsState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +31,16 @@ $DevToolsStateCopyWith<DevToolsState> get copyWith => _$DevToolsStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DevToolsState&&(identical(other.isApiDebug, isApiDebug) || other.isApiDebug == isApiDebug));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DevToolsState&&(identical(other.version, version) || other.version == version)&&(identical(other.isApiDebug, isApiDebug) || other.isApiDebug == isApiDebug));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,isApiDebug);
+int get hashCode => Object.hash(runtimeType,version,isApiDebug);
 
 @override
 String toString() {
-  return 'DevToolsState(isApiDebug: $isApiDebug)';
+  return 'DevToolsState(version: $version, isApiDebug: $isApiDebug)';
 }
 
 
@@ -48,7 +51,7 @@ abstract mixin class $DevToolsStateCopyWith<$Res>  {
   factory $DevToolsStateCopyWith(DevToolsState value, $Res Function(DevToolsState) _then) = _$DevToolsStateCopyWithImpl;
 @useResult
 $Res call({
- bool isApiDebug
+ int version, bool isApiDebug
 });
 
 
@@ -65,9 +68,10 @@ class _$DevToolsStateCopyWithImpl<$Res>
 
 /// Create a copy of DevToolsState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isApiDebug = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? version = null,Object? isApiDebug = null,}) {
   return _then(_self.copyWith(
-isApiDebug: null == isApiDebug ? _self.isApiDebug : isApiDebug // ignore: cast_nullable_to_non_nullable
+version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as int,isApiDebug: null == isApiDebug ? _self.isApiDebug : isApiDebug // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -153,10 +157,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isApiDebug)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int version,  bool isApiDebug)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DevToolsState() when $default != null:
-return $default(_that.isApiDebug);case _:
+return $default(_that.version,_that.isApiDebug);case _:
   return orElse();
 
 }
@@ -174,10 +178,10 @@ return $default(_that.isApiDebug);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isApiDebug)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int version,  bool isApiDebug)  $default,) {final _that = this;
 switch (_that) {
 case _DevToolsState():
-return $default(_that.isApiDebug);case _:
+return $default(_that.version,_that.isApiDebug);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -194,10 +198,10 @@ return $default(_that.isApiDebug);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isApiDebug)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int version,  bool isApiDebug)?  $default,) {final _that = this;
 switch (_that) {
 case _DevToolsState() when $default != null:
-return $default(_that.isApiDebug);case _:
+return $default(_that.version,_that.isApiDebug);case _:
   return null;
 
 }
@@ -209,9 +213,13 @@ return $default(_that.isApiDebug);case _:
 @JsonSerializable()
 
 class _DevToolsState extends DevToolsState {
-  const _DevToolsState({this.isApiDebug = true}): super._();
+  const _DevToolsState({this.version = 1, this.isApiDebug = true}): super._();
   factory _DevToolsState.fromJson(Map<String, dynamic> json) => _$DevToolsStateFromJson(json);
 
+/// Schema version of the persisted state. Bump it and add a `fromJson`
+/// case whenever the persisted shape changes in a way old stored data
+/// can't be read as-is, so existing users are migrated instead of reset.
+@override@JsonKey() final  int version;
 @override@JsonKey() final  bool isApiDebug;
 
 /// Create a copy of DevToolsState
@@ -227,16 +235,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DevToolsState&&(identical(other.isApiDebug, isApiDebug) || other.isApiDebug == isApiDebug));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DevToolsState&&(identical(other.version, version) || other.version == version)&&(identical(other.isApiDebug, isApiDebug) || other.isApiDebug == isApiDebug));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,isApiDebug);
+int get hashCode => Object.hash(runtimeType,version,isApiDebug);
 
 @override
 String toString() {
-  return 'DevToolsState(isApiDebug: $isApiDebug)';
+  return 'DevToolsState(version: $version, isApiDebug: $isApiDebug)';
 }
 
 
@@ -247,7 +255,7 @@ abstract mixin class _$DevToolsStateCopyWith<$Res> implements $DevToolsStateCopy
   factory _$DevToolsStateCopyWith(_DevToolsState value, $Res Function(_DevToolsState) _then) = __$DevToolsStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool isApiDebug
+ int version, bool isApiDebug
 });
 
 
@@ -264,9 +272,10 @@ class __$DevToolsStateCopyWithImpl<$Res>
 
 /// Create a copy of DevToolsState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isApiDebug = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? version = null,Object? isApiDebug = null,}) {
   return _then(_DevToolsState(
-isApiDebug: null == isApiDebug ? _self.isApiDebug : isApiDebug // ignore: cast_nullable_to_non_nullable
+version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as int,isApiDebug: null == isApiDebug ? _self.isApiDebug : isApiDebug // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

@@ -745,7 +745,10 @@ String toString() {
 /// @nodoc
 mixin _$DailyLogState {
 
- List<MealLogEntry> get mealEntries; List<WeightEntry> get weightEntries;
+/// Schema version of the persisted state. Bump it and add a `fromJson`
+/// case whenever the persisted shape changes in a way old stored data
+/// can't be read as-is, so existing users are migrated instead of reset.
+ int get version; List<MealLogEntry> get mealEntries; List<WeightEntry> get weightEntries;
 /// Create a copy of DailyLogState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -758,16 +761,16 @@ $DailyLogStateCopyWith<DailyLogState> get copyWith => _$DailyLogStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DailyLogState&&const DeepCollectionEquality().equals(other.mealEntries, mealEntries)&&const DeepCollectionEquality().equals(other.weightEntries, weightEntries));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DailyLogState&&(identical(other.version, version) || other.version == version)&&const DeepCollectionEquality().equals(other.mealEntries, mealEntries)&&const DeepCollectionEquality().equals(other.weightEntries, weightEntries));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(mealEntries),const DeepCollectionEquality().hash(weightEntries));
+int get hashCode => Object.hash(runtimeType,version,const DeepCollectionEquality().hash(mealEntries),const DeepCollectionEquality().hash(weightEntries));
 
 @override
 String toString() {
-  return 'DailyLogState(mealEntries: $mealEntries, weightEntries: $weightEntries)';
+  return 'DailyLogState(version: $version, mealEntries: $mealEntries, weightEntries: $weightEntries)';
 }
 
 
@@ -778,7 +781,7 @@ abstract mixin class $DailyLogStateCopyWith<$Res>  {
   factory $DailyLogStateCopyWith(DailyLogState value, $Res Function(DailyLogState) _then) = _$DailyLogStateCopyWithImpl;
 @useResult
 $Res call({
- List<MealLogEntry> mealEntries, List<WeightEntry> weightEntries
+ int version, List<MealLogEntry> mealEntries, List<WeightEntry> weightEntries
 });
 
 
@@ -795,9 +798,10 @@ class _$DailyLogStateCopyWithImpl<$Res>
 
 /// Create a copy of DailyLogState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? mealEntries = null,Object? weightEntries = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? version = null,Object? mealEntries = null,Object? weightEntries = null,}) {
   return _then(_self.copyWith(
-mealEntries: null == mealEntries ? _self.mealEntries : mealEntries // ignore: cast_nullable_to_non_nullable
+version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as int,mealEntries: null == mealEntries ? _self.mealEntries : mealEntries // ignore: cast_nullable_to_non_nullable
 as List<MealLogEntry>,weightEntries: null == weightEntries ? _self.weightEntries : weightEntries // ignore: cast_nullable_to_non_nullable
 as List<WeightEntry>,
   ));
@@ -884,10 +888,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<MealLogEntry> mealEntries,  List<WeightEntry> weightEntries)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int version,  List<MealLogEntry> mealEntries,  List<WeightEntry> weightEntries)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DailyLogState() when $default != null:
-return $default(_that.mealEntries,_that.weightEntries);case _:
+return $default(_that.version,_that.mealEntries,_that.weightEntries);case _:
   return orElse();
 
 }
@@ -905,10 +909,10 @@ return $default(_that.mealEntries,_that.weightEntries);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<MealLogEntry> mealEntries,  List<WeightEntry> weightEntries)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int version,  List<MealLogEntry> mealEntries,  List<WeightEntry> weightEntries)  $default,) {final _that = this;
 switch (_that) {
 case _DailyLogState():
-return $default(_that.mealEntries,_that.weightEntries);case _:
+return $default(_that.version,_that.mealEntries,_that.weightEntries);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -925,10 +929,10 @@ return $default(_that.mealEntries,_that.weightEntries);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<MealLogEntry> mealEntries,  List<WeightEntry> weightEntries)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int version,  List<MealLogEntry> mealEntries,  List<WeightEntry> weightEntries)?  $default,) {final _that = this;
 switch (_that) {
 case _DailyLogState() when $default != null:
-return $default(_that.mealEntries,_that.weightEntries);case _:
+return $default(_that.version,_that.mealEntries,_that.weightEntries);case _:
   return null;
 
 }
@@ -940,9 +944,13 @@ return $default(_that.mealEntries,_that.weightEntries);case _:
 
 @JsonSerializable(explicitToJson: true)
 class _DailyLogState extends DailyLogState {
-  const _DailyLogState({final  List<MealLogEntry> mealEntries = const <MealLogEntry>[], final  List<WeightEntry> weightEntries = const <WeightEntry>[]}): _mealEntries = mealEntries,_weightEntries = weightEntries,super._();
+  const _DailyLogState({this.version = 1, final  List<MealLogEntry> mealEntries = const <MealLogEntry>[], final  List<WeightEntry> weightEntries = const <WeightEntry>[]}): _mealEntries = mealEntries,_weightEntries = weightEntries,super._();
   factory _DailyLogState.fromJson(Map<String, dynamic> json) => _$DailyLogStateFromJson(json);
 
+/// Schema version of the persisted state. Bump it and add a `fromJson`
+/// case whenever the persisted shape changes in a way old stored data
+/// can't be read as-is, so existing users are migrated instead of reset.
+@override@JsonKey() final  int version;
  final  List<MealLogEntry> _mealEntries;
 @override@JsonKey() List<MealLogEntry> get mealEntries {
   if (_mealEntries is EqualUnmodifiableListView) return _mealEntries;
@@ -971,16 +979,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DailyLogState&&const DeepCollectionEquality().equals(other._mealEntries, _mealEntries)&&const DeepCollectionEquality().equals(other._weightEntries, _weightEntries));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DailyLogState&&(identical(other.version, version) || other.version == version)&&const DeepCollectionEquality().equals(other._mealEntries, _mealEntries)&&const DeepCollectionEquality().equals(other._weightEntries, _weightEntries));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_mealEntries),const DeepCollectionEquality().hash(_weightEntries));
+int get hashCode => Object.hash(runtimeType,version,const DeepCollectionEquality().hash(_mealEntries),const DeepCollectionEquality().hash(_weightEntries));
 
 @override
 String toString() {
-  return 'DailyLogState(mealEntries: $mealEntries, weightEntries: $weightEntries)';
+  return 'DailyLogState(version: $version, mealEntries: $mealEntries, weightEntries: $weightEntries)';
 }
 
 
@@ -991,7 +999,7 @@ abstract mixin class _$DailyLogStateCopyWith<$Res> implements $DailyLogStateCopy
   factory _$DailyLogStateCopyWith(_DailyLogState value, $Res Function(_DailyLogState) _then) = __$DailyLogStateCopyWithImpl;
 @override @useResult
 $Res call({
- List<MealLogEntry> mealEntries, List<WeightEntry> weightEntries
+ int version, List<MealLogEntry> mealEntries, List<WeightEntry> weightEntries
 });
 
 
@@ -1008,9 +1016,10 @@ class __$DailyLogStateCopyWithImpl<$Res>
 
 /// Create a copy of DailyLogState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? mealEntries = null,Object? weightEntries = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? version = null,Object? mealEntries = null,Object? weightEntries = null,}) {
   return _then(_DailyLogState(
-mealEntries: null == mealEntries ? _self._mealEntries : mealEntries // ignore: cast_nullable_to_non_nullable
+version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
+as int,mealEntries: null == mealEntries ? _self._mealEntries : mealEntries // ignore: cast_nullable_to_non_nullable
 as List<MealLogEntry>,weightEntries: null == weightEntries ? _self._weightEntries : weightEntries // ignore: cast_nullable_to_non_nullable
 as List<WeightEntry>,
   ));

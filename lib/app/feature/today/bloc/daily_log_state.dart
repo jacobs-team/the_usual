@@ -26,14 +26,40 @@ abstract class DailyLogState with _$DailyLogState {
   /// {@macro daily_log_state}
   @JsonSerializable(explicitToJson: true)
   const factory DailyLogState({
+    /// Schema version of the persisted state. Bump it and add a `fromJson`
+    /// case whenever the persisted shape changes in a way old stored data
+    /// can't be read as-is, so existing users are migrated instead of reset.
+    @Default(1) int version,
     @Default(<MealLogEntry>[]) List<MealLogEntry> mealEntries,
     @Default(<WeightEntry>[]) List<WeightEntry> weightEntries,
   }) = _DailyLogState;
 
   const DailyLogState._();
 
+  /// The version written by the current app.
+  static const _currentVersion = 1;
+
   factory DailyLogState.fromJson(Map<String, dynamic> json) =>
-      _$DailyLogStateFromJson(json);
+      DailyLogState._fromVersionedJson(json);
+
+  factory DailyLogState._fromVersionedJson(Map<String, dynamic> json) {
+    final version = json['version'] as int? ?? 0;
+    switch (version) {
+      // No migrations yet. v0 is unversioned data written before this field
+      // existed; it has the current shape and reads straight through. When the
+      // shape changes, bump [_currentVersion] and add a case that migrates
+      // older versions up to the current one before this case.
+      case 0:
+      case _currentVersion:
+        return _$DailyLogStateFromJson(json);
+      default:
+        // A newer, unknown version, e.g. after the user downgrades the app.
+        // Read it with the current schema as a best effort rather than
+        // discarding the user's logged meals and weigh-ins: unknown keys are
+        // ignored and missing ones fall back to defaults.
+        return _$DailyLogStateFromJson(json);
+    }
+  }
 
   /// The weigh-in recorded on [day], or null when there isn't one.
   WeightEntry? weightOn(DateTime day) {
