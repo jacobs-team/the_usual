@@ -1,0 +1,147 @@
+<style>
+  :root{
+    --surface:#FAF9F5; --surface-low:#F4F4F0; --surface-lowest:#FFFFFF;
+    --container:#EEEDE9; --container-high:#E8E7E3; --container-highest:#E2E3DF;
+    --primary:#271310; --on-primary:#FAF9F5; --primary-container:#3E2723;
+    --on-surface:#1A1C1A; --variant:#504442; --outline-variant:#D3C3C0;
+    --secondary-container:#D3C3C0;
+  }
+  .stage{display:flex;gap:24px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
+  .pick{display:flex;flex-direction:column;align-items:center;cursor:pointer;border:2px solid transparent;border-radius:28px;padding:14px;transition:border-color .15s,transform .15s}
+  .pick:hover{transform:translateY(-3px)}
+  .pick.selected{border-color:var(--primary)}
+  .pick h3{margin:14px 0 4px;font-size:16px}
+  .pick p{margin:0;max-width:280px;text-align:center;color:var(--variant);font-size:13px;line-height:1.45}
+  .phone{width:300px;height:600px;background:var(--surface);border-radius:34px;border:10px solid #1A1C1A;overflow:hidden;font-family:'Manrope',system-ui,sans-serif;color:var(--on-surface);position:relative;box-shadow:0 18px 40px rgba(39,19,16,.18)}
+  .scr{padding:18px 16px;height:100%;box-sizing:border-box;overflow:hidden}
+  .ttl{text-align:center;font-weight:700;font-size:15px;margin:4px 0 14px}
+  .lbl{font-size:10px;letter-spacing:.12em;color:var(--variant);font-weight:700;text-transform:uppercase}
+  .muted{color:var(--variant)}
+  .row{display:flex;align-items:center}
+
+  /* shared day card */
+  .daycard{background:var(--surface-lowest);border-radius:16px;padding:12px 14px;margin-top:10px;box-shadow:0 1px 0 var(--outline-variant)}
+  .calbar{height:6px;border-radius:3px;background:var(--container-highest);overflow:hidden;margin-top:8px}
+  .calbar > i{display:block;height:100%;background:var(--primary)}
+  .macro{height:6px;border-radius:3px;overflow:hidden;display:flex;margin-top:6px}
+  .macro > .p{background:#5D4037}.macro > .f{background:#A89896}.macro > .c{background:#D3C3C0}
+
+  /* A: segmented chips */
+  .seg{display:flex;background:var(--container);border-radius:20px;padding:3px;gap:2px;margin-bottom:14px}
+  .seg > span{flex:1;text-align:center;font-size:11px;font-weight:700;padding:6px 0;border-radius:16px;color:var(--variant)}
+  .seg > span.on{background:var(--primary);color:var(--on-primary)}
+  .mhead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+  .mhead b{font-size:22px}
+
+  /* B: dashboard header */
+  .dash{background:var(--primary);color:var(--on-primary);border-radius:20px;padding:16px;margin-bottom:14px}
+  .dash .big{font-size:26px;font-weight:700;line-height:1}
+  .spark{height:46px;margin-top:12px;position:relative}
+  .stat{display:flex;gap:18px;margin-top:6px}
+  .stat div b{font-size:16px;font-weight:700}
+  .donut{width:54px;height:54px;border-radius:50%;background:conic-gradient(#D3C3C0 0 38%,#A89896 38% 60%,#FAF9F5 60% 100%);display:flex;align-items:center;justify-content:center}
+  .donut > span{width:34px;height:34px;border-radius:50%;background:var(--primary)}
+
+  /* C: timeline */
+  .tl{position:relative;padding-left:30px}
+  .tl::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:2px;background:var(--outline-variant)}
+  .node{position:relative;margin-bottom:14px}
+  .node::before{content:"";position:absolute;left:-26px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--primary);border:2px solid var(--surface)}
+  .wtag{display:inline-block;font-size:10px;font-weight:700;background:var(--secondary-container);color:var(--primary-container);padding:2px 8px;border-radius:10px}
+</style>
+
+<h2>Three directions for History</h2>
+<p class="subtitle">Same browsing model (pick a month, scan the days) — three takes on hierarchy and the light data viz. Pixel-rough; we're choosing a feel.</p>
+
+<div class="stage">
+
+  <!-- ===== A ===== -->
+  <div class="pick" data-choice="a" onclick="toggleSelect(this)">
+    <div class="phone"><div class="scr">
+      <div class="ttl">History</div>
+      <div class="seg"><span>APR</span><span>MAY</span><span class="on">JUN</span></div>
+      <div class="mhead"><div><span class="lbl">June avg / day</span><br><b>2604</b> <span class="muted">cal</span></div>
+        <div style="text-align:right"><span class="lbl">Weight</span><br><b style="font-size:16px">100 lb</b> <span class="muted" style="font-size:11px">▼2</span></div></div>
+      <div class="lbl" style="margin:10px 0 2px">JUNE 2026</div>
+
+      <div class="daycard">
+        <div class="row" style="justify-content:space-between"><b style="font-size:14px">Mon, Jun 15</b><span class="muted" style="font-size:12px">2604 · 100 lb</span></div>
+        <div class="calbar"><i style="width:92%"></i></div>
+        <div class="macro"><span class="p" style="width:42%"></span><span class="f" style="width:18%"></span><span class="c" style="width:40%"></span></div>
+      </div>
+      <div class="daycard">
+        <div class="row" style="justify-content:space-between"><b style="font-size:14px">Sun, Jun 14</b><span class="muted" style="font-size:12px">2310</span></div>
+        <div class="calbar"><i style="width:81%"></i></div>
+        <div class="macro"><span class="p" style="width:36%"></span><span class="f" style="width:22%"></span><span class="c" style="width:42%"></span></div>
+      </div>
+      <div class="daycard">
+        <div class="row" style="justify-content:space-between"><b style="font-size:14px">Sat, Jun 13</b><span class="muted" style="font-size:12px">2780 · 101 lb</span></div>
+        <div class="calbar"><i style="width:98%"></i></div>
+        <div class="macro"><span class="p" style="width:40%"></span><span class="f" style="width:25%"></span><span class="c" style="width:35%"></span></div>
+      </div>
+    </div></div>
+    <h3>A · Calm log, richer rows</h3>
+    <p>Closest to today. Cleaner segmented month switch, a small month summary, and each day grows a calorie bar + macro split. List-first, low ceremony.</p>
+  </div>
+
+  <!-- ===== B ===== -->
+  <div class="pick" data-choice="b" onclick="toggleSelect(this)">
+    <div class="phone"><div class="scr">
+      <div class="ttl">History</div>
+      <div class="seg"><span>APR</span><span>MAY</span><span class="on">JUN</span></div>
+      <div class="dash">
+        <span class="lbl" style="color:#D3C3C0">June 2026</span>
+        <div class="row" style="justify-content:space-between;align-items:flex-end;margin-top:4px">
+          <div><div class="big">2604</div><span style="font-size:11px;color:#D3C3C0">avg cal / day</span></div>
+          <div class="donut"><span></span></div>
+        </div>
+        <div class="spark">
+          <svg viewBox="0 0 240 46" width="100%" height="46" preserveAspectRatio="none">
+            <polyline points="0,30 40,26 80,32 120,18 160,22 200,12 240,16" fill="none" stroke="#D3C3C0" stroke-width="2.5"/>
+          </svg>
+          <span style="position:absolute;left:0;bottom:-2px;font-size:10px;color:#D3C3C0">weight 102 → 100 lb</span>
+        </div>
+      </div>
+      <div class="lbl">15 DAYS LOGGED</div>
+      <div class="daycard">
+        <div class="row" style="justify-content:space-between"><b style="font-size:14px">Mon, Jun 15</b><span class="muted" style="font-size:12px">2604 · 100 lb</span></div>
+        <div class="calbar"><i style="width:92%"></i></div>
+      </div>
+      <div class="daycard">
+        <div class="row" style="justify-content:space-between"><b style="font-size:14px">Sun, Jun 14</b><span class="muted" style="font-size:12px">2310</span></div>
+        <div class="calbar"><i style="width:81%"></i></div>
+      </div>
+    </div></div>
+    <h3>B · Dashboard header</h3>
+    <p>Each month opens with a hero card: average calories, a macro donut, and a weight trend sparkline. The polished day list lives below. Most visual punch.</p>
+  </div>
+
+  <!-- ===== C ===== -->
+  <div class="pick" data-choice="c" onclick="toggleSelect(this)">
+    <div class="phone"><div class="scr">
+      <div class="ttl">History</div>
+      <div class="seg"><span>APR</span><span>MAY</span><span class="on">JUN</span></div>
+      <div class="lbl" style="margin-bottom:12px">JUNE 2026 · avg 2604 cal</div>
+      <div class="tl">
+        <div class="node">
+          <div class="row" style="justify-content:space-between"><b style="font-size:14px">Mon, Jun 15</b><span class="wtag">100 lb ▼</span></div>
+          <div class="muted" style="font-size:12px;margin-top:2px">2604 cal · 271P 120F 360C</div>
+          <div class="macro" style="margin-top:8px"><span class="p" style="width:42%"></span><span class="f" style="width:18%"></span><span class="c" style="width:40%"></span></div>
+        </div>
+        <div class="node">
+          <div class="row" style="justify-content:space-between"><b style="font-size:14px">Sun, Jun 14</b></div>
+          <div class="muted" style="font-size:12px;margin-top:2px">2310 cal · 240P 110F 300C</div>
+          <div class="macro" style="margin-top:8px"><span class="p" style="width:36%"></span><span class="f" style="width:22%"></span><span class="c" style="width:42%"></span></div>
+        </div>
+        <div class="node">
+          <div class="row" style="justify-content:space-between"><b style="font-size:14px">Sat, Jun 13</b><span class="wtag">101 lb</span></div>
+          <div class="muted" style="font-size:12px;margin-top:2px">2780 cal · 290P 130F 340C</div>
+          <div class="macro" style="margin-top:8px"><span class="p" style="width:40%"></span><span class="f" style="width:25%"></span><span class="c" style="width:35%"></span></div>
+        </div>
+      </div>
+    </div></div>
+    <h3>C · Vertical timeline</h3>
+    <p>Days become nodes on a continuous spine, weigh-ins as pills along it. Reads like a story of the month. Still a day list, just more distinctive.</p>
+  </div>
+
+</div>

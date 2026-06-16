@@ -128,6 +128,7 @@ class _HistoryViewState extends State<HistoryView> {
                               bottom: MediaQuery.paddingOf(context).bottom,
                             ),
                         children: [
+                          MonthTrendsChart(monthHistory: monthHistory),
                           Padding(
                             padding: EdgeInsets.only(
                               bottom: AppDesign.spacing.sm,
@@ -228,6 +229,10 @@ class _MonthSelectorState extends State<_MonthSelector> {
                   monthHistory.month,
                   widget.selectedMonth,
                 );
+                final weightEntries = monthHistory.weightEntries;
+                final latestWeightEntry = weightEntries.isEmpty
+                    ? null
+                    : weightEntries.last;
                 return Padding(
                   padding: EdgeInsets.only(
                     right: index == widget.history.length - 1
@@ -237,7 +242,7 @@ class _MonthSelectorState extends State<_MonthSelector> {
                   child: _MonthChip(
                     key: isSelected ? _selectedChipKey : null,
                     label: abbreviation,
-                    averageNutrition: monthHistory.averageNutrition,
+                    latestWeightEntry: latestWeightEntry,
                     isSelected: isSelected,
                     onTap: () => widget.onMonthSelected(index),
                   ),
@@ -250,19 +255,19 @@ class _MonthSelectorState extends State<_MonthSelector> {
   }
 }
 
-/// A single month in the selector strip: its abbreviation and average daily
-/// nutrition.
+/// A single month in the selector strip: its abbreviation and the latest
+/// weigh-in that month, if any.
 class _MonthChip extends StatelessWidget {
   const _MonthChip({
     required this.label,
-    required this.averageNutrition,
+    required this.latestWeightEntry,
     required this.isSelected,
     required this.onTap,
     super.key,
   });
 
   final String label;
-  final Nutrition averageNutrition;
+  final WeightEntry? latestWeightEntry;
   final bool isSelected;
   final VoidCallback onTap;
 
@@ -296,13 +301,15 @@ class _MonthChip extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: AppDesign.spacing.xs),
-              Text(
-                averageNutrition.summary,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: foregroundColor.withValues(alpha: 0.7),
+              if (latestWeightEntry != null) ...[
+                SizedBox(height: AppDesign.spacing.xs),
+                Text(
+                  latestWeightEntry!.label,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: foregroundColor.withValues(alpha: 0.7),
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
         ),

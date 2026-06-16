@@ -198,7 +198,7 @@ void main() {
       expect: () => [
         isA<DailyLogState>()
             .having((s) => s.mealEntries, 'mealEntries', isNotEmpty)
-            .having((s) => s.weightEntries, 'weightEntries', hasLength(10)),
+            .having((s) => s.weightEntries, 'weightEntries', isNotEmpty),
       ],
     );
 

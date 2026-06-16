@@ -49,7 +49,7 @@ class LoggedEntryRow extends StatelessWidget {
         // the usual meal's current id onto the entry so the link survives a
         // later rename. Deferred to after the frame to keep build pure.
 
-        // TODO: fix this trash later.
+        // TODO(jb): fix this trash later.
         if (usualMeal != null && usualMeal.id != mealLogEntry.usualMealId) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             getIt<DailyLogBloc>().add(
