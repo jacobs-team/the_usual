@@ -72,9 +72,19 @@ class MealLogSection extends StatelessWidget {
           borderRadius: BorderRadius.circular(
             isCurrent ? AppDesign.radius.sm : AppDesign.radius.md,
           ),
-          border: isCurrent
-              ? Border.all(color: theme.colorScheme.primary, width: 2)
-              : null,
+          border: Border.all(
+            color: isCurrent
+                ? theme.colorScheme.primary
+                : theme.colorScheme.outline,
+            width: isCurrent ? 2 : 1,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: theme.colorScheme.shadow.withValues(alpha: 0.08),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         sliver: SliverPadding(
           padding: EdgeInsets.all(AppDesign.spacing.lg),

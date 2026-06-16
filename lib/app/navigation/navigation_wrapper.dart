@@ -120,10 +120,12 @@ class _FloatingNavBar extends StatelessWidget {
             tooltip: d.label,
             icon: isSelected ? d.selectedIcon ?? d.icon : d.icon,
             color: isSelected
-                ? colorScheme.onTertiary
+                ? colorScheme.onSecondaryContainer
                 : colorScheme.onSurfaceVariant,
             style: isSelected
-                ? IconButton.styleFrom(backgroundColor: colorScheme.tertiary)
+                ? IconButton.styleFrom(
+                    backgroundColor: colorScheme.secondaryContainer,
+                  )
                 : null,
           );
         }).toList(),

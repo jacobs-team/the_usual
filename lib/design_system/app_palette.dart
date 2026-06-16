@@ -1,57 +1,58 @@
 import 'package:flutter/material.dart';
 
-/// The application's color palette derived from the "Solar Flame" design
-/// system — vibrant solar oranges and deep red over warm peach surfaces, with
-/// a deep navy anchor for structural elements. The dark scheme keeps the same
-/// accent families over warm near-black surfaces.
+/// The application's color palette derived from the "Professional Blue" design
+/// system — deep navy and sky-blue accents over soft sky-blue surfaces, with a
+/// warm gold tertiary. Professional Blue is a light palette, so it is the light
+/// scheme; the dark scheme is a derived cool-navy variant keeping the same
+/// accent families.
 abstract final class AppPalette {
-  // ── Primary ──
-  static const primary = Color(0xFF904D00);
+  // ── Primary ── (deep navy)
+  static const primary = Color(0xFF131B2E);
   static const onPrimary = Color(0xFFFFFFFF);
-  static const primaryContainer = Color(0xFFFF8C00);
-  static const onPrimaryContainer = Color(0xFF623200);
-  static const inversePrimary = Color(0xFFFFB77D);
-  static const primaryFixed = Color(0xFFFFDCC3);
-  static const primaryFixedDim = Color(0xFFFFB77D);
-  static const onPrimaryFixed = Color(0xFF2F1500);
-  static const onPrimaryFixedVariant = Color(0xFF6E3900);
+  static const primaryContainer = Color(0xFF131B2E);
+  static const onPrimaryContainer = Color(0xFF7C839B);
+  static const inversePrimary = Color(0xFFBEC6E0);
+  static const primaryFixed = Color(0xFFDAE2FD);
+  static const primaryFixedDim = Color(0xFFBEC6E0);
+  static const onPrimaryFixed = Color(0xFF131B2E);
+  static const onPrimaryFixedVariant = Color(0xFF3F465C);
 
-  // ── Secondary ──
-  static const secondary = Color(0xFFB52424);
+  // ── Secondary ── (sky blue)
+  static const secondary = Color(0xFF00668A);
   static const onSecondary = Color(0xFFFFFFFF);
-  static const secondaryContainer = Color(0xFFFF5A52);
-  static const onSecondaryContainer = Color(0xFF600006);
-  static const secondaryFixed = Color(0xFFFFDAD6);
-  static const secondaryFixedDim = Color(0xFFFFB4AC);
-  static const onSecondaryFixed = Color(0xFF410003);
-  static const onSecondaryFixedVariant = Color(0xFF92030F);
+  static const secondaryContainer = Color(0xFF40C2FD);
+  static const onSecondaryContainer = Color(0xFF004D6A);
+  static const secondaryFixed = Color(0xFFC4E7FF);
+  static const secondaryFixedDim = Color(0xFF7BD0FF);
+  static const onSecondaryFixed = Color(0xFF001E2C);
+  static const onSecondaryFixedVariant = Color(0xFF004C69);
 
-  // ── Tertiary ──
-  static const tertiary = Color(0xFF4F6073);
+  // ── Tertiary ── (warm gold)
+  static const tertiary = Color(0xFF000000);
   static const onTertiary = Color(0xFFFFFFFF);
-  static const tertiaryContainer = Color(0xFF9AABC0);
-  static const onTertiaryContainer = Color(0xFF2F4051);
-  static const tertiaryFixed = Color(0xFFD2E4FB);
-  static const tertiaryFixedDim = Color(0xFFB7C8DE);
-  static const onTertiaryFixed = Color(0xFF0B1D2D);
-  static const onTertiaryFixedVariant = Color(0xFF38485A);
+  static const tertiaryContainer = Color(0xFF271901);
+  static const onTertiaryContainer = Color(0xFF98805D);
+  static const tertiaryFixed = Color(0xFFFCDEB5);
+  static const tertiaryFixedDim = Color(0xFFDEC29A);
+  static const onTertiaryFixed = Color(0xFF271901);
+  static const onTertiaryFixedVariant = Color(0xFF574425);
 
-  // ── Surface ──
-  static const surface = Color(0xFFFFF8F4);
-  static const onSurface = Color(0xFF1F1B17);
-  static const onSurfaceVariant = Color(0xFF564334);
-  static const surfaceDim = Color(0xFFE2D8D2);
-  static const surfaceBright = Color(0xFFFFF8F4);
+  // ── Surface ── (soft sky blue)
+  static const surface = Color(0xFFF8F9FF);
+  static const onSurface = Color(0xFF0D1C2E);
+  static const onSurfaceVariant = Color(0xFF45464D);
+  static const surfaceDim = Color(0xFFCCDBF3);
+  static const surfaceBright = Color(0xFFF8F9FF);
   static const surfaceContainerLowest = Color(0xFFFFFFFF);
-  static const surfaceContainerLow = Color(0xFFFCF2EB);
-  static const surfaceContainer = Color(0xFFF6ECE5);
-  static const surfaceContainerHigh = Color(0xFFF0E6E0);
-  static const surfaceContainerHighest = Color(0xFFEAE1DA);
-  static const surfaceTint = Color(0xFF904D00);
+  static const surfaceContainerLow = Color(0xFFEFF4FF);
+  static const surfaceContainer = Color(0xFFE6EEFF);
+  static const surfaceContainerHigh = Color(0xFFDCE9FF);
+  static const surfaceContainerHighest = Color(0xFFD5E3FC);
+  static const surfaceTint = Color(0xFF565E74);
 
   // ── Outline ──
-  static const outline = Color(0xFF897362);
-  static const outlineVariant = Color(0xFFDDC1AE);
+  static const outline = Color(0xFF76777D);
+  static const outlineVariant = Color(0xFFC6C6CD);
 
   // ── Error ──
   static const error = Color(0xFFBA1A1A);
@@ -60,52 +61,52 @@ abstract final class AppPalette {
   static const onErrorContainer = Color(0xFF93000A);
 
   // ── Inverse ──
-  static const inverseSurface = Color(0xFF34302B);
-  static const onInverseSurface = Color(0xFFF9EFE8);
+  static const inverseSurface = Color(0xFF233144);
+  static const onInverseSurface = Color(0xFFEAF1FF);
 
   // ── Shadow / Scrim ──
   static const shadow = Color(0xFF000000);
   static const scrim = Color(0xFF000000);
 
   // ── Dark overrides ──
-  // The solar accents shift to their light tones so they read on dark
-  // surfaces; the surfaces themselves are warm near-blacks.
-  static const darkPrimary = Color(0xFFFFB77D);
-  static const darkOnPrimary = Color(0xFF4D2700);
-  static const darkPrimaryContainer = Color(0xFF6E3900);
-  static const darkOnPrimaryContainer = Color(0xFFFFDCC3);
-  static const darkInversePrimary = Color(0xFF904D00);
-  static const darkSecondary = Color(0xFFFFB4AC);
-  static const darkOnSecondary = Color(0xFF5F0009);
-  static const darkSecondaryContainer = Color(0xFF92030F);
-  static const darkOnSecondaryContainer = Color(0xFFFFDAD6);
-  static const darkTertiary = Color(0xFFB7C8DE);
-  static const darkOnTertiary = Color(0xFF20303F);
-  static const darkTertiaryContainer = Color(0xFF38485A);
-  static const darkOnTertiaryContainer = Color(0xFFD2E4FB);
-  static const darkSurface = Color(0xFF1A1714);
-  static const darkOnSurface = Color(0xFFF0E6E0);
-  static const darkOnSurfaceVariant = Color(0xFFDDC1AE);
-  static const darkSurfaceDim = Color(0xFF1A1714);
-  static const darkSurfaceBright = Color(0xFF423933);
-  static const darkSurfaceContainerLowest = Color(0xFF120F0D);
-  static const darkSurfaceContainerLow = Color(0xFF211D19);
-  static const darkSurfaceContainer = Color(0xFF261F1B);
-  static const darkSurfaceContainerHigh = Color(0xFF312822);
-  static const darkSurfaceContainerHighest = Color(0xFF3C322B);
-  static const darkSurfaceTint = Color(0xFFFFB77D);
-  static const darkOutline = Color(0xFFA89684);
-  static const darkOutlineVariant = Color(0xFF564334);
+  // The navy and sky-blue accents shift to their light tones so they read on
+  // dark surfaces; the surfaces are cool navy-tinted near-blacks.
+  static const darkPrimary = Color(0xFFBEC6E0);
+  static const darkOnPrimary = Color(0xFF131B2E);
+  static const darkPrimaryContainer = Color(0xFF3F465C);
+  static const darkOnPrimaryContainer = Color(0xFFDAE2FD);
+  static const darkInversePrimary = Color(0xFF565E74);
+  static const darkSecondary = Color(0xFF7BD0FF);
+  static const darkOnSecondary = Color(0xFF00344A);
+  static const darkSecondaryContainer = Color(0xFF004C69);
+  static const darkOnSecondaryContainer = Color(0xFFC4E7FF);
+  static const darkTertiary = Color(0xFFDEC29A);
+  static const darkOnTertiary = Color(0xFF271901);
+  static const darkTertiaryContainer = Color(0xFF574425);
+  static const darkOnTertiaryContainer = Color(0xFFFCDEB5);
+  static const darkSurface = Color(0xFF0E1622);
+  static const darkOnSurface = Color(0xFFDEE3EB);
+  static const darkOnSurfaceVariant = Color(0xFFC6C6CD);
+  static const darkSurfaceDim = Color(0xFF0E1622);
+  static const darkSurfaceBright = Color(0xFF343C4A);
+  static const darkSurfaceContainerLowest = Color(0xFF090E17);
+  static const darkSurfaceContainerLow = Color(0xFF161E2A);
+  static const darkSurfaceContainer = Color(0xFF1A2230);
+  static const darkSurfaceContainerHigh = Color(0xFF242C3A);
+  static const darkSurfaceContainerHighest = Color(0xFF2F3745);
+  static const darkSurfaceTint = Color(0xFFBEC6E0);
+  static const darkOutline = Color(0xFF8F9099);
+  static const darkOutlineVariant = Color(0xFF43474E);
   static const darkError = Color(0xFFFFB4AB);
   static const darkOnError = Color(0xFF690005);
   static const darkErrorContainer = Color(0xFF93000A);
   static const darkOnErrorContainer = Color(0xFFFFDAD6);
-  static const darkInverseSurface = Color(0xFFF0E6E0);
-  static const darkOnInverseSurface = Color(0xFF34302B);
+  static const darkInverseSurface = Color(0xFFDEE3EB);
+  static const darkOnInverseSurface = Color(0xFF2D3542);
   static const darkShadow = Color(0xFF000000);
   static const darkScrim = Color(0xFF000000);
 
-  /// Light [ColorScheme] built from the palette.
+  /// Light [ColorScheme] built from the palette (Professional Blue).
   static const lightScheme = ColorScheme(
     brightness: Brightness.light,
     primary: primary,
