@@ -15,7 +15,7 @@ void main() {
     late NotificationService notificationService;
 
     const completeState = OnboardingState(
-      activeStepIndex: 6,
+      activeStepIndex: 7,
       firstLogSelectedIds: ['u'],
       settings: UserSettingsState(
         startingWeight: 165,
