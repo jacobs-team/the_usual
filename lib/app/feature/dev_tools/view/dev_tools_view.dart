@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -53,6 +56,30 @@ class DevToolsView extends StatelessWidget {
             onTap: () => getIt<DailyLogBloc>().add(
               const DailyLogEvent.sampleDataSeeded(),
             ),
+          ),
+          const Divider(),
+          ListTile(
+            title: Text(
+              'Dump saved storage',
+              style: theme.textTheme.bodyLarge,
+            ),
+            subtitle: const Text(
+              'Logs every saved bloc entry to the debug console',
+            ),
+            trailing: const Icon(Icons.bug_report_outlined),
+            onTap: () {
+              const storageKeys = [
+                'OnboardingBloc',
+                'UserSettingsBloc',
+                'DailyLogBloc',
+                'AuthCubit',
+                'DevToolsCubit',
+              ];
+              for (final storageKey in storageKeys) {
+                final value = HydratedBloc.storage.read(storageKey);
+                log('HYDRATED[$storageKey] = ${jsonEncode(value)}');
+              }
+            },
           ),
           const Divider(),
           ListTile(
