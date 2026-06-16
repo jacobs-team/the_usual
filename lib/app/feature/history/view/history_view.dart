@@ -128,7 +128,25 @@ class _HistoryViewState extends State<HistoryView> {
                               bottom: MediaQuery.paddingOf(context).bottom,
                             ),
                         children: [
-                          MonthTrendsChart(monthHistory: monthHistory),
+                          BlocSelector<
+                            UserSettingsBloc,
+                            UserSettingsState,
+                            (double?, WeightUnit)
+                          >(
+                            bloc: getIt<UserSettingsBloc>(),
+                            selector: (state) => (
+                              state.weightGoal,
+                              state.weightUnit,
+                            ),
+                            builder: (context, goal) {
+                              final (weightGoal, weightUnit) = goal;
+                              return MonthTrendsChart(
+                                monthHistory: monthHistory,
+                                weightGoal: weightGoal,
+                                weightGoalUnit: weightUnit,
+                              );
+                            },
+                          ),
                           Padding(
                             padding: EdgeInsets.only(
                               bottom: AppDesign.spacing.sm,

@@ -108,7 +108,6 @@ class _ExpandableNutritionState extends State<ExpandableNutrition> {
         ? '×$quantity ${widget.name}'
         : widget.name;
     return ExpansionTile(
-      expandedAlignment: Alignment.centerRight,
       dense: true,
       controller: _controller,
       initiallyExpanded: widget.expandedByDefault,
@@ -118,7 +117,7 @@ class _ExpandableNutritionState extends State<ExpandableNutrition> {
       childrenPadding: EdgeInsets.zero,
       shape: const Border(),
       collapsedShape: const Border(),
-      expandedCrossAxisAlignment: CrossAxisAlignment.start,
+      expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
       title: widget.onNameChanged != null
           ? Row(
               children: [
@@ -180,10 +179,13 @@ class _ExpandableNutritionState extends State<ExpandableNutrition> {
         if (quantity != null && widget.onQuantityChanged != null) ...[
           const SectionLabel('QUANTITY'),
           SizedBox(height: AppDesign.spacing.xs),
-          QuantityStepper(
-            dense: true,
-            quantity: quantity,
-            onChanged: widget.onQuantityChanged!,
+          Align(
+            alignment: Alignment.centerLeft,
+            child: QuantityStepper(
+              dense: true,
+              quantity: quantity,
+              onChanged: widget.onQuantityChanged!,
+            ),
           ),
           if (quantity > 1 && !widget.nutrition.isEmpty) ...[
             SizedBox(height: AppDesign.spacing.xs),

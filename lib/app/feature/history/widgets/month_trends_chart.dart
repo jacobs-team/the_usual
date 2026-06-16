@@ -6,7 +6,8 @@ import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template month_trends_chart}
 /// A month's trends on a dark card: a line of its weigh-ins with the net weight
-/// change, and a bar per logged day of calories with the month's average.
+/// change and the goal weight marked, and a bar per logged day of calories with
+/// the month's average.
 ///
 /// Each section appears only when it has enough data — the weight line needs at
 /// least two weigh-ins, the calorie bars at least two days with calories — and
@@ -14,10 +15,22 @@ import 'package:the_usual/design_system/design_system.dart';
 /// {@endtemplate}
 class MonthTrendsChart extends StatelessWidget {
   /// {@macro month_trends_chart}
-  const MonthTrendsChart({required this.monthHistory, super.key});
+  const MonthTrendsChart({
+    required this.monthHistory,
+    required this.weightGoal,
+    required this.weightGoalUnit,
+    super.key,
+  });
 
   /// The month whose trends are drawn.
   final HistoryMonth monthHistory;
+
+  /// The user's target weight in [weightGoalUnit], or null when unset.
+  final double? weightGoal;
+
+  /// The unit [weightGoal] is expressed in. The goal line is only drawn when it
+  /// matches the month's weigh-in unit.
+  final WeightUnit weightGoalUnit;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +59,12 @@ class MonthTrendsChart extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            if (showWeight) _WeightTrend(weightEntries: weightEntries),
+            if (showWeight)
+              _WeightTrend(
+                weightEntries: weightEntries,
+                weightGoal: weightGoal,
+                weightGoalUnit: weightGoalUnit,
+              ),
             if (showWeight && showCalories)
               Padding(
                 padding: EdgeInsets.symmetric(vertical: AppDesign.spacing.md),
@@ -81,10 +99,20 @@ TextStyle? _sectionLabelStyle(BuildContext context) {
 /// The weigh-in line for a month, with the net change from first to last and
 /// the first and last weights below it. Expects at least two weigh-ins.
 class _WeightTrend extends StatelessWidget {
-  const _WeightTrend({required this.weightEntries});
+  const _WeightTrend({
+    required this.weightEntries,
+    required this.weightGoal,
+    required this.weightGoalUnit,
+  });
 
   /// The month's weigh-ins, oldest first.
   final List<WeightEntry> weightEntries;
+
+  /// The user's target weight in [weightGoalUnit], or null when unset.
+  final double? weightGoal;
+
+  /// The unit [weightGoal] is expressed in.
+  final WeightUnit weightGoalUnit;
 
   @override
   Widget build(BuildContext context) {
@@ -93,6 +121,23 @@ class _WeightTrend extends StatelessWidget {
     final mutedForeground = colorScheme.onPrimary.withValues(alpha: 0.7);
     final firstWeightEntry = weightEntries.first;
     final lastWeightEntry = weightEntries.last;
+
+    // The goal is plotted raw against the weigh-ins, so only draw it when both
+    // share a unit — a goal logged in a different unit would land at the wrong
+    // height.
+    final weightGoal = this.weightGoal;
+    final goalWeight =
+        weightGoal != null && weightGoalUnit == lastWeightEntry.weightUnit
+        ? weightGoal
+        : null;
+    final goalLabel = goalWeight == null
+        ? null
+        : 'Goal ${goalWeight.trimmedDecimal} ${weightGoalUnit.name}';
+    final goalColor = colorScheme.onPrimary.withValues(alpha: 0.85);
+    final goalLabelStyle = theme.textTheme.labelSmall?.copyWith(
+      color: goalColor,
+      fontWeight: FontWeight.w600,
+    );
 
     // Weigh-ins are entered to a single decimal, so round the difference to
     // match and drop the floating-point error subtraction introduces.
@@ -106,6 +151,19 @@ class _WeightTrend extends StatelessWidget {
       final arrow = change < 0 ? '▼' : '▲';
       netChange = '$arrow ${change.abs().trimmedDecimal} $unit';
     }
+
+    // Annotate the line's endpoints: the start weight unadorned, the current
+    // weight emphasized and carrying the unit, since it's the number the user
+    // checks first.
+    final startLabel = firstWeightEntry.weight.trimmedDecimal;
+    final endLabel = lastWeightEntry.label;
+    final startLabelStyle = theme.textTheme.bodySmall?.copyWith(
+      color: mutedForeground,
+    );
+    final endLabelStyle = theme.textTheme.bodySmall?.copyWith(
+      color: colorScheme.onPrimary,
+      fontWeight: FontWeight.w600,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -126,34 +184,24 @@ class _WeightTrend extends StatelessWidget {
         ),
         SizedBox(height: AppDesign.spacing.md),
         SizedBox(
-          height: 56,
+          height: 84,
           child: CustomPaint(
             painter: _WeightLinePainter(
               weights: [
                 for (final weightEntry in weightEntries) weightEntry.weight,
               ],
+              startLabel: startLabel,
+              endLabel: endLabel,
+              startLabelStyle: startLabelStyle,
+              endLabelStyle: endLabelStyle,
+              goalWeight: goalWeight,
+              goalLabel: goalLabel,
+              goalLabelStyle: goalLabelStyle,
               lineColor: colorScheme.inversePrimary,
               dotColor: colorScheme.onPrimary,
+              goalColor: goalColor,
             ),
           ),
-        ),
-        SizedBox(height: AppDesign.spacing.sm),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              firstWeightEntry.label,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: mutedForeground,
-              ),
-            ),
-            Text(
-              lastWeightEntry.label,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: mutedForeground,
-              ),
-            ),
-          ],
         ),
       ],
     );
@@ -215,34 +263,127 @@ class _CalorieBars extends StatelessWidget {
 }
 
 /// Paints a month's weigh-ins as a single line, evenly spaced across the width
-/// and scaled to the range of weights, with a dot on the latest point.
+/// and scaled to the range of weights, with a dot on the latest point. The
+/// start and current weights are labelled at the line's endpoints. When a goal
+/// weight is given the axis grows to include it and it is marked with a
+/// labelled dashed line, the label placed on the side of the line away from the
+/// trend so the two don't overlap.
 class _WeightLinePainter extends CustomPainter {
   const _WeightLinePainter({
     required this.weights,
+    required this.startLabel,
+    required this.endLabel,
+    required this.startLabelStyle,
+    required this.endLabelStyle,
+    required this.goalWeight,
+    required this.goalLabel,
+    required this.goalLabelStyle,
     required this.lineColor,
     required this.dotColor,
+    required this.goalColor,
   });
 
   /// The weigh-in values, oldest first.
   final List<double> weights;
+
+  /// Label drawn at the first weigh-in, e.g. '166.7'.
+  final String startLabel;
+
+  /// Label drawn at the latest weigh-in, e.g. '164 lb'.
+  final String endLabel;
+  final TextStyle? startLabelStyle;
+  final TextStyle? endLabelStyle;
+
+  /// The target weight to mark, or null when unset or in a different unit than
+  /// the weigh-ins.
+  final double? goalWeight;
+
+  /// The text drawn at the goal line, e.g. 'Goal 165 lb'.
+  final String? goalLabel;
+  final TextStyle? goalLabelStyle;
   final Color lineColor;
   final Color dotColor;
+  final Color goalColor;
+
+  static const double _verticalInset = 6;
 
   @override
   void paint(Canvas canvas, Size size) {
     if (weights.length < 2) return;
 
-    final minWeight = weights.reduce(min);
-    final maxWeight = weights.reduce(max);
-    final range = maxWeight - minWeight;
-    const verticalInset = 6.0;
-    final usableHeight = size.height - verticalInset * 2;
+    final dataMin = weights.reduce(min);
+    final dataMax = weights.reduce(max);
+    final goalWeight = this.goalWeight;
+
+    // Lay the labels out first so their heights can reserve room in the plot.
+    final goalLabel = this.goalLabel;
+    final labelPainter = goalWeight != null && goalLabel != null
+        ? (TextPainter(
+            text: TextSpan(text: goalLabel, style: goalLabelStyle),
+            textDirection: TextDirection.ltr,
+          )..layout())
+        : null;
+    final startLabelPainter = TextPainter(
+      text: TextSpan(text: startLabel, style: startLabelStyle),
+      textDirection: TextDirection.ltr,
+    )..layout();
+    final endLabelPainter = TextPainter(
+      text: TextSpan(text: endLabel, style: endLabelStyle),
+      textDirection: TextDirection.ltr,
+    )..layout();
+
+    // The axis spans both the weigh-ins and the goal so the goal line sits at
+    // its true height relative to the trend.
+    final axisMin = goalWeight == null ? dataMin : min(dataMin, goalWeight);
+    final axisMax = goalWeight == null ? dataMax : max(dataMax, goalWeight);
+    final axisRange = axisMax - axisMin;
+
+    // Reserve a band at the top for the endpoint labels, which sit above their
+    // points, and the goal label on the side of its line away from the trend —
+    // below when the goal is under the trend, above when over it — so nothing
+    // overlaps or clips the edge.
+    final meanWeight = weights.reduce((a, b) => a + b) / weights.length;
+    final labelBelowLine = goalWeight == null || goalWeight < meanWeight;
+    final goalBand = labelPainter == null ? 0.0 : labelPainter.height + 2;
+    final endpointBand =
+        max(startLabelPainter.height, endLabelPainter.height) + 2;
+    final plotTop =
+        _verticalInset + endpointBand + (labelBelowLine ? 0.0 : goalBand);
+    final plotBottom =
+        size.height - _verticalInset - (labelBelowLine ? goalBand : 0.0);
+    final plotHeight = plotBottom - plotTop;
 
     double yFor(double weight) {
-      if (range == 0) return size.height / 2;
-      final normalized = (weight - minWeight) / range;
+      if (axisRange == 0) return (plotTop + plotBottom) / 2;
+      final normalized = (weight - axisMin) / axisRange;
       // A higher weight sits higher on screen, so invert the normalized value.
-      return verticalInset + (1 - normalized) * usableHeight;
+      return plotTop + (1 - normalized) * plotHeight;
+    }
+
+    if (goalWeight != null) {
+      final goalY = yFor(goalWeight);
+      final goalPaint = Paint()
+        ..color = goalColor
+        ..strokeWidth = 1;
+      const dashWidth = 4.0;
+      const dashGap = 3.0;
+      var x = 0.0;
+      while (x < size.width) {
+        canvas.drawLine(
+          Offset(x, goalY),
+          Offset(min(x + dashWidth, size.width), goalY),
+          goalPaint,
+        );
+        x += dashWidth + dashGap;
+      }
+      if (labelPainter != null) {
+        // ignore: prefer_int_literals
+        final labelX = max(0.0, size.width - labelPainter.width);
+        final labelY = labelBelowLine
+            ? goalY + 2
+            : goalY - labelPainter.height - 2;
+        labelPainter.paint(canvas, Offset(labelX, labelY));
+      }
     }
 
     final horizontalStep = size.width / (weights.length - 1);
@@ -265,13 +406,36 @@ class _WeightLinePainter extends CustomPainter {
     canvas
       ..drawPath(linePath, linePaint)
       ..drawCircle(points.last, 3, Paint()..color = dotColor);
+
+    // The endpoint labels sit above their points, anchored to the chart edges.
+    final startLabelY = max(
+      _verticalInset,
+      points.first.dy - 2 - startLabelPainter.height,
+    );
+    startLabelPainter.paint(canvas, Offset(points.first.dx, startLabelY));
+    final endLabelY = max(
+      _verticalInset,
+      points.last.dy - 2 - endLabelPainter.height,
+    );
+    endLabelPainter.paint(
+      canvas,
+      Offset(points.last.dx - endLabelPainter.width, endLabelY),
+    );
   }
 
   @override
   bool shouldRepaint(_WeightLinePainter oldDelegate) =>
       oldDelegate.weights != weights ||
+      oldDelegate.startLabel != startLabel ||
+      oldDelegate.endLabel != endLabel ||
+      oldDelegate.startLabelStyle != startLabelStyle ||
+      oldDelegate.endLabelStyle != endLabelStyle ||
+      oldDelegate.goalWeight != goalWeight ||
+      oldDelegate.goalLabel != goalLabel ||
+      oldDelegate.goalLabelStyle != goalLabelStyle ||
       oldDelegate.lineColor != lineColor ||
-      oldDelegate.dotColor != dotColor;
+      oldDelegate.dotColor != dotColor ||
+      oldDelegate.goalColor != goalColor;
 }
 
 /// Paints one bar per day of calories, scaled to the highest day, with a dashed

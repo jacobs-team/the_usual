@@ -7,7 +7,10 @@ import 'package:the_usual/design_system/design_system.dart';
 /// goal. The bar's width represents [calorieGoal]; the colored portion spans
 /// the share of that goal already eaten — consumed calories over the goal — and
 /// is split into protein, carbs, and fat segments sized by their gram values.
-/// Each segment is labeled with its macro name, ellipsized when it doesn't fit.
+/// Each segment is labeled with its gram count and macro name, shortened to a
+/// single-letter abbreviation when the full name doesn't fit. A calorie summary
+/// — consumed over goal, or just consumed calories when there's no goal — sits
+/// above the bar.
 ///
 /// With no [calorieGoal] the macros fill the whole bar instead of a portion of
 /// it. When consumed calories reach or exceed the goal the colored portion
@@ -46,20 +49,26 @@ class NutritionBar extends StatelessWidget {
         : 1.0;
     final reachedGoal = hasGoal && consumedCalories >= calorieGoal;
 
-    final macroSegments =
-        [
-          (
-            name: 'Protein',
-            grams: nutrition.protein ?? 0,
-            color: AppPalette.proteinMacro,
-          ),
-          (
-            name: 'Carbs',
-            grams: nutrition.carbs ?? 0,
-            color: AppPalette.carbsMacro,
-          ),
-          (name: 'Fat', grams: nutrition.fat ?? 0, color: AppPalette.fatMacro),
-        ].where((macroSegment) => macroSegment.grams > 0).toList();
+    final macroSegments = [
+      (
+        name: 'Protein',
+        abbreviation: 'P',
+        grams: nutrition.protein ?? 0,
+        color: AppPalette.proteinMacro,
+      ),
+      (
+        name: 'Carbs',
+        abbreviation: 'C',
+        grams: nutrition.carbs ?? 0,
+        color: AppPalette.carbsMacro,
+      ),
+      (
+        name: 'Fat',
+        abbreviation: 'F',
+        grams: nutrition.fat ?? 0,
+        color: AppPalette.fatMacro,
+      ),
+    ].where((macroSegment) => macroSegment.grams > 0).toList();
     final totalGrams = macroSegments.fold(
       0,
       (sum, macroSegment) => sum + macroSegment.grams,
@@ -71,9 +80,8 @@ class NutritionBar extends StatelessWidget {
       for (final macroSegment in macroSegments)
         (
           macroSegment: macroSegment,
-          flex:
-              (filledFraction * macroSegment.grams / totalGrams * _flexScale)
-                  .round(),
+          flex: (filledFraction * macroSegment.grams / totalGrams * _flexScale)
+              .round(),
         ),
     ];
     final emptyFlex = ((1 - filledFraction) * _flexScale).round();
@@ -88,8 +96,15 @@ class NutritionBar extends StatelessWidget {
       fontWeight: FontWeight.w600,
     );
 
+    final calorieSummary = hasGoal
+        ? '$consumedCalories / $calorieGoal cal'
+        : '$consumedCalories cal';
+    final calorieSummaryStyle = theme.textTheme.labelSmall?.copyWith(
+      color: colorScheme.onSurfaceVariant,
+    );
+
     final borderRadius = BorderRadius.circular(AppDesign.radius.sm);
-    return Container(
+    final bar = Container(
       height: _height,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
@@ -126,11 +141,28 @@ class NutritionBar extends StatelessWidget {
                       padding: EdgeInsets.symmetric(
                         horizontal: AppDesign.spacing.xs,
                       ),
-                      child: Text(
-                        segmentFlex.macroSegment.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: labelStyle,
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final macroSegment = segmentFlex.macroSegment;
+                          final fullLabel =
+                              '${macroSegment.grams}g ${macroSegment.name}';
+                          final shortLabel =
+                              '${macroSegment.grams}g '
+                              '${macroSegment.abbreviation}';
+                          final fullLabelPainter = TextPainter(
+                            text: TextSpan(text: fullLabel, style: labelStyle),
+                            maxLines: 1,
+                            textDirection: Directionality.of(context),
+                          )..layout();
+                          final fits =
+                              fullLabelPainter.width <= constraints.maxWidth;
+                          return Text(
+                            fits ? fullLabel : shortLabel,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: labelStyle,
+                          );
+                        },
                       ),
                     ),
                   ),
@@ -155,6 +187,16 @@ class NutritionBar extends StatelessWidget {
             ),
         ],
       ),
+    );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(calorieSummary, style: calorieSummaryStyle),
+        SizedBox(height: AppDesign.spacing.xs),
+        bar,
+      ],
     );
   }
 }
