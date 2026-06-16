@@ -19,8 +19,11 @@ import 'package:the_usual/app/core/dependencies/modules/hydrated_bloc_module.dar
     as _i316;
 import 'package:the_usual/app/core/dependencies/modules/notification_module.dart'
     as _i833;
+import 'package:the_usual/app/core/networking/ai/meal_ai_client.dart' as _i813;
 import 'package:the_usual/app/core/networking/api/coffee_api.dart' as _i6;
 import 'package:the_usual/app/core/networking/api/rest_client.dart' as _i13;
+import 'package:the_usual/app/core/networking/repository/meal_ai_repository.dart'
+    as _i310;
 import 'package:the_usual/app/core/service/file_cache_service.dart' as _i115;
 import 'package:the_usual/app/core/service/service.dart' as _i988;
 import 'package:the_usual/app/feature/dev_tools/cubit/dev_tools_cubit.dart'
@@ -51,6 +54,7 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.singleton<_i335.AuthCubit>(() => _i335.AuthCubit());
     gh.singleton<_i473.ConnectivityCubit>(() => _i473.ConnectivityCubit());
+    gh.singleton<_i813.MealAiClient>(() => _i813.MealAiClient());
     gh.singleton<_i115.FileCacheService>(() => _i115.FileCacheService());
     gh.singleton<_i818.DevToolsCubit>(() => _i818.DevToolsCubit());
     gh.singleton<_i874.AppRouter>(() => _i874.AppRouter());
@@ -61,6 +65,9 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i13.RestClient(gh<_i538.AuthCubit>(), gh<_i538.DevToolsCubit>()),
     );
     gh.singleton<_i6.CoffeeApi>(() => _i6.CoffeeApi(gh<_i538.RestClient>()));
+    gh.singleton<_i310.MealAiRepository>(
+      () => _i310.MealAiRepository(gh<_i538.MealAiClient>()),
+    );
     return this;
   }
 }
