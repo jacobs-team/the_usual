@@ -137,9 +137,9 @@ class _ExpandableNutritionState extends State<ExpandableNutrition> {
                 ),
                 if (!_expanded) ...[
                   SizedBox(width: AppDesign.spacing.sm),
-                  Text(
-                    displayNutrition.summary,
+                  DefaultTextStyle.merge(
                     style: theme.textTheme.bodyMedium,
+                    child: NutritionSummary(displayNutrition),
                   ),
                 ],
               ],
@@ -164,11 +164,9 @@ class _ExpandableNutritionState extends State<ExpandableNutrition> {
                       ),
                     ),
                     if (!_expanded)
-                      Text(
-                        displayNutrition.summary,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          textBaseline: TextBaseline.alphabetic,
-                        ),
+                      DefaultTextStyle.merge(
+                        style: theme.textTheme.bodyMedium,
+                        child: NutritionSummary(displayNutrition),
                       ),
                   ],
                 );
@@ -189,10 +187,16 @@ class _ExpandableNutritionState extends State<ExpandableNutrition> {
           ),
           if (quantity > 1 && !widget.nutrition.isEmpty) ...[
             SizedBox(height: AppDesign.spacing.xs),
-            Text(
-              '×$quantity = ${displayNutrition.summary}',
+            DefaultTextStyle.merge(
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('×$quantity = '),
+                  NutritionSummary(displayNutrition),
+                ],
               ),
             ),
           ],

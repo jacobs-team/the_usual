@@ -86,6 +86,16 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
             settings: state.settings.copyWith(startingWeight: event.weight),
           ),
         ),
+        CalorieGoalChanged() => emit(
+          state.copyWith(
+            settings: state.settings.copyWith(calorieGoal: event.calorieGoal),
+          ),
+        ),
+        WeightGoalChanged() => emit(
+          state.copyWith(
+            settings: state.settings.copyWith(weightGoal: event.weightGoal),
+          ),
+        ),
         FirstLogItemToggled() => _onFirstLogItemToggled(event, emit),
         FirstLogItemQuantityChanged() => _onFirstLogItemQuantityChanged(
           event,

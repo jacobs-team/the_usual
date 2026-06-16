@@ -57,6 +57,15 @@ abstract class UserSettingsState with _$UserSettingsState {
     /// Baseline weight in [weightUnit], null when never provided.
     double? startingWeight,
 
+    /// The user's daily calorie target, null when they haven't set one. Drives
+    /// the length of the Today nutrition bar; when null the bar's macros fill
+    /// its full width instead of a portion of the goal.
+    int? calorieGoal,
+
+    /// The user's target weight in [weightUnit], null when they haven't set
+    /// one.
+    double? weightGoal,
+
     /// Whether the app follows the system theme or is forced light or dark.
     @Default(ThemeMode.system) ThemeMode themeMode,
 

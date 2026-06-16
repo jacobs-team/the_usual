@@ -64,7 +64,6 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final now = clock.now();
     final today = DateUtils.dateOnly(now);
     final currentMeal = getIt<UserSettingsBloc>().state.currentMeal(now);
@@ -93,15 +92,17 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
             BlocSelector<
               UserSettingsBloc,
               UserSettingsState,
-              (Map<MealOfTheDay, List<UsualMeal>>, bool)
+              (Map<MealOfTheDay, List<UsualMeal>>, bool, int?)
             >(
               bloc: getIt<UserSettingsBloc>(),
               selector: (state) => (
                 state.usuals,
                 state.expandNutritionByDefault,
+                state.calorieGoal,
               ),
               builder: (context, selected) {
-                final (usualMeals, expandNutritionByDefault) = selected;
+                final (usualMeals, expandNutritionByDefault, calorieGoal) =
+                    selected;
                 return BlocSelector<
                   DailyLogBloc,
                   DailyLogState,
@@ -128,20 +129,19 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
                                 SizedBox(height: AppDesign.spacing.sm),
                                 _WeightTracker(day: today),
                                 SizedBox(height: AppDesign.spacing.xl),
-                                const SectionLabel('MEALS'),
-                                SizedBox(height: AppDesign.spacing.sm),
                                 Row(
                                   children: [
-                                    Expanded(
-                                      child: Text(
-                                        breakdown.nutrition.summary,
-                                        style: textTheme.headlineSmall,
-                                      ),
-                                    ),
+                                    const SectionLabel('MEALS'),
+                                    const Spacer(),
                                     _NutritionExpansionToggle(
                                       expanded: expandNutritionByDefault,
                                     ),
                                   ],
+                                ),
+                                SizedBox(height: AppDesign.spacing.sm),
+                                NutritionBar(
+                                  nutrition: breakdown.nutrition,
+                                  calorieGoal: calorieGoal,
                                 ),
                               ],
                             ),

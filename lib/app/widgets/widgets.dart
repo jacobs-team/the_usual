@@ -8,6 +8,7 @@ export 'macro_field.dart';
 export 'meal_reminder_row.dart';
 export 'meal_schedule_mode_selector.dart';
 export 'nutrition_fields.dart';
+export 'nutrition_summary.dart';
 export 'quantity_stepper.dart';
 export 'radio_option_card.dart';
 export 'section_label.dart';

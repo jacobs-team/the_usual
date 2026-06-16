@@ -82,12 +82,14 @@ class _WeightTrackingViewState extends State<WeightTrackingView> {
                               SizedBox(height: AppDesign.spacing.sm),
                               WeightCheckinFrequencyChips(
                                 selected: weightCheckinFrequency,
-                                onSelected: (weightCheckinFrequency) =>
-                                    getIt<OnboardingBloc>().add(
-                                      OnboardingEvent.weightCheckinFrequencySelected(
-                                        weightCheckinFrequency,
-                                      ),
+                                onSelected: (weightCheckinFrequency) {
+                                  getIt<OnboardingBloc>().add(
+                                    // ignore: lines_longer_than_80_chars
+                                    OnboardingEvent.weightCheckinFrequencySelected(
+                                      weightCheckinFrequency,
                                     ),
+                                  );
+                                },
                               ),
                               SizedBox(height: AppDesign.spacing.xl),
                               if (weightCheckinFrequency ==

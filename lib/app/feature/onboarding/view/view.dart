@@ -1,6 +1,7 @@
 export 'build_usuals_view.dart';
 export 'complete_view.dart';
 export 'first_log_view.dart';
+export 'goals_view.dart';
 export 'meal_schedule_view.dart';
 export 'onboarding_view.dart';
 export 'reminder_style_view.dart';

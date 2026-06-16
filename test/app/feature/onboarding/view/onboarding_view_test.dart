@@ -54,15 +54,20 @@ void main() {
       expect(find.byType(WeightTrackingView), findsOneWidget);
     });
 
-    testWidgets('renders first log on the sixth step', (tester) async {
+    testWidgets('renders goals on the sixth step', (tester) async {
       await pumpAtStep(tester, 5);
+      expect(find.byType(GoalsView), findsOneWidget);
+    });
+
+    testWidgets('renders first log on the seventh step', (tester) async {
+      await pumpAtStep(tester, 6);
       expect(find.byType(FirstLogView), findsOneWidget);
     });
 
     testWidgets('renders the completion screen on the last step', (
       tester,
     ) async {
-      await pumpAtStep(tester, 6);
+      await pumpAtStep(tester, 7);
       expect(find.byType(CompleteView), findsOneWidget);
     });
   });

@@ -50,6 +50,13 @@ abstract final class AppPalette {
   static const surfaceContainerHighest = Color(0xFFD5E3FC);
   static const surfaceTint = Color(0xFF565E74);
 
+  // ── Macros ── (protein teal, carbs blue, fat amber — red is reserved for
+  // the over-goal state, so no macro uses it). White reads on all three.
+  static const proteinMacro = Color(0xFF2E8B7F);
+  static const carbsMacro = Color(0xFF3E78B2);
+  static const fatMacro = Color(0xFFC68A2E);
+  static const onMacro = Color(0xFFFFFFFF);
+
   // ── Outline ──
   static const outline = Color(0xFF76777D);
   static const outlineVariant = Color(0xFFC6C6CD);

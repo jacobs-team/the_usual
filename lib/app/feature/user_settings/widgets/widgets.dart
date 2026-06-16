@@ -1,5 +1,6 @@
 export 'appearance_section.dart';
 export 'enable_notifications_in_settings_dialog.dart';
+export 'goals_section.dart';
 export 'info_box.dart';
 export 'meal_schedule_section.dart';
 export 'reminder_style_section.dart';

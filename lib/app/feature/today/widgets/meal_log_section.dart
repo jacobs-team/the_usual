@@ -102,9 +102,9 @@ class MealLogSection extends StatelessWidget {
                         ),
                       ),
                       if (mealLogEntries.isNotEmpty)
-                        Text(
-                          nutrition.summary,
+                        DefaultTextStyle.merge(
                           style: theme.textTheme.bodyMedium,
+                          child: NutritionSummary(nutrition),
                         ),
                     ],
                   ),

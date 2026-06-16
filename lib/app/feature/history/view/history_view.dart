@@ -339,7 +339,10 @@ class _HistoryDayCard extends StatelessWidget {
         subtitle: Row(
           children: [
             Flexible(
-              child: Text(historyDay.nutrition.summary, style: bodySmall),
+              child: DefaultTextStyle.merge(
+                style: bodySmall,
+                child: NutritionSummary(historyDay.nutrition),
+              ),
             ),
             if (weightEntry != null)
               Text(' · ${weightEntry.label}', style: bodySmall),

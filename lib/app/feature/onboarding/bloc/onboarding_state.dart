@@ -50,6 +50,7 @@ enum OnboardingStep {
   reminderStyle,
   mealSchedule,
   weightTracking,
+  goals,
   firstLog,
   complete;
 

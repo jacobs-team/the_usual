@@ -62,6 +62,8 @@ _UserSettingsState _$UserSettingsStateFromJson(
       $enumDecodeNullable(_$WeightUnitEnumMap, json['weightUnit']) ??
       WeightUnit.lb,
   startingWeight: (json['startingWeight'] as num?)?.toDouble(),
+  calorieGoal: (json['calorieGoal'] as num?)?.toInt(),
+  weightGoal: (json['weightGoal'] as num?)?.toDouble(),
   themeMode:
       $enumDecodeNullable(_$ThemeModeEnumMap, json['themeMode']) ??
       ThemeMode.system,
@@ -93,6 +95,8 @@ Map<String, dynamic> _$UserSettingsStateToJson(
   'weightTimeOfDay': _$WeightTimeOfDayEnumMap[instance.weightTimeOfDay]!,
   'weightUnit': _$WeightUnitEnumMap[instance.weightUnit]!,
   'startingWeight': instance.startingWeight,
+  'calorieGoal': instance.calorieGoal,
+  'weightGoal': instance.weightGoal,
   'themeMode': _$ThemeModeEnumMap[instance.themeMode]!,
   'expandNutritionByDefault': instance.expandNutritionByDefault,
   'usuals': instance.usuals.map(

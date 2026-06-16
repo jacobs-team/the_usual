@@ -23,6 +23,7 @@ class OnboardingView extends StatelessWidget {
           OnboardingStep.reminderStyle => const ReminderStyleView(),
           OnboardingStep.mealSchedule => const MealScheduleView(),
           OnboardingStep.weightTracking => const WeightTrackingView(),
+          OnboardingStep.goals => const GoalsView(),
           OnboardingStep.firstLog => const FirstLogView(),
           // TODO(onboarding): route to the home/log feature once it exists.
           OnboardingStep.complete => const CompleteView(),

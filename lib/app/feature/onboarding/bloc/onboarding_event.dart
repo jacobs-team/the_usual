@@ -51,6 +51,10 @@ sealed class OnboardingEvent with _$OnboardingEvent {
       WeightUnitSelected;
   const factory OnboardingEvent.startingWeightChanged(double? weight) =
       StartingWeightChanged;
+  const factory OnboardingEvent.calorieGoalChanged(int? calorieGoal) =
+      CalorieGoalChanged;
+  const factory OnboardingEvent.weightGoalChanged(double? weightGoal) =
+      WeightGoalChanged;
   const factory OnboardingEvent.firstLogItemToggled(String id) =
       FirstLogItemToggled;
   const factory OnboardingEvent.firstLogItemQuantityChanged(
