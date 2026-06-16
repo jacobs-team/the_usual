@@ -269,7 +269,7 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
     }
 
     for (final plan in monthPlans) {
-      final monthStart = DateTime(now.year, now.month - plan.monthsAgo, 1);
+      final monthStart = DateTime(now.year, now.month - plan.monthsAgo);
       final daysInMonth = DateTime(
         monthStart.year,
         monthStart.month + 1,
@@ -317,8 +317,7 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
         if (random.nextDouble() < plan.weighInChance) {
           final progress = (dayOfMonth - 1) / span;
           final trend =
-              plan.startWeight +
-              (plan.endWeight - plan.startWeight) * progress;
+              plan.startWeight + (plan.endWeight - plan.startWeight) * progress;
           // A little daily noise on top of the trend so the line wavers.
           final noise = (random.nextDouble() - 0.5) * 1.6;
           final weight = ((trend + noise) * 10).round() / 10;

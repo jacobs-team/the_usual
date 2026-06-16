@@ -9,7 +9,7 @@ import 'package:the_usual/design_system/app_palette.dart';
 class AppTheme {
   static ThemeData _buildTheme(ColorScheme colorScheme) {
     final base = ThemeData(colorScheme: colorScheme);
-    final baseTextTheme = GoogleFonts.manropeTextTheme(base.textTheme);
+    final baseTextTheme = GoogleFonts.plusJakartaSansTextTheme(base.textTheme);
     final textTheme = baseTextTheme.copyWith(
       titleMedium: baseTextTheme.titleMedium?.copyWith(
         fontWeight: FontWeight.bold,
@@ -133,7 +133,7 @@ class AppTheme {
         iconTheme: WidgetStateProperty.resolveWith(
           (states) => IconThemeData(
             color: states.contains(WidgetState.selected)
-                ? colorScheme.primary
+                ? colorScheme.tertiary
                 : colorScheme.onSurfaceVariant,
             size: AppDesign.iconSizes.md,
           ),
@@ -143,7 +143,7 @@ class AppTheme {
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: colorScheme.surfaceContainer,
         elevation: 0,
-        selectedIconTheme: IconThemeData(color: colorScheme.primary),
+        selectedIconTheme: IconThemeData(color: colorScheme.tertiary),
         unselectedIconTheme: IconThemeData(
           color: colorScheme.onSurfaceVariant,
         ),
