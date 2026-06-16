@@ -64,62 +64,81 @@ class _WeightTrackingViewState extends State<WeightTrackingView> {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Text('Weight check-ins', style: textTheme.headlineSmall),
-                      SizedBox(height: AppDesign.spacing.sm),
-                      const Text('A quick weigh-in keeps the trend honest.'),
-                      SizedBox(height: AppDesign.spacing.xl),
-                      const SectionLabel('HOW OFTEN'),
-                      SizedBox(height: AppDesign.spacing.sm),
-                      WeightCheckinFrequencyChips(
-                        selected: weightCheckinFrequency,
-                        onSelected: (weightCheckinFrequency) =>
-                            getIt<OnboardingBloc>().add(
-                              OnboardingEvent.weightCheckinFrequencySelected(
-                                weightCheckinFrequency,
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text(
+                                'Weight check-ins',
+                                style: textTheme.headlineSmall,
                               ),
-                            ),
-                      ),
-                      SizedBox(height: AppDesign.spacing.xl),
-                      if (weightCheckinFrequency == WeightCheckinFrequency.off)
-                        Text(
-                          'No weight check-ins. You can turn them on any time '
-                          'in Settings.',
-                          style: textTheme.bodySmall,
-                        )
-                      else ...[
-                        const SectionLabel('WHAT TIME OF DAY'),
-                        SizedBox(height: AppDesign.spacing.sm),
-                        WeightTimeOfDayChips(
-                          selected: weightTimeOfDay,
-                          onSelected: (weightTimeOfDay) =>
-                              getIt<OnboardingBloc>().add(
-                                OnboardingEvent.weightTimeOfDaySelected(
-                                  weightTimeOfDay,
+                              SizedBox(height: AppDesign.spacing.sm),
+                              const Text(
+                                'A quick weigh-in keeps the trend honest.',
+                              ),
+                              SizedBox(height: AppDesign.spacing.xl),
+                              const SectionLabel('HOW OFTEN'),
+                              SizedBox(height: AppDesign.spacing.sm),
+                              WeightCheckinFrequencyChips(
+                                selected: weightCheckinFrequency,
+                                onSelected: (weightCheckinFrequency) =>
+                                    getIt<OnboardingBloc>().add(
+                                      OnboardingEvent.weightCheckinFrequencySelected(
+                                        weightCheckinFrequency,
+                                      ),
+                                    ),
+                              ),
+                              SizedBox(height: AppDesign.spacing.xl),
+                              if (weightCheckinFrequency ==
+                                  WeightCheckinFrequency.off)
+                                Text(
+                                  'No weight check-ins. You can turn them on '
+                                  'any time in Settings.',
+                                  style: textTheme.bodySmall,
+                                )
+                              else ...[
+                                const SectionLabel('WHAT TIME OF DAY'),
+                                SizedBox(height: AppDesign.spacing.sm),
+                                WeightTimeOfDayChips(
+                                  selected: weightTimeOfDay,
+                                  onSelected: (weightTimeOfDay) =>
+                                      getIt<OnboardingBloc>().add(
+                                        OnboardingEvent.weightTimeOfDaySelected(
+                                          weightTimeOfDay,
+                                        ),
+                                      ),
                                 ),
-                              ),
+                                SizedBox(height: AppDesign.spacing.sm),
+                                Text(
+                                  'Morning weigh-ins are the most consistent.',
+                                  style: textTheme.bodySmall,
+                                ),
+                                SizedBox(height: AppDesign.spacing.xl),
+                                const SectionLabel('STARTING WEIGHT'),
+                                SizedBox(height: AppDesign.spacing.sm),
+                                WeightInput(
+                                  controller: _weightController,
+                                  weightUnit: weightUnit,
+                                  onWeightChanged: (weight) =>
+                                      getIt<OnboardingBloc>().add(
+                                        OnboardingEvent.startingWeightChanged(
+                                          weight,
+                                        ),
+                                      ),
+                                  onUnitSelected: (weightUnit) =>
+                                      getIt<OnboardingBloc>().add(
+                                        OnboardingEvent.weightUnitSelected(
+                                          weightUnit,
+                                        ),
+                                      ),
+                                ),
+                              ],
+                            ],
+                          ),
                         ),
-                        SizedBox(height: AppDesign.spacing.sm),
-                        Text(
-                          'Morning weigh-ins are the most consistent.',
-                          style: textTheme.bodySmall,
-                        ),
-                        SizedBox(height: AppDesign.spacing.xl),
-                        const SectionLabel('STARTING WEIGHT'),
-                        SizedBox(height: AppDesign.spacing.sm),
-                        WeightInput(
-                          controller: _weightController,
-                          weightUnit: weightUnit,
-                          onWeightChanged: (weight) =>
-                              getIt<OnboardingBloc>().add(
-                                OnboardingEvent.startingWeightChanged(weight),
-                              ),
-                          onUnitSelected: (weightUnit) =>
-                              getIt<OnboardingBloc>().add(
-                                OnboardingEvent.weightUnitSelected(weightUnit),
-                              ),
-                        ),
-                      ],
-                      const Spacer(),
+                      ),
+                      SizedBox(height: AppDesign.spacing.md),
                       OnboardingActions(
                         primary: FilledButton(
                           onPressed: () => getIt<OnboardingBloc>().add(

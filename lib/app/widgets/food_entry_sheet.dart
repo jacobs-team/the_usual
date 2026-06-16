@@ -57,7 +57,7 @@ class _FoodEntrySheetState extends State<FoodEntrySheet> {
       ),
       child: SafeArea(
         top: false,
-        child: Padding(
+        child: SingleChildScrollView(
           padding: EdgeInsets.all(AppDesign.spacing.lg),
           child: Column(
             mainAxisSize: MainAxisSize.min,
