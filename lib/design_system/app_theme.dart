@@ -9,11 +9,23 @@ import 'package:the_usual/design_system/app_palette.dart';
 class AppTheme {
   static ThemeData _buildTheme(ColorScheme colorScheme) {
     final base = ThemeData(colorScheme: colorScheme);
-    final baseTextTheme = GoogleFonts.plusJakartaSansTextTheme(base.textTheme);
-    final textTheme = baseTextTheme.copyWith(
-      titleMedium: baseTextTheme.titleMedium?.copyWith(
-        fontWeight: FontWeight.bold,
-      ),
+    // Display, headline, and title in Plus Jakarta Sans; body and labels in
+    // Hanken Grotesk.
+    final bodyTextTheme = GoogleFonts.hankenGroteskTextTheme(base.textTheme);
+    TextStyle? heading(TextStyle? style) =>
+        style == null ? null : GoogleFonts.plusJakartaSans(textStyle: style);
+    final textTheme = bodyTextTheme.copyWith(
+      displayLarge: heading(bodyTextTheme.displayLarge),
+      displayMedium: heading(bodyTextTheme.displayMedium),
+      displaySmall: heading(bodyTextTheme.displaySmall),
+      headlineLarge: heading(bodyTextTheme.headlineLarge),
+      headlineMedium: heading(bodyTextTheme.headlineMedium),
+      headlineSmall: heading(bodyTextTheme.headlineSmall),
+      titleLarge: heading(bodyTextTheme.titleLarge),
+      titleMedium: heading(
+        bodyTextTheme.titleMedium,
+      )?.copyWith(fontWeight: FontWeight.bold),
+      titleSmall: heading(bodyTextTheme.titleSmall),
     );
 
     final smRadius = BorderRadius.circular(AppDesign.radius.sm);
@@ -51,8 +63,13 @@ class AppTheme {
 
       cardTheme: CardThemeData(
         color: colorScheme.surfaceContainerLowest,
-        elevation: 0,
-        shape: mdShape,
+        elevation: 3,
+        shadowColor: colorScheme.shadow,
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppDesign.radius.md),
+          side: BorderSide(color: colorScheme.outline),
+        ),
         margin: EdgeInsets.zero,
       ),
 
@@ -133,7 +150,7 @@ class AppTheme {
         iconTheme: WidgetStateProperty.resolveWith(
           (states) => IconThemeData(
             color: states.contains(WidgetState.selected)
-                ? colorScheme.tertiary
+                ? colorScheme.secondary
                 : colorScheme.onSurfaceVariant,
             size: AppDesign.iconSizes.md,
           ),
@@ -143,7 +160,7 @@ class AppTheme {
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: colorScheme.surfaceContainer,
         elevation: 0,
-        selectedIconTheme: IconThemeData(color: colorScheme.tertiary),
+        selectedIconTheme: IconThemeData(color: colorScheme.secondary),
         unselectedIconTheme: IconThemeData(
           color: colorScheme.onSurfaceVariant,
         ),
