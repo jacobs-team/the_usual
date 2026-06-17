@@ -1,14 +1,12 @@
 import 'dart:async';
 
 import 'package:clock/clock.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
 import 'package:the_usual/design_system/design_system.dart';
-import 'package:the_usual/l10n/l10n.dart';
 
 /// {@template today_view}
 /// The Today view: tracks the day's weight and logs the day's meals from the
@@ -68,23 +66,7 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
     final currentMeal = getIt<UserSettingsBloc>().state.currentMeal(now);
 
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Text('Today'),
-        actions: [
-          IconButton(
-            onPressed: () => context.go(Routes.settings),
-            tooltip: context.l10n.settingsTooltip,
-            icon: const Icon(Icons.settings_outlined),
-          ),
-          if (kDebugMode)
-            IconButton(
-              onPressed: () => context.push(Routes.devTools),
-              tooltip: context.l10n.devToolsTooltip,
-              icon: const Icon(Icons.code),
-            ),
-        ],
-      ),
+      appBar: const TheUsualAppBar(title: 'Today'),
       body: SafeArea(
         bottom: false,
         child:

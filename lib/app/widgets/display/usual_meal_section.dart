@@ -91,6 +91,7 @@ class UsualMealSection extends StatelessWidget {
                 useSafeArea: true,
                 showDragHandle: false,
                 enableDrag: false,
+                isDismissible: false,
                 builder: (context) => const FoodEntrySheet(
                   title: 'Add usual meals',
                   confirmLabel: 'Add',

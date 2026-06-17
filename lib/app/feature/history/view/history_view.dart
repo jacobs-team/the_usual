@@ -61,7 +61,7 @@ class _HistoryViewState extends State<HistoryView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(centerTitle: true, title: const Text('History')),
+      appBar: const TheUsualAppBar(title: 'History'),
       body: SafeArea(
         bottom: false,
         child: BlocBuilder<DailyLogBloc, DailyLogState>(

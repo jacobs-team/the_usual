@@ -17,9 +17,9 @@ typedef FoodEntryResult = ({
 /// Bottom sheet for capturing what the user ate, by hand or with AI assistance.
 ///
 /// The sheet is always a list of food rows: one for a simple entry, more when
-/// the user itemizes or adds them. The [MealEntryMode] toggle only changes what
-/// the AI returns — one combined item ([MealEntryMode.wholeMeal]) or one per
-/// food ([MealEntryMode.itemized]) — not the layout. It starts from the user's
+/// the user itemizes or adds them. The Itemize checkbox only changes what the
+/// AI returns — one combined item ([MealEntryMode.wholeMeal]) or one per food
+/// ([MealEntryMode.itemized]) — not the layout. It starts from the user's
 /// remembered preference and updates it when changed. Pops with the list of
 /// [FoodEntryResult]s to log, or null when cancelled.
 /// {@endtemplate}
@@ -251,29 +251,6 @@ class _FoodEntrySheetState extends State<FoodEntrySheet> {
     }
   }
 
-  /// Asks the user to confirm discarding the entry, so an accidental
-  /// tap-outside, swipe-down, or back gesture doesn't wipe their progress.
-  Future<bool> _confirmDiscard() async {
-    final discarded = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Discard this entry?'),
-        content: const Text('The items you entered will be lost.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Keep editing'),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Discard'),
-          ),
-        ],
-      ),
-    );
-    return discarded ?? false;
-  }
-
   void _confirm() {
     final results = <FoodEntryResult>[
       for (final draft in _drafts)
@@ -293,181 +270,138 @@ class _FoodEntrySheetState extends State<FoodEntrySheet> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final aiButtonStyle = FilledButton.styleFrom(
+      visualDensity: VisualDensity.compact,
+      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      padding: EdgeInsets.symmetric(
+        horizontal: AppDesign.spacing.md,
+        vertical: AppDesign.spacing.sm,
+      ),
+    );
     // Lift the sheet above the keyboard, then keep the content clear of the
     // home indicator with SafeArea. The status bar is handled by the route's
     // useSafeArea, which strips the top padding here.
-    return PopScope(
-      canPop: !_hasContent,
-      onPopInvokedWithResult: (didPop, result) async {
-        if (didPop) return;
-        final navigator = Navigator.of(context);
-        final shouldDiscard = await _confirmDiscard();
-        if (shouldDiscard) navigator.pop();
-      },
-      child: Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.viewInsetsOf(context).bottom,
-        ),
-        child: SafeArea(
-          top: false,
-          child: SingleChildScrollView(
-            padding: EdgeInsets.all(AppDesign.spacing.lg),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
+    return Padding(
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.viewInsetsOf(context).bottom,
+      ),
+      child: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(AppDesign.spacing.lg),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(widget.title, style: textTheme.titleMedium),
+                  ),
+                  IconButton(
+                    visualDensity: VisualDensity.compact,
+                    onPressed: () => Navigator.of(context).pop(),
+                    icon: const Icon(Icons.close),
+                    tooltip: 'Close',
+                  ),
+                ],
+              ),
+              if (_aiAvailable) ...[
+                SizedBox(height: AppDesign.spacing.sm),
                 Row(
                   children: [
                     Expanded(
-                      child: Text(widget.title, style: textTheme.titleMedium),
-                    ),
-                    if (_aiAvailable) ...[
-                      Text('How should we log it?', style: textTheme.bodySmall),
-                      IconButton(
-                        visualDensity: VisualDensity.compact,
-                        onPressed: () => showDialog<void>(
-                          context: context,
-                          builder: (_) => const _MealEntryModeInfoDialog(),
+                      child: FilledButton.tonalIcon(
+                        style: aiButtonStyle,
+                        onPressed: _isGenerating ? null : _estimateWithAi,
+                        icon: const Icon(
+                          Icons.auto_awesome_outlined,
+                          size: 18,
                         ),
-                        icon: const Icon(Icons.info_outline, size: 18),
-                        tooltip: 'How logging modes work',
-                      ),
-                    ],
-                  ],
-                ),
-                if (_aiAvailable) ...[
-                  SizedBox(height: AppDesign.spacing.md),
-                  SegmentedButton<MealEntryMode>(
-                    showSelectedIcon: false,
-                    segments: [
-                      for (final mode in MealEntryMode.values)
-                        ButtonSegment(value: mode, label: Text(mode.label)),
-                    ],
-                    selected: {_mode},
-                    onSelectionChanged: _isGenerating
-                        ? null
-                        : (selection) => _setMode(selection.first),
-                  ),
-                  SizedBox(height: AppDesign.spacing.sm),
-                  Text(_mode.summary, style: textTheme.bodySmall),
-                  SizedBox(height: AppDesign.spacing.md),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: FilledButton.tonalIcon(
-                          onPressed: _isGenerating ? null : _estimateWithAi,
-                          icon: const Icon(Icons.auto_awesome_outlined),
-                          label: const Text('Estimate'),
-                        ),
-                      ),
-                      SizedBox(width: AppDesign.spacing.sm),
-                      Expanded(
-                        child: FilledButton.tonalIcon(
-                          onPressed: _isGenerating ? null : _photoWithAi,
-                          icon: const Icon(Icons.photo_camera_outlined),
-                          label: const Text('Photo'),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: AppDesign.spacing.sm),
-                  if (_isGenerating)
-                    Row(
-                      children: [
-                        const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                        SizedBox(width: AppDesign.spacing.sm),
-                        Text('Estimating…', style: textTheme.bodySmall),
-                      ],
-                    )
-                  else
-                    Text(
-                      'Type a name and tap Estimate, or snap a photo.',
-                      style: textTheme.bodySmall,
-                    ),
-                ],
-                SizedBox(height: AppDesign.spacing.md),
-                for (var index = 0; index < _drafts.length; index++) ...[
-                  if (index > 0) SizedBox(height: AppDesign.spacing.md),
-                  _FoodItemRow(
-                    key: ObjectKey(_drafts[index]),
-                    draft: _drafts[index],
-                    autofocus: index == 0,
-                    showQuantity: widget.showQuantity,
-                    showAddToUsualMeals: widget.showAddToUsualMeals,
-                    canRemove: _drafts.length > 1,
-                    onChanged: () => setState(() {}),
-                    onRemove: () => _removeDraft(_drafts[index]),
-                  ),
-                ],
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton.icon(
-                    onPressed: _addDraft,
-                    icon: const Icon(Icons.add),
-                    label: const Text('Add item'),
-                  ),
-                ),
-                SizedBox(height: AppDesign.spacing.md),
-                Row(
-                  children: [
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed: () => Navigator.maybePop(context),
-                        child: const Text('Cancel'),
+                        label: const Text('Estimate'),
                       ),
                     ),
                     SizedBox(width: AppDesign.spacing.sm),
                     Expanded(
-                      flex: 2,
-                      child: FilledButton(
-                        onPressed: _canConfirm ? _confirm : null,
-                        child: Text(widget.confirmLabel),
+                      child: FilledButton.tonalIcon(
+                        style: aiButtonStyle,
+                        onPressed: _isGenerating ? null : _photoWithAi,
+                        icon: const Icon(
+                          Icons.photo_camera_outlined,
+                          size: 18,
+                        ),
+                        label: const Text('Photo'),
+                      ),
+                    ),
+                    SizedBox(width: AppDesign.spacing.sm),
+                    Checkbox(
+                      visualDensity: VisualDensity.compact,
+                      value: _mode == MealEntryMode.itemized,
+                      onChanged: _isGenerating
+                          ? null
+                          : (value) => _setMode(
+                              (value ?? false)
+                                  ? MealEntryMode.itemized
+                                  : MealEntryMode.wholeMeal,
+                            ),
+                    ),
+                    const Text('Itemize'),
+                    Tooltip(
+                      message: MealEntryMode.itemized.detail,
+                      triggerMode: TooltipTriggerMode.tap,
+                      showDuration: const Duration(seconds: 4),
+                      child: Padding(
+                        padding: EdgeInsets.all(AppDesign.spacing.xs),
+                        child: const Icon(Icons.info_outline, size: 18),
                       ),
                     ),
                   ],
                 ),
+                if (_isGenerating) ...[
+                  SizedBox(height: AppDesign.spacing.sm),
+                  Row(
+                    children: [
+                      const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                      SizedBox(width: AppDesign.spacing.sm),
+                      Text('Estimating…', style: textTheme.bodySmall),
+                    ],
+                  ),
+                ],
               ],
-            ),
+              SizedBox(height: AppDesign.spacing.md),
+              for (var index = 0; index < _drafts.length; index++) ...[
+                if (index > 0) SizedBox(height: AppDesign.spacing.md),
+                _FoodItemRow(
+                  key: ObjectKey(_drafts[index]),
+                  draft: _drafts[index],
+                  autofocus: index == 0,
+                  showQuantity: widget.showQuantity,
+                  showAddToUsualMeals: widget.showAddToUsualMeals,
+                  canRemove: _drafts.length > 1,
+                  onChanged: () => setState(() {}),
+                  onRemove: () => _removeDraft(_drafts[index]),
+                ),
+              ],
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  onPressed: _addDraft,
+                  icon: const Icon(Icons.add),
+                  label: const Text('Add item'),
+                ),
+              ),
+              FilledButton(
+                onPressed: _canConfirm ? _confirm : null,
+                child: Text(widget.confirmLabel),
+              ),
+            ],
           ),
         ),
       ),
-    );
-  }
-}
-
-/// Explains how each [MealEntryMode] turns a meal into log entries, so the
-/// user understands that the toggle changes the AI's output.
-class _MealEntryModeInfoDialog extends StatelessWidget {
-  const _MealEntryModeInfoDialog();
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return AlertDialog(
-      title: const Text('How should we log it?'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (final mode in MealEntryMode.values) ...[
-            if (mode != MealEntryMode.values.first)
-              SizedBox(height: AppDesign.spacing.md),
-            Text(mode.label, style: textTheme.titleSmall),
-            SizedBox(height: AppDesign.spacing.xs),
-            Text(mode.detail, style: textTheme.bodyMedium),
-          ],
-        ],
-      ),
-      actions: [
-        FilledButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Got it'),
-        ),
-      ],
     );
   }
 }

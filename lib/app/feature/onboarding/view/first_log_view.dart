@@ -101,6 +101,7 @@ class _FirstLogViewState extends State<FirstLogView> {
                                   useSafeArea: true,
                                   showDragHandle: false,
                                   enableDrag: false,
+                                  isDismissible: false,
                                   builder: (context) => const FoodEntrySheet(
                                     title: 'Log something else',
                                     confirmLabel: 'Log',
