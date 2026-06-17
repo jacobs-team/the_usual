@@ -197,7 +197,10 @@ class NutritionBar extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (hasGoal)
-          Text('$consumedCalories / $calorieGoal cal', style: calorieSummaryStyle)
+          Text(
+            '$consumedCalories / $calorieGoal cal',
+            style: calorieSummaryStyle,
+          )
         else
           Row(
             mainAxisSize: MainAxisSize.min,

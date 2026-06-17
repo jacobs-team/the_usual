@@ -31,14 +31,12 @@ class WeightInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     return TheUsualTextField(
       controller: controller,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
       inputFormatters: [
         FilteringTextInputFormatter.allow(RegExp(r'^\d{0,4}\.?\d{0,1}')),
       ],
-      textStyle: textTheme.headlineMedium,
       suffixIcon: Padding(
         padding: EdgeInsets.only(right: AppDesign.spacing.sm),
         child: Row(

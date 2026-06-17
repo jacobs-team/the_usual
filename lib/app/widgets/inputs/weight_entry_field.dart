@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template weight_entry_field}
 /// An inline number field for a single day's weigh-in, prefilled with that
@@ -101,8 +102,17 @@ class _WeightEntryFieldState extends State<WeightEntryField> {
                   ),
                 ],
                 suffixText: ' ${weightUnit.name}',
+                suffixIconConstraints: const BoxConstraints(),
                 suffixIcon: canUseLast
                     ? TextButton(
+                        style: TextButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: AppDesign.spacing.sm,
+                          ),
+                          minimumSize: Size.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          visualDensity: VisualDensity.compact,
+                        ),
                         onPressed: () => _dailyLogBloc.add(
                           DailyLogEvent.weightOnDayChanged(
                             widget.day,

@@ -109,38 +109,40 @@ void main() {
       expect(find.byType(PageView), findsOneWidget);
     });
 
-    testWidgets('clamps to a remaining month when the selected one is deleted',
-        (tester) async {
-      useTallWindow(tester);
+    testWidgets(
+      'clamps to a remaining month when the selected one is deleted',
+      (tester) async {
+        useTallWindow(tester);
 
-      // Start on the latest month (June), then emit a state where June's only
-      // entries are gone, leaving May. The selected month vanishes, so the
-      // post-frame clamp snaps the selection back into range.
-      final stateController = StreamController<DailyLogState>.broadcast();
-      addTearDown(stateController.close);
-      var currentState = twoMonthState();
-      when(() => dailyLogBloc.state).thenAnswer((_) => currentState);
-      when(
-        () => dailyLogBloc.stream,
-      ).thenAnswer((_) => stateController.stream);
+        // Start on the latest month (June), then emit a state where June's only
+        // entries are gone, leaving May. The selected month vanishes, so the
+        // post-frame clamp snaps the selection back into range.
+        final stateController = StreamController<DailyLogState>.broadcast();
+        addTearDown(stateController.close);
+        var currentState = twoMonthState();
+        when(() => dailyLogBloc.state).thenAnswer((_) => currentState);
+        when(
+          () => dailyLogBloc.stream,
+        ).thenAnswer((_) => stateController.stream);
 
-      await tester.pumpPumpPumpItUP(
-        deps: [dailyLogBloc],
-        const HistoryView(),
-      );
-      await tester.pumpAndSettle();
+        await tester.pumpPumpPumpItUP(
+          deps: [dailyLogBloc],
+          const HistoryView(),
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.text('JUN'), findsOneWidget);
+        expect(find.text('JUN'), findsOneWidget);
 
-      final mayOnlyState = DailyLogState(
-        mealEntries: [meal(DateTime(2026, 5, 10, 8), calories: 300)],
-      );
-      currentState = mayOnlyState;
-      stateController.add(mayOnlyState);
-      await tester.pumpAndSettle();
+        final mayOnlyState = DailyLogState(
+          mealEntries: [meal(DateTime(2026, 5, 10, 8), calories: 300)],
+        );
+        currentState = mayOnlyState;
+        stateController.add(mayOnlyState);
+        await tester.pumpAndSettle();
 
-      expect(find.text('JUN'), findsNothing);
-      expect(find.text('MAY'), findsOneWidget);
-    });
+        expect(find.text('JUN'), findsNothing);
+        expect(find.text('MAY'), findsOneWidget);
+      },
+    );
   });
 }

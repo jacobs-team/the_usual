@@ -298,8 +298,7 @@ void main() {
       blocTest<OnboardingBloc, OnboardingState>(
         'calorieGoalChanged stores the calorie goal',
         build: OnboardingBloc.new,
-        act: (bloc) =>
-            bloc.add(const OnboardingEvent.calorieGoalChanged(2200)),
+        act: (bloc) => bloc.add(const OnboardingEvent.calorieGoalChanged(2200)),
         expect: () => [
           isA<OnboardingState>().having(
             (s) => s.settings.calorieGoal,
@@ -312,8 +311,7 @@ void main() {
       blocTest<OnboardingBloc, OnboardingState>(
         'weightGoalChanged stores the weight goal',
         build: OnboardingBloc.new,
-        act: (bloc) =>
-            bloc.add(const OnboardingEvent.weightGoalChanged(150.5)),
+        act: (bloc) => bloc.add(const OnboardingEvent.weightGoalChanged(150.5)),
         expect: () => [
           isA<OnboardingState>().having(
             (s) => s.settings.weightGoal,

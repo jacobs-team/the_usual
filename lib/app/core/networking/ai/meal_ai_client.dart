@@ -75,7 +75,9 @@ class MealAiClient {
           role: Role.user,
           content: [
             TextPart(text: prompt),
-            MediaPart(media: Media(contentType: imageMediaType, url: dataUrl)),
+            MediaPart(
+              media: Media(contentType: imageMediaType, url: dataUrl),
+            ),
           ],
         ),
       ];

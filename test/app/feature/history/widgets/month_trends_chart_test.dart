@@ -152,34 +152,38 @@ void main() {
       expect(find.textContaining('▲'), findsOneWidget);
     });
 
-    testWidgets('draws the goal weight line below the trend when goal is under',
-        (tester) async {
-      // The goal label is canvas-painted, so only the section header is a Text
-      // widget. A goal under the mean weight places its label below the line.
-      await pumpChart(
-        tester,
-        monthHistory: month(
-          weightEntries: [weight(1, 166), weight(5, 164)],
-        ),
-        weightGoal: 160,
-      );
+    testWidgets(
+      'draws the goal weight line below the trend when goal is under',
+      (tester) async {
+        // The goal label is canvas-painted, so only the section header is a Text
+        // widget. A goal under the mean weight places its label below the line.
+        await pumpChart(
+          tester,
+          monthHistory: month(
+            weightEntries: [weight(1, 166), weight(5, 164)],
+          ),
+          weightGoal: 160,
+        );
 
-      expect(find.text('WEIGHT'), findsOneWidget);
-    });
+        expect(find.text('WEIGHT'), findsOneWidget);
+      },
+    );
 
-    testWidgets('draws the goal weight line above the trend when goal is over',
-        (tester) async {
-      // Goal above the mean weight pushes the label band above the line.
-      await pumpChart(
-        tester,
-        monthHistory: month(
-          weightEntries: [weight(1, 160), weight(5, 162)],
-        ),
-        weightGoal: 170,
-      );
+    testWidgets(
+      'draws the goal weight line above the trend when goal is over',
+      (tester) async {
+        // Goal above the mean weight pushes the label band above the line.
+        await pumpChart(
+          tester,
+          monthHistory: month(
+            weightEntries: [weight(1, 160), weight(5, 162)],
+          ),
+          weightGoal: 170,
+        );
 
-      expect(find.text('WEIGHT'), findsOneWidget);
-    });
+        expect(find.text('WEIGHT'), findsOneWidget);
+      },
+    );
 
     testWidgets('hides the goal weight line when units mismatch', (
       tester,
