@@ -27,7 +27,12 @@ void main() {
       dailyLogBloc = MockDailyLogBloc();
       userSettingsBloc = MockUserSettingsBloc();
       registerFallbackValue(
-        DailyLogEvent.weightOnDayChanged(DateTime(2020), 0, WeightUnit.lb),
+        DailyLogEvent.weightOnDayChanged(
+          DateTime(2020),
+          0,
+          WeightUnit.lb,
+          const TimeOfDay(hour: 0, minute: 0),
+        ),
       );
     });
 
@@ -143,6 +148,76 @@ void main() {
       await tester.tap(find.byIcon(Icons.code));
       await tester.pumpAndSettle();
       expect(find.text('devtools-page'), findsOneWidget);
+    });
+
+    testWidgets('navigates to goals when the nutrition bar set goal fires', (
+      tester,
+    ) async {
+      stubDailyLog(const DailyLogState());
+      stubSettings(const UserSettingsState());
+      await pumpView(tester);
+
+      final nutritionBar = tester.widget<NutritionBar>(
+        find.byType(NutritionBar),
+      );
+      nutritionBar.onSetGoal!();
+      await tester.pumpAndSettle();
+
+      expect(find.text('settings-page'), findsOneWidget);
+    });
+
+    testWidgets('toggles the expand-nutrition setting through the bloc', (
+      tester,
+    ) async {
+      registerFallbackValue(
+        const UserSettingsEvent.expandNutritionByDefaultChanged(
+          expandNutritionByDefault: true,
+        ),
+      );
+      stubDailyLog(const DailyLogState());
+      stubSettings(const UserSettingsState());
+      when(() => userSettingsBloc.add(any())).thenReturn(null);
+      await pumpView(tester);
+
+      await tester.tap(find.byIcon(Icons.unfold_more));
+      await tester.pump();
+
+      verify(() => userSettingsBloc.add(any())).called(1);
+    });
+
+    testWidgets('reschedules the refresh and rebuilds on resume', (
+      tester,
+    ) async {
+      stubDailyLog(const DailyLogState());
+      stubSettings(const UserSettingsState());
+      await pumpView(tester);
+
+      tester.binding.handleAppLifecycleStateChanged(
+        AppLifecycleState.resumed,
+      );
+      await tester.pump();
+
+      expect(find.byType(MealLogSection), findsNWidgets(4));
+    });
+
+    testWidgets('rebuilds when the meal-boundary refresh timer fires', (
+      tester,
+    ) async {
+      stubDailyLog(const DailyLogState());
+      // End-of-day mode has no per-meal boundaries, so the highlight next
+      // changes at the top of the hour: a timer at most an hour out.
+      stubSettings(
+        const UserSettingsState(
+          mealCheckinScheduleMode: MealCheckinScheduleMode.endOfDay,
+        ),
+      );
+      await pumpView(tester);
+
+      // Advance past the next hourly boundary so the scheduled timer fires and
+      // reschedules the next one while still mounted.
+      await tester.pump(const Duration(hours: 1, minutes: 1));
+
+      expect(find.byType(MealLogSection), findsNWidgets(4));
     });
   });
 }

@@ -74,6 +74,9 @@ class UserSettingsBloc
             skipLoggedMealReminders: event.skipLoggedMealReminders,
           ),
         ),
+        SettingsDayStartTimeChanged() => emit(
+          state.copyWith(dayStartTime: event.dayStartTime),
+        ),
         SettingsMealEntryModeChanged() => emit(
           state.copyWith(mealEntryMode: event.mealEntryMode),
         ),

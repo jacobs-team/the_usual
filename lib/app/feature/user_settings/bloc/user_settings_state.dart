@@ -84,6 +84,13 @@ abstract class UserSettingsState with _$UserSettingsState {
     /// what's logged.
     @Default(false) bool skipLoggedMealReminders,
 
+    /// When a new day begins. Meals and weigh-ins logged before this time count
+    /// toward the previous day, so late-night logging lands on the right day
+    /// and the Today view doesn't roll over at midnight.
+    @TimeOfDayConverter()
+    @Default(TimeOfDay(hour: 0, minute: 0))
+    TimeOfDay dayStartTime,
+
     /// How AI-assisted entry turns a meal into log entries: one combined item
     /// or a breakdown into individual foods. Remembered as the user's default
     /// and switchable per entry from the food entry sheet.

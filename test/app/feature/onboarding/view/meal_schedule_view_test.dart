@@ -94,6 +94,30 @@ void main() {
       ).called(1);
     });
 
+    testWidgets('toggles skip-logged reminders', (tester) async {
+      useTallWindow(tester);
+      stubBloc(const UserSettingsState());
+      await tester.pumpPumpPumpItUP(
+        deps: [onboardingBloc],
+        const MealScheduleView(),
+      );
+
+      await tester.tap(
+        find.descendant(
+          of: find.byType(SkipLoggedRemindersTile),
+          matching: find.byType(Switch),
+        ),
+      );
+
+      verify(
+        () => onboardingBloc.add(
+          const OnboardingEvent.skipLoggedMealRemindersChanged(
+            skipLoggedMealReminders: true,
+          ),
+        ),
+      ).called(1);
+    });
+
     testWidgets('shows the end-of-day row and retimes it', (tester) async {
       useTallWindow(tester);
       stubBloc(

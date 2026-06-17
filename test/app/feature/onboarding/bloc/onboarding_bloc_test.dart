@@ -224,6 +224,104 @@ void main() {
           ),
         ],
       );
+
+      blocTest<OnboardingBloc, OnboardingState>(
+        'usualMealNameChanged updates the matching meal only',
+        build: OnboardingBloc.new,
+        seed: () => const OnboardingState(
+          settings: UserSettingsState(
+            usuals: {
+              MealOfTheDay.breakfast: [
+                UsualMeal(id: 'a', name: 'Eggs'),
+                UsualMeal(id: 'b', name: 'Oats'),
+              ],
+            },
+          ),
+        ),
+        act: (bloc) => bloc.add(
+          const OnboardingEvent.usualMealNameChanged(
+            MealOfTheDay.breakfast,
+            'a',
+            'Scrambled eggs',
+          ),
+        ),
+        expect: () => [
+          isA<OnboardingState>().having(
+            (s) => s.settings.usuals[MealOfTheDay.breakfast]!.first.name,
+            'updated name',
+            'Scrambled eggs',
+          ),
+        ],
+      );
+
+      blocTest<OnboardingBloc, OnboardingState>(
+        'usualMealNameChanged ignores a blank name',
+        build: OnboardingBloc.new,
+        seed: () => const OnboardingState(
+          settings: UserSettingsState(
+            usuals: {
+              MealOfTheDay.breakfast: [UsualMeal(id: 'a', name: 'Eggs')],
+            },
+          ),
+        ),
+        act: (bloc) => bloc.add(
+          const OnboardingEvent.usualMealNameChanged(
+            MealOfTheDay.breakfast,
+            'a',
+            '   ',
+          ),
+        ),
+        expect: () => <OnboardingState>[],
+      );
+    });
+
+    group('reminder skip', () {
+      blocTest<OnboardingBloc, OnboardingState>(
+        'skipLoggedMealRemindersChanged stores the flag',
+        build: OnboardingBloc.new,
+        act: (bloc) => bloc.add(
+          const OnboardingEvent.skipLoggedMealRemindersChanged(
+            skipLoggedMealReminders: true,
+          ),
+        ),
+        expect: () => [
+          isA<OnboardingState>().having(
+            (s) => s.settings.skipLoggedMealReminders,
+            'skipLoggedMealReminders',
+            isTrue,
+          ),
+        ],
+      );
+    });
+
+    group('goals', () {
+      blocTest<OnboardingBloc, OnboardingState>(
+        'calorieGoalChanged stores the calorie goal',
+        build: OnboardingBloc.new,
+        act: (bloc) =>
+            bloc.add(const OnboardingEvent.calorieGoalChanged(2200)),
+        expect: () => [
+          isA<OnboardingState>().having(
+            (s) => s.settings.calorieGoal,
+            'calorieGoal',
+            2200,
+          ),
+        ],
+      );
+
+      blocTest<OnboardingBloc, OnboardingState>(
+        'weightGoalChanged stores the weight goal',
+        build: OnboardingBloc.new,
+        act: (bloc) =>
+            bloc.add(const OnboardingEvent.weightGoalChanged(150.5)),
+        expect: () => [
+          isA<OnboardingState>().having(
+            (s) => s.settings.weightGoal,
+            'weightGoal',
+            150.5,
+          ),
+        ],
+      );
     });
 
     group('reminder settings', () {
@@ -435,6 +533,22 @@ void main() {
       );
 
       blocTest<OnboardingBloc, OnboardingState>(
+        'firstLogItemQuantityChanged stores the rounded quantity for the item',
+        build: OnboardingBloc.new,
+        seed: () => const OnboardingState(firstLogSelectedIds: ['a']),
+        act: (bloc) => bloc.add(
+          const OnboardingEvent.firstLogItemQuantityChanged('a', 2.5),
+        ),
+        expect: () => [
+          isA<OnboardingState>().having(
+            (s) => s.firstLogQuantities['a'],
+            'quantity for a',
+            2.5,
+          ),
+        ],
+      );
+
+      blocTest<OnboardingBloc, OnboardingState>(
         'somethingElseLogged adds a usual and selects it',
         build: OnboardingBloc.new,
         act: (bloc) => bloc.add(
@@ -460,6 +574,25 @@ void main() {
       );
 
       blocTest<OnboardingBloc, OnboardingState>(
+        'somethingElseLogged stores the rounded quantity for the new usual',
+        build: OnboardingBloc.new,
+        act: (bloc) => bloc.add(
+          const OnboardingEvent.somethingElseLogged(
+            MealOfTheDay.dinner,
+            'Tacos',
+            quantity: 3,
+          ),
+        ),
+        expect: () => [
+          isA<OnboardingState>().having(
+            (s) => s.firstLogQuantities.values,
+            'stored quantities',
+            contains(3.0),
+          ),
+        ],
+      );
+
+      blocTest<OnboardingBloc, OnboardingState>(
         'somethingElseLogged ignores a blank name',
         build: OnboardingBloc.new,
         act: (bloc) => bloc.add(
@@ -477,6 +610,18 @@ void main() {
         final restored = bloc.fromJson(bloc.toJson(state));
 
         expect(restored, equals(state));
+      });
+
+      test('toJson then fromJson round-trips populated firstLogQuantities', () {
+        final bloc = OnboardingBloc();
+        const state = OnboardingState(
+          firstLogSelectedIds: ['a', 'b'],
+          firstLogQuantities: {'a': 2.5, 'b': 1},
+        );
+
+        final restored = bloc.fromJson(bloc.toJson(state));
+
+        expect(restored.firstLogQuantities, equals({'a': 2.5, 'b': 1.0}));
       });
     });
   });
@@ -507,6 +652,57 @@ void main() {
       const state = OnboardingState(activeStepIndex: 1);
 
       expect(state.step, equals(OnboardingStep.buildUsuals));
+    });
+
+    group('fromJson migration', () {
+      Map<String, dynamic> v0Json({
+        required int activeStepIndex,
+        ReminderStyle reminderStyle = ReminderStyle.onAppOpen,
+      }) {
+        return {
+          'version': 0,
+          'activeStepIndex': activeStepIndex,
+          'settings': const UserSettingsState()
+              .copyWith(reminderStyle: reminderStyle)
+              .toJson(),
+        };
+      }
+
+      test('v0 shifts an index at or past the goals insertion point up by '
+          'one', () {
+        final restored = OnboardingState.fromJson(
+          v0Json(activeStepIndex: 5),
+        );
+
+        expect(restored.version, equals(1));
+        expect(restored.activeStepIndex, equals(6));
+      });
+
+      test('v0 leaves an index before the goals insertion point unchanged', () {
+        final restored = OnboardingState.fromJson(
+          v0Json(activeStepIndex: 3),
+        );
+
+        expect(restored.version, equals(1));
+        expect(restored.activeStepIndex, equals(3));
+      });
+
+      test('v0 uses the earlier insertion point when reminders are off', () {
+        final restored = OnboardingState.fromJson(
+          v0Json(activeStepIndex: 4, reminderStyle: ReminderStyle.none),
+        );
+
+        expect(restored.activeStepIndex, equals(5));
+      });
+
+      test('a newer unknown version resolves to a completed onboarding', () {
+        final restored = OnboardingState.fromJson({'version': 99});
+
+        expect(
+          restored.activeStepIndex,
+          equals(OnboardingStep.values.length),
+        );
+      });
     });
   });
 

@@ -20,6 +20,48 @@ void main() {
       registerFallbackValue(const OnboardingEvent.continuePressed());
     });
 
+    testWidgets('adds usualMealNameChanged when a saved name is edited', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(1200, 3000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final onboardingBloc = blocWith(
+        const OnboardingState(
+          settings: UserSettingsState(
+            expandNutritionByDefault: true,
+            usuals: {
+              MealOfTheDay.breakfast: [UsualMeal(id: 'a', name: 'Eggs')],
+            },
+          ),
+        ),
+      );
+      await tester.pumpPumpPumpItUP(
+        deps: [onboardingBloc],
+        const BuildUsualsView(),
+      );
+
+      final nameField = find
+          .descendant(
+            of: find.byType(ExpandableNutrition),
+            matching: find.byType(TextField),
+          )
+          .first;
+      await tester.enterText(nameField, 'Scrambled eggs');
+
+      verify(
+        () => onboardingBloc.add(
+          const OnboardingEvent.usualMealNameChanged(
+            MealOfTheDay.breakfast,
+            'a',
+            'Scrambled eggs',
+          ),
+        ),
+      ).called(1);
+    });
+
     testWidgets('renders a section per meal', (tester) async {
       tester.view.physicalSize = const Size(1200, 3000);
       tester.view.devicePixelRatio = 1.0;

@@ -1,7 +1,12 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:the_usual/app/app.dart';
 
 void main() {
+  // The default day boundary is midnight, so a logical day equals a calendar
+  // day; these tests exercise the bucketing against that boundary.
+  const dayStart = TimeOfDay(hour: 0, minute: 0);
+
   MealLogEntry entry({
     required String id,
     required DateTime loggedAt,
@@ -61,7 +66,7 @@ void main() {
           ),
         ];
 
-        final breakdown = entries.breakdownOn(day);
+        final breakdown = entries.breakdownOn(day, dayStart);
 
         expect(breakdown.nutrition.calories, equals(850));
         expect(
@@ -80,7 +85,7 @@ void main() {
           entry(id: 'a', loggedAt: DateTime(2026, 6, 10), calories: 100),
         ];
 
-        final breakdown = entries.breakdownOn(DateTime(2026, 6, 14));
+        final breakdown = entries.breakdownOn(DateTime(2026, 6, 14), dayStart);
 
         expect(breakdown.nutrition.calories, isNull);
         expect(breakdown.entriesByMeal, isEmpty);
@@ -150,6 +155,7 @@ void main() {
         mealOfTheDay: MealOfTheDay.breakfast,
         usuals: usuals,
         day: day,
+        dayStart: dayStart,
       );
 
       expect(
@@ -163,6 +169,7 @@ void main() {
         mealOfTheDay: MealOfTheDay.breakfast,
         usuals: usuals,
         day: day,
+        dayStart: dayStart,
       );
 
       expect(
@@ -190,9 +197,113 @@ void main() {
         mealOfTheDay: MealOfTheDay.breakfast,
         usuals: usuals,
         day: day,
+        dayStart: dayStart,
       );
 
       expect(picks.any((usualMeal) => usualMeal.id == 'eggs'), isFalse);
+    });
+
+    test('breaks an equal-count tie by most recently logged', () {
+      // eggs is the most recent overall and is pulled out as the lead pick.
+      // oatmeal and coffee each have one log, so they tie on count and the
+      // tie-break falls to whichever was logged more recently.
+      final entries = [
+        logEntry(
+          id: '1',
+          loggedAt: DateTime(2026, 6, 15),
+          mealOfTheDay: MealOfTheDay.breakfast,
+          usualMealId: 'eggs',
+        ),
+        logEntry(
+          id: '2',
+          loggedAt: DateTime(2026, 6, 10),
+          mealOfTheDay: MealOfTheDay.breakfast,
+          usualMealId: 'oatmeal',
+        ),
+        logEntry(
+          id: '3',
+          loggedAt: DateTime(2026, 6, 12),
+          mealOfTheDay: MealOfTheDay.breakfast,
+          usualMealId: 'coffee',
+        ),
+      ];
+
+      final picks = entries.orderedQuickPicks(
+        mealOfTheDay: MealOfTheDay.breakfast,
+        usuals: usuals,
+        day: day,
+        dayStart: dayStart,
+      );
+
+      expect(
+        picks.map((usualMeal) => usualMeal.id).toList(),
+        equals(['eggs', 'coffee', 'oatmeal']),
+      );
+    });
+
+    test('keeps library order for usuals never logged at this meal', () {
+      // eggs is the only logged usual, so it leads. oatmeal and coffee were
+      // never logged here, tying at zero with no last-logged on either side,
+      // so they fall back to their library order.
+      final entries = [
+        logEntry(
+          id: '1',
+          loggedAt: DateTime(2026, 6, 15),
+          mealOfTheDay: MealOfTheDay.breakfast,
+          usualMealId: 'eggs',
+        ),
+      ];
+
+      final picks = entries.orderedQuickPicks(
+        mealOfTheDay: MealOfTheDay.breakfast,
+        usuals: usuals,
+        day: day,
+        dayStart: dayStart,
+      );
+
+      expect(
+        picks.map((usualMeal) => usualMeal.id).toList(),
+        equals(['eggs', 'oatmeal', 'coffee']),
+      );
+    });
+
+    test('keeps library order when count and last-logged tie', () {
+      // eggs is logged latest and pulled out as the lead pick. oatmeal and
+      // coffee each have one log at the same instant, tying on both count and
+      // last-logged, so they fall back to their library order.
+      final tie = DateTime(2026, 6, 10);
+      final entries = [
+        logEntry(
+          id: '1',
+          loggedAt: DateTime(2026, 6, 15),
+          mealOfTheDay: MealOfTheDay.breakfast,
+          usualMealId: 'eggs',
+        ),
+        logEntry(
+          id: '2',
+          loggedAt: tie,
+          mealOfTheDay: MealOfTheDay.breakfast,
+          usualMealId: 'oatmeal',
+        ),
+        logEntry(
+          id: '3',
+          loggedAt: tie,
+          mealOfTheDay: MealOfTheDay.breakfast,
+          usualMealId: 'coffee',
+        ),
+      ];
+
+      final picks = entries.orderedQuickPicks(
+        mealOfTheDay: MealOfTheDay.breakfast,
+        usuals: usuals,
+        day: day,
+        dayStart: dayStart,
+      );
+
+      expect(
+        picks.map((usualMeal) => usualMeal.id).toList(),
+        equals(['eggs', 'oatmeal', 'coffee']),
+      );
     });
 
     test('drops a usual already logged today for this meal by name', () {
@@ -209,6 +320,7 @@ void main() {
         mealOfTheDay: MealOfTheDay.breakfast,
         usuals: usuals,
         day: day,
+        dayStart: dayStart,
       );
 
       expect(picks.any((usualMeal) => usualMeal.id == 'oatmeal'), isFalse);
@@ -255,6 +367,7 @@ void main() {
           mealOfTheDay: MealOfTheDay.breakfast,
           usuals: usuals,
           day: day,
+          dayStart: dayStart,
         );
 
         expect(grouped.containsKey(MealOfTheDay.breakfast), isFalse);
@@ -290,6 +403,7 @@ void main() {
           mealOfTheDay: MealOfTheDay.breakfast,
           usuals: usuals,
           day: day,
+          dayStart: dayStart,
         );
 
         expect(grouped.containsKey(MealOfTheDay.dinner), isFalse);

@@ -42,6 +42,8 @@ class MockFileCacheService extends Mock implements FileCacheService {}
 
 class MockMealAiRepository extends Mock implements MealAiRepository {}
 
+class MockMealAiClient extends Mock implements MealAiClient {}
+
 class MockDio extends Mock implements Dio {}
 
 class MockPrettyDioLogger extends Mock implements PrettyDioLogger {}

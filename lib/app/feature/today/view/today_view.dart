@@ -65,7 +65,6 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final now = clock.now();
-    final today = DateUtils.dateOnly(now);
     final currentMeal = getIt<UserSettingsBloc>().state.currentMeal(now);
 
     return Scaffold(
@@ -92,17 +91,23 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
             BlocSelector<
               UserSettingsBloc,
               UserSettingsState,
-              (Map<MealOfTheDay, List<UsualMeal>>, bool, int?)
+              (Map<MealOfTheDay, List<UsualMeal>>, bool, int?, TimeOfDay)
             >(
               bloc: getIt<UserSettingsBloc>(),
               selector: (state) => (
                 state.usuals,
                 state.expandNutritionByDefault,
                 state.calorieGoal,
+                state.dayStartTime,
               ),
               builder: (context, selected) {
-                final (usualMeals, expandNutritionByDefault, calorieGoal) =
-                    selected;
+                final (
+                  usualMeals,
+                  expandNutritionByDefault,
+                  calorieGoal,
+                  dayStartTime,
+                ) = selected;
+                final today = now.logicalDay(dayStartTime);
                 return BlocSelector<
                   DailyLogBloc,
                   DailyLogState,
@@ -111,7 +116,10 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
                   bloc: getIt<DailyLogBloc>(),
                   selector: (state) => state.mealEntries,
                   builder: (context, mealEntries) {
-                    final breakdown = mealEntries.breakdownOn(today);
+                    final breakdown = mealEntries.breakdownOn(
+                      today,
+                      dayStartTime,
+                    );
                     return CustomScrollView(
                       slivers: [
                         SliverPadding(
@@ -159,11 +167,13 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
                               mealOfTheDay: mealOfTheDay,
                               usuals: usualMeals,
                               day: today,
+                              dayStart: dayStartTime,
                             ),
                             otherMealUsuals: mealEntries.usualsFromOtherMeals(
                               mealOfTheDay: mealOfTheDay,
                               usuals: usualMeals,
                               day: today,
+                              dayStart: dayStartTime,
                             ),
                             isCurrent: mealOfTheDay == currentMeal,
                             nutritionExpandedByDefault:

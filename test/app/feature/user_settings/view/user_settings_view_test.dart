@@ -7,9 +7,9 @@ import '../../../../helpers/helpers.dart';
 
 void main() {
   group(UserSettingsView, () {
-    GoRouter buildRouter() {
+    GoRouter buildRouter({String initialLocation = Routes.settings}) {
       return GoRouter(
-        initialLocation: Routes.settings,
+        initialLocation: initialLocation,
         routes: [
           GoRoute(
             path: Routes.settings,
@@ -23,14 +23,17 @@ void main() {
       );
     }
 
-    Future<void> pumpView(WidgetTester tester) {
+    Future<void> pumpView(
+      WidgetTester tester, {
+      String initialLocation = Routes.settings,
+    }) {
       tester.view.physicalSize = const Size(1200, 4000);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
       return tester.pumpPumpPumpItUP(
         const SizedBox.shrink(),
-        router: buildRouter(),
+        router: buildRouter(initialLocation: initialLocation),
       );
     }
 
@@ -43,6 +46,15 @@ void main() {
       expect(find.byType(WeightSection), findsOneWidget);
       expect(find.byType(UsualMealsTile), findsOneWidget);
       expect(find.byType(AppearanceSection), findsOneWidget);
+    });
+
+    testWidgets('scrolls the goals section into view with focus=goals', (
+      tester,
+    ) async {
+      await pumpView(tester, initialLocation: '${Routes.settings}?focus=goals');
+      await tester.pumpAndSettle();
+
+      expect(find.byType(GoalsSection), findsOneWidget);
     });
 
     testWidgets('the back button returns to today', (tester) async {

@@ -28,7 +28,8 @@ class _HistoryViewState extends State<HistoryView> {
   @override
   void initState() {
     super.initState();
-    final history = _dailyLogBloc.state.historyByMonth;
+    final dayStart = getIt<UserSettingsBloc>().state.dayStartTime;
+    final history = _dailyLogBloc.state.historyByMonth(dayStart);
     final initialIndex = history.isEmpty ? 0 : history.length - 1;
     final now = clock.now();
     _selectedMonth = history.isEmpty
@@ -66,7 +67,8 @@ class _HistoryViewState extends State<HistoryView> {
         child: BlocBuilder<DailyLogBloc, DailyLogState>(
           bloc: _dailyLogBloc,
           builder: (context, state) {
-            final history = state.historyByMonth;
+            final dayStart = getIt<UserSettingsBloc>().state.dayStartTime;
+            final history = state.historyByMonth(dayStart);
             if (history.isEmpty) {
               return Center(
                 child: Padding(

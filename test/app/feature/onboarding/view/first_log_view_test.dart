@@ -72,6 +72,34 @@ void main() {
       ).called(1);
     });
 
+    testWidgets('stepping a selected card adds firstLogItemQuantityChanged', (
+      tester,
+    ) async {
+      useTallWindow(tester);
+      registerFallbackValue(
+        const OnboardingEvent.firstLogItemQuantityChanged('a', 1),
+      );
+      stubBloc(
+        OnboardingState(
+          activeStepIndex: 5,
+          firstLogSelectedIds: const ['a'],
+          settings: UserSettingsState(usuals: usualsForEveryMeal()),
+        ),
+      );
+      await tester.pumpPumpPumpItUP(
+        deps: [onboardingBloc],
+        const FirstLogView(),
+      );
+
+      await tester.tap(find.byIcon(Icons.add).first);
+
+      verify(
+        () => onboardingBloc.add(
+          const OnboardingEvent.firstLogItemQuantityChanged('a', 2),
+        ),
+      ).called(1);
+    });
+
     testWidgets('Log it is disabled until something is selected', (
       tester,
     ) async {

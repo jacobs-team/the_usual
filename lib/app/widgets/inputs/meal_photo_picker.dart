@@ -1,3 +1,7 @@
+// coverage:ignore-file
+// Thin image_picker platform glue: capturing a photo drives the picker plugin's
+// platform channel, which can't be exercised in a unit test.
+
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';

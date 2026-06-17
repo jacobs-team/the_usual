@@ -70,6 +70,23 @@ void main() {
         ),
       ).called(1);
 
+      final rowName = find
+          .descendant(
+            of: find.byType(ExpandableNutrition),
+            matching: find.byType(EditableText),
+          )
+          .first;
+      await tester.enterText(rowName, 'Scrambled eggs');
+      verify(
+        () => userSettingsBloc.add(
+          const UserSettingsEvent.usualMealNameChanged(
+            MealOfTheDay.breakfast,
+            'a',
+            'Scrambled eggs',
+          ),
+        ),
+      ).called(1);
+
       await tester.tap(find.byIcon(Icons.delete_forever_outlined).first);
       verify(
         () => userSettingsBloc.add(

@@ -41,14 +41,15 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
   /// run on a settings change or a log change.
   void _syncNotifications() {
     final settings = getIt<UserSettingsBloc>().state;
-    final today = DateUtils.dateOnly(clock.now());
+    final today = clock.now().logicalDay(settings.dayStartTime);
     final dailyLog = getIt<DailyLogBloc>().state;
     final mealsLoggedToday = dailyLog.mealEntries
-        .breakdownOn(today)
+        .breakdownOn(today, settings.dayStartTime)
         .entriesByMeal
         .keys
         .toSet();
-    final weighedInToday = dailyLog.weightOn(today) != null;
+    final weighedInToday =
+        dailyLog.weightOn(today, settings.dayStartTime) != null;
     unawaited(
       getIt<NotificationService>().sync(
         reminderStyle: settings.reminderStyle,

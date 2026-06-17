@@ -39,6 +39,18 @@ void main() {
       );
     });
 
+    test('fromJson reads a newer, unknown version with the current schema', () {
+      final json = <String, dynamic>{
+        'version': 99,
+        'user': user,
+        'token': token,
+      };
+      expect(
+        AuthCubit().fromJson(json),
+        const AuthState(version: 99, user: user, token: token),
+      );
+    });
+
     test(
       'addListener and removeListener manage listeners and notify on onChange',
       () {

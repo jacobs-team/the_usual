@@ -24,11 +24,21 @@ void main() {
       userSettingsBloc = MockUserSettingsBloc();
       registerFallbackValue(const DailyLogEvent.mealEntryRemoved('x'));
       registerFallbackValue(
+        const DailyLogEvent.mealEntryUsualMealLinked('x', 'y'),
+      );
+      registerFallbackValue(
+        const DailyLogEvent.mealEntryQuantityChanged('x', 1),
+      );
+      registerFallbackValue(
         const UserSettingsEvent.usualMealRemoved(MealOfTheDay.breakfast, 'x'),
       );
     });
 
-    MealLogEntry entry({String? usualMealId, int? calories}) {
+    MealLogEntry entry({
+      String? usualMealId,
+      int? calories,
+      double quantity = 1,
+    }) {
       return MealLogEntry(
         id: 'm1',
         loggedAt: DateTime.now(),
@@ -36,6 +46,7 @@ void main() {
         name: 'Eggs',
         nutrition: Nutrition(calories: calories),
         usualMealId: usualMealId,
+        quantity: quantity,
       );
     }
 
@@ -184,6 +195,44 @@ void main() {
       await pumpRow(tester, entry(usualMealId: 'u', calories: 350));
 
       expect(find.byType(TextButton), findsNothing);
+    });
+
+    testWidgets('stamps the usual meal id onto an entry linked only by name', (
+      tester,
+    ) async {
+      // The entry has no stored id but matches a usual meal by name, so the
+      // row heals the link by stamping the usual meal's id onto the entry.
+      stubSettings(
+        const UserSettingsState(
+          usuals: {
+            MealOfTheDay.breakfast: [UsualMeal(id: 'u', name: 'Eggs')],
+          },
+        ),
+      );
+      await pumpRow(tester, entry());
+
+      await tester.pump();
+
+      verify(
+        () => dailyLogBloc.add(
+          const DailyLogEvent.mealEntryUsualMealLinked('m1', 'u'),
+        ),
+      ).called(1);
+    });
+
+    testWidgets('changing the quantity dispatches through the bloc', (
+      tester,
+    ) async {
+      stubSettings(const UserSettingsState());
+      await pumpRow(tester, entry(quantity: 2));
+
+      await tester.tap(find.byIcon(Icons.add));
+
+      verify(
+        () => dailyLogBloc.add(
+          const DailyLogEvent.mealEntryQuantityChanged('m1', 3),
+        ),
+      ).called(1);
     });
   });
 }

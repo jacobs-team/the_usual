@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:the_usual/app/core/extensions/extensions.dart';
 import 'package:the_usual/app/model/model.dart';
 
 /// A day's meal entries grouped for display, with the running nutrition total
@@ -19,14 +20,16 @@ extension MealLogEntryListFormatting on List<MealLogEntry> {
     return nutrition;
   }
 
-  /// Groups the entries logged on [day] by meal of the day and sums their
-  /// known nutrition, each scaled by its quantity, in a single pass. Values an
-  /// entry leaves unset add nothing to the total.
-  DailyMealBreakdown breakdownOn(DateTime day) {
+  /// Groups the entries logged on the logical [day] (rolling over at
+  /// [dayStart]) by meal of the day and sums their known nutrition, each scaled
+  /// by its quantity, in a single pass. Values an entry leaves unset add
+  /// nothing to the total.
+  DailyMealBreakdown breakdownOn(DateTime day, TimeOfDay dayStart) {
     var nutrition = const Nutrition();
     final entriesByMeal = <MealOfTheDay, List<MealLogEntry>>{};
     for (final mealLogEntry in this) {
-      if (!DateUtils.isSameDay(mealLogEntry.loggedAt, day)) continue;
+      final loggedDay = mealLogEntry.loggedAt.logicalDay(dayStart);
+      if (!DateUtils.isSameDay(loggedDay, day)) continue;
       nutrition += mealLogEntry.scaledNutrition;
       entriesByMeal
           .putIfAbsent(mealLogEntry.mealOfTheDay, () => <MealLogEntry>[])
@@ -37,14 +40,15 @@ extension MealLogEntryListFormatting on List<MealLogEntry> {
 
   /// The user's usuals for [mealOfTheDay]'s quick-pick chips: the most recently
   /// logged usual for this meal first, then this meal's usuals by how often
-  /// they've been logged here. Usuals already logged on [day] for [mealOfTheDay]
-  /// are dropped, matched by name or linked id so a renamed usual stays hidden.
+  /// they've been logged here. Usuals already logged on [day] for this meal are
+  /// dropped, matched by name or linked id so a renamed usual stays hidden.
   List<UsualMeal> orderedQuickPicks({
     required MealOfTheDay mealOfTheDay,
     required Map<MealOfTheDay, List<UsualMeal>> usuals,
     required DateTime day,
+    required TimeOfDay dayStart,
   }) {
-    final loggedToday = _loggedTodayKeys(mealOfTheDay, day);
+    final loggedToday = _loggedTodayKeys(mealOfTheDay, day, dayStart);
     final countAtTiming = <String, int>{};
     final lastLoggedAtTiming = <String, DateTime>{};
 
@@ -99,8 +103,9 @@ extension MealLogEntryListFormatting on List<MealLogEntry> {
     required MealOfTheDay mealOfTheDay,
     required Map<MealOfTheDay, List<UsualMeal>> usuals,
     required DateTime day,
+    required TimeOfDay dayStart,
   }) {
-    final loggedToday = _loggedTodayKeys(mealOfTheDay, day);
+    final loggedToday = _loggedTodayKeys(mealOfTheDay, day, dayStart);
 
     bool isVisible(UsualMeal usualMeal) =>
         !loggedToday.names.contains(usualMeal.name.toLowerCase()) &&
@@ -117,17 +122,20 @@ extension MealLogEntryListFormatting on List<MealLogEntry> {
     return grouped;
   }
 
-  /// The lowercased names and linked ids of entries logged on [day] for
-  /// [mealOfTheDay], used to hide usuals already logged in that section today.
+  /// The lowercased names and linked ids of entries logged on the logical
+  /// [day] (rolling over at [dayStart]) for [mealOfTheDay], used to hide usuals
+  /// already logged in that section today.
   ({Set<String> names, Set<String> ids}) _loggedTodayKeys(
     MealOfTheDay mealOfTheDay,
     DateTime day,
+    TimeOfDay dayStart,
   ) {
     final names = <String>{};
     final ids = <String>{};
     for (final mealLogEntry in this) {
       if (mealLogEntry.mealOfTheDay != mealOfTheDay) continue;
-      if (!DateUtils.isSameDay(mealLogEntry.loggedAt, day)) continue;
+      final loggedDay = mealLogEntry.loggedAt.logicalDay(dayStart);
+      if (!DateUtils.isSameDay(loggedDay, day)) continue;
       names.add(mealLogEntry.name.toLowerCase());
       final usualMealId = mealLogEntry.usualMealId;
       if (usualMealId != null) ids.add(usualMealId);
@@ -156,7 +164,10 @@ void _sortByLogActivity(
       return lastB.compareTo(lastA);
     }
     if (lastA == null && lastB != null) return 1;
-    if (lastA != null && lastB == null) return -1;
+    // Unreachable from the sole caller: counts and lastLogged are populated
+    // together, so an equal count (needed to get here) means both or neither
+    // were ever logged. Kept as the symmetric guard.
+    if (lastA != null && lastB == null) return -1; // coverage:ignore-line
 
     return originalIndex[a.id]!.compareTo(originalIndex[b.id]!);
   });

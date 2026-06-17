@@ -61,10 +61,12 @@ abstract class DailyLogState with _$DailyLogState {
     }
   }
 
-  /// The weigh-in recorded on [day], or null when there isn't one.
-  WeightEntry? weightOn(DateTime day) {
+  /// The weigh-in recorded on the logical [day] (rolling over at [dayStart]),
+  /// or null when there isn't one.
+  WeightEntry? weightOn(DateTime day, TimeOfDay dayStart) {
     for (final weightEntry in weightEntries) {
-      if (DateUtils.isSameDay(weightEntry.loggedAt, day)) return weightEntry;
+      final loggedDay = weightEntry.loggedAt.logicalDay(dayStart);
+      if (DateUtils.isSameDay(loggedDay, day)) return weightEntry;
     }
     return null;
   }
@@ -78,18 +80,19 @@ abstract class DailyLogState with _$DailyLogState {
   }
 
   /// The full log rolled up by month for the history screen, oldest month
-  /// first. Built in a single pass: meals and weigh-ins are bucketed by day,
-  /// days are grouped into months, and each month's average is computed once.
-  List<HistoryMonth> get historyByMonth {
+  /// first. Built in a single pass: meals and weigh-ins are bucketed by logical
+  /// day (rolling over at [dayStart]), days are grouped into months, and each
+  /// month's average is computed once.
+  List<HistoryMonth> historyByMonth(TimeOfDay dayStart) {
     final mealsByDay = <DateTime, List<MealLogEntry>>{};
     for (final mealLogEntry in mealEntries) {
-      final day = DateUtils.dateOnly(mealLogEntry.loggedAt);
+      final day = mealLogEntry.loggedAt.logicalDay(dayStart);
       mealsByDay.putIfAbsent(day, () => <MealLogEntry>[]).add(mealLogEntry);
     }
 
     final weightByDay = <DateTime, WeightEntry>{};
     for (final weightEntry in weightEntries) {
-      weightByDay[DateUtils.dateOnly(weightEntry.loggedAt)] = weightEntry;
+      weightByDay[weightEntry.loggedAt.logicalDay(dayStart)] = weightEntry;
     }
 
     final allDays = <DateTime>{...mealsByDay.keys, ...weightByDay.keys}.toList()

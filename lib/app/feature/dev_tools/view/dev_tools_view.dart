@@ -138,10 +138,13 @@ class DevToolsView extends StatelessWidget {
                   'two large eggs and a slice of sourdough toast',
                   mode: MealEntryMode.itemized,
                 );
-                final summary = [
-                  for (final s in suggestions)
-                    '×${s.quantity.trimmedDecimal} ${s.name} (${s.nutrition.summary})',
-                ].join('  •  ');
+                final summary = suggestions
+                    .map(
+                      (s) =>
+                          '×${s.quantity.trimmedDecimal} ${s.name} '
+                          '(${s.nutrition.summary})',
+                    )
+                    .join('  •  ');
                 log('CLAUDE suggestion: $summary');
                 messenger.showSnackBar(SnackBar(content: Text(summary)));
               } catch (error, stackTrace) {
@@ -186,10 +189,13 @@ class DevToolsView extends StatelessWidget {
                   mode: MealEntryMode.wholeMeal,
                   imageMediaType: photo.mediaType,
                 );
-                final summary = [
-                  for (final s in suggestions)
-                    '×${s.quantity.trimmedDecimal} ${s.name} (${s.nutrition.summary})',
-                ].join('  •  ');
+                final summary = suggestions
+                    .map(
+                      (s) =>
+                          '×${s.quantity.trimmedDecimal} ${s.name} '
+                          '(${s.nutrition.summary})',
+                    )
+                    .join('  •  ');
                 log('CLAUDE photo suggestion: $summary');
                 messenger.showSnackBar(SnackBar(content: Text(summary)));
               } catch (error, stackTrace) {

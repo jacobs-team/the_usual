@@ -74,6 +74,9 @@ void main() {
           endOfDayReminder: any(named: 'endOfDayReminder'),
           weightCheckinFrequency: any(named: 'weightCheckinFrequency'),
           weightTimeOfDay: any(named: 'weightTimeOfDay'),
+          skipLoggedMealReminders: any(named: 'skipLoggedMealReminders'),
+          mealsLoggedToday: any(named: 'mealsLoggedToday'),
+          weighedInToday: any(named: 'weighedInToday'),
         ),
       ).thenAnswer((_) async {});
 
@@ -95,7 +98,9 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
 
-      await tester.pumpWidget(const TheUsualsApp());
+      // Built with a runtime key so the constructor runs rather than folding
+      // to a compile-time const.
+      await tester.pumpWidget(TheUsualsApp(key: UniqueKey()));
       await tester.pumpAndSettle();
 
       expect(find.byType(MaterialApp), findsOneWidget);
@@ -118,6 +123,48 @@ void main() {
               as void Function();
       onReminderTapped();
       await tester.pumpAndSettle();
+    });
+
+    testWidgets('re-syncs notifications when the daily log changes', (
+      tester,
+    ) async {
+      whenListen(
+        dailyLogBloc,
+        Stream.value(
+          DailyLogState(
+            mealEntries: [
+              MealLogEntry(
+                id: 'm1',
+                loggedAt: DateTime.now(),
+                mealOfTheDay: MealOfTheDay.breakfast,
+                name: 'Eggs',
+                nutrition: const Nutrition(calories: 300),
+              ),
+            ],
+          ),
+        ),
+        initialState: const DailyLogState(),
+      );
+
+      tester.view.physicalSize = const Size(1200, 3000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(const TheUsualsApp());
+      await tester.pumpAndSettle();
+
+      // The daily-log change drives the re-sync listener.
+      verify(
+        () => notificationService.sync(
+          reminderStyle: any(named: 'reminderStyle'),
+          scheduleMode: any(named: 'scheduleMode'),
+          mealReminders: any(named: 'mealReminders'),
+          endOfDayReminder: any(named: 'endOfDayReminder'),
+          weightCheckinFrequency: any(named: 'weightCheckinFrequency'),
+          weightTimeOfDay: any(named: 'weightTimeOfDay'),
+        ),
+      ).called(greaterThanOrEqualTo(1));
     });
 
     testWidgets('commits onboarding and seeds the log when it completes', (

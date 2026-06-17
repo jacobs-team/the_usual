@@ -187,8 +187,14 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
     Emitter<DailyLogState> emit,
   ) {
     final day = event.day;
+    final dayStart = event.dayStart;
     final otherDayEntries = state.weightEntries
-        .where((weightEntry) => !DateUtils.isSameDay(weightEntry.loggedAt, day))
+        .where(
+          (weightEntry) => !DateUtils.isSameDay(
+            weightEntry.loggedAt.logicalDay(dayStart),
+            day,
+          ),
+        )
         .toList();
 
     final weight = event.weight;
@@ -197,7 +203,7 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
       return;
     }
 
-    final existingWeightEntry = state.weightOn(day);
+    final existingWeightEntry = state.weightOn(day, dayStart);
     final weightEntry =
         existingWeightEntry?.copyWith(
           weight: weight,
@@ -205,7 +211,9 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
         ) ??
         WeightEntry(
           id: _uuid.v4(),
-          loggedAt: day,
+          // Stamp the entry at the logical day's start so it buckets back to
+          // [day] rather than the calendar day midnight falls on.
+          loggedAt: day.atDayStart(dayStart),
           weight: weight,
           weightUnit: event.weightUnit,
         );

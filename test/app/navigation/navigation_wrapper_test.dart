@@ -77,6 +77,23 @@ void main() {
       expect(find.byType(GlassContainer), findsNothing);
     });
 
+    testWidgets('reserves floating-nav clearance when there is bottom inset', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(400, 800);
+      tester.view.devicePixelRatio = 1.0;
+      tester.view.padding = const FakeViewPadding(bottom: 48);
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPadding);
+
+      await tester.pumpPumpPumpItUP(
+        NavigationWrapper(navigationShell: navigationShell),
+      );
+
+      expect(find.byType(GlassContainer), findsOneWidget);
+    });
+
     testWidgets('switches branch when a nav item is selected', (tester) async {
       tester.view.physicalSize = const Size(400, 800);
       tester.view.devicePixelRatio = 1.0;

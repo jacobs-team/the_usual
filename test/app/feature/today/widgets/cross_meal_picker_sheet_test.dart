@@ -1,0 +1,78 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:the_usual/app/app.dart';
+
+import '../../../../helpers/helpers.dart';
+
+void main() {
+  group(OtherMealUsualsSheet, () {
+    late DailyLogBloc dailyLogBloc;
+
+    setUp(() {
+      dailyLogBloc = MockDailyLogBloc();
+      when(() => dailyLogBloc.state).thenReturn(const DailyLogState());
+      when(() => dailyLogBloc.stream).thenAnswer((_) => const Stream.empty());
+      registerFallbackValue(
+        const DailyLogEvent.mealLogged(MealOfTheDay.breakfast, 'x'),
+      );
+    });
+
+    Future<void> pumpSheet(
+      WidgetTester tester,
+      Map<MealOfTheDay, List<UsualMeal>> usualsByMeal,
+    ) {
+      return tester.pumpPumpPumpItUP(
+        deps: [dailyLogBloc],
+        OtherMealUsualsSheet(
+          mealOfTheDay: MealOfTheDay.breakfast,
+          usualsByMeal: usualsByMeal,
+        ),
+      );
+    }
+
+    testWidgets('lists usuals grouped by their own meal', (tester) async {
+      await pumpSheet(tester, const {
+        MealOfTheDay.lunch: [
+          UsualMeal(
+            id: 'u',
+            name: 'Salad',
+            nutrition: Nutrition(calories: 250),
+          ),
+          UsualMeal(id: 'v', name: 'Soup'),
+        ],
+      });
+
+      expect(find.text('Log to Breakfast'), findsOneWidget);
+      expect(find.text('LUNCH'), findsOneWidget);
+      expect(find.text('Salad'), findsOneWidget);
+      expect(find.text('250 cal'), findsOneWidget);
+      expect(find.text('Soup'), findsOneWidget);
+    });
+
+    testWidgets('logs the tapped usual under the current meal', (tester) async {
+      await pumpSheet(tester, const {
+        MealOfTheDay.lunch: [
+          UsualMeal(
+            id: 'u',
+            name: 'Salad',
+            nutrition: Nutrition(calories: 250),
+          ),
+        ],
+      });
+
+      await tester.tap(find.text('Salad'));
+      await tester.pumpAndSettle();
+
+      verify(
+        () => dailyLogBloc.add(
+          const DailyLogEvent.mealLogged(
+            MealOfTheDay.breakfast,
+            'Salad',
+            nutrition: Nutrition(calories: 250),
+            usualMealId: 'u',
+          ),
+        ),
+      ).called(1);
+    });
+  });
+}

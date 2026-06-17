@@ -30,5 +30,21 @@ void main() {
       final json = DevToolsCubit().toJson(state);
       expect(json['isApiDebug'], isFalse);
     });
+
+    test('fromJson reads current-version data through the schema', () {
+      final json = <String, dynamic>{'version': 1, 'isApiDebug': false};
+      expect(
+        DevToolsCubit().fromJson(json),
+        equals(const DevToolsState(isApiDebug: false)),
+      );
+    });
+
+    test('fromJson reads unknown newer version with the current schema', () {
+      final json = <String, dynamic>{'version': 99, 'isApiDebug': false};
+      expect(
+        DevToolsCubit().fromJson(json),
+        equals(const DevToolsState(version: 99, isApiDebug: false)),
+      );
+    });
   });
 }

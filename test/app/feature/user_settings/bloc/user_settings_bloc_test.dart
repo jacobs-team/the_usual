@@ -205,6 +205,32 @@ void main() {
     });
 
     blocTest<UserSettingsBloc, UserSettingsState>(
+      'calorieGoalChanged stores the goal',
+      build: UserSettingsBloc.new,
+      act: (bloc) => bloc.add(const UserSettingsEvent.calorieGoalChanged(2200)),
+      expect: () => [
+        isA<UserSettingsState>().having(
+          (s) => s.calorieGoal,
+          'calorieGoal',
+          2200,
+        ),
+      ],
+    );
+
+    blocTest<UserSettingsBloc, UserSettingsState>(
+      'weightGoalChanged stores the goal',
+      build: UserSettingsBloc.new,
+      act: (bloc) => bloc.add(const UserSettingsEvent.weightGoalChanged(68)),
+      expect: () => [
+        isA<UserSettingsState>().having(
+          (s) => s.weightGoal,
+          'weightGoal',
+          68.0,
+        ),
+      ],
+    );
+
+    blocTest<UserSettingsBloc, UserSettingsState>(
       'themeModeSelected stores the theme mode',
       build: UserSettingsBloc.new,
       act: (bloc) => bloc.add(
@@ -215,6 +241,72 @@ void main() {
           (s) => s.themeMode,
           'themeMode',
           ThemeMode.dark,
+        ),
+      ],
+    );
+
+    blocTest<UserSettingsBloc, UserSettingsState>(
+      'expandNutritionByDefaultChanged stores the flag',
+      build: UserSettingsBloc.new,
+      act: (bloc) => bloc.add(
+        const UserSettingsEvent.expandNutritionByDefaultChanged(
+          expandNutritionByDefault: true,
+        ),
+      ),
+      expect: () => [
+        isA<UserSettingsState>().having(
+          (s) => s.expandNutritionByDefault,
+          'expandNutritionByDefault',
+          isTrue,
+        ),
+      ],
+    );
+
+    blocTest<UserSettingsBloc, UserSettingsState>(
+      'skipLoggedMealRemindersChanged stores the flag',
+      build: UserSettingsBloc.new,
+      act: (bloc) => bloc.add(
+        const UserSettingsEvent.skipLoggedMealRemindersChanged(
+          skipLoggedMealReminders: true,
+        ),
+      ),
+      expect: () => [
+        isA<UserSettingsState>().having(
+          (s) => s.skipLoggedMealReminders,
+          'skipLoggedMealReminders',
+          isTrue,
+        ),
+      ],
+    );
+
+    blocTest<UserSettingsBloc, UserSettingsState>(
+      'dayStartTimeChanged stores the time',
+      build: UserSettingsBloc.new,
+      act: (bloc) => bloc.add(
+        const UserSettingsEvent.dayStartTimeChanged(
+          TimeOfDay(hour: 4, minute: 30),
+        ),
+      ),
+      expect: () => [
+        isA<UserSettingsState>().having(
+          (s) => s.dayStartTime,
+          'dayStartTime',
+          const TimeOfDay(hour: 4, minute: 30),
+        ),
+      ],
+    );
+
+    blocTest<UserSettingsBloc, UserSettingsState>(
+      'mealEntryModeChanged stores the mode',
+      build: UserSettingsBloc.new,
+      act: (bloc) => bloc.add(
+        const UserSettingsEvent.mealEntryModeChanged(MealEntryMode.itemized),
+      ),
+      expect: () => [
+        isA<UserSettingsState>().having(
+          (s) => s.mealEntryMode,
+          'mealEntryMode',
+          MealEntryMode.itemized,
         ),
       ],
     );
@@ -319,11 +411,78 @@ void main() {
           ),
         ],
       );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'usualMealNameChanged renames the matching meal only',
+        build: UserSettingsBloc.new,
+        seed: () => const UserSettingsState(
+          usuals: {
+            MealOfTheDay.breakfast: [
+              UsualMeal(id: 'a', name: 'Eggs'),
+              UsualMeal(id: 'b', name: 'Oats'),
+            ],
+          },
+        ),
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.usualMealNameChanged(
+            MealOfTheDay.breakfast,
+            'b',
+            'Porridge',
+          ),
+        ),
+        expect: () => [
+          isA<UserSettingsState>().having(
+            (s) => s.usuals[MealOfTheDay.breakfast]!.last.name,
+            'renamed meal',
+            'Porridge',
+          ),
+        ],
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'usualMealNameChanged ignores a blank name',
+        build: UserSettingsBloc.new,
+        seed: () => const UserSettingsState(
+          usuals: {
+            MealOfTheDay.breakfast: [UsualMeal(id: 'a', name: 'Eggs')],
+          },
+        ),
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.usualMealNameChanged(
+            MealOfTheDay.breakfast,
+            'a',
+            '   ',
+          ),
+        ),
+        expect: () => <UserSettingsState>[],
+      );
     });
 
     test('toJson then fromJson round-trips the state', () {
       final bloc = UserSettingsBloc();
       const state = UserSettingsState(weightUnit: WeightUnit.kg);
+
+      final restored = bloc.fromJson(bloc.toJson(state));
+
+      expect(restored, equals(state));
+    });
+
+    test('toJson then fromJson round-trips a populated usuals map', () {
+      final bloc = UserSettingsBloc();
+      const state = UserSettingsState(
+        usuals: {
+          MealOfTheDay.breakfast: [
+            UsualMeal(
+              id: 'a',
+              name: 'Eggs',
+              nutrition: Nutrition(calories: 90),
+            ),
+          ],
+          MealOfTheDay.lunch: [
+            UsualMeal(id: 'b', name: 'Salad'),
+          ],
+        },
+      );
 
       final restored = bloc.fromJson(bloc.toJson(state));
 

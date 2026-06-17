@@ -1,4 +1,5 @@
 export 'appearance_section.dart';
+export 'day_start_section.dart';
 export 'enable_notifications_in_settings_dialog.dart';
 export 'goals_section.dart';
 export 'info_box.dart';

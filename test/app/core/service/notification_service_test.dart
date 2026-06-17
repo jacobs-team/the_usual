@@ -331,6 +331,58 @@ void main() {
         },
       );
 
+      test('skips today for a meal already logged today', () async {
+        await notificationService.sync(
+          reminderStyle: ReminderStyle.notifications,
+          scheduleMode: MealCheckinScheduleMode.perMeal,
+          mealReminders: {
+            MealOfTheDay.breakfast: reminder(enabled: true),
+          },
+          endOfDayReminder: reminder(enabled: true),
+          weightCheckinFrequency: WeightCheckinFrequency.off,
+          weightTimeOfDay: WeightTimeOfDay.morning,
+          skipLoggedMealReminders: true,
+          mealsLoggedToday: const {MealOfTheDay.breakfast},
+        );
+
+        verify(
+          () => plugin.zonedSchedule(
+            id: MealOfTheDay.breakfast.index,
+            scheduledDate: any(named: 'scheduledDate'),
+            notificationDetails: any(named: 'notificationDetails'),
+            androidScheduleMode: any(named: 'androidScheduleMode'),
+            title: any(named: 'title'),
+            body: any(named: 'body'),
+            matchDateTimeComponents: any(named: 'matchDateTimeComponents'),
+          ),
+        ).called(1);
+      });
+
+      test('skips today for the weigh-in once weighed in today', () async {
+        await notificationService.sync(
+          reminderStyle: ReminderStyle.notifications,
+          scheduleMode: MealCheckinScheduleMode.endOfDay,
+          mealReminders: const {},
+          endOfDayReminder: reminder(enabled: true),
+          weightCheckinFrequency: WeightCheckinFrequency.daily,
+          weightTimeOfDay: WeightTimeOfDay.morning,
+          skipLoggedMealReminders: true,
+          weighedInToday: true,
+        );
+
+        verify(
+          () => plugin.zonedSchedule(
+            id: 200,
+            scheduledDate: any(named: 'scheduledDate'),
+            notificationDetails: any(named: 'notificationDetails'),
+            androidScheduleMode: any(named: 'androidScheduleMode'),
+            title: any(named: 'title'),
+            body: any(named: 'body'),
+            matchDateTimeComponents: any(named: 'matchDateTimeComponents'),
+          ),
+        ).called(1);
+      });
+
       test('every-two-days weigh-in also schedules a rolling window', () async {
         await notificationService.sync(
           reminderStyle: ReminderStyle.notifications,

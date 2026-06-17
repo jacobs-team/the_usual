@@ -458,6 +458,11 @@ class _WeightLinePainter extends CustomPainter {
     );
   }
 
+  // The widget rebuilds this painter with a freshly built [weights] list every
+  // time, so the leading identity comparison is always true and the rest of the
+  // chain can't be reached from a test (the painter is private, so it can't be
+  // driven directly either).
+  // coverage:ignore-start
   @override
   bool shouldRepaint(_WeightLinePainter oldDelegate) =>
       oldDelegate.weights != weights ||
@@ -471,6 +476,7 @@ class _WeightLinePainter extends CustomPainter {
       oldDelegate.lineColor != lineColor ||
       oldDelegate.dotColor != dotColor ||
       oldDelegate.goalColor != goalColor;
+  // coverage:ignore-end
 }
 
 /// Paints one bar per day of calories, with the goal and the average each drawn
@@ -567,6 +573,10 @@ class _CalorieBarsPainter extends CustomPainter {
     );
   }
 
+  // As with the weight painter, the freshly built [calories] list makes the
+  // leading comparison always true, so the rest of the chain is unreachable
+  // from a test and the painter is private.
+  // coverage:ignore-start
   @override
   bool shouldRepaint(_CalorieBarsPainter oldDelegate) =>
       oldDelegate.calories != calories ||
@@ -575,4 +585,5 @@ class _CalorieBarsPainter extends CustomPainter {
       oldDelegate.barColor != barColor ||
       oldDelegate.averageLineColor != averageLineColor ||
       oldDelegate.goalLineColor != goalLineColor;
+  // coverage:ignore-end
 }

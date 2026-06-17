@@ -167,6 +167,24 @@ void main() {
       ).called(1);
     });
 
+    testWidgets('opens the from-another-meal picker when usuals exist', (
+      tester,
+    ) async {
+      await pumpSection(
+        tester,
+        otherMealUsuals: const {
+          MealOfTheDay.lunch: [UsualMeal(id: 'u', name: 'Salad')],
+        },
+      );
+
+      expect(find.text('From another meal'), findsOneWidget);
+
+      await tester.tap(find.text('From another meal'));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(OtherMealUsualsSheet), findsOneWidget);
+    });
+
     testWidgets('cancelling the sheet logs nothing', (tester) async {
       await pumpSection(tester);
 

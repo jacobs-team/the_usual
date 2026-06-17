@@ -1,3 +1,6 @@
+// coverage:ignore-file
+// Thin wrapper over the Genkit/Anthropic SDK that owns the live network
+// connection; it has no unit-testable logic apart from SDK calls.
 import 'dart:convert';
 import 'dart:typed_data';
 

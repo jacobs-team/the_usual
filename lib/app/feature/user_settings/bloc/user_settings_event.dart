@@ -43,6 +43,8 @@ sealed class UserSettingsEvent with _$UserSettingsEvent {
   const factory UserSettingsEvent.skipLoggedMealRemindersChanged({
     required bool skipLoggedMealReminders,
   }) = SettingsSkipLoggedMealRemindersChanged;
+  const factory UserSettingsEvent.dayStartTimeChanged(TimeOfDay dayStartTime) =
+      SettingsDayStartTimeChanged;
   const factory UserSettingsEvent.mealEntryModeChanged(
     MealEntryMode mealEntryMode,
   ) = SettingsMealEntryModeChanged;

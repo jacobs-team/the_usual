@@ -32,12 +32,14 @@ sealed class DailyLogEvent with _$DailyLogEvent {
     WeightUnit weightUnit,
   ) = WeightLogged;
 
-  /// Sets the weigh-in on [day]: updates that day's entry if one exists, adds
-  /// one if not, or removes it when [weight] is null.
+  /// Sets the weigh-in on the logical [day] (rolling over at [dayStart]):
+  /// updates that day's entry if one exists, adds one if not, or removes it
+  /// when [weight] is null.
   const factory DailyLogEvent.weightOnDayChanged(
     DateTime day,
     double? weight,
     WeightUnit weightUnit,
+    TimeOfDay dayStart,
   ) = WeightOnDayChanged;
 
   // TODO(dev): temporary. Replaces the log with sample history; triggered from

@@ -70,6 +70,11 @@ _UserSettingsState _$UserSettingsStateFromJson(
       ThemeMode.system,
   expandNutritionByDefault: json['expandNutritionByDefault'] as bool? ?? false,
   skipLoggedMealReminders: json['skipLoggedMealReminders'] as bool? ?? false,
+  dayStartTime: json['dayStartTime'] == null
+      ? const TimeOfDay(hour: 0, minute: 0)
+      : const TimeOfDayConverter().fromJson(
+          json['dayStartTime'] as Map<String, dynamic>,
+        ),
   mealEntryMode:
       $enumDecodeNullable(_$MealEntryModeEnumMap, json['mealEntryMode']) ??
       MealEntryMode.wholeMeal,
@@ -106,6 +111,7 @@ Map<String, dynamic> _$UserSettingsStateToJson(
   'themeMode': _$ThemeModeEnumMap[instance.themeMode]!,
   'expandNutritionByDefault': instance.expandNutritionByDefault,
   'skipLoggedMealReminders': instance.skipLoggedMealReminders,
+  'dayStartTime': const TimeOfDayConverter().toJson(instance.dayStartTime),
   'mealEntryMode': _$MealEntryModeEnumMap[instance.mealEntryMode]!,
   'usuals': instance.usuals.map(
     (k, e) =>

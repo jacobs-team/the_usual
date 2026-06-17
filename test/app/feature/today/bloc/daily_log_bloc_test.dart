@@ -1,10 +1,15 @@
 import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:the_usual/app/app.dart';
 
 import '../../../../helpers/helpers.dart';
 
 void main() {
+  // The default day boundary is midnight, so a logical day equals a calendar
+  // day in these tests.
+  const dayStart = TimeOfDay(hour: 0, minute: 0);
+
   group(DailyLogBloc, () {
     setUp(initHydratedStorage);
 
@@ -115,6 +120,60 @@ void main() {
     );
 
     blocTest<DailyLogBloc, DailyLogState>(
+      'mealEntryQuantityChanged sanitizes and updates the matching entry only',
+      build: DailyLogBloc.new,
+      seed: () => DailyLogState(
+        mealEntries: [
+          mealEntry(id: 'a', loggedAt: DateTime(2026, 6, 14)),
+          mealEntry(id: 'b', loggedAt: DateTime(2026, 6, 14)),
+        ],
+      ),
+      // 1.25 sanitizes to 1.3 via asLoggedQuantity.
+      act: (bloc) =>
+          bloc.add(const DailyLogEvent.mealEntryQuantityChanged('a', 1.25)),
+      expect: () => [
+        isA<DailyLogState>()
+            .having(
+              (s) => s.mealEntries.first.quantity,
+              'updated quantity',
+              1.3,
+            )
+            .having(
+              (s) => s.mealEntries.last.quantity,
+              'untouched quantity',
+              1,
+            ),
+      ],
+    );
+
+    blocTest<DailyLogBloc, DailyLogState>(
+      'mealEntryUsualMealLinked stamps the usual meal id on the entry only',
+      build: DailyLogBloc.new,
+      seed: () => DailyLogState(
+        mealEntries: [
+          mealEntry(id: 'a', loggedAt: DateTime(2026, 6, 14)),
+          mealEntry(id: 'b', loggedAt: DateTime(2026, 6, 14)),
+        ],
+      ),
+      act: (bloc) => bloc.add(
+        const DailyLogEvent.mealEntryUsualMealLinked('a', 'usual-1'),
+      ),
+      expect: () => [
+        isA<DailyLogState>()
+            .having(
+              (s) => s.mealEntries.first.usualMealId,
+              'linked usual meal id',
+              'usual-1',
+            )
+            .having(
+              (s) => s.mealEntries.last.usualMealId,
+              'untouched usual meal id',
+              isNull,
+            ),
+      ],
+    );
+
+    blocTest<DailyLogBloc, DailyLogState>(
       'weightLogged appends a weight entry',
       build: DailyLogBloc.new,
       act: (bloc) =>
@@ -133,7 +192,12 @@ void main() {
         'adds a new entry when none exists for today',
         build: DailyLogBloc.new,
         act: (bloc) => bloc.add(
-          DailyLogEvent.weightOnDayChanged(DateTime.now(), 170, WeightUnit.lb),
+          DailyLogEvent.weightOnDayChanged(
+            DateTime.now(),
+            170,
+            WeightUnit.lb,
+            dayStart,
+          ),
         ),
         expect: () => [
           isA<DailyLogState>().having(
@@ -151,7 +215,12 @@ void main() {
           weightEntries: [weightEntry(id: 'today', loggedAt: DateTime.now())],
         ),
         act: (bloc) => bloc.add(
-          DailyLogEvent.weightOnDayChanged(DateTime.now(), 172, WeightUnit.kg),
+          DailyLogEvent.weightOnDayChanged(
+            DateTime.now(),
+            172,
+            WeightUnit.kg,
+            dayStart,
+          ),
         ),
         expect: () => [
           isA<DailyLogState>()
@@ -179,7 +248,12 @@ void main() {
           ],
         ),
         act: (bloc) => bloc.add(
-          DailyLogEvent.weightOnDayChanged(DateTime.now(), null, WeightUnit.lb),
+          DailyLogEvent.weightOnDayChanged(
+            DateTime.now(),
+            null,
+            WeightUnit.lb,
+            dayStart,
+          ),
         ),
         expect: () => [
           isA<DailyLogState>().having(
@@ -215,6 +289,20 @@ void main() {
   });
 
   group(DailyLogState, () {
+    test('fromJson reads a newer, unknown version with the current schema', () {
+      final json = <String, dynamic>{
+        'version': 99,
+        'meal_entries': <dynamic>[],
+        'weight_entries': <dynamic>[],
+      };
+
+      final state = DailyLogState.fromJson(json);
+
+      expect(state.version, equals(99));
+      expect(state.mealEntries, isEmpty);
+      expect(state.weightEntries, isEmpty);
+    });
+
     WeightEntry weightEntry(String id, DateTime loggedAt) {
       return WeightEntry(
         id: id,
@@ -230,7 +318,10 @@ void main() {
           weightEntries: [weightEntry('a', DateTime(2026, 6, 14, 7))],
         );
 
-        expect(state.weightOn(DateTime(2026, 6, 14, 23))?.id, equals('a'));
+        expect(
+          state.weightOn(DateTime(2026, 6, 14, 23), dayStart)?.id,
+          equals('a'),
+        );
       });
 
       test('returns null when no entry was recorded that day', () {
@@ -238,7 +329,7 @@ void main() {
           weightEntries: [weightEntry('a', DateTime(2026, 6, 14))],
         );
 
-        expect(state.weightOn(DateTime(2026, 6, 13)), isNull);
+        expect(state.weightOn(DateTime(2026, 6, 13), dayStart), isNull);
       });
     });
 
@@ -261,7 +352,7 @@ void main() {
 
     group('historyByMonth', () {
       test('is empty when nothing has been logged', () {
-        expect(const DailyLogState().historyByMonth, isEmpty);
+        expect(const DailyLogState().historyByMonth(dayStart), isEmpty);
       });
 
       test('rolls meals and weigh-ins up by month with averages', () {
@@ -285,7 +376,7 @@ void main() {
           weightEntries: [weightEntry('w1', DateTime(2026, 6, 14, 7))],
         );
 
-        final history = state.historyByMonth;
+        final history = state.historyByMonth(dayStart);
 
         expect(history, hasLength(2));
         // Oldest month first.

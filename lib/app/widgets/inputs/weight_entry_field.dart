@@ -33,13 +33,14 @@ class WeightEntryField extends StatefulWidget {
 
 class _WeightEntryFieldState extends State<WeightEntryField> {
   final DailyLogBloc _dailyLogBloc = getIt<DailyLogBloc>();
+  final TimeOfDay _dayStart = getIt<UserSettingsBloc>().state.dayStartTime;
   late final TextEditingController _controller;
   final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
-    final dayWeight = _dailyLogBloc.state.weightOn(widget.day);
+    final dayWeight = _dailyLogBloc.state.weightOn(widget.day, _dayStart);
     _controller = TextEditingController(
       text: dayWeight == null ? '' : dayWeight.weight.trimmedDecimal,
     );
@@ -58,13 +59,14 @@ class _WeightEntryFieldState extends State<WeightEntryField> {
     return BlocListener<DailyLogBloc, DailyLogState>(
       bloc: _dailyLogBloc,
       listenWhen: (previous, current) =>
-          previous.weightOn(widget.day) != current.weightOn(widget.day),
+          previous.weightOn(widget.day, _dayStart) !=
+          current.weightOn(widget.day, _dayStart),
       listener: (context, state) {
         // Sync the field to externally-set weight (e.g. the "Use last"
         // button), but never while the user is typing, so a trailing decimal
         // isn't wiped mid-entry.
         if (_focusNode.hasFocus) return;
-        final dayWeight = state.weightOn(widget.day);
+        final dayWeight = state.weightOn(widget.day, _dayStart);
         final text = dayWeight == null ? '' : dayWeight.weight.trimmedDecimal;
         if (_controller.text != text) _controller.text = text;
       },
@@ -76,7 +78,7 @@ class _WeightEntryFieldState extends State<WeightEntryField> {
           >(
             bloc: _dailyLogBloc,
             selector: (state) =>
-                (state.weightOn(widget.day), state.latestWeight),
+                (state.weightOn(widget.day, _dayStart), state.latestWeight),
             builder: (context, selected) {
               final (dayWeight, latestWeight) = selected;
               final canUseLast =
@@ -106,6 +108,7 @@ class _WeightEntryFieldState extends State<WeightEntryField> {
                             widget.day,
                             latestWeight.weight,
                             latestWeight.weightUnit,
+                            _dayStart,
                           ),
                         ),
                         child: Text(
@@ -118,6 +121,7 @@ class _WeightEntryFieldState extends State<WeightEntryField> {
                     widget.day,
                     double.tryParse(value),
                     weightUnit,
+                    _dayStart,
                   ),
                 ),
               );
