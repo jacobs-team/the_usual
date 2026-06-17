@@ -13,7 +13,8 @@ class MealLogSection extends StatelessWidget {
   const MealLogSection({
     required this.mealOfTheDay,
     required this.mealLogEntries,
-    required this.usualMeals,
+    required this.quickPicks,
+    required this.otherMealUsuals,
     required this.isCurrent,
     required this.nutritionExpandedByDefault,
     super.key,
@@ -25,8 +26,13 @@ class MealLogSection extends StatelessWidget {
   /// Entries already logged for this meal today.
   final List<MealLogEntry> mealLogEntries;
 
-  /// The user's usual meals for this meal.
-  final List<UsualMeal> usualMeals;
+  /// The user's usuals offered as quick picks for this meal, already filtered
+  /// and ordered (most recent, then most logged here).
+  final List<UsualMeal> quickPicks;
+
+  /// Usuals from other meals, grouped by their own meal, for the "from another
+  /// meal" picker. Empty when there are none to cross-post.
+  final Map<MealOfTheDay, List<UsualMeal>> otherMealUsuals;
 
   /// Whether this is the meal nearest the current time.
   final bool isCurrent;
@@ -38,26 +44,6 @@ class MealLogSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final nutrition = mealLogEntries.totalNutrition;
-    final loggedNames = mealLogEntries
-        .map((mealLogEntry) => mealLogEntry.name.toLowerCase())
-        .toSet();
-    final loggedUsualMealIds = mealLogEntries
-        .map((mealLogEntry) => mealLogEntry.usualMealId)
-        .whereType<String>()
-        .toSet();
-    // TODO(today): order quick picks with the most recently logged usual meal
-    // first, then by how often each has been logged. Compute this from log
-    // history in the bloc/state, not here — it shouldn't recompute on every
-    // build.
-    final quickPicks = usualMeals.where((usualMeal) {
-      // A logged entry keeps its original name, so after a rename match on the
-      // linked id too, otherwise the renamed usual reappears as a quick pick.
-      final alreadyLoggedByName = loggedNames.contains(
-        usualMeal.name.toLowerCase(),
-      );
-      final alreadyLoggedById = loggedUsualMealIds.contains(usualMeal.id);
-      return !alreadyLoggedByName && !alreadyLoggedById;
-    }).toList();
 
     return SliverPadding(
       padding: EdgeInsets.fromLTRB(
@@ -127,67 +113,71 @@ class MealLogSection extends StatelessWidget {
                   children: [
                     if (quickPicks.isNotEmpty) ...[
                       SizedBox(height: AppDesign.spacing.md),
-                      Wrap(
-                        spacing: AppDesign.spacing.sm,
-                        runSpacing: AppDesign.spacing.sm,
-                        children: [
-                          for (final usualMeal in quickPicks)
-                            _QuickPickChip(
-                              label: '+ ${usualMeal.name}',
-                              onPressed: () => getIt<DailyLogBloc>().add(
-                                DailyLogEvent.mealLogged(
-                                  mealOfTheDay,
-                                  usualMeal.name,
-                                  nutrition: usualMeal.nutrition,
-                                  usualMealId: usualMeal.id,
-                                  photoPath: usualMeal.photoPath,
-                                ),
-                              ),
-                            ),
-                        ],
+                      _QuickPickColumns(
+                        mealOfTheDay: mealOfTheDay,
+                        quickPicks: quickPicks,
                       ),
                     ],
                     SizedBox(height: AppDesign.spacing.sm),
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: TextButton.icon(
-                        onPressed: () async {
-                          final results =
-                              await showModalBottomSheet<List<FoodEntryResult>>(
-                                context: context,
-                                isScrollControlled: true,
-                                useSafeArea: true,
-                                showDragHandle: true,
-                                builder: (context) => const FoodEntrySheet(
-                                  title: 'Log something else',
-                                  confirmLabel: 'Log',
-                                  showAddToUsualMeals: true,
-                                ),
-                              );
-                          if (results == null) return;
-                          for (final result in results) {
-                            if (result.addToUsualMeals) {
-                              getIt<UserSettingsBloc>().add(
-                                UserSettingsEvent.usualMealAdded(
+                    Wrap(
+                      spacing: AppDesign.spacing.sm,
+                      children: [
+                        TextButton.icon(
+                          onPressed: () async {
+                            final results =
+                                await showModalBottomSheet<
+                                  List<FoodEntryResult>
+                                >(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  useSafeArea: true,
+                                  showDragHandle: true,
+                                  builder: (context) => const FoodEntrySheet(
+                                    title: 'Log something else',
+                                    confirmLabel: 'Log',
+                                    showAddToUsualMeals: true,
+                                  ),
+                                );
+                            if (results == null) return;
+                            for (final result in results) {
+                              if (result.addToUsualMeals) {
+                                getIt<UserSettingsBloc>().add(
+                                  UserSettingsEvent.usualMealAdded(
+                                    mealOfTheDay,
+                                    result.name,
+                                    result.nutrition,
+                                  ),
+                                );
+                              }
+                              getIt<DailyLogBloc>().add(
+                                DailyLogEvent.mealLogged(
                                   mealOfTheDay,
                                   result.name,
-                                  result.nutrition,
+                                  nutrition: result.nutrition,
+                                  quantity: result.quantity,
                                 ),
                               );
                             }
-                            getIt<DailyLogBloc>().add(
-                              DailyLogEvent.mealLogged(
-                                mealOfTheDay,
-                                result.name,
-                                nutrition: result.nutrition,
-                                quantity: result.quantity,
+                          },
+                          icon: const Icon(Icons.add),
+                          label: const Text('I ate something else'),
+                        ),
+                        if (otherMealUsuals.isNotEmpty)
+                          TextButton.icon(
+                            onPressed: () => showModalBottomSheet<void>(
+                              context: context,
+                              isScrollControlled: true,
+                              useSafeArea: true,
+                              showDragHandle: true,
+                              builder: (_) => OtherMealUsualsSheet(
+                                mealOfTheDay: mealOfTheDay,
+                                usualsByMeal: otherMealUsuals,
                               ),
-                            );
-                          }
-                        },
-                        icon: const Icon(Icons.add),
-                        label: const Text('I ate something else'),
-                      ),
+                            ),
+                            icon: const Icon(Icons.restaurant_menu),
+                            label: const Text('From another meal'),
+                          ),
+                      ],
                     ),
                   ],
                 ),
@@ -195,6 +185,66 @@ class MealLogSection extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// Lays the quick picks into columns of up to three chips, filling top to
+/// bottom then spilling rightward in a horizontal scroll view. Tapping a chip
+/// logs that usual under [mealOfTheDay].
+class _QuickPickColumns extends StatelessWidget {
+  const _QuickPickColumns({
+    required this.mealOfTheDay,
+    required this.quickPicks,
+  });
+
+  /// The meal a tapped chip logs under.
+  final MealOfTheDay mealOfTheDay;
+
+  /// The usuals to offer, already filtered and ordered.
+  final List<UsualMeal> quickPicks;
+
+  static const _rowsPerColumn = 3;
+
+  @override
+  Widget build(BuildContext context) {
+    final columns = <List<UsualMeal>>[];
+    for (var start = 0; start < quickPicks.length; start += _rowsPerColumn) {
+      final end = (start + _rowsPerColumn).clamp(0, quickPicks.length);
+      columns.add(quickPicks.sublist(start, end));
+    }
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (final (columnIndex, column) in columns.indexed) ...[
+            if (columnIndex > 0) SizedBox(width: AppDesign.spacing.sm),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                for (final (rowIndex, usualMeal) in column.indexed) ...[
+                  if (rowIndex > 0) SizedBox(height: AppDesign.spacing.sm),
+                  _QuickPickChip(
+                    label: '+ ${usualMeal.name}',
+                    onPressed: () => getIt<DailyLogBloc>().add(
+                      DailyLogEvent.mealLogged(
+                        mealOfTheDay,
+                        usualMeal.name,
+                        nutrition: usualMeal.nutrition,
+                        usualMealId: usualMeal.id,
+                        photoPath: usualMeal.photoPath,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ],
       ),
     );
   }

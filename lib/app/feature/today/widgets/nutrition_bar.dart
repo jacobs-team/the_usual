@@ -9,8 +9,8 @@ import 'package:the_usual/design_system/design_system.dart';
 /// is split into protein, carbs, and fat segments sized by their gram values.
 /// Each segment is labeled with its gram count and macro name, shortened to a
 /// single-letter abbreviation when the full name doesn't fit. A calorie summary
-/// — consumed over goal, or just consumed calories when there's no goal — sits
-/// above the bar.
+/// — consumed over goal, or consumed calories with a "Set goal" button when no
+/// goal is set — sits above the bar.
 ///
 /// With no [calorieGoal] the macros fill the whole bar instead of a portion of
 /// it. When consumed calories reach or exceed the goal the colored portion
@@ -21,6 +21,7 @@ class NutritionBar extends StatelessWidget {
   const NutritionBar({
     required this.nutrition,
     required this.calorieGoal,
+    this.onSetGoal,
     super.key,
   });
 
@@ -30,7 +31,12 @@ class NutritionBar extends StatelessWidget {
   /// The user's daily calorie target, or null when they haven't set one.
   final int? calorieGoal;
 
-  static const double _height = 32;
+  /// Called when the user taps "Set goal", shown beside the consumed calories
+  /// when no [calorieGoal] is set. When null, no button is shown.
+  final VoidCallback? onSetGoal;
+
+  /// Height of the colored macro bar, so callers can align controls to it.
+  static const double height = 32;
 
   /// Flex weights are integers, so widths are computed on a fixed scale to keep
   /// small gram differences from collapsing to the same width.
@@ -96,16 +102,13 @@ class NutritionBar extends StatelessWidget {
       fontWeight: FontWeight.w600,
     );
 
-    final calorieSummary = hasGoal
-        ? '$consumedCalories / $calorieGoal cal'
-        : '$consumedCalories cal';
     final calorieSummaryStyle = theme.textTheme.labelSmall?.copyWith(
       color: colorScheme.onSurfaceVariant,
     );
 
     final borderRadius = BorderRadius.circular(AppDesign.radius.sm);
     final bar = Container(
-      height: _height,
+      height: height,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerHighest,
@@ -193,7 +196,30 @@ class NutritionBar extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(calorieSummary, style: calorieSummaryStyle),
+        if (hasGoal)
+          Text('$consumedCalories / $calorieGoal cal', style: calorieSummaryStyle)
+        else
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('$consumedCalories cal / ', style: calorieSummaryStyle),
+              TextButton(
+                onPressed: onSetGoal,
+                style: TextButton.styleFrom(
+                  foregroundColor: colorScheme.primary,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppDesign.spacing.xs,
+                  ),
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  textStyle: theme.textTheme.labelSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                child: const Text('Set goal'),
+              ),
+            ],
+          ),
         SizedBox(height: AppDesign.spacing.xs),
         bar,
       ],

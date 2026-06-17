@@ -47,6 +47,71 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
 
   static const _uuid = Uuid();
 
+  // TODO(dev): temporary sample meals for seeding. Each is
+  // (name, calories, protein, fat, carbs). Remove before ship along with the
+  // SampleDataSeeded event.
+  static const _breakfasts = [
+    ('Scrambled eggs & toast', 350, 20, 16, 28),
+    ('Oatmeal with banana', 320, 9, 6, 60),
+    ('Greek yogurt & granola', 300, 20, 8, 38),
+    ('Avocado toast', 380, 12, 20, 38),
+    ('Protein shake', 260, 30, 5, 22),
+    ('Bagel & cream cheese', 420, 13, 16, 55),
+    ('Pancakes & syrup', 480, 12, 14, 78),
+  ];
+  static const _lunches = [
+    ('Chicken & rice bowl', 620, 45, 16, 65),
+    ('Turkey sandwich', 480, 28, 18, 50),
+    ('Caesar salad w/ chicken', 430, 35, 24, 18),
+    ('Burrito', 700, 32, 26, 80),
+    ('Leftover pasta', 560, 22, 18, 78),
+    ('Sushi rolls', 520, 24, 12, 78),
+    ('Soup & sourdough', 400, 16, 12, 58),
+  ];
+  static const _dinners = [
+    ('Salmon & veggies', 560, 40, 28, 24),
+    ('Spaghetti bolognese', 720, 34, 24, 92),
+    ('Steak & potatoes', 780, 48, 38, 52),
+    ('Chicken stir fry', 600, 38, 20, 60),
+    ('Tacos', 650, 30, 30, 62),
+    ('Homemade pizza', 850, 34, 38, 92),
+    ('Veggie curry & rice', 580, 16, 18, 88),
+  ];
+  static const _snacks = [
+    ('Protein bar', 210, 20, 7, 24),
+    ('Apple & peanut butter', 270, 7, 16, 28),
+    ('Handful of almonds', 180, 6, 16, 6),
+    ('Greek yogurt', 130, 15, 0, 12),
+    ('Dark chocolate', 160, 2, 11, 16),
+    ('Banana', 105, 1, 0, 27),
+  ];
+
+  /// The sample meals built into a usuals library, each keyed by the meal it
+  /// belongs to. Shares the seed pools so a seeded entry's [MealLogEntry.name]
+  /// (and the id it links via) matches a usual, letting the seeded history
+  /// drive the quick-pick ordering.
+  static Map<MealOfTheDay, List<UsualMeal>> get sampleUsuals {
+    List<UsualMeal> toUsuals(List<(String, int, int, int, int)> pool) => [
+      for (final sample in pool)
+        UsualMeal(
+          id: sample.$1,
+          name: sample.$1,
+          nutrition: Nutrition(
+            calories: sample.$2,
+            protein: sample.$3,
+            fat: sample.$4,
+            carbs: sample.$5,
+          ),
+        ),
+    ];
+    return {
+      MealOfTheDay.breakfast: toUsuals(_breakfasts),
+      MealOfTheDay.lunch: toUsuals(_lunches),
+      MealOfTheDay.dinner: toUsuals(_dinners),
+      MealOfTheDay.snacks: toUsuals(_snacks),
+    };
+  }
+
   void _onMealLogged(MealLogged event, Emitter<DailyLogState> emit) {
     final name = event.name.trim();
     if (name.isEmpty) return;
@@ -147,46 +212,7 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
     emit(state.copyWith(weightEntries: [...otherDayEntries, weightEntry]));
   }
 
-  // TODO(dev): temporary sample data for the history screen. Remove before
-  // ship along with the SampleDataSeeded event.
   void _onSampleDataSeeded(Emitter<DailyLogState> emit) {
-    // Each sample is (name, calories, protein, fat, carbs).
-    const breakfasts = [
-      ('Scrambled eggs & toast', 350, 20, 16, 28),
-      ('Oatmeal with banana', 320, 9, 6, 60),
-      ('Greek yogurt & granola', 300, 20, 8, 38),
-      ('Avocado toast', 380, 12, 20, 38),
-      ('Protein shake', 260, 30, 5, 22),
-      ('Bagel & cream cheese', 420, 13, 16, 55),
-      ('Pancakes & syrup', 480, 12, 14, 78),
-    ];
-    const lunches = [
-      ('Chicken & rice bowl', 620, 45, 16, 65),
-      ('Turkey sandwich', 480, 28, 18, 50),
-      ('Caesar salad w/ chicken', 430, 35, 24, 18),
-      ('Burrito', 700, 32, 26, 80),
-      ('Leftover pasta', 560, 22, 18, 78),
-      ('Sushi rolls', 520, 24, 12, 78),
-      ('Soup & sourdough', 400, 16, 12, 58),
-    ];
-    const dinners = [
-      ('Salmon & veggies', 560, 40, 28, 24),
-      ('Spaghetti bolognese', 720, 34, 24, 92),
-      ('Steak & potatoes', 780, 48, 38, 52),
-      ('Chicken stir fry', 600, 38, 20, 60),
-      ('Tacos', 650, 30, 30, 62),
-      ('Homemade pizza', 850, 34, 38, 92),
-      ('Veggie curry & rice', 580, 16, 18, 88),
-    ];
-    const snacks = [
-      ('Protein bar', 210, 20, 7, 24),
-      ('Apple & peanut butter', 270, 7, 16, 28),
-      ('Handful of almonds', 180, 6, 16, 6),
-      ('Greek yogurt', 130, 15, 0, 12),
-      ('Dark chocolate', 160, 2, 11, 16),
-      ('Banana', 105, 1, 0, 27),
-    ];
-
     // Each month trends between a start and end weight, and consecutive months
     // join up so the overall line drifts down, back up, then down again. The
     // month two back is deliberately sparse: fewer logged days and more
@@ -264,6 +290,7 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
             carbs: macrosEntered ? sample.$5 : null,
           ),
           quantity: quantity,
+          usualMealId: sample.$1,
         ),
       );
     }
@@ -288,28 +315,28 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
         maybeAddMeal(
           day,
           MealOfTheDay.breakfast,
-          breakfasts,
+          _breakfasts,
           8,
           plan.sparseMeals ? 0.40 : 0.12,
         );
         maybeAddMeal(
           day,
           MealOfTheDay.lunch,
-          lunches,
+          _lunches,
           13,
           plan.sparseMeals ? 0.30 : 0.05,
         );
         maybeAddMeal(
           day,
           MealOfTheDay.dinner,
-          dinners,
+          _dinners,
           19,
           plan.sparseMeals ? 0.25 : 0.03,
         );
         maybeAddMeal(
           day,
           MealOfTheDay.snacks,
-          snacks,
+          _snacks,
           16,
           plan.sparseMeals ? 0.70 : 0.50,
         );

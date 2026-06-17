@@ -7,10 +7,39 @@ import 'package:the_usual/design_system/design_system.dart';
 /// Settings screen where the user can revisit the choices they made during
 /// onboarding: check-in style, meal schedule, weight check-ins, and their
 /// usual meals.
+///
+/// A `focus=goals` query parameter scrolls the Goals section into view on
+/// open, used by the Today view's "Set goal" button.
 /// {@endtemplate}
-class UserSettingsView extends StatelessWidget {
+class UserSettingsView extends StatefulWidget {
   /// {@macro user_settings_view}
   const UserSettingsView({super.key});
+
+  @override
+  State<UserSettingsView> createState() => _UserSettingsViewState();
+}
+
+class _UserSettingsViewState extends State<UserSettingsView> {
+  final GlobalKey _goalsKey = GlobalKey();
+  bool _didFocusGoals = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_didFocusGoals) return;
+    final focus = GoRouterState.of(context).uri.queryParameters['focus'];
+    if (focus != 'goals') return;
+    _didFocusGoals = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final goalsContext = _goalsKey.currentContext;
+      if (goalsContext == null) return;
+      Scrollable.ensureVisible(
+        goalsContext,
+        duration: AppDesign.durations.fast,
+        alignment: 0.1,
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +66,7 @@ class UserSettingsView extends StatelessWidget {
             SizedBox(height: AppDesign.spacing.sm),
             const WeightSection(),
             SizedBox(height: AppDesign.spacing.xl),
-            const SectionLabel('GOALS'),
+            SectionLabel('GOALS', key: _goalsKey),
             SizedBox(height: AppDesign.spacing.sm),
             const GoalsSection(),
             SizedBox(height: AppDesign.spacing.xl),

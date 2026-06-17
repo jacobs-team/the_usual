@@ -87,4 +87,219 @@ void main() {
       });
     });
   });
+
+  group('orderedQuickPicks', () {
+    UsualMeal usual(String id, String name) => UsualMeal(id: id, name: name);
+
+    MealLogEntry logEntry({
+      required String id,
+      required DateTime loggedAt,
+      required MealOfTheDay mealOfTheDay,
+      String? name,
+      String? usualMealId,
+    }) {
+      return MealLogEntry(
+        id: id,
+        loggedAt: loggedAt,
+        mealOfTheDay: mealOfTheDay,
+        name: name ?? id,
+        usualMealId: usualMealId,
+      );
+    }
+
+    final usuals = <MealOfTheDay, List<UsualMeal>>{
+      MealOfTheDay.breakfast: [
+        usual('eggs', 'Eggs'),
+        usual('oatmeal', 'Oatmeal'),
+        usual('coffee', 'Coffee'),
+      ],
+      MealOfTheDay.dinner: [usual('pizza', 'Pizza')],
+    };
+
+    final day = DateTime(2026, 6, 16);
+
+    test("orders the meal's own usuals: most recent, then by frequency", () {
+      final entries = [
+        logEntry(
+          id: '1',
+          loggedAt: DateTime(2026, 6, 15),
+          mealOfTheDay: MealOfTheDay.breakfast,
+          usualMealId: 'eggs',
+        ),
+        logEntry(
+          id: '2',
+          loggedAt: DateTime(2026, 6, 10),
+          mealOfTheDay: MealOfTheDay.breakfast,
+          usualMealId: 'oatmeal',
+        ),
+        logEntry(
+          id: '3',
+          loggedAt: DateTime(2026, 6, 11),
+          mealOfTheDay: MealOfTheDay.breakfast,
+          usualMealId: 'oatmeal',
+        ),
+        logEntry(
+          id: '4',
+          loggedAt: DateTime(2026, 6, 12),
+          mealOfTheDay: MealOfTheDay.breakfast,
+          usualMealId: 'oatmeal',
+        ),
+      ];
+
+      final picks = entries.orderedQuickPicks(
+        mealOfTheDay: MealOfTheDay.breakfast,
+        usuals: usuals,
+        day: day,
+      );
+
+      expect(
+        picks.map((usualMeal) => usualMeal.id).toList(),
+        equals(['eggs', 'oatmeal', 'coffee']),
+      );
+    });
+
+    test('excludes usuals that belong to other meals', () {
+      final picks = <MealLogEntry>[].orderedQuickPicks(
+        mealOfTheDay: MealOfTheDay.breakfast,
+        usuals: usuals,
+        day: day,
+      );
+
+      expect(
+        picks.any((usualMeal) => usualMeal.id == 'pizza'),
+        isFalse,
+      );
+      expect(
+        picks.map((usualMeal) => usualMeal.id).toList(),
+        equals(['eggs', 'oatmeal', 'coffee']),
+      );
+    });
+
+    test('drops a usual already logged today for this meal by id', () {
+      final entries = [
+        logEntry(
+          id: '1',
+          loggedAt: DateTime(2026, 6, 16, 8),
+          mealOfTheDay: MealOfTheDay.breakfast,
+          name: 'Renamed Eggs',
+          usualMealId: 'eggs',
+        ),
+      ];
+
+      final picks = entries.orderedQuickPicks(
+        mealOfTheDay: MealOfTheDay.breakfast,
+        usuals: usuals,
+        day: day,
+      );
+
+      expect(picks.any((usualMeal) => usualMeal.id == 'eggs'), isFalse);
+    });
+
+    test('drops a usual already logged today for this meal by name', () {
+      final entries = [
+        logEntry(
+          id: '1',
+          loggedAt: DateTime(2026, 6, 16, 8),
+          mealOfTheDay: MealOfTheDay.breakfast,
+          name: 'oatmeal',
+        ),
+      ];
+
+      final picks = entries.orderedQuickPicks(
+        mealOfTheDay: MealOfTheDay.breakfast,
+        usuals: usuals,
+        day: day,
+      );
+
+      expect(picks.any((usualMeal) => usualMeal.id == 'oatmeal'), isFalse);
+    });
+  });
+
+  group('usualsFromOtherMeals', () {
+    UsualMeal usual(String id, String name) => UsualMeal(id: id, name: name);
+
+    MealLogEntry logEntry({
+      required String id,
+      required DateTime loggedAt,
+      required MealOfTheDay mealOfTheDay,
+      String? name,
+      String? usualMealId,
+    }) {
+      return MealLogEntry(
+        id: id,
+        loggedAt: loggedAt,
+        mealOfTheDay: mealOfTheDay,
+        name: name ?? id,
+        usualMealId: usualMealId,
+      );
+    }
+
+    final usuals = <MealOfTheDay, List<UsualMeal>>{
+      MealOfTheDay.breakfast: [
+        usual('eggs', 'Eggs'),
+        usual('coffee', 'Coffee'),
+      ],
+      MealOfTheDay.lunch: [
+        usual('salad', 'Salad'),
+        usual('sandwich', 'Sandwich'),
+      ],
+      MealOfTheDay.dinner: [usual('pizza', 'Pizza')],
+    };
+
+    final day = DateTime(2026, 6, 16);
+
+    test(
+      'groups other meals, excludes the current meal, keeps library order',
+      () {
+        final grouped = <MealLogEntry>[].usualsFromOtherMeals(
+          mealOfTheDay: MealOfTheDay.breakfast,
+          usuals: usuals,
+          day: day,
+        );
+
+        expect(grouped.containsKey(MealOfTheDay.breakfast), isFalse);
+        expect(
+          grouped[MealOfTheDay.lunch]!
+              .map((usualMeal) => usualMeal.id)
+              .toList(),
+          equals(['salad', 'sandwich']),
+        );
+        expect(
+          grouped[MealOfTheDay.dinner]!
+              .map((usualMeal) => usualMeal.id)
+              .toList(),
+          equals(['pizza']),
+        );
+      },
+    );
+
+    test(
+      'drops usuals logged today for the current meal and omits emptied meals',
+      () {
+        final entries = [
+          logEntry(
+            id: '1',
+            loggedAt: DateTime(2026, 6, 16, 8),
+            mealOfTheDay: MealOfTheDay.breakfast,
+            name: 'Pizza',
+            usualMealId: 'pizza',
+          ),
+        ];
+
+        final grouped = entries.usualsFromOtherMeals(
+          mealOfTheDay: MealOfTheDay.breakfast,
+          usuals: usuals,
+          day: day,
+        );
+
+        expect(grouped.containsKey(MealOfTheDay.dinner), isFalse);
+        expect(
+          grouped[MealOfTheDay.lunch]!
+              .map((usualMeal) => usualMeal.id)
+              .toList(),
+          equals(['salad', 'sandwich']),
+        );
+      },
+    );
+  });
 }

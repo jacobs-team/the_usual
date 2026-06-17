@@ -125,23 +125,25 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                const SectionLabel('WEIGHT'),
-                                SizedBox(height: AppDesign.spacing.sm),
                                 _WeightTracker(day: today),
-                                SizedBox(height: AppDesign.spacing.xl),
+                                SizedBox(height: AppDesign.spacing.lg),
                                 Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
                                   children: [
-                                    const SectionLabel('MEALS'),
-                                    const Spacer(),
+                                    Expanded(
+                                      child: NutritionBar(
+                                        nutrition: breakdown.nutrition,
+                                        calorieGoal: calorieGoal,
+                                        onSetGoal: () => context.go(
+                                          '${Routes.settings}?focus=goals',
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(width: AppDesign.spacing.sm),
                                     _NutritionExpansionToggle(
                                       expanded: expandNutritionByDefault,
                                     ),
                                   ],
-                                ),
-                                SizedBox(height: AppDesign.spacing.sm),
-                                NutritionBar(
-                                  nutrition: breakdown.nutrition,
-                                  calorieGoal: calorieGoal,
                                 ),
                               ],
                             ),
@@ -153,8 +155,16 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
                             mealLogEntries:
                                 breakdown.entriesByMeal[mealOfTheDay] ??
                                 const <MealLogEntry>[],
-                            usualMeals:
-                                usualMeals[mealOfTheDay] ?? <UsualMeal>[],
+                            quickPicks: mealEntries.orderedQuickPicks(
+                              mealOfTheDay: mealOfTheDay,
+                              usuals: usualMeals,
+                              day: today,
+                            ),
+                            otherMealUsuals: mealEntries.usualsFromOtherMeals(
+                              mealOfTheDay: mealOfTheDay,
+                              usuals: usualMeals,
+                              day: today,
+                            ),
                             isCurrent: mealOfTheDay == currentMeal,
                             nutritionExpandedByDefault:
                                 expandNutritionByDefault,
@@ -185,20 +195,27 @@ class _NutritionExpansionToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      tooltip: expanded ? 'Minimize nutrition' : 'Expand nutrition',
-      onPressed: () => getIt<UserSettingsBloc>().add(
-        UserSettingsEvent.expandNutritionByDefaultChanged(
-          expandNutritionByDefault: !expanded,
+    // Sized to the bar's height so it sits centered against it when the row is
+    // bottom-aligned, rather than against the taller nutrition column.
+    return SizedBox(
+      height: NutritionBar.height,
+      child: IconButton(
+        padding: EdgeInsets.zero,
+        constraints: const BoxConstraints(minWidth: 40),
+        tooltip: expanded ? 'Minimize nutrition' : 'Expand nutrition',
+        onPressed: () => getIt<UserSettingsBloc>().add(
+          UserSettingsEvent.expandNutritionByDefaultChanged(
+            expandNutritionByDefault: !expanded,
+          ),
         ),
-      ),
-      icon: AnimatedSwitcher(
-        duration: AppDesign.durations.fast,
-        transitionBuilder: (child, animation) =>
-            ScaleTransition(scale: animation, child: child),
-        child: Icon(
-          expanded ? Icons.unfold_less : Icons.unfold_more,
-          key: ValueKey(expanded),
+        icon: AnimatedSwitcher(
+          duration: AppDesign.durations.fast,
+          transitionBuilder: (child, animation) =>
+              ScaleTransition(scale: animation, child: child),
+          child: Icon(
+            expanded ? Icons.unfold_less : Icons.unfold_more,
+            key: ValueKey(expanded),
+          ),
         ),
       ),
     );
@@ -215,11 +232,27 @@ class _WeightTracker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Card(
       margin: EdgeInsets.zero,
-      child: ListTile(
-        title: const Text('Weight'),
-        trailing: WeightEntryField(day: day, showLastWeightButton: true),
+      child: Padding(
+        padding: EdgeInsets.symmetric(
+          horizontal: AppDesign.spacing.md,
+          vertical: AppDesign.spacing.xs,
+        ),
+        child: Row(
+          children: [
+            Icon(
+              Icons.monitor_weight_outlined,
+              size: 20,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+            SizedBox(width: AppDesign.spacing.sm),
+            Text('Weight', style: theme.textTheme.bodyMedium),
+            const Spacer(),
+            WeightEntryField(day: day, showLastWeightButton: true),
+          ],
+        ),
       ),
     );
   }

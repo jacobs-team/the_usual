@@ -101,7 +101,7 @@ class _FoodEntrySheetState extends State<FoodEntrySheet> {
 
   /// Estimates the food from the first row's name, used as the description.
   /// In whole-meal mode that typed name is kept as written.
-  Future<void> _describeWithAi() async {
+  Future<void> _estimateWithAi() async {
     final messenger = ScaffoldMessenger.of(context);
     final description = _drafts.first.nameController.text.trim();
     if (description.isEmpty) {
@@ -207,7 +207,25 @@ class _FoodEntrySheetState extends State<FoodEntrySheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(widget.title, style: textTheme.titleMedium),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(widget.title, style: textTheme.titleMedium),
+                  ),
+                  if (_aiAvailable) ...[
+                    Text('How should we log it?', style: textTheme.bodySmall),
+                    IconButton(
+                      visualDensity: VisualDensity.compact,
+                      onPressed: () => showDialog<void>(
+                        context: context,
+                        builder: (_) => const _MealEntryModeInfoDialog(),
+                      ),
+                      icon: const Icon(Icons.info_outline, size: 18),
+                      tooltip: 'How logging modes work',
+                    ),
+                  ],
+                ],
+              ),
               if (_aiAvailable) ...[
                 SizedBox(height: AppDesign.spacing.md),
                 SegmentedButton<MealEntryMode>(
@@ -221,14 +239,16 @@ class _FoodEntrySheetState extends State<FoodEntrySheet> {
                       ? null
                       : (selection) => _setMode(selection.first),
                 ),
+                SizedBox(height: AppDesign.spacing.sm),
+                Text(_mode.summary, style: textTheme.bodySmall),
                 SizedBox(height: AppDesign.spacing.md),
                 Row(
                   children: [
                     Expanded(
                       child: FilledButton.tonalIcon(
-                        onPressed: _isGenerating ? null : _describeWithAi,
+                        onPressed: _isGenerating ? null : _estimateWithAi,
                         icon: const Icon(Icons.auto_awesome_outlined),
-                        label: const Text('Describe'),
+                        label: const Text('Estimate'),
                       ),
                     ),
                     SizedBox(width: AppDesign.spacing.sm),
@@ -256,7 +276,7 @@ class _FoodEntrySheetState extends State<FoodEntrySheet> {
                   )
                 else
                   Text(
-                    'Type a name and tap Describe, or snap a photo.',
+                    'Type a name and tap Estimate, or snap a photo.',
                     style: textTheme.bodySmall,
                   ),
               ],
@@ -305,6 +325,39 @@ class _FoodEntrySheetState extends State<FoodEntrySheet> {
           ),
         ),
       ),
+    );
+  }
+}
+
+/// Explains how each [MealEntryMode] turns a meal into log entries, so the
+/// user understands that the toggle changes the AI's output.
+class _MealEntryModeInfoDialog extends StatelessWidget {
+  const _MealEntryModeInfoDialog();
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return AlertDialog(
+      title: const Text('How should we log it?'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          for (final mode in MealEntryMode.values) ...[
+            if (mode != MealEntryMode.values.first)
+              SizedBox(height: AppDesign.spacing.md),
+            Text(mode.label, style: textTheme.titleSmall),
+            SizedBox(height: AppDesign.spacing.xs),
+            Text(mode.detail, style: textTheme.bodyMedium),
+          ],
+        ],
+      ),
+      actions: [
+        FilledButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Got it'),
+        ),
+      ],
     );
   }
 }

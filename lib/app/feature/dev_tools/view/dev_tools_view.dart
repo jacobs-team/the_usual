@@ -52,12 +52,22 @@ class DevToolsView extends StatelessWidget {
               style: theme.textTheme.bodyLarge,
             ),
             subtitle: const Text(
-              'Replaces the log with seeded days and months',
+              'Replaces the log and usuals with seeded days and months',
             ),
             trailing: const Icon(Icons.history),
-            onTap: () => getIt<DailyLogBloc>().add(
-              const DailyLogEvent.sampleDataSeeded(),
-            ),
+            onTap: () {
+              getIt<DailyLogBloc>().add(
+                const DailyLogEvent.sampleDataSeeded(),
+              );
+              final userSettingsBloc = getIt<UserSettingsBloc>();
+              userSettingsBloc.add(
+                UserSettingsEvent.settingsCommitted(
+                  userSettingsBloc.state.copyWith(
+                    usuals: DailyLogBloc.sampleUsuals,
+                  ),
+                ),
+              );
+            },
           ),
           const Divider(),
           ListTile(
