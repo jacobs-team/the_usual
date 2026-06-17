@@ -49,10 +49,10 @@ class ExpandableNutrition extends StatefulWidget {
 
   /// How many of this food was logged. Null hides the stepper and shows the
   /// nutrition unscaled, for foods that have no count.
-  final int? quantity;
+  final double? quantity;
 
   /// Called with the new quantity when the stepper is used.
-  final ValueChanged<int>? onQuantityChanged;
+  final ValueChanged<double>? onQuantityChanged;
 
   /// Called when the remove button is pressed.
   final VoidCallback onRemoved;
@@ -105,7 +105,7 @@ class _ExpandableNutritionState extends State<ExpandableNutrition> {
         ? widget.nutrition
         : widget.nutrition * quantity;
     final displayName = quantity != null && quantity > 1
-        ? '×$quantity ${widget.name}'
+        ? '×${quantity.trimmedDecimal} ${widget.name}'
         : widget.name;
     return ExpansionTile(
       dense: true,
@@ -196,7 +196,7 @@ class _ExpandableNutritionState extends State<ExpandableNutrition> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('×$quantity = '),
+                  Text('×${quantity.trimmedDecimal} = '),
                   NutritionSummary(displayNutrition),
                 ],
               ),

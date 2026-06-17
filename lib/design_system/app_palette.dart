@@ -57,6 +57,10 @@ abstract final class AppPalette {
   static const fatMacro = Color(0xFFC68A2E);
   static const onMacro = Color(0xFFFFFFFF);
 
+  // ── Trend accents ── (warm amber-orange, complementary to the blue palette
+  // so a goal reference line reads against both the navy card and blue bars).
+  static const goalLine = Color(0xFFF5A623);
+
   // ── Outline ──
   static const outline = Color(0xFF76777D);
   static const outlineVariant = Color(0xFFC6C6CD);

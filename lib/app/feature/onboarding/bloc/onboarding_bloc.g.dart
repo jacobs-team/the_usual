@@ -22,9 +22,9 @@ _OnboardingState _$OnboardingStateFromJson(Map<String, dynamic> json) =>
           const <String>[],
       firstLogQuantities:
           (json['firstLogQuantities'] as Map<String, dynamic>?)?.map(
-            (k, e) => MapEntry(k, (e as num).toInt()),
+            (k, e) => MapEntry(k, (e as num).toDouble()),
           ) ??
-          const <String, int>{},
+          const <String, double>{},
     );
 
 Map<String, dynamic> _$OnboardingStateToJson(_OnboardingState instance) =>

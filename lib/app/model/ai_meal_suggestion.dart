@@ -18,7 +18,7 @@ abstract class AiMealSuggestion with _$AiMealSuggestion {
   @JsonSerializable(explicitToJson: true)
   const factory AiMealSuggestion({
     required String name,
-    @Default(1) int quantity,
+    @Default(1) double quantity,
     @Default(Nutrition()) Nutrition nutrition,
   }) = _AiMealSuggestion;
 

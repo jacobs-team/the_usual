@@ -1669,8 +1669,10 @@ mixin _$UserSettingsState {
  double? get weightGoal;/// Whether the app follows the system theme or is forced light or dark.
  ThemeMode get themeMode;/// Whether a meal's nutrition fields start expanded for editing rather than
 /// collapsed to a summary.
- bool get expandNutritionByDefault;/// Whether a per-meal reminder is skipped on a day that meal already has a
-/// logged entry. When false, reminders fire regardless of what's logged.
+ bool get expandNutritionByDefault;/// Whether a reminder is skipped on a day its entry is already logged: a
+/// meal reminder once that meal is logged, and the weigh-in reminder once
+/// today's weight is logged. When false, reminders fire regardless of
+/// what's logged.
  bool get skipLoggedMealReminders;/// How AI-assisted entry turns a meal into log entries: one combined item
 /// or a breakdown into individual foods. Remembered as the user's default
 /// and switchable per entry from the food entry sheet.
@@ -1938,8 +1940,10 @@ class _UserSettingsState extends UserSettingsState {
 /// Whether a meal's nutrition fields start expanded for editing rather than
 /// collapsed to a summary.
 @override@JsonKey() final  bool expandNutritionByDefault;
-/// Whether a per-meal reminder is skipped on a day that meal already has a
-/// logged entry. When false, reminders fire regardless of what's logged.
+/// Whether a reminder is skipped on a day its entry is already logged: a
+/// meal reminder once that meal is logged, and the weigh-in reminder once
+/// today's weight is logged. When false, reminders fire regardless of
+/// what's logged.
 @override@JsonKey() final  bool skipLoggedMealReminders;
 /// How AI-assisted entry turns a meal into log entries: one combined item
 /// or a breakdown into individual foods. Remembered as the user's default

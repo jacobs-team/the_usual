@@ -22,8 +22,9 @@ abstract class OnboardingState with _$OnboardingState {
     @Default(<String>[]) List<String> firstLogSelectedIds,
 
     /// How many of each selected first-log item the user had, keyed by usual
-    /// meal id. An item absent from the map defaults to one.
-    @Default(<String, int>{}) Map<String, int> firstLogQuantities,
+    /// meal id. An item absent from the map defaults to one. Whole counts saved
+    /// by older versions read back fine, since json reads each value as a num.
+    @Default(<String, double>{}) Map<String, double> firstLogQuantities,
   }) = _OnboardingState;
 
   const OnboardingState._();

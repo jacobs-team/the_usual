@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$MealLogEntry {
 
- String get id; DateTime get loggedAt; MealOfTheDay get mealOfTheDay; String get name; Nutrition get nutrition; int get quantity; String? get usualMealId; String? get photoPath;
+ String get id; DateTime get loggedAt; MealOfTheDay get mealOfTheDay; String get name; Nutrition get nutrition; double get quantity; String? get usualMealId; String? get photoPath;
 /// Create a copy of MealLogEntry
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $MealLogEntryCopyWith<$Res>  {
   factory $MealLogEntryCopyWith(MealLogEntry value, $Res Function(MealLogEntry) _then) = _$MealLogEntryCopyWithImpl;
 @useResult
 $Res call({
- String id, DateTime loggedAt, MealOfTheDay mealOfTheDay, String name, Nutrition nutrition, int quantity, String? usualMealId, String? photoPath
+ String id, DateTime loggedAt, MealOfTheDay mealOfTheDay, String name, Nutrition nutrition, double quantity, String? usualMealId, String? photoPath
 });
 
 
@@ -73,7 +73,7 @@ as DateTime,mealOfTheDay: null == mealOfTheDay ? _self.mealOfTheDay : mealOfTheD
 as MealOfTheDay,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,nutrition: null == nutrition ? _self.nutrition : nutrition // ignore: cast_nullable_to_non_nullable
 as Nutrition,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
-as int,usualMealId: freezed == usualMealId ? _self.usualMealId : usualMealId // ignore: cast_nullable_to_non_nullable
+as double,usualMealId: freezed == usualMealId ? _self.usualMealId : usualMealId // ignore: cast_nullable_to_non_nullable
 as String?,photoPath: freezed == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
@@ -169,7 +169,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  DateTime loggedAt,  MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  int quantity,  String? usualMealId,  String? photoPath)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  DateTime loggedAt,  MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  double quantity,  String? usualMealId,  String? photoPath)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _MealLogEntry() when $default != null:
 return $default(_that.id,_that.loggedAt,_that.mealOfTheDay,_that.name,_that.nutrition,_that.quantity,_that.usualMealId,_that.photoPath);case _:
@@ -190,7 +190,7 @@ return $default(_that.id,_that.loggedAt,_that.mealOfTheDay,_that.name,_that.nutr
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  DateTime loggedAt,  MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  int quantity,  String? usualMealId,  String? photoPath)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  DateTime loggedAt,  MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  double quantity,  String? usualMealId,  String? photoPath)  $default,) {final _that = this;
 switch (_that) {
 case _MealLogEntry():
 return $default(_that.id,_that.loggedAt,_that.mealOfTheDay,_that.name,_that.nutrition,_that.quantity,_that.usualMealId,_that.photoPath);case _:
@@ -210,7 +210,7 @@ return $default(_that.id,_that.loggedAt,_that.mealOfTheDay,_that.name,_that.nutr
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  DateTime loggedAt,  MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  int quantity,  String? usualMealId,  String? photoPath)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  DateTime loggedAt,  MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  double quantity,  String? usualMealId,  String? photoPath)?  $default,) {final _that = this;
 switch (_that) {
 case _MealLogEntry() when $default != null:
 return $default(_that.id,_that.loggedAt,_that.mealOfTheDay,_that.name,_that.nutrition,_that.quantity,_that.usualMealId,_that.photoPath);case _:
@@ -233,7 +233,7 @@ class _MealLogEntry extends MealLogEntry {
 @override final  MealOfTheDay mealOfTheDay;
 @override final  String name;
 @override@JsonKey() final  Nutrition nutrition;
-@override@JsonKey() final  int quantity;
+@override@JsonKey() final  double quantity;
 @override final  String? usualMealId;
 @override final  String? photoPath;
 
@@ -270,7 +270,7 @@ abstract mixin class _$MealLogEntryCopyWith<$Res> implements $MealLogEntryCopyWi
   factory _$MealLogEntryCopyWith(_MealLogEntry value, $Res Function(_MealLogEntry) _then) = __$MealLogEntryCopyWithImpl;
 @override @useResult
 $Res call({
- String id, DateTime loggedAt, MealOfTheDay mealOfTheDay, String name, Nutrition nutrition, int quantity, String? usualMealId, String? photoPath
+ String id, DateTime loggedAt, MealOfTheDay mealOfTheDay, String name, Nutrition nutrition, double quantity, String? usualMealId, String? photoPath
 });
 
 
@@ -295,7 +295,7 @@ as DateTime,mealOfTheDay: null == mealOfTheDay ? _self.mealOfTheDay : mealOfTheD
 as MealOfTheDay,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,nutrition: null == nutrition ? _self.nutrition : nutrition // ignore: cast_nullable_to_non_nullable
 as Nutrition,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
-as int,usualMealId: freezed == usualMealId ? _self.usualMealId : usualMealId // ignore: cast_nullable_to_non_nullable
+as double,usualMealId: freezed == usualMealId ? _self.usualMealId : usualMealId // ignore: cast_nullable_to_non_nullable
 as String?,photoPath: freezed == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable
 as String?,
   ));

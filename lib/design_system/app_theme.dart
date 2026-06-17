@@ -42,7 +42,7 @@ class AppTheme {
     );
     final inputBorder = OutlineInputBorder(
       borderRadius: smRadius,
-      borderSide: BorderSide.none,
+      borderSide: BorderSide(color: colorScheme.outlineVariant),
     );
 
     return base.copyWith(

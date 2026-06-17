@@ -131,19 +131,22 @@ class _HistoryViewState extends State<HistoryView> {
                           BlocSelector<
                             UserSettingsBloc,
                             UserSettingsState,
-                            (double?, WeightUnit)
+                            (double?, WeightUnit, int?)
                           >(
                             bloc: getIt<UserSettingsBloc>(),
                             selector: (state) => (
                               state.weightGoal,
                               state.weightUnit,
+                              state.calorieGoal,
                             ),
-                            builder: (context, goal) {
-                              final (weightGoal, weightUnit) = goal;
+                            builder: (context, goals) {
+                              final (weightGoal, weightUnit, calorieGoal) =
+                                  goals;
                               return MonthTrendsChart(
                                 monthHistory: monthHistory,
                                 weightGoal: weightGoal,
                                 weightGoalUnit: weightUnit,
+                                calorieGoal: calorieGoal,
                               );
                             },
                           ),

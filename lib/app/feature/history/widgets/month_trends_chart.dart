@@ -19,6 +19,7 @@ class MonthTrendsChart extends StatelessWidget {
     required this.monthHistory,
     required this.weightGoal,
     required this.weightGoalUnit,
+    required this.calorieGoal,
     super.key,
   });
 
@@ -31,6 +32,9 @@ class MonthTrendsChart extends StatelessWidget {
   /// The unit [weightGoal] is expressed in. The goal line is only drawn when it
   /// matches the month's weigh-in unit.
   final WeightUnit weightGoalUnit;
+
+  /// The user's daily calorie target, or null when unset.
+  final int? calorieGoal;
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +82,7 @@ class MonthTrendsChart extends StatelessWidget {
               _CalorieBars(
                 dailyCalories: dailyCalories,
                 averageCalories: monthHistory.averageNutrition.calories ?? 0,
+                goalCalories: calorieGoal,
               ),
           ],
         ),
@@ -85,6 +90,10 @@ class MonthTrendsChart extends StatelessWidget {
     );
   }
 }
+
+/// The plotted height each section's chart is given, so the weight line and the
+/// calorie bars take equal portions of the card.
+const double _chartHeight = 84;
 
 /// The card's section label style: a small, spaced, muted uppercase caption.
 TextStyle? _sectionLabelStyle(BuildContext context) {
@@ -133,8 +142,8 @@ class _WeightTrend extends StatelessWidget {
     final goalLabel = goalWeight == null
         ? null
         : 'Goal ${goalWeight.trimmedDecimal} ${weightGoalUnit.name}';
-    final goalColor = colorScheme.onPrimary.withValues(alpha: 0.85);
-    final goalLabelStyle = theme.textTheme.labelSmall?.copyWith(
+    const goalColor = AppPalette.goalLine;
+    final goalLabelStyle = theme.textTheme.labelMedium?.copyWith(
       color: goalColor,
       fontWeight: FontWeight.w600,
     );
@@ -184,7 +193,7 @@ class _WeightTrend extends StatelessWidget {
         ),
         SizedBox(height: AppDesign.spacing.md),
         SizedBox(
-          height: 84,
+          height: _chartHeight,
           child: CustomPaint(
             painter: _WeightLinePainter(
               weights: [
@@ -208,52 +217,78 @@ class _WeightTrend extends StatelessWidget {
   }
 }
 
-/// A bar per logged day of the month's calories, with the average drawn as a
-/// dashed reference line and labelled in the header.
+/// A bar per logged day of the month's calories, with the goal and the average
+/// each drawn as a labelled reference line in its own color.
 class _CalorieBars extends StatelessWidget {
   const _CalorieBars({
     required this.dailyCalories,
     required this.averageCalories,
+    required this.goalCalories,
   });
 
   /// Each logged day's calorie total, oldest first. Days without calories are
   /// zero so they hold their place on the time axis.
   final List<int> dailyCalories;
 
-  /// The month's average daily calories, drawn as the reference line.
+  /// The month's average daily calories, drawn as the average reference line.
   final int averageCalories;
+
+  /// The user's daily calorie target, drawn as the goal reference line, or null
+  /// when unset.
+  final int? goalCalories;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
+    // The goal is the warm accent against the blue bars; the average is the
+    // plain onPrimary so the two reference lines never read as the same line.
+    const goalLineColor = AppPalette.goalLine;
+    final averageLineColor = colorScheme.onPrimary;
+    final goalCalories = this.goalCalories;
+
+    // Each value is named in the header legend in its line's color, so the bars
+    // are left clear and the two labels can't collide or overlap a tall bar.
+    final legendStyle = theme.textTheme.labelMedium?.copyWith(
+      fontWeight: FontWeight.w600,
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.baseline,
-          textBaseline: TextBaseline.alphabetic,
           children: [
             Text('CALORIES', style: _sectionLabelStyle(context)),
-            Text(
-              'avg $averageCalories',
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: colorScheme.onPrimary,
-              ),
+            Row(
+              children: [
+                if (goalCalories != null) ...[
+                  Text(
+                    'Goal $goalCalories',
+                    style: legendStyle?.copyWith(color: goalLineColor),
+                  ),
+                  SizedBox(width: AppDesign.spacing.md),
+                ],
+                Text(
+                  'avg $averageCalories',
+                  style: legendStyle?.copyWith(color: averageLineColor),
+                ),
+              ],
             ),
           ],
         ),
         SizedBox(height: AppDesign.spacing.md),
         SizedBox(
-          height: 48,
+          height: _chartHeight,
           child: CustomPaint(
             painter: _CalorieBarsPainter(
               calories: dailyCalories,
               averageCalories: averageCalories,
+              goalCalories: goalCalories,
               barColor: colorScheme.inversePrimary,
-              averageLineColor: colorScheme.onPrimary.withValues(alpha: 0.6),
+              averageLineColor: averageLineColor,
+              goalLineColor: goalLineColor,
             ),
           ),
         ),
@@ -438,21 +473,32 @@ class _WeightLinePainter extends CustomPainter {
       oldDelegate.goalColor != goalColor;
 }
 
-/// Paints one bar per day of calories, scaled to the highest day, with a dashed
-/// horizontal line at the month's average.
+/// Paints one bar per day of calories, with the goal and the average each drawn
+/// as a solid horizontal line in its own color. The values are named in the
+/// header legend rather than on the lines, so the bars stay clear. The axis
+/// tops out at the tallest of the bars and the two lines so neither is clipped.
 class _CalorieBarsPainter extends CustomPainter {
   const _CalorieBarsPainter({
     required this.calories,
     required this.averageCalories,
+    required this.goalCalories,
     required this.barColor,
     required this.averageLineColor,
+    required this.goalLineColor,
   });
 
   /// Each day's calorie total, oldest first.
   final List<int> calories;
   final int averageCalories;
+
+  /// The user's daily calorie target, or null when unset.
+  final int? goalCalories;
   final Color barColor;
   final Color averageLineColor;
+  final Color goalLineColor;
+
+  /// Headroom above the tallest bar so the topmost line isn't flush to the top.
+  static const double _topInset = 6;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -460,43 +506,73 @@ class _CalorieBarsPainter extends CustomPainter {
     final maxCalories = calories.reduce(max);
     if (maxCalories == 0) return;
 
+    final goalCalories = this.goalCalories;
+
+    // The axis tops out at the tallest of the bars and the two reference lines
+    // so neither line is clipped when the goal or average exceeds every day.
+    var axisMax = max(maxCalories, averageCalories).toDouble();
+    if (goalCalories != null) {
+      axisMax = max(axisMax, goalCalories.toDouble());
+    }
+
+    final plotBottom = size.height;
+    final plotHeight = plotBottom - _topInset;
+
+    double yFor(double value) => plotBottom - (value / axisMax) * plotHeight;
+
     const gap = 3.0;
     final totalGap = gap * (calories.length - 1);
     final barWidth = (size.width - totalGap) / calories.length;
     final barPaint = Paint()..color = barColor;
     for (var index = 0; index < calories.length; index++) {
-      final barHeight = (calories[index] / maxCalories) * size.height;
+      final barTop = yFor(calories[index].toDouble());
       final left = index * (barWidth + gap);
       final bar = RRect.fromRectAndCorners(
-        Rect.fromLTWH(left, size.height - barHeight, barWidth, barHeight),
+        Rect.fromLTWH(left, barTop, barWidth, plotBottom - barTop),
         topLeft: const Radius.circular(2),
         topRight: const Radius.circular(2),
       );
       canvas.drawRRect(bar, barPaint);
     }
 
-    final averageFraction = averageCalories / maxCalories;
-    final averageY = size.height - averageFraction * size.height;
-    final averagePaint = Paint()
-      ..color = averageLineColor
-      ..strokeWidth = 1;
-    const dashWidth = 4.0;
-    const dashGap = 3.0;
-    var x = 0.0;
-    while (x < size.width) {
-      canvas.drawLine(
-        Offset(x, averageY),
-        Offset(min(x + dashWidth, size.width), averageY),
-        averagePaint,
-      );
-      x += dashWidth + dashGap;
+    void drawReferenceLine(double value, Color color, {required bool dashed}) {
+      final y = yFor(value);
+      final linePaint = Paint()..color = color;
+      if (dashed) {
+        linePaint.strokeWidth = 1;
+        const dashWidth = 4.0;
+        const dashGap = 3.0;
+        var x = 0.0;
+        while (x < size.width) {
+          canvas.drawLine(
+            Offset(x, y),
+            Offset(min(x + dashWidth, size.width), y),
+            linePaint,
+          );
+          x += dashWidth + dashGap;
+        }
+      } else {
+        linePaint.strokeWidth = 1.5;
+        canvas.drawLine(Offset(0, y), Offset(size.width, y), linePaint);
+      }
     }
+
+    if (goalCalories != null) {
+      drawReferenceLine(goalCalories.toDouble(), goalLineColor, dashed: true);
+    }
+    drawReferenceLine(
+      averageCalories.toDouble(),
+      averageLineColor,
+      dashed: false,
+    );
   }
 
   @override
   bool shouldRepaint(_CalorieBarsPainter oldDelegate) =>
       oldDelegate.calories != calories ||
       oldDelegate.averageCalories != averageCalories ||
+      oldDelegate.goalCalories != goalCalories ||
       oldDelegate.barColor != barColor ||
-      oldDelegate.averageLineColor != averageLineColor;
+      oldDelegate.averageLineColor != averageLineColor ||
+      oldDelegate.goalLineColor != goalLineColor;
 }

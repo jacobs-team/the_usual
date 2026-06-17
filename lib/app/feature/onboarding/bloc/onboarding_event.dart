@@ -62,12 +62,12 @@ sealed class OnboardingEvent with _$OnboardingEvent {
       FirstLogItemToggled;
   const factory OnboardingEvent.firstLogItemQuantityChanged(
     String id,
-    int quantity,
+    double quantity,
   ) = FirstLogItemQuantityChanged;
   const factory OnboardingEvent.somethingElseLogged(
     MealOfTheDay mealOfTheDay,
     String name, {
     @Default(Nutrition()) Nutrition nutrition,
-    @Default(1) int quantity,
+    @Default(1) double quantity,
   }) = SomethingElseLogged;
 }

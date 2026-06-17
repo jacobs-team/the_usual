@@ -17,7 +17,7 @@ abstract class MealLogEntry with _$MealLogEntry {
     required MealOfTheDay mealOfTheDay,
     required String name,
     @Default(Nutrition()) Nutrition nutrition,
-    @Default(1) int quantity,
+    @Default(1) double quantity,
     String? usualMealId,
     String? photoPath,
   }) = _MealLogEntry;

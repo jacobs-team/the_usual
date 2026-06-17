@@ -89,6 +89,7 @@ class NotificationService {
     required WeightTimeOfDay weightTimeOfDay,
     bool skipLoggedMealReminders = false,
     Set<MealOfTheDay> mealsLoggedToday = const {},
+    bool weighedInToday = false,
   }) async {
     await _plugin.cancelAll();
     if (reminderStyle != ReminderStyle.notifications) return;
@@ -122,14 +123,22 @@ class NotificationService {
     }
 
     if (weightCheckinFrequency != WeightCheckinFrequency.off) {
-      await _scheduleWeight(weightCheckinFrequency, weightTimeOfDay);
+      // The same skip-when-already-logged choice that governs meals also holds
+      // back today's weigh-in reminder once the user has logged today's weight.
+      final skipWeightToday = skipLoggedMealReminders && weighedInToday;
+      await _scheduleWeight(
+        weightCheckinFrequency,
+        weightTimeOfDay,
+        skipToday: skipWeightToday,
+      );
     }
   }
 
   Future<void> _scheduleWeight(
     WeightCheckinFrequency frequency,
-    WeightTimeOfDay weightTimeOfDay,
-  ) async {
+    WeightTimeOfDay weightTimeOfDay, {
+    bool skipToday = false,
+  }) async {
     final time = weightTimeOfDay.scheduledTime;
     const title = 'Time to weigh in';
     const body = "Log today's weight in The Usual.";
@@ -140,12 +149,13 @@ class NotificationService {
         title: title,
         body: body,
         time: time,
+        skipToday: skipToday,
       );
       return;
     }
 
     final intervalDays = frequency == WeightCheckinFrequency.weekly ? 7 : 2;
-    final firstReminder = _nextInstanceOf(time);
+    final firstReminder = _nextInstanceOf(time, skipToday: skipToday);
     for (var occurrence = 0; occurrence < _weightRollingCount; occurrence++) {
       await _plugin.zonedSchedule(
         id: _weightBaseId + occurrence,

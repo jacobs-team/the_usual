@@ -9,7 +9,7 @@ part of 'ai_meal_suggestion.dart';
 _AiMealSuggestion _$AiMealSuggestionFromJson(Map<String, dynamic> json) =>
     _AiMealSuggestion(
       name: json['name'] as String,
-      quantity: (json['quantity'] as num?)?.toInt() ?? 1,
+      quantity: (json['quantity'] as num?)?.toDouble() ?? 1,
       nutrition: json['nutrition'] == null
           ? const Nutrition()
           : Nutrition.fromJson(json['nutrition'] as Map<String, dynamic>),

@@ -182,7 +182,7 @@ return somethingElseLogged(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  backPressed,TResult Function()?  resetPressed,TResult Function()?  skipPressed,TResult Function()?  continuePressed,TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  usualMealAdded,TResult Function( MealOfTheDay mealOfTheDay,  String id)?  usualMealRemoved,TResult Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)?  usualMealNutritionChanged,TResult Function( MealOfTheDay mealOfTheDay,  String id,  String name)?  usualMealNameChanged,TResult Function( ReminderStyle reminderStyle)?  reminderStyleSelected,TResult Function( MealCheckinScheduleMode mealCheckinScheduleMode)?  mealCheckinScheduleModeChanged,TResult Function( MealOfTheDay mealOfTheDay,  bool enabled)?  mealReminderToggled,TResult Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)?  mealReminderTimeChanged,TResult Function( TimeOfDay timeOfDay)?  endOfDayTimeChanged,TResult Function( bool skipLoggedMealReminders)?  skipLoggedMealRemindersChanged,TResult Function( WeightCheckinFrequency weightCheckinFrequency)?  weightCheckinFrequencySelected,TResult Function( WeightTimeOfDay weightTimeOfDay)?  weightTimeOfDaySelected,TResult Function( WeightUnit weightUnit)?  weightUnitSelected,TResult Function( double? weight)?  startingWeightChanged,TResult Function( int? calorieGoal)?  calorieGoalChanged,TResult Function( double? weightGoal)?  weightGoalChanged,TResult Function( String id)?  firstLogItemToggled,TResult Function( String id,  int quantity)?  firstLogItemQuantityChanged,TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  int quantity)?  somethingElseLogged,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  backPressed,TResult Function()?  resetPressed,TResult Function()?  skipPressed,TResult Function()?  continuePressed,TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  usualMealAdded,TResult Function( MealOfTheDay mealOfTheDay,  String id)?  usualMealRemoved,TResult Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)?  usualMealNutritionChanged,TResult Function( MealOfTheDay mealOfTheDay,  String id,  String name)?  usualMealNameChanged,TResult Function( ReminderStyle reminderStyle)?  reminderStyleSelected,TResult Function( MealCheckinScheduleMode mealCheckinScheduleMode)?  mealCheckinScheduleModeChanged,TResult Function( MealOfTheDay mealOfTheDay,  bool enabled)?  mealReminderToggled,TResult Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)?  mealReminderTimeChanged,TResult Function( TimeOfDay timeOfDay)?  endOfDayTimeChanged,TResult Function( bool skipLoggedMealReminders)?  skipLoggedMealRemindersChanged,TResult Function( WeightCheckinFrequency weightCheckinFrequency)?  weightCheckinFrequencySelected,TResult Function( WeightTimeOfDay weightTimeOfDay)?  weightTimeOfDaySelected,TResult Function( WeightUnit weightUnit)?  weightUnitSelected,TResult Function( double? weight)?  startingWeightChanged,TResult Function( int? calorieGoal)?  calorieGoalChanged,TResult Function( double? weightGoal)?  weightGoalChanged,TResult Function( String id)?  firstLogItemToggled,TResult Function( String id,  double quantity)?  firstLogItemQuantityChanged,TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  double quantity)?  somethingElseLogged,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case BackPressed() when backPressed != null:
 return backPressed();case ResetPressed() when resetPressed != null:
@@ -225,7 +225,7 @@ return somethingElseLogged(_that.mealOfTheDay,_that.name,_that.nutrition,_that.q
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  backPressed,required TResult Function()  resetPressed,required TResult Function()  skipPressed,required TResult Function()  continuePressed,required TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)  usualMealAdded,required TResult Function( MealOfTheDay mealOfTheDay,  String id)  usualMealRemoved,required TResult Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)  usualMealNutritionChanged,required TResult Function( MealOfTheDay mealOfTheDay,  String id,  String name)  usualMealNameChanged,required TResult Function( ReminderStyle reminderStyle)  reminderStyleSelected,required TResult Function( MealCheckinScheduleMode mealCheckinScheduleMode)  mealCheckinScheduleModeChanged,required TResult Function( MealOfTheDay mealOfTheDay,  bool enabled)  mealReminderToggled,required TResult Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)  mealReminderTimeChanged,required TResult Function( TimeOfDay timeOfDay)  endOfDayTimeChanged,required TResult Function( bool skipLoggedMealReminders)  skipLoggedMealRemindersChanged,required TResult Function( WeightCheckinFrequency weightCheckinFrequency)  weightCheckinFrequencySelected,required TResult Function( WeightTimeOfDay weightTimeOfDay)  weightTimeOfDaySelected,required TResult Function( WeightUnit weightUnit)  weightUnitSelected,required TResult Function( double? weight)  startingWeightChanged,required TResult Function( int? calorieGoal)  calorieGoalChanged,required TResult Function( double? weightGoal)  weightGoalChanged,required TResult Function( String id)  firstLogItemToggled,required TResult Function( String id,  int quantity)  firstLogItemQuantityChanged,required TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  int quantity)  somethingElseLogged,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  backPressed,required TResult Function()  resetPressed,required TResult Function()  skipPressed,required TResult Function()  continuePressed,required TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)  usualMealAdded,required TResult Function( MealOfTheDay mealOfTheDay,  String id)  usualMealRemoved,required TResult Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)  usualMealNutritionChanged,required TResult Function( MealOfTheDay mealOfTheDay,  String id,  String name)  usualMealNameChanged,required TResult Function( ReminderStyle reminderStyle)  reminderStyleSelected,required TResult Function( MealCheckinScheduleMode mealCheckinScheduleMode)  mealCheckinScheduleModeChanged,required TResult Function( MealOfTheDay mealOfTheDay,  bool enabled)  mealReminderToggled,required TResult Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)  mealReminderTimeChanged,required TResult Function( TimeOfDay timeOfDay)  endOfDayTimeChanged,required TResult Function( bool skipLoggedMealReminders)  skipLoggedMealRemindersChanged,required TResult Function( WeightCheckinFrequency weightCheckinFrequency)  weightCheckinFrequencySelected,required TResult Function( WeightTimeOfDay weightTimeOfDay)  weightTimeOfDaySelected,required TResult Function( WeightUnit weightUnit)  weightUnitSelected,required TResult Function( double? weight)  startingWeightChanged,required TResult Function( int? calorieGoal)  calorieGoalChanged,required TResult Function( double? weightGoal)  weightGoalChanged,required TResult Function( String id)  firstLogItemToggled,required TResult Function( String id,  double quantity)  firstLogItemQuantityChanged,required TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  double quantity)  somethingElseLogged,}) {final _that = this;
 switch (_that) {
 case BackPressed():
 return backPressed();case ResetPressed():
@@ -264,7 +264,7 @@ return somethingElseLogged(_that.mealOfTheDay,_that.name,_that.nutrition,_that.q
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  backPressed,TResult? Function()?  resetPressed,TResult? Function()?  skipPressed,TResult? Function()?  continuePressed,TResult? Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  usualMealAdded,TResult? Function( MealOfTheDay mealOfTheDay,  String id)?  usualMealRemoved,TResult? Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)?  usualMealNutritionChanged,TResult? Function( MealOfTheDay mealOfTheDay,  String id,  String name)?  usualMealNameChanged,TResult? Function( ReminderStyle reminderStyle)?  reminderStyleSelected,TResult? Function( MealCheckinScheduleMode mealCheckinScheduleMode)?  mealCheckinScheduleModeChanged,TResult? Function( MealOfTheDay mealOfTheDay,  bool enabled)?  mealReminderToggled,TResult? Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)?  mealReminderTimeChanged,TResult? Function( TimeOfDay timeOfDay)?  endOfDayTimeChanged,TResult? Function( bool skipLoggedMealReminders)?  skipLoggedMealRemindersChanged,TResult? Function( WeightCheckinFrequency weightCheckinFrequency)?  weightCheckinFrequencySelected,TResult? Function( WeightTimeOfDay weightTimeOfDay)?  weightTimeOfDaySelected,TResult? Function( WeightUnit weightUnit)?  weightUnitSelected,TResult? Function( double? weight)?  startingWeightChanged,TResult? Function( int? calorieGoal)?  calorieGoalChanged,TResult? Function( double? weightGoal)?  weightGoalChanged,TResult? Function( String id)?  firstLogItemToggled,TResult? Function( String id,  int quantity)?  firstLogItemQuantityChanged,TResult? Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  int quantity)?  somethingElseLogged,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  backPressed,TResult? Function()?  resetPressed,TResult? Function()?  skipPressed,TResult? Function()?  continuePressed,TResult? Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  usualMealAdded,TResult? Function( MealOfTheDay mealOfTheDay,  String id)?  usualMealRemoved,TResult? Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)?  usualMealNutritionChanged,TResult? Function( MealOfTheDay mealOfTheDay,  String id,  String name)?  usualMealNameChanged,TResult? Function( ReminderStyle reminderStyle)?  reminderStyleSelected,TResult? Function( MealCheckinScheduleMode mealCheckinScheduleMode)?  mealCheckinScheduleModeChanged,TResult? Function( MealOfTheDay mealOfTheDay,  bool enabled)?  mealReminderToggled,TResult? Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)?  mealReminderTimeChanged,TResult? Function( TimeOfDay timeOfDay)?  endOfDayTimeChanged,TResult? Function( bool skipLoggedMealReminders)?  skipLoggedMealRemindersChanged,TResult? Function( WeightCheckinFrequency weightCheckinFrequency)?  weightCheckinFrequencySelected,TResult? Function( WeightTimeOfDay weightTimeOfDay)?  weightTimeOfDaySelected,TResult? Function( WeightUnit weightUnit)?  weightUnitSelected,TResult? Function( double? weight)?  startingWeightChanged,TResult? Function( int? calorieGoal)?  calorieGoalChanged,TResult? Function( double? weightGoal)?  weightGoalChanged,TResult? Function( String id)?  firstLogItemToggled,TResult? Function( String id,  double quantity)?  firstLogItemQuantityChanged,TResult? Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  double quantity)?  somethingElseLogged,}) {final _that = this;
 switch (_that) {
 case BackPressed() when backPressed != null:
 return backPressed();case ResetPressed() when resetPressed != null:
@@ -1591,7 +1591,7 @@ class FirstLogItemQuantityChanged implements OnboardingEvent {
   
 
  final  String id;
- final  int quantity;
+ final  double quantity;
 
 /// Create a copy of OnboardingEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -1623,7 +1623,7 @@ abstract mixin class $FirstLogItemQuantityChangedCopyWith<$Res> implements $Onbo
   factory $FirstLogItemQuantityChangedCopyWith(FirstLogItemQuantityChanged value, $Res Function(FirstLogItemQuantityChanged) _then) = _$FirstLogItemQuantityChangedCopyWithImpl;
 @useResult
 $Res call({
- String id, int quantity
+ String id, double quantity
 });
 
 
@@ -1644,7 +1644,7 @@ class _$FirstLogItemQuantityChangedCopyWithImpl<$Res>
   return _then(FirstLogItemQuantityChanged(
 null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
-as int,
+as double,
   ));
 }
 
@@ -1661,7 +1661,7 @@ class SomethingElseLogged implements OnboardingEvent {
  final  MealOfTheDay mealOfTheDay;
  final  String name;
 @JsonKey() final  Nutrition nutrition;
-@JsonKey() final  int quantity;
+@JsonKey() final  double quantity;
 
 /// Create a copy of OnboardingEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -1693,7 +1693,7 @@ abstract mixin class $SomethingElseLoggedCopyWith<$Res> implements $OnboardingEv
   factory $SomethingElseLoggedCopyWith(SomethingElseLogged value, $Res Function(SomethingElseLogged) _then) = _$SomethingElseLoggedCopyWithImpl;
 @useResult
 $Res call({
- MealOfTheDay mealOfTheDay, String name, Nutrition nutrition, int quantity
+ MealOfTheDay mealOfTheDay, String name, Nutrition nutrition, double quantity
 });
 
 
@@ -1716,7 +1716,7 @@ null == mealOfTheDay ? _self.mealOfTheDay : mealOfTheDay // ignore: cast_nullabl
 as MealOfTheDay,null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,nutrition: null == nutrition ? _self.nutrition : nutrition // ignore: cast_nullable_to_non_nullable
 as Nutrition,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
-as int,
+as double,
   ));
 }
 
@@ -1743,8 +1743,9 @@ mixin _$OnboardingState {
  int get activeStepIndex;/// Draft of the user's settings and usuals, committed to
 /// [UserSettingsBloc] when onboarding completes.
  UserSettingsState get settings; List<String> get firstLogSelectedIds;/// How many of each selected first-log item the user had, keyed by usual
-/// meal id. An item absent from the map defaults to one.
- Map<String, int> get firstLogQuantities;
+/// meal id. An item absent from the map defaults to one. Whole counts saved
+/// by older versions read back fine, since json reads each value as a num.
+ Map<String, double> get firstLogQuantities;
 /// Create a copy of OnboardingState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1777,7 +1778,7 @@ abstract mixin class $OnboardingStateCopyWith<$Res>  {
   factory $OnboardingStateCopyWith(OnboardingState value, $Res Function(OnboardingState) _then) = _$OnboardingStateCopyWithImpl;
 @useResult
 $Res call({
- int version, int activeStepIndex, UserSettingsState settings, List<String> firstLogSelectedIds, Map<String, int> firstLogQuantities
+ int version, int activeStepIndex, UserSettingsState settings, List<String> firstLogSelectedIds, Map<String, double> firstLogQuantities
 });
 
 
@@ -1801,7 +1802,7 @@ as int,activeStepIndex: null == activeStepIndex ? _self.activeStepIndex : active
 as int,settings: null == settings ? _self.settings : settings // ignore: cast_nullable_to_non_nullable
 as UserSettingsState,firstLogSelectedIds: null == firstLogSelectedIds ? _self.firstLogSelectedIds : firstLogSelectedIds // ignore: cast_nullable_to_non_nullable
 as List<String>,firstLogQuantities: null == firstLogQuantities ? _self.firstLogQuantities : firstLogQuantities // ignore: cast_nullable_to_non_nullable
-as Map<String, int>,
+as Map<String, double>,
   ));
 }
 /// Create a copy of OnboardingState
@@ -1895,7 +1896,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int version,  int activeStepIndex,  UserSettingsState settings,  List<String> firstLogSelectedIds,  Map<String, int> firstLogQuantities)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int version,  int activeStepIndex,  UserSettingsState settings,  List<String> firstLogSelectedIds,  Map<String, double> firstLogQuantities)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _OnboardingState() when $default != null:
 return $default(_that.version,_that.activeStepIndex,_that.settings,_that.firstLogSelectedIds,_that.firstLogQuantities);case _:
@@ -1916,7 +1917,7 @@ return $default(_that.version,_that.activeStepIndex,_that.settings,_that.firstLo
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int version,  int activeStepIndex,  UserSettingsState settings,  List<String> firstLogSelectedIds,  Map<String, int> firstLogQuantities)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int version,  int activeStepIndex,  UserSettingsState settings,  List<String> firstLogSelectedIds,  Map<String, double> firstLogQuantities)  $default,) {final _that = this;
 switch (_that) {
 case _OnboardingState():
 return $default(_that.version,_that.activeStepIndex,_that.settings,_that.firstLogSelectedIds,_that.firstLogQuantities);case _:
@@ -1936,7 +1937,7 @@ return $default(_that.version,_that.activeStepIndex,_that.settings,_that.firstLo
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int version,  int activeStepIndex,  UserSettingsState settings,  List<String> firstLogSelectedIds,  Map<String, int> firstLogQuantities)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int version,  int activeStepIndex,  UserSettingsState settings,  List<String> firstLogSelectedIds,  Map<String, double> firstLogQuantities)?  $default,) {final _that = this;
 switch (_that) {
 case _OnboardingState() when $default != null:
 return $default(_that.version,_that.activeStepIndex,_that.settings,_that.firstLogSelectedIds,_that.firstLogQuantities);case _:
@@ -1951,7 +1952,7 @@ return $default(_that.version,_that.activeStepIndex,_that.settings,_that.firstLo
 
 @JsonSerializable(explicitToJson: true)
 class _OnboardingState extends OnboardingState {
-  const _OnboardingState({this.version = 1, this.activeStepIndex = 0, this.settings = const UserSettingsState(), final  List<String> firstLogSelectedIds = const <String>[], final  Map<String, int> firstLogQuantities = const <String, int>{}}): _firstLogSelectedIds = firstLogSelectedIds,_firstLogQuantities = firstLogQuantities,super._();
+  const _OnboardingState({this.version = 1, this.activeStepIndex = 0, this.settings = const UserSettingsState(), final  List<String> firstLogSelectedIds = const <String>[], final  Map<String, double> firstLogQuantities = const <String, double>{}}): _firstLogSelectedIds = firstLogSelectedIds,_firstLogQuantities = firstLogQuantities,super._();
   factory _OnboardingState.fromJson(Map<String, dynamic> json) => _$OnboardingStateFromJson(json);
 
 /// Schema version of the persisted state. Bump it and add a `fromJson`
@@ -1971,11 +1972,13 @@ class _OnboardingState extends OnboardingState {
 }
 
 /// How many of each selected first-log item the user had, keyed by usual
-/// meal id. An item absent from the map defaults to one.
- final  Map<String, int> _firstLogQuantities;
+/// meal id. An item absent from the map defaults to one. Whole counts saved
+/// by older versions read back fine, since json reads each value as a num.
+ final  Map<String, double> _firstLogQuantities;
 /// How many of each selected first-log item the user had, keyed by usual
-/// meal id. An item absent from the map defaults to one.
-@override@JsonKey() Map<String, int> get firstLogQuantities {
+/// meal id. An item absent from the map defaults to one. Whole counts saved
+/// by older versions read back fine, since json reads each value as a num.
+@override@JsonKey() Map<String, double> get firstLogQuantities {
   if (_firstLogQuantities is EqualUnmodifiableMapView) return _firstLogQuantities;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableMapView(_firstLogQuantities);
@@ -2015,7 +2018,7 @@ abstract mixin class _$OnboardingStateCopyWith<$Res> implements $OnboardingState
   factory _$OnboardingStateCopyWith(_OnboardingState value, $Res Function(_OnboardingState) _then) = __$OnboardingStateCopyWithImpl;
 @override @useResult
 $Res call({
- int version, int activeStepIndex, UserSettingsState settings, List<String> firstLogSelectedIds, Map<String, int> firstLogQuantities
+ int version, int activeStepIndex, UserSettingsState settings, List<String> firstLogSelectedIds, Map<String, double> firstLogQuantities
 });
 
 
@@ -2039,7 +2042,7 @@ as int,activeStepIndex: null == activeStepIndex ? _self.activeStepIndex : active
 as int,settings: null == settings ? _self.settings : settings // ignore: cast_nullable_to_non_nullable
 as UserSettingsState,firstLogSelectedIds: null == firstLogSelectedIds ? _self._firstLogSelectedIds : firstLogSelectedIds // ignore: cast_nullable_to_non_nullable
 as List<String>,firstLogQuantities: null == firstLogQuantities ? _self._firstLogQuantities : firstLogQuantities // ignore: cast_nullable_to_non_nullable
-as Map<String, int>,
+as Map<String, double>,
   ));
 }
 

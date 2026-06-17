@@ -47,14 +47,14 @@ abstract class Nutrition with _$Nutrition {
     carbs: (carbs ?? 0) + (other.carbs ?? 0),
   );
 
-  /// Scales each value by [factor], leaving unset values unset so the summary
-  /// still drops them. Used to apply a logged entry's quantity to its per-unit
-  /// facts.
-  Nutrition operator *(int factor) => Nutrition(
-    calories: calories == null ? null : calories! * factor,
-    protein: protein == null ? null : protein! * factor,
-    fat: fat == null ? null : fat! * factor,
-    carbs: carbs == null ? null : carbs! * factor,
+  /// Scales each value by [factor], rounding back to a whole number and leaving
+  /// unset values unset so the summary still drops them. Used to apply a logged
+  /// entry's quantity, which may be fractional, to its per-unit facts.
+  Nutrition operator *(double factor) => Nutrition(
+    calories: calories == null ? null : (calories! * factor).round(),
+    protein: protein == null ? null : (protein! * factor).round(),
+    fat: fat == null ? null : (fat! * factor).round(),
+    carbs: carbs == null ? null : (carbs! * factor).round(),
   );
 
   /// Migrates a record's JSON from the legacy shape, where `calories` lived at

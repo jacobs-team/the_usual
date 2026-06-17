@@ -122,7 +122,7 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
       mealOfTheDay: event.mealOfTheDay,
       name: name,
       nutrition: event.nutrition,
-      quantity: event.quantity,
+      quantity: event.quantity.asLoggedQuantity,
       usualMealId: event.usualMealId,
       photoPath: event.photoPath,
     );
@@ -147,7 +147,7 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
     MealEntryQuantityChanged event,
     Emitter<DailyLogState> emit,
   ) {
-    final quantity = event.quantity < 1 ? 1 : event.quantity;
+    final quantity = event.quantity.asLoggedQuantity;
     final updatedEntries = [
       for (final mealLogEntry in state.mealEntries)
         if (mealLogEntry.id == event.id)
@@ -274,7 +274,9 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
     ) {
       if (random.nextDouble() < skipChance) return;
       final sample = pool[random.nextInt(pool.length)];
-      final quantity = random.nextDouble() < 0.12 ? 2 : 1;
+      // Mostly one, occasionally a fractional serving. Built by division so the
+      // value is a double without a literal the formatter might rewrite to int.
+      final quantity = (random.nextDouble() < 0.12 ? 3 : 2) / 2;
       // Now and then only the calorie count was entered, leaving macros blank.
       final macrosEntered = random.nextDouble() > 0.08;
       mealEntries.add(

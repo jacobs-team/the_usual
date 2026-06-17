@@ -78,8 +78,10 @@ abstract class UserSettingsState with _$UserSettingsState {
     /// collapsed to a summary.
     @Default(false) bool expandNutritionByDefault,
 
-    /// Whether a per-meal reminder is skipped on a day that meal already has a
-    /// logged entry. When false, reminders fire regardless of what's logged.
+    /// Whether a reminder is skipped on a day its entry is already logged: a
+    /// meal reminder once that meal is logged, and the weigh-in reminder once
+    /// today's weight is logged. When false, reminders fire regardless of
+    /// what's logged.
     @Default(false) bool skipLoggedMealReminders,
 
     /// How AI-assisted entry turns a meal into log entries: one combined item

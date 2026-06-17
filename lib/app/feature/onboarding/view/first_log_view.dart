@@ -41,7 +41,7 @@ class _FirstLogViewState extends State<FirstLogView> {
               BlocSelector<
                 OnboardingBloc,
                 OnboardingState,
-                (List<UsualMeal>, List<String>, Map<String, int>)
+                (List<UsualMeal>, List<String>, Map<String, double>)
               >(
                 bloc: getIt<OnboardingBloc>(),
                 selector: (state) => (
@@ -155,7 +155,7 @@ class _FoodCard extends StatelessWidget {
 
   final UsualMeal usualMeal;
   final bool selected;
-  final int quantity;
+  final double quantity;
 
   @override
   Widget build(BuildContext context) {

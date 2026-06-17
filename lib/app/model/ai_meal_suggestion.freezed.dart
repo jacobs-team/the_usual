@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AiMealSuggestion {
 
- String get name; int get quantity; Nutrition get nutrition;
+ String get name; double get quantity; Nutrition get nutrition;
 /// Create a copy of AiMealSuggestion
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $AiMealSuggestionCopyWith<$Res>  {
   factory $AiMealSuggestionCopyWith(AiMealSuggestion value, $Res Function(AiMealSuggestion) _then) = _$AiMealSuggestionCopyWithImpl;
 @useResult
 $Res call({
- String name, int quantity, Nutrition nutrition
+ String name, double quantity, Nutrition nutrition
 });
 
 
@@ -69,7 +69,7 @@ class _$AiMealSuggestionCopyWithImpl<$Res>
   return _then(_self.copyWith(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
-as int,nutrition: null == nutrition ? _self.nutrition : nutrition // ignore: cast_nullable_to_non_nullable
+as double,nutrition: null == nutrition ? _self.nutrition : nutrition // ignore: cast_nullable_to_non_nullable
 as Nutrition,
   ));
 }
@@ -164,7 +164,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String name,  int quantity,  Nutrition nutrition)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String name,  double quantity,  Nutrition nutrition)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AiMealSuggestion() when $default != null:
 return $default(_that.name,_that.quantity,_that.nutrition);case _:
@@ -185,7 +185,7 @@ return $default(_that.name,_that.quantity,_that.nutrition);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String name,  int quantity,  Nutrition nutrition)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String name,  double quantity,  Nutrition nutrition)  $default,) {final _that = this;
 switch (_that) {
 case _AiMealSuggestion():
 return $default(_that.name,_that.quantity,_that.nutrition);case _:
@@ -205,7 +205,7 @@ return $default(_that.name,_that.quantity,_that.nutrition);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String name,  int quantity,  Nutrition nutrition)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String name,  double quantity,  Nutrition nutrition)?  $default,) {final _that = this;
 switch (_that) {
 case _AiMealSuggestion() when $default != null:
 return $default(_that.name,_that.quantity,_that.nutrition);case _:
@@ -224,7 +224,7 @@ class _AiMealSuggestion implements AiMealSuggestion {
   factory _AiMealSuggestion.fromJson(Map<String, dynamic> json) => _$AiMealSuggestionFromJson(json);
 
 @override final  String name;
-@override@JsonKey() final  int quantity;
+@override@JsonKey() final  double quantity;
 @override@JsonKey() final  Nutrition nutrition;
 
 /// Create a copy of AiMealSuggestion
@@ -260,7 +260,7 @@ abstract mixin class _$AiMealSuggestionCopyWith<$Res> implements $AiMealSuggesti
   factory _$AiMealSuggestionCopyWith(_AiMealSuggestion value, $Res Function(_AiMealSuggestion) _then) = __$AiMealSuggestionCopyWithImpl;
 @override @useResult
 $Res call({
- String name, int quantity, Nutrition nutrition
+ String name, double quantity, Nutrition nutrition
 });
 
 
@@ -281,7 +281,7 @@ class __$AiMealSuggestionCopyWithImpl<$Res>
   return _then(_AiMealSuggestion(
 name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
-as int,nutrition: null == nutrition ? _self.nutrition : nutrition // ignore: cast_nullable_to_non_nullable
+as double,nutrition: null == nutrition ? _self.nutrition : nutrition // ignore: cast_nullable_to_non_nullable
 as Nutrition,
   ));
 }

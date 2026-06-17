@@ -15,7 +15,7 @@ _MealLogEntry _$MealLogEntryFromJson(Map<String, dynamic> json) =>
       nutrition: json['nutrition'] == null
           ? const Nutrition()
           : Nutrition.fromJson(json['nutrition'] as Map<String, dynamic>),
-      quantity: (json['quantity'] as num?)?.toInt() ?? 1,
+      quantity: (json['quantity'] as num?)?.toDouble() ?? 1,
       usualMealId: json['usualMealId'] as String?,
       photoPath: json['photoPath'] as String?,
     );

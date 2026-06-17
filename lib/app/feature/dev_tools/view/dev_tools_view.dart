@@ -140,7 +140,7 @@ class DevToolsView extends StatelessWidget {
                 );
                 final summary = [
                   for (final s in suggestions)
-                    '×${s.quantity} ${s.name} (${s.nutrition.summary})',
+                    '×${s.quantity.trimmedDecimal} ${s.name} (${s.nutrition.summary})',
                 ].join('  •  ');
                 log('CLAUDE suggestion: $summary');
                 messenger.showSnackBar(SnackBar(content: Text(summary)));
@@ -188,7 +188,7 @@ class DevToolsView extends StatelessWidget {
                 );
                 final summary = [
                   for (final s in suggestions)
-                    '×${s.quantity} ${s.name} (${s.nutrition.summary})',
+                    '×${s.quantity.trimmedDecimal} ${s.name} (${s.nutrition.summary})',
                 ].join('  •  ');
                 log('CLAUDE photo suggestion: $summary');
                 messenger.showSnackBar(SnackBar(content: Text(summary)));

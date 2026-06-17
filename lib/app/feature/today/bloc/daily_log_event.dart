@@ -6,7 +6,7 @@ sealed class DailyLogEvent with _$DailyLogEvent {
     MealOfTheDay mealOfTheDay,
     String name, {
     @Default(Nutrition()) Nutrition nutrition,
-    @Default(1) int quantity,
+    @Default(1) double quantity,
     String? usualMealId,
     String? photoPath,
   }) = MealLogged;
@@ -17,7 +17,7 @@ sealed class DailyLogEvent with _$DailyLogEvent {
   ) = MealEntryNutritionChanged;
   const factory DailyLogEvent.mealEntryQuantityChanged(
     String id,
-    int quantity,
+    double quantity,
   ) = MealEntryQuantityChanged;
 
   /// Repairs the link from a logged entry to its usual meal by stamping the

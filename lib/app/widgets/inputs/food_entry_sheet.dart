@@ -9,7 +9,7 @@ import 'package:the_usual/design_system/design_system.dart';
 typedef FoodEntryResult = ({
   String name,
   Nutrition nutrition,
-  int quantity,
+  double quantity,
   bool addToUsualMeals,
 });
 
@@ -187,18 +187,27 @@ class _FoodEntrySheetState extends State<FoodEntrySheet> {
     }
   }
 
-  /// Snaps or picks a photo and estimates the food from it.
+  /// Snaps or picks a photo and estimates the food from it. Any name the user
+  /// already typed is sent with the photo to sharpen the estimate, and is kept
+  /// instead of the model's name in whole-meal mode, so a typed description
+  /// stays as the user wrote it. With no name typed, the model names the food.
   Future<void> _photoWithAi() async {
     final messenger = ScaffoldMessenger.of(context);
     final photo = await pickMealPhoto(context);
     if (photo == null) return;
+    final description = _drafts.first.nameController.text.trim();
+    final hasDescription = description.isNotEmpty;
     await _runEstimate(
       messenger,
       () => getIt<MealAiRepository>().suggestFromPhoto(
         photo.bytes,
         mode: _mode,
+        description: hasDescription ? description : null,
         imageMediaType: photo.mediaType,
       ),
+      keepFirstName: hasDescription && _mode == MealEntryMode.wholeMeal
+          ? description
+          : null,
     );
   }
 
@@ -475,7 +484,7 @@ class _FoodDraft {
   }) : nameController = TextEditingController(text: name);
 
   final TextEditingController nameController;
-  int quantity;
+  double quantity;
   Nutrition nutrition;
   bool addToUsualMeals;
 

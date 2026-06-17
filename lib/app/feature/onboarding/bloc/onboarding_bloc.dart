@@ -305,7 +305,7 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
     FirstLogItemQuantityChanged event,
     Emitter<OnboardingState> emit,
   ) {
-    final quantity = event.quantity < 1 ? 1 : event.quantity;
+    final quantity = event.quantity.asLoggedQuantity;
     emit(
       state.copyWith(
         firstLogQuantities: {...state.firstLogQuantities, event.id: quantity},
@@ -327,7 +327,7 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
       name: name,
       nutrition: event.nutrition,
     );
-    final quantity = event.quantity < 1 ? 1 : event.quantity;
+    final quantity = event.quantity.asLoggedQuantity;
     emit(
       state.copyWith(
         settings: state.settings.copyWith(

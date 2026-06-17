@@ -36,16 +36,19 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
   }
 
   /// Reschedules reminders from the current settings, suppressing today's
-  /// per-meal reminders for meals already logged today when the user enabled
-  /// that. Reads both blocs so it can run on a settings change or a log change.
+  /// reminders for meals already logged today and the weigh-in once today's
+  /// weight is logged, when the user enabled that. Reads both blocs so it can
+  /// run on a settings change or a log change.
   void _syncNotifications() {
     final settings = getIt<UserSettingsBloc>().state;
     final today = DateUtils.dateOnly(clock.now());
-    final mealsLoggedToday = getIt<DailyLogBloc>().state.mealEntries
+    final dailyLog = getIt<DailyLogBloc>().state;
+    final mealsLoggedToday = dailyLog.mealEntries
         .breakdownOn(today)
         .entriesByMeal
         .keys
         .toSet();
+    final weighedInToday = dailyLog.weightOn(today) != null;
     unawaited(
       getIt<NotificationService>().sync(
         reminderStyle: settings.reminderStyle,
@@ -56,6 +59,7 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
         weightTimeOfDay: settings.weightTimeOfDay,
         skipLoggedMealReminders: settings.skipLoggedMealReminders,
         mealsLoggedToday: mealsLoggedToday,
+        weighedInToday: weighedInToday,
       ),
     );
   }

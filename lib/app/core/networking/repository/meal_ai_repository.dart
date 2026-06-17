@@ -36,16 +36,19 @@ class MealAiRepository {
   }
 
   /// Estimates the food in a [photo] of the meal or its nutrition label,
-  /// returning one combined item or a per-food breakdown per [mode].
-  /// [imageMediaType] is the photo's MIME type and must be one Claude accepts
-  /// (`image/jpeg`, `image/png`, `image/gif`, or `image/webp`).
+  /// returning one combined item or a per-food breakdown per [mode]. When the
+  /// user has typed a [description] of the food it is sent alongside the photo
+  /// to sharpen the estimate. [imageMediaType] is the photo's MIME type and
+  /// must be one Claude accepts (`image/jpeg`, `image/png`, `image/gif`, or
+  /// `image/webp`).
   Future<List<AiMealSuggestion>> suggestFromPhoto(
     Uint8List photo, {
     required MealEntryMode mode,
+    String? description,
     String imageMediaType = 'image/jpeg',
   }) {
     return _estimate(
-      prompt: _photoPrompt(mode),
+      prompt: _photoPrompt(mode, description),
       mode: mode,
       image: photo,
       imageMediaType: imageMediaType,
@@ -83,11 +86,17 @@ class MealAiRepository {
       '${_rules(mode: mode, fromPhoto: false)}\n\n'
       'Food: $description';
 
-  String _photoPrompt(MealEntryMode mode) =>
-      'Estimate the nutrition for the food in this photo. The photo may show a '
-      'plate or serving of food, or a packaged item with a nutrition label; '
-      'when a label is visible, base the estimate on its values.\n\n'
-      '${_rules(mode: mode, fromPhoto: true)}';
+  String _photoPrompt(MealEntryMode mode, String? description) {
+    const intro =
+        'Estimate the nutrition for the food in this photo. The photo may show '
+        'a plate or serving of food, or a packaged item with a nutrition '
+        'label; when a label is visible, base the estimate on its values.';
+    final descriptionHint = description == null
+        ? ''
+        : '\n\nThe user describes the food as: "$description". Use this '
+              'description to identify the food and sharpen the estimate.';
+    return '$intro$descriptionHint\n\n${_rules(mode: mode, fromPhoto: true)}';
+  }
 
   /// Assembles the estimation rules for a request: the grouping rule depends on
   /// [mode], and the portion-in-name rule is added only when the food came
