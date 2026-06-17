@@ -24,7 +24,7 @@ class DevToolsView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Dev Tools')),
-      body: Column(
+      body: ListView(
         children: [
           const Divider(),
           Center(

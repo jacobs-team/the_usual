@@ -7,7 +7,7 @@ import '../../helpers/helpers.dart';
 void main() {
   group(FoodEntrySheet, () {
     /// Opens the sheet from a button and records whatever it pops with.
-    Future<List<(String, Nutrition, int, bool)?>> showSheet(
+    Future<List<List<FoodEntryResult>?>> showSheet(
       WidgetTester tester, {
       bool showAddToUsualMeals = false,
     }) async {
@@ -16,20 +16,19 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
 
-      final results = <(String, Nutrition, int, bool)?>[];
+      final results = <List<FoodEntryResult>?>[];
       await tester.pumpPumpPumpItUP(
         Builder(
           builder: (context) => ElevatedButton(
             onPressed: () async {
-              final result =
-                  await showModalBottomSheet<(String, Nutrition, int, bool)>(
-                    context: context,
-                    builder: (_) => FoodEntrySheet(
-                      title: 'Log food',
-                      confirmLabel: 'Log',
-                      showAddToUsualMeals: showAddToUsualMeals,
-                    ),
-                  );
+              final result = await showModalBottomSheet<List<FoodEntryResult>>(
+                context: context,
+                builder: (_) => FoodEntrySheet(
+                  title: 'Log food',
+                  confirmLabel: 'Log',
+                  showAddToUsualMeals: showAddToUsualMeals,
+                ),
+              );
               results.add(result);
             },
             child: const Text('open'),
@@ -53,9 +52,10 @@ void main() {
       await showSheet(tester);
 
       expect(find.text('Log food'), findsOneWidget);
-      expect(find.text('NAME'), findsOneWidget);
-      expect(find.text('QUANTITY'), findsOneWidget);
-      expect(find.text('NUTRITION · OPTIONAL'), findsOneWidget);
+      expect(find.text('CALORIES'), findsOneWidget);
+      expect(find.text('PROTEIN'), findsOneWidget);
+      expect(find.text('FAT'), findsOneWidget);
+      expect(find.text('CARBS'), findsOneWidget);
     });
 
     testWidgets('confirm is disabled until a name is entered', (tester) async {
@@ -86,7 +86,14 @@ void main() {
 
       expect(
         results.single,
-        equals(('Salad', const Nutrition(calories: 380), 1, true)),
+        equals([
+          (
+            name: 'Salad',
+            nutrition: const Nutrition(calories: 380),
+            quantity: 1,
+            addToUsualMeals: true,
+          ),
+        ]),
       );
     });
 
@@ -94,14 +101,24 @@ void main() {
       final results = await showSheet(tester, showAddToUsualMeals: true);
 
       await tester.enterText(find.byType(TextFormField).first, 'Salad');
-      await tester.tap(find.byIcon(Icons.add));
+      await tester.tap(find.byIcon(Icons.add).first);
       await tester.pump();
-      await tester.tap(find.byIcon(Icons.add));
+      await tester.tap(find.byIcon(Icons.add).first);
       await tester.pump();
       await tester.tap(find.text('Log'));
       await tester.pumpAndSettle();
 
-      expect(results.single, equals(('Salad', const Nutrition(), 3, true)));
+      expect(
+        results.single,
+        equals([
+          (
+            name: 'Salad',
+            nutrition: const Nutrition(),
+            quantity: 3,
+            addToUsualMeals: true,
+          ),
+        ]),
+      );
     });
 
     testWidgets('toggling the checkbox flips the add-to-usuals flag', (
@@ -111,12 +128,22 @@ void main() {
 
       await tester.enterText(find.byType(TextFormField).first, 'Salad');
       await tester.pump();
-      await tester.tap(find.byType(CheckboxListTile));
+      await tester.tap(find.byType(Checkbox));
       await tester.pump();
       await tester.tap(find.text('Log'));
       await tester.pumpAndSettle();
 
-      expect(results.single, equals(('Salad', const Nutrition(), 1, false)));
+      expect(
+        results.single,
+        equals([
+          (
+            name: 'Salad',
+            nutrition: const Nutrition(),
+            quantity: 1,
+            addToUsualMeals: false,
+          ),
+        ]),
+      );
     });
 
     testWidgets('cancel pops with null', (tester) async {

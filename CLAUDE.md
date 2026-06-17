@@ -102,3 +102,4 @@
 - Prefer using `isA<BlocState>().having` in tests over matching the entire state to reduce test fragility.
 - Use `mocktail` for mocking dependencies.
 - Call `initHydratedStorage()` in test setup when testing with `HydratedBloc`.
+- Always use random seed ordering for testing using the flag.

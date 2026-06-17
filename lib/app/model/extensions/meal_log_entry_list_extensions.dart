@@ -88,7 +88,7 @@ extension MealLogEntryListFormatting on List<MealLogEntry> {
         .toList();
     _sortByLogActivity(remaining, countAtTiming, lastLoggedAtTiming);
 
-    return [if (mostRecent != null) mostRecent, ...remaining];
+    return [?mostRecent, ...remaining];
   }
 
   /// The user's usuals from meals other than [mealOfTheDay], grouped by their

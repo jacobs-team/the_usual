@@ -34,6 +34,9 @@ extension PumpApp on WidgetTester {
       () => userSettingsBloc.stream,
     ).thenAnswer((_) => const Stream.empty());
 
+    final mealAiRepository = MockMealAiRepository();
+    when(() => mealAiRepository.isConfigured).thenReturn(false);
+
     getIt
       ..registerSingleton<AuthCubit>(authCubit)
       ..registerSingleton<ConnectivityCubit>(MockConnectivityCubit())
@@ -44,7 +47,8 @@ extension PumpApp on WidgetTester {
       ..registerSingleton<NotificationService>(MockNotificationService())
       ..registerSingleton<CoffeeApi>(MockCoffeeApi())
       ..registerSingleton<RestClient>(MockRestClient())
-      ..registerSingleton<FileCacheService>(MockFileCacheService());
+      ..registerSingleton<FileCacheService>(MockFileCacheService())
+      ..registerSingleton<MealAiRepository>(mealAiRepository);
 
     for (final instance in [...deps]) {
       await _registerOverride(instance);
@@ -124,6 +128,10 @@ extension PumpApp on WidgetTester {
       getIt
         ..unregister<FileCacheService>()
         ..registerSingleton<FileCacheService>(instance);
+    } else if (instance is MealAiRepository) {
+      getIt
+        ..unregister<MealAiRepository>()
+        ..registerSingleton<MealAiRepository>(instance);
     }
   }
 }

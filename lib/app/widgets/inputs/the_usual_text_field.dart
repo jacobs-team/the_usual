@@ -103,10 +103,7 @@ class TheUsualTextField extends StatelessWidget {
         isDense: dense,
         border: dense ? null : const OutlineInputBorder(),
         contentPadding: dense
-            ? EdgeInsets.symmetric(
-                horizontal: AppDesign.spacing.xs,
-                vertical: AppDesign.spacing.sm,
-              )
+            ? EdgeInsets.all(AppDesign.spacing.xs)
             : null,
       ),
       onChanged: onChanged,

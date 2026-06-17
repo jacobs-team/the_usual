@@ -113,9 +113,24 @@ class MealLogSection extends StatelessWidget {
                   children: [
                     if (quickPicks.isNotEmpty) ...[
                       SizedBox(height: AppDesign.spacing.md),
-                      _QuickPickColumns(
-                        mealOfTheDay: mealOfTheDay,
-                        quickPicks: quickPicks,
+                      Wrap(
+                        spacing: AppDesign.spacing.sm,
+                        runSpacing: AppDesign.spacing.sm,
+                        children: [
+                          for (final usualMeal in quickPicks)
+                            _QuickPickChip(
+                              label: '+ ${usualMeal.name}',
+                              onPressed: () => getIt<DailyLogBloc>().add(
+                                DailyLogEvent.mealLogged(
+                                  mealOfTheDay,
+                                  usualMeal.name,
+                                  nutrition: usualMeal.nutrition,
+                                  usualMealId: usualMeal.id,
+                                  photoPath: usualMeal.photoPath,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ],
                     SizedBox(height: AppDesign.spacing.sm),
@@ -131,7 +146,8 @@ class MealLogSection extends StatelessWidget {
                                   context: context,
                                   isScrollControlled: true,
                                   useSafeArea: true,
-                                  showDragHandle: true,
+                                  showDragHandle: false,
+                                  enableDrag: false,
                                   builder: (context) => const FoodEntrySheet(
                                     title: 'Log something else',
                                     confirmLabel: 'Log',
@@ -160,7 +176,7 @@ class MealLogSection extends StatelessWidget {
                             }
                           },
                           icon: const Icon(Icons.add),
-                          label: const Text('I ate something else'),
+                          label: const Text('Something else'),
                         ),
                         if (otherMealUsuals.isNotEmpty)
                           TextButton.icon(
@@ -185,66 +201,6 @@ class MealLogSection extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-/// Lays the quick picks into columns of up to three chips, filling top to
-/// bottom then spilling rightward in a horizontal scroll view. Tapping a chip
-/// logs that usual under [mealOfTheDay].
-class _QuickPickColumns extends StatelessWidget {
-  const _QuickPickColumns({
-    required this.mealOfTheDay,
-    required this.quickPicks,
-  });
-
-  /// The meal a tapped chip logs under.
-  final MealOfTheDay mealOfTheDay;
-
-  /// The usuals to offer, already filtered and ordered.
-  final List<UsualMeal> quickPicks;
-
-  static const _rowsPerColumn = 3;
-
-  @override
-  Widget build(BuildContext context) {
-    final columns = <List<UsualMeal>>[];
-    for (var start = 0; start < quickPicks.length; start += _rowsPerColumn) {
-      final end = (start + _rowsPerColumn).clamp(0, quickPicks.length);
-      columns.add(quickPicks.sublist(start, end));
-    }
-
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (final (columnIndex, column) in columns.indexed) ...[
-            if (columnIndex > 0) SizedBox(width: AppDesign.spacing.sm),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (final (rowIndex, usualMeal) in column.indexed) ...[
-                  if (rowIndex > 0) SizedBox(height: AppDesign.spacing.sm),
-                  _QuickPickChip(
-                    label: '+ ${usualMeal.name}',
-                    onPressed: () => getIt<DailyLogBloc>().add(
-                      DailyLogEvent.mealLogged(
-                        mealOfTheDay,
-                        usualMeal.name,
-                        nutrition: usualMeal.nutrition,
-                        usualMealId: usualMeal.id,
-                        photoPath: usualMeal.photoPath,
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ],
-        ],
       ),
     );
   }

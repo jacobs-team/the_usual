@@ -3,9 +3,11 @@ enum MealEntryMode {
   /// The meal is captured as a single combined item, logged as one entry.
   wholeMeal(
     'One meal',
-    summary: 'Logged as one row with combined nutrition. '
+    summary:
+        'Logged as one row with combined nutrition. '
         'Best for one-tap usual meals.',
-    detail: 'Steak and potatoes become a single entry with combined '
+    detail:
+        'Steak and potatoes become a single entry with combined '
         'nutrition. Best for one-tap logging of your usual meals.',
   ),
 
@@ -14,12 +16,16 @@ enum MealEntryMode {
   itemized(
     'Itemize',
     summary: 'Each food gets its own row and nutrition.',
-    detail: 'Steak and potatoes become separate entries, steak one row and '
+    detail:
+        'Steak and potatoes become separate entries, steak one row and '
         'potatoes another, each with its own nutrition.',
-  ),
-  ;
+  );
 
-  const MealEntryMode(this.label, {required this.summary, required this.detail});
+  const MealEntryMode(
+    this.label, {
+    required this.summary,
+    required this.detail,
+  });
 
   /// Display label for the mode, shown on the entry sheet's toggle.
   final String label;

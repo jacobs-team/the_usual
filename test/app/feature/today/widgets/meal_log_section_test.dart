@@ -40,7 +40,8 @@ void main() {
     Future<void> pumpSection(
       WidgetTester tester, {
       List<MealLogEntry> mealLogEntries = const [],
-      List<UsualMeal> usualMeals = const [],
+      List<UsualMeal> quickPicks = const [],
+      Map<MealOfTheDay, List<UsualMeal>> otherMealUsuals = const {},
       bool isCurrent = false,
       bool nutritionExpandedByDefault = false,
     }) {
@@ -55,7 +56,8 @@ void main() {
             MealLogSection(
               mealOfTheDay: MealOfTheDay.breakfast,
               mealLogEntries: mealLogEntries,
-              usualMeals: usualMeals,
+              quickPicks: quickPicks,
+              otherMealUsuals: otherMealUsuals,
               isCurrent: isCurrent,
               nutritionExpandedByDefault: nutritionExpandedByDefault,
             ),
@@ -81,10 +83,12 @@ void main() {
       expect(find.byType(LoggedEntryRow), findsOneWidget);
     });
 
-    testWidgets('offers quick picks for usuals not yet logged', (tester) async {
+    testWidgets('renders a quick pick chip and logs it when tapped', (
+      tester,
+    ) async {
       await pumpSection(
         tester,
-        usualMeals: const [
+        quickPicks: const [
           UsualMeal(
             id: 'u',
             name: 'Oatmeal',
@@ -109,22 +113,12 @@ void main() {
       ).called(1);
     });
 
-    testWidgets('hides a quick pick once that usual is logged', (tester) async {
-      await pumpSection(
-        tester,
-        mealLogEntries: [logged('a', 'Oatmeal')],
-        usualMeals: const [UsualMeal(id: 'u', name: 'Oatmeal')],
-      );
-
-      expect(find.text('+ Oatmeal'), findsNothing);
-    });
-
     testWidgets('logs something else and adds it to usuals when checked', (
       tester,
     ) async {
       await pumpSection(tester);
 
-      await tester.tap(find.text('I ate something else'));
+      await tester.tap(find.text('Something else'));
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextFormField).first, 'Burrito');
       await tester.pump();
@@ -152,11 +146,11 @@ void main() {
     ) async {
       await pumpSection(tester);
 
-      await tester.tap(find.text('I ate something else'));
+      await tester.tap(find.text('Something else'));
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextFormField).first, 'Burrito');
       await tester.pump();
-      await tester.tap(find.byType(CheckboxListTile));
+      await tester.tap(find.byType(Checkbox));
       await tester.pump();
       await tester.tap(find.text('Log'));
       await tester.pumpAndSettle();
@@ -176,7 +170,7 @@ void main() {
     testWidgets('cancelling the sheet logs nothing', (tester) async {
       await pumpSection(tester);
 
-      await tester.tap(find.text('I ate something else'));
+      await tester.tap(find.text('Something else'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Cancel'));
       await tester.pumpAndSettle();

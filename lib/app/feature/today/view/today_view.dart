@@ -236,10 +236,7 @@ class _WeightTracker extends StatelessWidget {
     return Card(
       margin: EdgeInsets.zero,
       child: Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: AppDesign.spacing.md,
-          vertical: AppDesign.spacing.xs,
-        ),
+        padding: EdgeInsets.all(AppDesign.spacing.md),
         child: Row(
           children: [
             Icon(

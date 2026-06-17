@@ -74,9 +74,12 @@ class _FoodEntrySheetState extends State<FoodEntrySheet> {
   /// Whether AI assistance is available (an API key is configured).
   bool get _aiAvailable => getIt<MealAiRepository>().isConfigured;
 
-  bool get _canConfirm =>
-      !_isGenerating &&
+  /// Whether any row has a name entered — progress worth confirming before the
+  /// sheet is dismissed.
+  bool get _hasContent =>
       _drafts.any((draft) => draft.nameController.text.trim().isNotEmpty);
+
+  bool get _canConfirm => !_isGenerating && _hasContent;
 
   /// Switches the AI mode and remembers it as the user's new default.
   void _setMode(MealEntryMode mode) {
@@ -99,25 +102,89 @@ class _FoodEntrySheetState extends State<FoodEntrySheet> {
     });
   }
 
-  /// Estimates the food from the first row's name, used as the description.
-  /// In whole-meal mode that typed name is kept as written.
+  /// Estimates nutrition with the AI. A single filled row is treated as a
+  /// description the AI may split per the selected [MealEntryMode]; several
+  /// filled rows are already itemized by the user, so each row is estimated on
+  /// its own and filled in place, keeping every row and its name.
   Future<void> _estimateWithAi() async {
     final messenger = ScaffoldMessenger.of(context);
-    final description = _drafts.first.nameController.text.trim();
-    if (description.isEmpty) {
+    final namedDrafts = _drafts
+        .where((draft) => draft.nameController.text.trim().isNotEmpty)
+        .toList();
+    if (namedDrafts.isEmpty) {
       messenger.showSnackBar(
         const SnackBar(content: Text('Type a meal name or description first.')),
       );
       return;
     }
-    await _runEstimate(
-      messenger,
-      () => getIt<MealAiRepository>().suggestFromDescription(
-        description,
-        mode: _mode,
-      ),
-      keepFirstName: _mode == MealEntryMode.wholeMeal ? description : null,
-    );
+    if (namedDrafts.length == 1) {
+      final description = namedDrafts.first.nameController.text.trim();
+      await _runEstimate(
+        messenger,
+        () => getIt<MealAiRepository>().suggestFromDescription(
+          description,
+          mode: _mode,
+        ),
+        keepFirstName: _mode == MealEntryMode.wholeMeal ? description : null,
+      );
+      return;
+    }
+    await _estimateEachRow(messenger, namedDrafts);
+  }
+
+  /// Estimates each of [namedDrafts] as its own single item, in parallel, and
+  /// rebuilds those rows with the estimated nutrition and quantity while
+  /// keeping their names. Rows are kept, so estimating never discards the items
+  /// the user already entered. Empty rows are left untouched.
+  Future<void> _estimateEachRow(
+    ScaffoldMessengerState messenger,
+    List<_FoodDraft> namedDrafts,
+  ) async {
+    final repository = getIt<MealAiRepository>();
+    setState(() => _isGenerating = true);
+    try {
+      final estimates = await Future.wait([
+        for (final draft in namedDrafts)
+          repository.suggestFromDescription(
+            draft.nameController.text.trim(),
+            mode: MealEntryMode.wholeMeal,
+          ),
+      ]);
+      if (!mounted) return;
+      final estimateByDraft = <_FoodDraft, AiMealSuggestion>{};
+      for (final (index, draft) in namedDrafts.indexed) {
+        final suggestions = estimates[index];
+        if (suggestions.isNotEmpty) estimateByDraft[draft] = suggestions.first;
+      }
+      setState(() {
+        final rebuiltDrafts = <_FoodDraft>[];
+        for (final draft in _drafts) {
+          final estimate = estimateByDraft[draft];
+          if (estimate == null) {
+            rebuiltDrafts.add(draft);
+            continue;
+          }
+          rebuiltDrafts.add(
+            _FoodDraft(
+              name: draft.nameController.text,
+              quantity: estimate.quantity,
+              nutrition: estimate.nutrition,
+              addToUsualMeals: draft.addToUsualMeals,
+            ),
+          );
+          draft.dispose();
+        }
+        _drafts
+          ..clear()
+          ..addAll(rebuiltDrafts);
+      });
+    } on Object catch (error) {
+      messenger.showSnackBar(
+        SnackBar(content: Text('Could not estimate nutrition: $error')),
+      );
+    } finally {
+      if (mounted) setState(() => _isGenerating = false);
+    }
   }
 
   /// Snaps or picks a photo and estimates the food from it.
@@ -175,6 +242,29 @@ class _FoodEntrySheetState extends State<FoodEntrySheet> {
     }
   }
 
+  /// Asks the user to confirm discarding the entry, so an accidental
+  /// tap-outside, swipe-down, or back gesture doesn't wipe their progress.
+  Future<bool> _confirmDiscard() async {
+    final discarded = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Discard this entry?'),
+        content: const Text('The items you entered will be lost.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Keep editing'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Discard'),
+          ),
+        ],
+      ),
+    );
+    return discarded ?? false;
+  }
+
   void _confirm() {
     final results = <FoodEntryResult>[
       for (final draft in _drafts)
@@ -197,131 +287,142 @@ class _FoodEntrySheetState extends State<FoodEntrySheet> {
     // Lift the sheet above the keyboard, then keep the content clear of the
     // home indicator with SafeArea. The status bar is handled by the route's
     // useSafeArea, which strips the top padding here.
-    return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
-      child: SafeArea(
-        top: false,
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(AppDesign.spacing.lg),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(widget.title, style: textTheme.titleMedium),
-                  ),
-                  if (_aiAvailable) ...[
-                    Text('How should we log it?', style: textTheme.bodySmall),
-                    IconButton(
-                      visualDensity: VisualDensity.compact,
-                      onPressed: () => showDialog<void>(
-                        context: context,
-                        builder: (_) => const _MealEntryModeInfoDialog(),
-                      ),
-                      icon: const Icon(Icons.info_outline, size: 18),
-                      tooltip: 'How logging modes work',
+    return PopScope(
+      canPop: !_hasContent,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        final navigator = Navigator.of(context);
+        final shouldDiscard = await _confirmDiscard();
+        if (shouldDiscard) navigator.pop();
+      },
+      child: Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.viewInsetsOf(context).bottom,
+        ),
+        child: SafeArea(
+          top: false,
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(AppDesign.spacing.lg),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(widget.title, style: textTheme.titleMedium),
                     ),
+                    if (_aiAvailable) ...[
+                      Text('How should we log it?', style: textTheme.bodySmall),
+                      IconButton(
+                        visualDensity: VisualDensity.compact,
+                        onPressed: () => showDialog<void>(
+                          context: context,
+                          builder: (_) => const _MealEntryModeInfoDialog(),
+                        ),
+                        icon: const Icon(Icons.info_outline, size: 18),
+                        tooltip: 'How logging modes work',
+                      ),
+                    ],
                   ],
-                ],
-              ),
-              if (_aiAvailable) ...[
-                SizedBox(height: AppDesign.spacing.md),
-                SegmentedButton<MealEntryMode>(
-                  showSelectedIcon: false,
-                  segments: [
-                    for (final mode in MealEntryMode.values)
-                      ButtonSegment(value: mode, label: Text(mode.label)),
-                  ],
-                  selected: {_mode},
-                  onSelectionChanged: _isGenerating
-                      ? null
-                      : (selection) => _setMode(selection.first),
                 ),
-                SizedBox(height: AppDesign.spacing.sm),
-                Text(_mode.summary, style: textTheme.bodySmall),
+                if (_aiAvailable) ...[
+                  SizedBox(height: AppDesign.spacing.md),
+                  SegmentedButton<MealEntryMode>(
+                    showSelectedIcon: false,
+                    segments: [
+                      for (final mode in MealEntryMode.values)
+                        ButtonSegment(value: mode, label: Text(mode.label)),
+                    ],
+                    selected: {_mode},
+                    onSelectionChanged: _isGenerating
+                        ? null
+                        : (selection) => _setMode(selection.first),
+                  ),
+                  SizedBox(height: AppDesign.spacing.sm),
+                  Text(_mode.summary, style: textTheme.bodySmall),
+                  SizedBox(height: AppDesign.spacing.md),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: FilledButton.tonalIcon(
+                          onPressed: _isGenerating ? null : _estimateWithAi,
+                          icon: const Icon(Icons.auto_awesome_outlined),
+                          label: const Text('Estimate'),
+                        ),
+                      ),
+                      SizedBox(width: AppDesign.spacing.sm),
+                      Expanded(
+                        child: FilledButton.tonalIcon(
+                          onPressed: _isGenerating ? null : _photoWithAi,
+                          icon: const Icon(Icons.photo_camera_outlined),
+                          label: const Text('Photo'),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: AppDesign.spacing.sm),
+                  if (_isGenerating)
+                    Row(
+                      children: [
+                        const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                        SizedBox(width: AppDesign.spacing.sm),
+                        Text('Estimating…', style: textTheme.bodySmall),
+                      ],
+                    )
+                  else
+                    Text(
+                      'Type a name and tap Estimate, or snap a photo.',
+                      style: textTheme.bodySmall,
+                    ),
+                ],
+                SizedBox(height: AppDesign.spacing.md),
+                for (var index = 0; index < _drafts.length; index++) ...[
+                  if (index > 0) SizedBox(height: AppDesign.spacing.md),
+                  _FoodItemRow(
+                    key: ObjectKey(_drafts[index]),
+                    draft: _drafts[index],
+                    autofocus: index == 0,
+                    showQuantity: widget.showQuantity,
+                    showAddToUsualMeals: widget.showAddToUsualMeals,
+                    canRemove: _drafts.length > 1,
+                    onChanged: () => setState(() {}),
+                    onRemove: () => _removeDraft(_drafts[index]),
+                  ),
+                ],
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: _addDraft,
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add item'),
+                  ),
+                ),
                 SizedBox(height: AppDesign.spacing.md),
                 Row(
                   children: [
                     Expanded(
-                      child: FilledButton.tonalIcon(
-                        onPressed: _isGenerating ? null : _estimateWithAi,
-                        icon: const Icon(Icons.auto_awesome_outlined),
-                        label: const Text('Estimate'),
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.maybePop(context),
+                        child: const Text('Cancel'),
                       ),
                     ),
                     SizedBox(width: AppDesign.spacing.sm),
                     Expanded(
-                      child: FilledButton.tonalIcon(
-                        onPressed: _isGenerating ? null : _photoWithAi,
-                        icon: const Icon(Icons.photo_camera_outlined),
-                        label: const Text('Photo'),
+                      flex: 2,
+                      child: FilledButton(
+                        onPressed: _canConfirm ? _confirm : null,
+                        child: Text(widget.confirmLabel),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: AppDesign.spacing.sm),
-                if (_isGenerating)
-                  Row(
-                    children: [
-                      const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                      SizedBox(width: AppDesign.spacing.sm),
-                      Text('Estimating…', style: textTheme.bodySmall),
-                    ],
-                  )
-                else
-                  Text(
-                    'Type a name and tap Estimate, or snap a photo.',
-                    style: textTheme.bodySmall,
-                  ),
               ],
-              SizedBox(height: AppDesign.spacing.md),
-              for (var index = 0; index < _drafts.length; index++) ...[
-                if (index > 0) SizedBox(height: AppDesign.spacing.md),
-                _FoodItemRow(
-                  key: ObjectKey(_drafts[index]),
-                  draft: _drafts[index],
-                  autofocus: index == 0,
-                  showQuantity: widget.showQuantity,
-                  showAddToUsualMeals: widget.showAddToUsualMeals,
-                  canRemove: _drafts.length > 1,
-                  onChanged: () => setState(() {}),
-                  onRemove: () => _removeDraft(_drafts[index]),
-                ),
-              ],
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton.icon(
-                  onPressed: _addDraft,
-                  icon: const Icon(Icons.add),
-                  label: const Text('Add item'),
-                ),
-              ),
-              SizedBox(height: AppDesign.spacing.md),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Cancel'),
-                    ),
-                  ),
-                  SizedBox(width: AppDesign.spacing.sm),
-                  Expanded(
-                    flex: 2,
-                    child: FilledButton(
-                      onPressed: _canConfirm ? _confirm : null,
-                      child: Text(widget.confirmLabel),
-                    ),
-                  ),
-                ],
-              ),
-            ],
+            ),
           ),
         ),
       ),

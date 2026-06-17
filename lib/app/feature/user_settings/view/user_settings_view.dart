@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:the_usual/app/app.dart';
@@ -33,10 +35,12 @@ class _UserSettingsViewState extends State<UserSettingsView> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final goalsContext = _goalsKey.currentContext;
       if (goalsContext == null) return;
-      Scrollable.ensureVisible(
-        goalsContext,
-        duration: AppDesign.durations.fast,
-        alignment: 0.1,
+      unawaited(
+        Scrollable.ensureVisible(
+          goalsContext,
+          duration: AppDesign.durations.fast,
+          alignment: 0.1,
+        ),
       );
     });
   }

@@ -99,7 +99,8 @@ class _FirstLogViewState extends State<FirstLogView> {
                                   context: context,
                                   isScrollControlled: true,
                                   useSafeArea: true,
-                                  showDragHandle: true,
+                                  showDragHandle: false,
+                                  enableDrag: false,
                                   builder: (context) => const FoodEntrySheet(
                                     title: 'Log something else',
                                     confirmLabel: 'Log',
