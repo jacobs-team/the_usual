@@ -65,81 +65,76 @@ class _BuildUsualsViewState extends State<BuildUsualsView> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    return Scaffold(
+    return OnboardingScaffold(
       resizeToAvoidBottomInset: false,
       appBar: const OnboardingTopBar(step: OnboardingStep.buildUsuals),
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(AppDesign.spacing.xl),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text('Add your usual meals', style: textTheme.headlineSmall),
-              SizedBox(height: AppDesign.spacing.sm),
-              Text(
-                'Add what you usually eat for each meal. You can edit these '
-                'anytime — while logging, or later in Settings.',
-                style: textTheme.bodyMedium,
-              ),
-              SizedBox(height: AppDesign.spacing.lg),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: SegmentedButton<MealOfTheDay>(
-                  showSelectedIcon: false,
-                  segments: [
-                    for (final mealOfTheDay in MealOfTheDay.values)
-                      ButtonSegment(
-                        value: mealOfTheDay,
-                        label: Text(mealOfTheDay.label),
-                      ),
-                  ],
-                  selected: {_selectedMealOfTheDay},
-                  onSelectionChanged: (selection) => setState(
-                    () => _selectedMealOfTheDay = selection.first,
-                  ),
-                ),
-              ),
-              SizedBox(height: AppDesign.spacing.lg),
-              Expanded(
-                child: IndexedStack(
-                  index: MealOfTheDay.values.indexOf(_selectedMealOfTheDay),
-                  children: [
-                    for (final mealOfTheDay in MealOfTheDay.values)
-                      SingleChildScrollView(
-                        child: FoodEntryForm(
-                          key: _formKeys[mealOfTheDay],
-                          initialFoods: _initialFoods[mealOfTheDay],
-                          showQuantity: false,
-                          autofocusFirst: false,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              SizedBox(height: AppDesign.spacing.md),
-              OnboardingActions(
-                primary: FilledButton(
-                  onPressed: () {
-                    _commitAllMeals();
-                    getIt<OnboardingBloc>().add(
-                      const OnboardingEvent.continuePressed(),
-                    );
-                  },
-                  child: const Text('Continue'),
-                ),
-                secondary: TextButton(
-                  onPressed: () {
-                    _commitAllMeals();
-                    getIt<OnboardingBloc>().add(
-                      const OnboardingEvent.skipPressed(),
-                    );
-                  },
-                  child: const Text('Skip for now'),
-                ),
-              ),
-            ],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text('Add your usual meals', style: textTheme.headlineSmall),
+          SizedBox(height: AppDesign.spacing.sm),
+          Text(
+            'Add what you usually eat for each meal. You can edit these '
+            'anytime — while logging, or later in Settings.',
+            style: textTheme.bodyMedium,
           ),
-        ),
+          SizedBox(height: AppDesign.spacing.lg),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: SegmentedButton<MealOfTheDay>(
+              showSelectedIcon: false,
+              segments: [
+                for (final mealOfTheDay in MealOfTheDay.values)
+                  ButtonSegment(
+                    value: mealOfTheDay,
+                    label: Text(mealOfTheDay.label),
+                  ),
+              ],
+              selected: {_selectedMealOfTheDay},
+              onSelectionChanged: (selection) => setState(
+                () => _selectedMealOfTheDay = selection.first,
+              ),
+            ),
+          ),
+          SizedBox(height: AppDesign.spacing.lg),
+          Expanded(
+            child: IndexedStack(
+              index: MealOfTheDay.values.indexOf(_selectedMealOfTheDay),
+              children: [
+                for (final mealOfTheDay in MealOfTheDay.values)
+                  SingleChildScrollView(
+                    child: FoodEntryForm(
+                      key: _formKeys[mealOfTheDay],
+                      initialFoods: _initialFoods[mealOfTheDay],
+                      showQuantity: false,
+                      autofocusFirst: false,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          SizedBox(height: AppDesign.spacing.md),
+          OnboardingActions(
+            primary: FilledButton(
+              onPressed: () {
+                _commitAllMeals();
+                getIt<OnboardingBloc>().add(
+                  const OnboardingEvent.continuePressed(),
+                );
+              },
+              child: const Text('Continue'),
+            ),
+            secondary: TextButton(
+              onPressed: () {
+                _commitAllMeals();
+                getIt<OnboardingBloc>().add(
+                  const OnboardingEvent.skipPressed(),
+                );
+              },
+              child: const Text('Skip for now'),
+            ),
+          ),
+        ],
       ),
     );
   }

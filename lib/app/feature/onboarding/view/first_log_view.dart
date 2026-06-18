@@ -35,115 +35,110 @@ class _FirstLogViewState extends State<FirstLogView> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    return Scaffold(
+    return OnboardingScaffold(
       appBar: const OnboardingTopBar(
         step: OnboardingStep.firstLog,
         showSkip: false,
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(AppDesign.spacing.xl),
-          child:
-              BlocSelector<
-                OnboardingBloc,
-                OnboardingState,
-                (List<UsualMeal>, List<String>, Map<String, double>)
-              >(
-                bloc: getIt<OnboardingBloc>(),
-                selector: (state) => (
-                  state.settings.usuals[_mealOfTheDay] ?? <UsualMeal>[],
-                  state.firstLogSelectedIds,
-                  state.firstLogQuantities,
-                ),
-                builder: (context, selected) {
-                  final (usualMeals, selectedIds, quantities) = selected;
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        'Did you eat ${_mealOfTheDay.name} today?',
-                        style: textTheme.headlineSmall,
-                      ),
-                      SizedBox(height: AppDesign.spacing.sm),
-                      const Text('Tap everything you had.'),
-                      SizedBox(height: AppDesign.spacing.xl),
-                      Expanded(
-                        child: usualMeals.isEmpty
-                            ? Center(
-                                child: Text(
-                                  'No ${_mealOfTheDay.name} usual meals yet. '
-                                  'Tap "I ate something else" to add what '
-                                  'you had.',
-                                  textAlign: TextAlign.center,
-                                ),
-                              )
-                            : GridView.count(
-                                crossAxisCount: 2,
-                                mainAxisSpacing: AppDesign.spacing.md,
-                                crossAxisSpacing: AppDesign.spacing.md,
-                                childAspectRatio: _foodCardAspectRatio,
-                                children: [
-                                  for (final usualMeal in usualMeals)
-                                    _FoodCard(
-                                      usualMeal: usualMeal,
-                                      selected: selectedIds.contains(
-                                        usualMeal.id,
-                                      ),
-                                      quantity: quantities[usualMeal.id] ?? 1,
-                                    ),
-                                ],
-                              ),
-                      ),
-                      SizedBox(height: AppDesign.spacing.md),
-                      OnboardingActions(
-                        above: OutlinedButton.icon(
-                          onPressed: () async {
-                            final results =
-                                await TheUsualBottomSheet.show<
-                                  List<FoodEntryResult>
-                                >(
-                                  context,
-                                  builder: (context) => const FoodEntrySheet(
-                                    title: 'Log something else',
-                                    confirmLabel: 'Log',
+      child:
+          BlocSelector<
+            OnboardingBloc,
+            OnboardingState,
+            (List<UsualMeal>, List<String>, Map<String, double>)
+          >(
+            bloc: getIt<OnboardingBloc>(),
+            selector: (state) => (
+              state.settings.usuals[_mealOfTheDay] ?? <UsualMeal>[],
+              state.firstLogSelectedIds,
+              state.firstLogQuantities,
+            ),
+            builder: (context, selected) {
+              final (usualMeals, selectedIds, quantities) = selected;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    'Did you eat ${_mealOfTheDay.name} today?',
+                    style: textTheme.headlineSmall,
+                  ),
+                  SizedBox(height: AppDesign.spacing.sm),
+                  const Text('Tap everything you had.'),
+                  SizedBox(height: AppDesign.spacing.xl),
+                  Expanded(
+                    child: usualMeals.isEmpty
+                        ? Center(
+                            child: Text(
+                              'No ${_mealOfTheDay.name} usual meals yet. '
+                              'Tap "I ate something else" to add what '
+                              'you had.',
+                              textAlign: TextAlign.center,
+                            ),
+                          )
+                        : GridView.count(
+                            crossAxisCount: 2,
+                            mainAxisSpacing: AppDesign.spacing.md,
+                            crossAxisSpacing: AppDesign.spacing.md,
+                            childAspectRatio: _foodCardAspectRatio,
+                            children: [
+                              for (final usualMeal in usualMeals)
+                                _FoodCard(
+                                  usualMeal: usualMeal,
+                                  selected: selectedIds.contains(
+                                    usualMeal.id,
                                   ),
-                                );
-                            if (results == null) return;
-                            for (final result in results) {
-                              getIt<OnboardingBloc>().add(
-                                OnboardingEvent.somethingElseLogged(
-                                  _mealOfTheDay,
-                                  result.name,
-                                  nutrition: result.nutrition,
-                                  quantity: result.quantity,
+                                  quantity: quantities[usualMeal.id] ?? 1,
                                 ),
-                              );
-                            }
-                          },
-                          icon: const Icon(Icons.camera_alt_outlined),
-                          label: const Text('I ate something else'),
-                        ),
-                        primary: FilledButton(
-                          onPressed: selectedIds.isEmpty
-                              ? null
-                              : () => getIt<OnboardingBloc>().add(
-                                  const OnboardingEvent.continuePressed(),
-                                ),
-                          child: const Text('Log it'),
-                        ),
-                        secondary: TextButton(
-                          onPressed: () => getIt<OnboardingBloc>().add(
-                            const OnboardingEvent.continuePressed(),
+                            ],
                           ),
-                          child: Text("I didn't eat ${_mealOfTheDay.name}"),
-                        ),
+                  ),
+                  SizedBox(height: AppDesign.spacing.md),
+                  OnboardingActions(
+                    above: OutlinedButton.icon(
+                      onPressed: () async {
+                        final results =
+                            await TheUsualBottomSheet.show<
+                              List<FoodEntryResult>
+                            >(
+                              context,
+                              builder: (context) => const FoodEntrySheet(
+                                title: 'Log something else',
+                                confirmLabel: 'Log',
+                              ),
+                            );
+                        if (results == null) return;
+                        for (final result in results) {
+                          getIt<OnboardingBloc>().add(
+                            OnboardingEvent.somethingElseLogged(
+                              _mealOfTheDay,
+                              result.name,
+                              nutrition: result.nutrition,
+                              quantity: result.quantity,
+                            ),
+                          );
+                        }
+                      },
+                      icon: const Icon(Icons.camera_alt_outlined),
+                      label: const Text('I ate something else'),
+                    ),
+                    primary: FilledButton(
+                      onPressed: selectedIds.isEmpty
+                          ? null
+                          : () => getIt<OnboardingBloc>().add(
+                              const OnboardingEvent.continuePressed(),
+                            ),
+                      child: const Text('Log it'),
+                    ),
+                    secondary: TextButton(
+                      onPressed: () => getIt<OnboardingBloc>().add(
+                        const OnboardingEvent.continuePressed(),
                       ),
-                    ],
-                  );
-                },
-              ),
-        ),
-      ),
+                      child: Text("I didn't eat ${_mealOfTheDay.name}"),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ),
     );
   }
 }

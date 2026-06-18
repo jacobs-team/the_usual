@@ -12,44 +12,39 @@ class WelcomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(AppDesign.spacing.xl),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                'The Usual',
-                style: Theme.of(context).textTheme.headlineLarge,
-              ),
-              const Spacer(),
-              Text(
-                'Track what you eat in two taps.',
-                style: Theme.of(context).textTheme.headlineMedium,
-              ),
-              SizedBox(height: AppDesign.spacing.md),
-              const Text(
-                'Set up your usual meals once and logging takes seconds.',
-              ),
-              const Spacer(),
-              OnboardingActions(
-                primary: FilledButton(
-                  onPressed: () => getIt<OnboardingBloc>().add(
-                    const OnboardingEvent.continuePressed(),
-                  ),
-                  child: const Text('Get started'),
-                ),
-                above: const Center(
-                  child: Text(
-                    'No account needed. Your data stays on your phone.',
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-            ],
+    return OnboardingScaffold(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            'The Usual',
+            style: Theme.of(context).textTheme.headlineLarge,
           ),
-        ),
+          const Spacer(),
+          Text(
+            'Track what you eat in two taps.',
+            style: Theme.of(context).textTheme.headlineMedium,
+          ),
+          SizedBox(height: AppDesign.spacing.md),
+          const Text(
+            'Set up your usual meals once and logging takes seconds.',
+          ),
+          const Spacer(),
+          OnboardingActions(
+            primary: FilledButton(
+              onPressed: () => getIt<OnboardingBloc>().add(
+                const OnboardingEvent.continuePressed(),
+              ),
+              child: const Text('Get started'),
+            ),
+            above: const Center(
+              child: Text(
+                'No account needed. Your data stays on your phone.',
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -43,87 +43,81 @@ class _GoalsViewState extends State<GoalsView> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    return Scaffold(
+    return OnboardingScaffold(
       resizeToAvoidBottomInset: false,
       appBar: const OnboardingTopBar(step: OnboardingStep.goals),
-      body: SafeArea(
-        child: Padding(
-          padding: EdgeInsets.all(AppDesign.spacing.xl),
-          child: BlocSelector<OnboardingBloc, OnboardingState, WeightUnit>(
-            bloc: getIt<OnboardingBloc>(),
-            selector: (state) => state.settings.weightUnit,
-            builder: (context, weightUnit) {
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Text('Your goals', style: textTheme.headlineSmall),
-                          SizedBox(height: AppDesign.spacing.sm),
-                          const Text(
-                            "A calorie goal fills the day's nutrition bar so "
-                            'you can see how much room is left. Both goals are '
-                            'optional.',
-                          ),
-                          SizedBox(height: AppDesign.spacing.xl),
-                          const SectionLabel('DAILY CALORIE GOAL'),
-                          SizedBox(height: AppDesign.spacing.sm),
-                          MacroField(
-                            controller: _calorieGoalController,
-                            unit: 'cal',
-                            maxDigits: 5,
-                            onChanged: (calorieGoal) =>
-                                getIt<OnboardingBloc>().add(
-                                  OnboardingEvent.calorieGoalChanged(
-                                    calorieGoal,
-                                  ),
-                                ),
-                          ),
-                          SizedBox(height: AppDesign.spacing.xl),
-                          const SectionLabel('GOAL WEIGHT'),
-                          SizedBox(height: AppDesign.spacing.sm),
-                          WeightInput(
-                            controller: _weightGoalController,
-                            weightUnit: weightUnit,
-                            onWeightChanged: (weightGoal) =>
-                                getIt<OnboardingBloc>().add(
-                                  OnboardingEvent.weightGoalChanged(weightGoal),
-                                ),
-                            onUnitSelected: (weightUnit) =>
-                                getIt<OnboardingBloc>().add(
-                                  OnboardingEvent.weightUnitSelected(
-                                    weightUnit,
-                                  ),
-                                ),
-                          ),
-                          SizedBox(height: AppDesign.spacing.sm),
-                          Text(
-                            'No pressure to get these right. Skip them and add '
-                            'goals in Settings whenever you figure out your '
-                            'baseline.',
-                            style: textTheme.bodySmall,
-                          ),
-                        ],
+      child: BlocSelector<OnboardingBloc, OnboardingState, WeightUnit>(
+        bloc: getIt<OnboardingBloc>(),
+        selector: (state) => state.settings.weightUnit,
+        builder: (context, weightUnit) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text('Your goals', style: textTheme.headlineSmall),
+                      SizedBox(height: AppDesign.spacing.sm),
+                      const Text(
+                        "A calorie goal fills the day's nutrition bar so "
+                        'you can see how much room is left. Both goals are '
+                        'optional.',
                       ),
-                    ),
-                  ),
-                  SizedBox(height: AppDesign.spacing.md),
-                  OnboardingActions(
-                    primary: FilledButton(
-                      onPressed: () => getIt<OnboardingBloc>().add(
-                        const OnboardingEvent.continuePressed(),
+                      SizedBox(height: AppDesign.spacing.xl),
+                      const SectionLabel('DAILY CALORIE GOAL'),
+                      SizedBox(height: AppDesign.spacing.sm),
+                      MacroField(
+                        controller: _calorieGoalController,
+                        unit: 'cal',
+                        maxDigits: 5,
+                        onChanged: (calorieGoal) => getIt<OnboardingBloc>().add(
+                          OnboardingEvent.calorieGoalChanged(
+                            calorieGoal,
+                          ),
+                        ),
                       ),
-                      child: const Text('Continue'),
-                    ),
+                      SizedBox(height: AppDesign.spacing.xl),
+                      const SectionLabel('GOAL WEIGHT'),
+                      SizedBox(height: AppDesign.spacing.sm),
+                      WeightInput(
+                        controller: _weightGoalController,
+                        weightUnit: weightUnit,
+                        onWeightChanged: (weightGoal) =>
+                            getIt<OnboardingBloc>().add(
+                              OnboardingEvent.weightGoalChanged(weightGoal),
+                            ),
+                        onUnitSelected: (weightUnit) =>
+                            getIt<OnboardingBloc>().add(
+                              OnboardingEvent.weightUnitSelected(
+                                weightUnit,
+                              ),
+                            ),
+                      ),
+                      SizedBox(height: AppDesign.spacing.sm),
+                      Text(
+                        'No pressure to get these right. Skip them and add '
+                        'goals in Settings whenever you figure out your '
+                        'baseline.',
+                        style: textTheme.bodySmall,
+                      ),
+                    ],
                   ),
-                ],
-              );
-            },
-          ),
-        ),
+                ),
+              ),
+              SizedBox(height: AppDesign.spacing.md),
+              OnboardingActions(
+                primary: FilledButton(
+                  onPressed: () => getIt<OnboardingBloc>().add(
+                    const OnboardingEvent.continuePressed(),
+                  ),
+                  child: const Text('Continue'),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
