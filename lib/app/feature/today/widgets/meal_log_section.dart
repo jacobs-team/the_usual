@@ -140,6 +140,12 @@ class MealLogSection extends StatelessWidget {
                                   dayStart: dayStart,
                                 ),
                               ),
+                              onRemove: () => getIt<UserSettingsBloc>().add(
+                                UserSettingsEvent.usualMealRemoved(
+                                  mealOfTheDay,
+                                  usualMeal.id,
+                                ),
+                              ),
                             ),
                         ],
                       ),
@@ -215,35 +221,53 @@ class MealLogSection extends StatelessWidget {
 }
 
 /// A quick pick for a usual meal not yet logged: a dashed border and a muted
-/// fill mark it as available to add rather than already on the day.
+/// fill mark it as available to add rather than already on the day. Tapping
+/// logs it; a long press opens a menu to remove it from the user's usuals.
 class _QuickPickChip extends StatelessWidget {
-  const _QuickPickChip({required this.label, required this.onPressed});
+  const _QuickPickChip({
+    required this.label,
+    required this.onPressed,
+    required this.onRemove,
+  });
 
   final String label;
   final VoidCallback onPressed;
+  final VoidCallback onRemove;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final borderRadius = BorderRadius.circular(AppDesign.radius.lg);
 
-    return DashedBorder(
-      color: theme.colorScheme.outlineVariant,
-      radius: AppDesign.radius.lg,
-      child: Material(
-        borderRadius: borderRadius,
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onPressed,
-          child: Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: AppDesign.spacing.md,
-              vertical: AppDesign.spacing.sm,
-            ),
-            child: Text(label, style: theme.textTheme.labelLarge),
-          ),
+    return MenuAnchor(
+      menuChildren: [
+        MenuItemButton(
+          leadingIcon: const Icon(Icons.delete_outline),
+          onPressed: onRemove,
+          child: const Text('Remove from usuals'),
         ),
-      ),
+      ],
+      builder: (context, controller, child) {
+        return DashedBorder(
+          color: theme.colorScheme.outlineVariant,
+          radius: AppDesign.radius.lg,
+          child: Material(
+            borderRadius: borderRadius,
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: onPressed,
+              onLongPress: controller.open,
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: AppDesign.spacing.md,
+                  vertical: AppDesign.spacing.sm,
+                ),
+                child: Text(label, style: theme.textTheme.labelLarge),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
