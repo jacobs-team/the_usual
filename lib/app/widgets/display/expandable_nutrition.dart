@@ -11,7 +11,7 @@ import 'package:the_usual/design_system/design_system.dart';
 ///
 /// When [quantity] is supplied the stored [nutrition] is treated as per unit:
 /// the summary shows it scaled by the quantity, the name gains a `×N` prefix
-/// once the quantity passes one, and a [QuantityStepper] appears above the
+/// whenever the quantity isn't one, and a [QuantityStepper] appears above the
 /// fields while expanded. Leave [quantity] null for foods that have no count,
 /// such as usual meals.
 /// {@endtemplate}
@@ -104,7 +104,7 @@ class _ExpandableNutritionState extends State<ExpandableNutrition> {
     final displayNutrition = quantity == null
         ? widget.nutrition
         : widget.nutrition * quantity;
-    final displayName = quantity != null && quantity > 1
+    final displayName = quantity != null && quantity != 1
         ? '×${quantity.trimmedDecimal} ${widget.name}'
         : widget.name;
     return ExpansionTile(
@@ -195,7 +195,7 @@ class _ExpandableNutritionState extends State<ExpandableNutrition> {
               onChanged: widget.onQuantityChanged!,
             ),
           ),
-          if (quantity > 1 && !widget.nutrition.isEmpty) ...[
+          if (quantity != 1 && !widget.nutrition.isEmpty) ...[
             SizedBox(height: AppDesign.spacing.xs),
             DefaultTextStyle.merge(
               style: theme.textTheme.bodySmall?.copyWith(

@@ -104,6 +104,24 @@ void main() {
       expect(find.text('×2 Eggs'), findsOneWidget);
     });
 
+    testWidgets('shows the ×N prefix for a fractional quantity', (
+      tester,
+    ) async {
+      await tester.pumpPumpPumpItUP(
+        ExpandableNutrition(
+          name: 'Eggs',
+          nutrition: const Nutrition(calories: 100),
+          expandedByDefault: false,
+          quantity: 0.5,
+          onQuantityChanged: (_) {},
+          onChanged: (_) {},
+          onRemoved: () {},
+        ),
+      );
+
+      expect(find.text('×0.5 Eggs'), findsOneWidget);
+    });
+
     testWidgets('reflects an externally changed name', (tester) async {
       late void Function(void Function()) rebuild;
       var name = 'Eggs';
