@@ -20,6 +20,7 @@ class TheUsualTextField extends StatelessWidget {
     this.inputFormatters,
     this.textAlign = TextAlign.start,
     this.textStyle,
+    this.textCapitalization = TextCapitalization.none,
     this.textInputAction,
     this.autofocus = false,
     this.onChanged,
@@ -68,6 +69,9 @@ class TheUsualTextField extends StatelessWidget {
   /// Style for the entered text. Defaults to the field's theme style.
   final TextStyle? textStyle;
 
+  /// How typed text is auto-capitalized.
+  final TextCapitalization textCapitalization;
+
   /// Action button to show on the keyboard.
   final TextInputAction? textInputAction;
 
@@ -99,6 +103,7 @@ class TheUsualTextField extends StatelessWidget {
       keyboardType: keyboardType,
       textAlign: textAlign,
       style: textStyle,
+      textCapitalization: textCapitalization,
       autofocus: autofocus,
       textInputAction: textInputAction ?? TextInputAction.done,
       inputFormatters: inputFormatters,
@@ -108,7 +113,6 @@ class TheUsualTextField extends StatelessWidget {
         suffixIcon: suffixIcon,
         suffixIconConstraints: suffixIconConstraints,
         isDense: dense,
-        border: dense ? null : const OutlineInputBorder(),
         contentPadding: dense ? EdgeInsets.all(AppDesign.spacing.xs) : null,
       ),
       onChanged: onChanged,

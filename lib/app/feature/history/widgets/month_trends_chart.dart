@@ -20,6 +20,7 @@ class MonthTrendsChart extends StatelessWidget {
     required this.weightGoal,
     required this.weightGoalUnit,
     required this.calorieGoal,
+    required this.onDayTapped,
     super.key,
   });
 
@@ -36,6 +37,10 @@ class MonthTrendsChart extends StatelessWidget {
   /// The user's daily calorie target, or null when unset.
   final int? calorieGoal;
 
+  /// Called with a day when its calorie bar is tapped, so the caller can open
+  /// that day's detail sheet.
+  final ValueChanged<HistoryDay> onDayTapped;
+
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
@@ -43,12 +48,12 @@ class MonthTrendsChart extends StatelessWidget {
     final weightEntries = monthHistory.weightEntries;
     final showWeight = weightEntries.length >= 2;
 
-    final dailyCalories = [
-      for (final historyDay in monthHistory.days.reversed)
-        historyDay.nutrition.calories ?? 0,
-    ];
+    final orderedDays = monthHistory.days.reversed.toList();
     final showCalories =
-        dailyCalories.where((calories) => calories > 0).length >= 2;
+        orderedDays
+            .where((historyDay) => (historyDay.nutrition.calories ?? 0) > 0)
+            .length >=
+        2;
 
     if (!showWeight && !showCalories) return const SizedBox.shrink();
 
@@ -80,9 +85,10 @@ class MonthTrendsChart extends StatelessWidget {
               ),
             if (showCalories)
               _CalorieBars(
-                dailyCalories: dailyCalories,
+                days: orderedDays,
                 averageCalories: monthHistory.averageNutrition.calories ?? 0,
                 goalCalories: calorieGoal,
+                onDayTapped: onDayTapped,
               ),
           ],
         ),
@@ -94,6 +100,10 @@ class MonthTrendsChart extends StatelessWidget {
 /// The plotted height each section's chart is given, so the weight line and the
 /// calorie bars take equal portions of the card.
 const double _chartHeight = 84;
+
+/// Width of the gap between calorie bars, shared by the painter and the tap
+/// hit-test so a tap resolves to the same bar the painter drew.
+const double _barGap = 3;
 
 /// The card's section label style: a small, spaced, muted uppercase caption.
 TextStyle? _sectionLabelStyle(BuildContext context) {
@@ -217,18 +227,21 @@ class _WeightTrend extends StatelessWidget {
   }
 }
 
-/// A bar per logged day of the month's calories, with the goal and the average
-/// each drawn as a labelled reference line in its own color.
+/// A bar per logged day: its height the day's calories, its fill split into
+/// protein, carbs, and fat segments sized by gram share in the same macro
+/// colors as the today view. The goal and the average are each drawn as a
+/// labelled reference line in its own color. Tapping a bar reports its day.
 class _CalorieBars extends StatelessWidget {
   const _CalorieBars({
-    required this.dailyCalories,
+    required this.days,
     required this.averageCalories,
     required this.goalCalories,
+    required this.onDayTapped,
   });
 
-  /// Each logged day's calorie total, oldest first. Days without calories are
-  /// zero so they hold their place on the time axis.
-  final List<int> dailyCalories;
+  /// Each logged day, oldest first. Days without calories hold their place on
+  /// the time axis with no bar drawn.
+  final List<HistoryDay> days;
 
   /// The month's average daily calories, drawn as the average reference line.
   final int averageCalories;
@@ -236,6 +249,9 @@ class _CalorieBars extends StatelessWidget {
   /// The user's daily calorie target, drawn as the goal reference line, or null
   /// when unset.
   final int? goalCalories;
+
+  /// Called with the day whose bar (or column) was tapped.
+  final ValueChanged<HistoryDay> onDayTapped;
 
   @override
   Widget build(BuildContext context) {
@@ -248,11 +264,22 @@ class _CalorieBars extends StatelessWidget {
     final averageLineColor = colorScheme.onPrimary;
     final goalCalories = this.goalCalories;
 
-    // Each value is named in the header legend in its line's color, so the bars
-    // are left clear and the two labels can't collide or overlap a tall bar.
+    const proteinColor = AppPalette.proteinMacro;
+    const carbsColor = AppPalette.carbsMacro;
+    const fatColor = AppPalette.fatMacro;
+
+    // The goal and average are named in the header legend in their line's color
+    // so the bars stay clear; the macros are keyed by a P/C/F swatch legend
+    // since the bars are too thin to label each segment inline.
     final legendStyle = theme.textTheme.labelMedium?.copyWith(
       fontWeight: FontWeight.w600,
     );
+
+    final macroLegend = [
+      (letter: 'P', color: proteinColor),
+      (letter: 'C', color: carbsColor),
+      (letter: 'F', color: fatColor),
+    ];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -260,8 +287,26 @@ class _CalorieBars extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text('CALORIES', style: _sectionLabelStyle(context)),
-            Row(
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('CALORIES', style: _sectionLabelStyle(context)),
+                Row(
+                  children: [
+                    for (final macro in macroLegend)
+                      Padding(
+                        padding: EdgeInsets.only(right: AppDesign.spacing.xs),
+                        child: Text(
+                          macro.letter,
+                          style: legendStyle?.copyWith(color: macro.color),
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 if (goalCalories != null) ...[
                   Text(
@@ -271,7 +316,7 @@ class _CalorieBars extends StatelessWidget {
                   SizedBox(width: AppDesign.spacing.md),
                 ],
                 Text(
-                  'avg $averageCalories',
+                  'Avg $averageCalories',
                   style: legendStyle?.copyWith(color: averageLineColor),
                 ),
               ],
@@ -281,15 +326,36 @@ class _CalorieBars extends StatelessWidget {
         SizedBox(height: AppDesign.spacing.md),
         SizedBox(
           height: _chartHeight,
-          child: CustomPaint(
-            painter: _CalorieBarsPainter(
-              calories: dailyCalories,
-              averageCalories: averageCalories,
-              goalCalories: goalCalories,
-              barColor: colorScheme.inversePrimary,
-              averageLineColor: averageLineColor,
-              goalLineColor: goalLineColor,
-            ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTapUp: (details) {
+                  final totalGap = _barGap * (days.length - 1);
+                  final slotWidth =
+                      (constraints.maxWidth - totalGap) / days.length + _barGap;
+                  final tappedIndex = (details.localPosition.dx / slotWidth)
+                      .floor()
+                      .clamp(0, days.length - 1);
+                  onDayTapped(days[tappedIndex]);
+                },
+                child: CustomPaint(
+                  painter: _CalorieBarsPainter(
+                    nutritions: [
+                      for (final historyDay in days) historyDay.nutrition,
+                    ],
+                    averageCalories: averageCalories,
+                    goalCalories: goalCalories,
+                    proteinColor: proteinColor,
+                    carbsColor: carbsColor,
+                    fatColor: fatColor,
+                    fallbackBarColor: colorScheme.inversePrimary,
+                    averageLineColor: averageLineColor,
+                    goalLineColor: goalLineColor,
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ],
@@ -479,27 +545,38 @@ class _WeightLinePainter extends CustomPainter {
   // coverage:ignore-end
 }
 
-/// Paints one bar per day of calories, with the goal and the average each drawn
-/// as a solid horizontal line in its own color. The values are named in the
-/// header legend rather than on the lines, so the bars stay clear. The axis
-/// tops out at the tallest of the bars and the two lines so neither is clipped.
+/// Paints one bar per day: its height the day's calories, its fill split into
+/// protein, carbs, and fat segments sized by each macro's gram share. A day
+/// with calories but no logged macros fills as one solid bar in
+/// [fallbackBarColor]. The goal and the average are each drawn as a horizontal
+/// line in its own color over the bars, named in the header legend rather than
+/// on the lines so the bars stay clear. The axis tops out at the tallest of the
+/// bars and the two lines so neither is clipped.
 class _CalorieBarsPainter extends CustomPainter {
   const _CalorieBarsPainter({
-    required this.calories,
+    required this.nutritions,
     required this.averageCalories,
     required this.goalCalories,
-    required this.barColor,
+    required this.proteinColor,
+    required this.carbsColor,
+    required this.fatColor,
+    required this.fallbackBarColor,
     required this.averageLineColor,
     required this.goalLineColor,
   });
 
-  /// Each day's calorie total, oldest first.
-  final List<int> calories;
+  /// Each day's nutrition total, oldest first.
+  final List<Nutrition> nutritions;
   final int averageCalories;
 
   /// The user's daily calorie target, or null when unset.
   final int? goalCalories;
-  final Color barColor;
+  final Color proteinColor;
+  final Color carbsColor;
+  final Color fatColor;
+
+  /// Fill for a day that has calories but no macro breakdown to split.
+  final Color fallbackBarColor;
   final Color averageLineColor;
   final Color goalLineColor;
 
@@ -508,8 +585,11 @@ class _CalorieBarsPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    if (calories.isEmpty) return;
-    final maxCalories = calories.reduce(max);
+    if (nutritions.isEmpty) return;
+    final dailyCalories = [
+      for (final nutrition in nutritions) nutrition.calories ?? 0,
+    ];
+    final maxCalories = dailyCalories.reduce(max);
     if (maxCalories == 0) return;
 
     final goalCalories = this.goalCalories;
@@ -526,19 +606,55 @@ class _CalorieBarsPainter extends CustomPainter {
 
     double yFor(double value) => plotBottom - (value / axisMax) * plotHeight;
 
-    const gap = 3.0;
-    final totalGap = gap * (calories.length - 1);
-    final barWidth = (size.width - totalGap) / calories.length;
-    final barPaint = Paint()..color = barColor;
-    for (var index = 0; index < calories.length; index++) {
-      final barTop = yFor(calories[index].toDouble());
-      final left = index * (barWidth + gap);
+    final totalGap = _barGap * (nutritions.length - 1);
+    final barWidth = (size.width - totalGap) / nutritions.length;
+    for (var index = 0; index < nutritions.length; index++) {
+      final nutrition = nutritions[index];
+      final calories = nutrition.calories ?? 0;
+      if (calories == 0) continue;
+
+      final barTop = yFor(calories.toDouble());
+      final left = index * (barWidth + _barGap);
+      final barHeight = plotBottom - barTop;
       final bar = RRect.fromRectAndCorners(
-        Rect.fromLTWH(left, barTop, barWidth, plotBottom - barTop),
+        Rect.fromLTWH(left, barTop, barWidth, barHeight),
         topLeft: const Radius.circular(2),
         topRight: const Radius.circular(2),
       );
-      canvas.drawRRect(bar, barPaint);
+
+      final macroSegments = [
+        (grams: nutrition.protein ?? 0, color: proteinColor),
+        (grams: nutrition.carbs ?? 0, color: carbsColor),
+        (grams: nutrition.fat ?? 0, color: fatColor),
+      ];
+      final totalGrams = macroSegments.fold(
+        0,
+        (sum, macroSegment) => sum + macroSegment.grams,
+      );
+
+      // No macros to split: fill the whole bar so the day still shows.
+      if (totalGrams == 0) {
+        canvas.drawRRect(bar, Paint()..color = fallbackBarColor);
+        continue;
+      }
+
+      // Clip to the rounded bar so the stacked segments share its top corners,
+      // then fill from the bottom up: protein, carbs, fat.
+      canvas
+        ..save()
+        ..clipRRect(bar);
+      var segmentBottom = plotBottom;
+      for (final macroSegment in macroSegments) {
+        if (macroSegment.grams == 0) continue;
+        final segmentHeight = barHeight * macroSegment.grams / totalGrams;
+        final segmentTop = segmentBottom - segmentHeight;
+        canvas.drawRect(
+          Rect.fromLTRB(left, segmentTop, left + barWidth, segmentBottom),
+          Paint()..color = macroSegment.color,
+        );
+        segmentBottom = segmentTop;
+      }
+      canvas.restore();
     }
 
     void drawReferenceLine(double value, Color color, {required bool dashed}) {
@@ -579,10 +695,13 @@ class _CalorieBarsPainter extends CustomPainter {
   // coverage:ignore-start
   @override
   bool shouldRepaint(_CalorieBarsPainter oldDelegate) =>
-      oldDelegate.calories != calories ||
+      oldDelegate.nutritions != nutritions ||
       oldDelegate.averageCalories != averageCalories ||
       oldDelegate.goalCalories != goalCalories ||
-      oldDelegate.barColor != barColor ||
+      oldDelegate.proteinColor != proteinColor ||
+      oldDelegate.carbsColor != carbsColor ||
+      oldDelegate.fatColor != fatColor ||
+      oldDelegate.fallbackBarColor != fallbackBarColor ||
       oldDelegate.averageLineColor != averageLineColor ||
       oldDelegate.goalLineColor != goalLineColor;
   // coverage:ignore-end

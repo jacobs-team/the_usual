@@ -17,6 +17,8 @@ class MealLogSection extends StatelessWidget {
     required this.otherMealUsuals,
     required this.isCurrent,
     required this.nutritionExpandedByDefault,
+    this.day,
+    this.dayStart,
     super.key,
   });
 
@@ -39,6 +41,13 @@ class MealLogSection extends StatelessWidget {
 
   /// Whether each logged entry's nutrition fields start expanded for editing.
   final bool nutritionExpandedByDefault;
+
+  /// The day meals logged from this section are recorded onto. Null logs to
+  /// today; the History view passes the day being edited.
+  final DateTime? day;
+
+  /// The user's day-start, used with [day] to stamp entries onto that day.
+  final TimeOfDay? dayStart;
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +82,7 @@ class MealLogSection extends StatelessWidget {
           ],
         ),
         sliver: SliverPadding(
-          padding: EdgeInsets.all(AppDesign.spacing.lg),
+          padding: EdgeInsets.all(AppDesign.spacing.md),
           sliver: SliverMainAxisGroup(
             slivers: [
               SliverToBoxAdapter(
@@ -127,6 +136,8 @@ class MealLogSection extends StatelessWidget {
                                   nutrition: usualMeal.nutrition,
                                   usualMealId: usualMeal.id,
                                   photoPath: usualMeal.photoPath,
+                                  day: day,
+                                  dayStart: dayStart,
                                 ),
                               ),
                             ),
@@ -172,6 +183,8 @@ class MealLogSection extends StatelessWidget {
                                   result.name,
                                   nutrition: result.nutrition,
                                   quantity: result.quantity,
+                                  day: day,
+                                  dayStart: dayStart,
                                 ),
                               );
                             }
@@ -189,6 +202,8 @@ class MealLogSection extends StatelessWidget {
                               builder: (_) => OtherMealUsualsSheet(
                                 mealOfTheDay: mealOfTheDay,
                                 usualsByMeal: otherMealUsuals,
+                                day: day,
+                                dayStart: dayStart,
                               ),
                             ),
                             icon: const Icon(Icons.restaurant_menu),

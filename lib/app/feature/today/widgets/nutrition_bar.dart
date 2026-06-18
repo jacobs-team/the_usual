@@ -137,35 +137,44 @@ class NutritionBar extends StatelessWidget {
             if (segmentFlex.flex > 0)
               Expanded(
                 flex: segmentFlex.flex,
-                child: ColoredBox(
-                  color: segmentFlex.macroSegment.color,
-                  child: Center(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: AppDesign.spacing.xs,
-                      ),
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          final macroSegment = segmentFlex.macroSegment;
-                          final fullLabel =
-                              '${macroSegment.grams}g ${macroSegment.name}';
-                          final shortLabel =
-                              '${macroSegment.grams}g '
-                              '${macroSegment.abbreviation}';
-                          final fullLabelPainter = TextPainter(
-                            text: TextSpan(text: fullLabel, style: labelStyle),
-                            maxLines: 1,
-                            textDirection: Directionality.of(context),
-                          )..layout();
-                          final fits =
-                              fullLabelPainter.width <= constraints.maxWidth;
-                          return Text(
-                            fits ? fullLabel : shortLabel,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: labelStyle,
-                          );
-                        },
+                child: Tooltip(
+                  message:
+                      '${segmentFlex.macroSegment.grams}g '
+                      '${segmentFlex.macroSegment.name}',
+                  triggerMode: TooltipTriggerMode.tap,
+                  child: ColoredBox(
+                    color: segmentFlex.macroSegment.color,
+                    child: Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: AppDesign.spacing.xs,
+                        ),
+                        child: LayoutBuilder(
+                          builder: (context, constraints) {
+                            final macroSegment = segmentFlex.macroSegment;
+                            final fullLabel =
+                                '${macroSegment.grams}g ${macroSegment.name}';
+                            final shortLabel =
+                                '${macroSegment.grams}g '
+                                '${macroSegment.abbreviation}';
+                            final fullLabelPainter = TextPainter(
+                              text: TextSpan(
+                                text: fullLabel,
+                                style: labelStyle,
+                              ),
+                              maxLines: 1,
+                              textDirection: Directionality.of(context),
+                            )..layout();
+                            final fits =
+                                fullLabelPainter.width <= constraints.maxWidth;
+                            return Text(
+                              fits ? fullLabel : shortLabel,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: labelStyle,
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),

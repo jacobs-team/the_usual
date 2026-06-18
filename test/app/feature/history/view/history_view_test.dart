@@ -93,6 +93,71 @@ void main() {
       expect(find.text('Eggs'), findsWidgets);
     });
 
+    testWidgets('shows every meal with an add button on a day', (
+      tester,
+    ) async {
+      useTallWindow(tester);
+      stub(
+        DailyLogState(
+          mealEntries: [
+            MealLogEntry(
+              id: 'a',
+              loggedAt: DateTime(2026, 6, 16, 19),
+              mealOfTheDay: MealOfTheDay.dinner,
+              name: 'Tacos',
+              nutrition: const Nutrition(calories: 650),
+            ),
+          ],
+        ),
+      );
+      await tester.pumpPumpPumpItUP(
+        deps: [dailyLogBloc],
+        const HistoryView(),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(ExpansionTile).first);
+      await tester.pumpAndSettle();
+
+      expect(find.text('BREAKFAST'), findsOneWidget);
+      expect(find.text('LUNCH'), findsOneWidget);
+      expect(find.text('DINNER'), findsOneWidget);
+      expect(find.text('SNACKS'), findsOneWidget);
+      expect(find.byIcon(Icons.add), findsNWidgets(4));
+    });
+
+    testWidgets('tapping a meal add button opens the meal sheet', (
+      tester,
+    ) async {
+      useTallWindow(tester);
+      stub(
+        DailyLogState(
+          mealEntries: [
+            MealLogEntry(
+              id: 'a',
+              loggedAt: DateTime(2026, 6, 16, 19),
+              mealOfTheDay: MealOfTheDay.dinner,
+              name: 'Tacos',
+              nutrition: const Nutrition(calories: 650),
+            ),
+          ],
+        ),
+      );
+      await tester.pumpPumpPumpItUP(
+        deps: [dailyLogBloc],
+        const HistoryView(),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(ExpansionTile).first);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.add).first);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(HistoryMealSheet), findsOneWidget);
+    });
+
     testWidgets('selecting a month chip flips the page', (tester) async {
       useTallWindow(tester);
       stub(twoMonthState());

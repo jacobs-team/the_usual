@@ -5,7 +5,7 @@ import 'package:the_usual/design_system/design_system.dart';
 /// {@template nutrition_summary}
 /// A one-line nutrition summary with each value bolded and the macros
 /// color-coded to match the daily nutrition bar: calories and separators in the
-/// surrounding text color, protein teal, fat amber, carbs blue. Unset values
+/// surrounding text color, protein teal, carbs blue, fat amber. Unset values
 /// are dropped; an em dash shows when none are set.
 ///
 /// Size and base color come from the ambient [DefaultTextStyle], so wrap the
@@ -26,9 +26,9 @@ class NutritionSummary extends StatelessWidget {
       if (nutrition.calories != null) ('${nutrition.calories} cal', null),
       if (nutrition.protein != null)
         ('${nutrition.protein}P', AppPalette.proteinMacro),
-      if (nutrition.fat != null) ('${nutrition.fat}F', AppPalette.fatMacro),
       if (nutrition.carbs != null)
         ('${nutrition.carbs}C', AppPalette.carbsMacro),
+      if (nutrition.fat != null) ('${nutrition.fat}F', AppPalette.fatMacro),
     ];
 
     if (parts.isEmpty) {

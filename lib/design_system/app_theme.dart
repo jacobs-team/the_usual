@@ -30,9 +30,8 @@ class AppTheme {
 
     final smRadius = BorderRadius.circular(AppDesign.radius.sm);
     final smShape = RoundedRectangleBorder(borderRadius: smRadius);
-    final mdShape = RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(AppDesign.radius.md),
-    );
+    final mdRadius = BorderRadius.circular(AppDesign.radius.md);
+    final mdShape = RoundedRectangleBorder(borderRadius: mdRadius);
     final lgShape = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(AppDesign.radius.lg),
     );
@@ -40,8 +39,9 @@ class AppTheme {
       horizontal: AppDesign.spacing.xl,
       vertical: AppDesign.spacing.md,
     );
+    // Buttons and input fields share the same corner radius.
     final inputBorder = OutlineInputBorder(
-      borderRadius: smRadius,
+      borderRadius: mdRadius,
       borderSide: BorderSide(color: colorScheme.outlineVariant),
     );
 
@@ -206,7 +206,7 @@ class AppTheme {
 
       listTileTheme: ListTileThemeData(
         contentPadding: EdgeInsets.symmetric(
-          horizontal: AppDesign.spacing.lg,
+          horizontal: AppDesign.spacing.md,
           vertical: AppDesign.spacing.xs,
         ),
         shape: smShape,

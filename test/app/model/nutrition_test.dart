@@ -22,7 +22,7 @@ void main() {
           carbs: 60,
         );
 
-        expect(nutrition.summary, equals('420 cal · 28P · 14F · 60C'));
+        expect(nutrition.summary, equals('420 cal · 28P · 60C · 14F'));
       });
 
       test('drops unset values', () {

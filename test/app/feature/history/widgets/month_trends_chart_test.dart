@@ -59,6 +59,7 @@ void main() {
             weightGoal: weightGoal,
             weightGoalUnit: weightGoalUnit,
             calorieGoal: calorieGoal,
+            onDayTapped: (_) {},
           ),
         ),
       );
@@ -112,7 +113,7 @@ void main() {
       expect(find.text('WEIGHT'), findsNothing);
       expect(find.text('CALORIES'), findsOneWidget);
       expect(find.text('Goal 2000'), findsOneWidget);
-      expect(find.text('avg 400'), findsOneWidget);
+      expect(find.text('Avg 400'), findsOneWidget);
     });
 
     testWidgets('hides the calorie goal legend when no goal is set', (
@@ -128,7 +129,7 @@ void main() {
 
       expect(find.text('CALORIES'), findsOneWidget);
       expect(find.textContaining('Goal '), findsNothing);
-      expect(find.text('avg 400'), findsOneWidget);
+      expect(find.text('Avg 400'), findsOneWidget);
     });
 
     testWidgets('renders both sections with a divider between them', (
@@ -265,6 +266,7 @@ void main() {
                     weightGoal: 160,
                     weightGoalUnit: WeightUnit.lb,
                     calorieGoal: 1800,
+                    onDayTapped: (_) {},
                   ),
                 );
               },
@@ -274,12 +276,12 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('avg 400'), findsOneWidget);
+      expect(find.text('Avg 400'), findsOneWidget);
 
       setStep(() => second = true);
       await tester.pump();
 
-      expect(find.text('avg 525'), findsOneWidget);
+      expect(find.text('Avg 525'), findsOneWidget);
     });
   });
 }

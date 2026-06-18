@@ -26,14 +26,14 @@ abstract class Nutrition with _$Nutrition {
   bool get isEmpty =>
       calories == null && protein == null && fat == null && carbs == null;
 
-  /// A one-line summary for display, e.g. "420 cal · 28P · 14F · 60C". Unset
+  /// A one-line summary for display, e.g. "420 cal · 28P · 60C · 14F". Unset
   /// values are dropped; an em dash is shown when none are set.
   String get summary {
     final parts = [
       if (calories != null) '$calories cal',
       if (protein != null) '${protein}P',
-      if (fat != null) '${fat}F',
       if (carbs != null) '${carbs}C',
+      if (fat != null) '${fat}F',
     ];
     return parts.isEmpty ? '—' : parts.join(' · ');
   }

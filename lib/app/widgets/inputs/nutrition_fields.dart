@@ -3,8 +3,8 @@ import 'package:the_usual/app/app.dart';
 import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template nutrition_fields}
-/// Entry for a full set of [Nutrition] facts: calories plus protein, fat, and
-/// carbs in grams, all shown at once. The fields sit on one line when there's
+/// Entry for a full set of [Nutrition] facts: calories plus protein, carbs, and
+/// fat in grams, all shown at once. The fields sit on one line when there's
 /// room and wrap when there isn't. Reports the parsed [Nutrition] on each edit.
 /// {@endtemplate}
 class NutritionFields extends StatefulWidget {
@@ -36,19 +36,19 @@ class _NutritionFieldsState extends State<NutritionFields> {
   late final _proteinController = TextEditingController(
     text: widget.initial.protein?.toString() ?? '',
   );
-  late final _fatController = TextEditingController(
-    text: widget.initial.fat?.toString() ?? '',
-  );
   late final _carbsController = TextEditingController(
     text: widget.initial.carbs?.toString() ?? '',
+  );
+  late final _fatController = TextEditingController(
+    text: widget.initial.fat?.toString() ?? '',
   );
 
   @override
   void dispose() {
     _caloriesController.dispose();
     _proteinController.dispose();
-    _fatController.dispose();
     _carbsController.dispose();
+    _fatController.dispose();
     super.dispose();
   }
 
@@ -57,8 +57,8 @@ class _NutritionFieldsState extends State<NutritionFields> {
       Nutrition(
         calories: int.tryParse(_caloriesController.text),
         protein: int.tryParse(_proteinController.text),
-        fat: int.tryParse(_fatController.text),
         carbs: int.tryParse(_carbsController.text),
+        fat: int.tryParse(_fatController.text),
       ),
     );
   }
@@ -88,21 +88,21 @@ class _NutritionFieldsState extends State<NutritionFields> {
           onChanged: (_) => _emit(),
         ),
         _LabeledMacroField(
-          label: 'FAT',
-          unit: 'g',
-          maxDigits: 3,
-          width: widget.dense ? 72 : 80,
-          dense: widget.dense,
-          controller: _fatController,
-          onChanged: (_) => _emit(),
-        ),
-        _LabeledMacroField(
           label: 'CARBS',
           unit: 'g',
           maxDigits: 3,
           width: widget.dense ? 72 : 80,
           dense: widget.dense,
           controller: _carbsController,
+          onChanged: (_) => _emit(),
+        ),
+        _LabeledMacroField(
+          label: 'FAT',
+          unit: 'g',
+          maxDigits: 3,
+          width: widget.dense ? 72 : 80,
+          dense: widget.dense,
+          controller: _fatController,
           onChanged: (_) => _emit(),
         ),
       ],

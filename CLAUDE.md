@@ -81,6 +81,10 @@
 - Feature-specific widgets go in the feature's `widgets/` folder. App-wide widgets go in the apps `widgets/` folder.
 - Get bloc instances via `getIt<T>()` in views — do not use `context.read<T>()`.
 
+## Design Mockups
+
+- When the user wants to mock up or compare UI designs before building (e.g. "mock this up", "show me some designs", "design options"), use the `design-mockups` skill. It produces phone-framed HTML mockups styled with the app's real design tokens and screenshots them inline, since the Flutter app is run by the developer, not by you.
+
 ## Dependency Injection
 
 - Use `@singleton` for BLoCs, repositories, and other dependencies.

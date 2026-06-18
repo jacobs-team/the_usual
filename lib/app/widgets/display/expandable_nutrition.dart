@@ -119,29 +119,37 @@ class _ExpandableNutritionState extends State<ExpandableNutrition> {
       collapsedShape: const Border(),
       expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
       title: widget.onNameChanged != null
-          ? Row(
-              children: [
-                Expanded(
-                  child: TextField(
-                    controller: _nameController,
-                    onChanged: widget.onNameChanged,
-                    textCapitalization: TextCapitalization.sentences,
-                    style: theme.textTheme.bodyLarge,
-                    decoration: const InputDecoration(
-                      isDense: true,
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.zero,
+          ? LayoutBuilder(
+              builder: (context, constraints) {
+                return Wrap(
+                  spacing: AppDesign.spacing.sm,
+                  runSpacing: AppDesign.spacing.xs,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    // Sized to the name so the summary can sit beside a short
+                    // name, capped to the row so a long one fills the line and
+                    // wraps the summary below.
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: constraints.maxWidth,
+                      ),
+                      child: TheUsualTextField(
+                        controller: _nameController,
+                        onChanged: widget.onNameChanged,
+                        textCapitalization: TextCapitalization.sentences,
+                        textStyle: theme.textTheme.bodyLarge,
+                        dense: true,
+                        autoSize: true,
+                      ),
                     ),
-                  ),
-                ),
-                if (!_expanded) ...[
-                  SizedBox(width: AppDesign.spacing.sm),
-                  DefaultTextStyle.merge(
-                    style: theme.textTheme.bodyMedium,
-                    child: NutritionSummary(displayNutrition),
-                  ),
-                ],
-              ],
+                    if (!_expanded)
+                      DefaultTextStyle.merge(
+                        style: theme.textTheme.bodyMedium,
+                        child: NutritionSummary(displayNutrition),
+                      ),
+                  ],
+                );
+              },
             )
           : LayoutBuilder(
               builder: (context, constraints) {

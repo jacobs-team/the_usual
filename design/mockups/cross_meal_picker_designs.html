@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Cross-meal picker — design options</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    /* Pulled directly from app_palette.dart (light scheme) */
+    --primary: #131B2E;
+    --on-primary: #FFFFFF;
+    --secondary: #00668A;
+    --secondary-container: #40C2FD;
+    --on-secondary-container: #004D6A;
+    --surface: #F8F9FF;
+    --on-surface: #0D1C2E;
+    --on-surface-variant: #45464D;
+    --surface-container-lowest: #FFFFFF;
+    --surface-container-low: #EFF4FF;
+    --surface-container: #E6EEFF;
+    --surface-container-high: #DCE9FF;
+    --surface-container-highest: #D5E3FC;
+    --outline: #76777D;
+    --outline-variant: #C6C6CD;
+    --protein: #2E8B7F;
+    --carbs: #3E78B2;
+    --fat: #C68A2E;
+
+    --r-sm: 12px;
+    --r-md: 16px;
+    --r-lg: 24px;
+    --r-xl: 32px;
+
+    --s-xs: 4px;
+    --s-sm: 8px;
+    --s-md: 12px;
+    --s-lg: 16px;
+    --s-xl: 24px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Hanken Grotesk', sans-serif;
+    background: #2b3245;
+    color: var(--on-surface);
+    padding: 40px 24px 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  h1.page-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: #fff;
+    font-weight: 800;
+    font-size: 26px;
+    margin-bottom: 4px;
+  }
+  p.page-sub {
+    color: #b9c2d6;
+    font-size: 14px;
+    margin-bottom: 32px;
+    text-align: center;
+    max-width: 620px;
+  }
+
+  .row {
+    display: flex;
+    gap: 36px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .col-label {
+    color: #fff;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+  }
+  .col-desc {
+    color: #aab3c9;
+    font-size: 12.5px;
+    text-align: center;
+    max-width: 300px;
+    line-height: 1.45;
+    min-height: 54px;
+  }
+
+  /* ---- phone frame ---- */
+  .phone {
+    width: 320px;
+    height: 660px;
+    background: var(--surface);
+    border-radius: 36px;
+    border: 10px solid #11151f;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* dimmed app behind the sheet */
+  .scrim {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(rgba(0,0,0,0.42), rgba(0,0,0,0.42)),
+      var(--surface-container);
+  }
+
+  .sheet {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    max-height: 90%;
+    background: var(--surface-container-low);
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 -8px 40px rgba(0,0,0,0.25);
+  }
+  .grabber {
+    width: 38px; height: 4px; border-radius: 2px;
+    background: var(--outline-variant);
+    margin: 10px auto 4px;
+    flex: none;
+  }
+  .sheet-head {
+    padding: 8px var(--s-lg) 4px;
+    flex: none;
+  }
+  .sheet-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--on-surface);
+  }
+  .sheet-sub {
+    font-size: 12.5px;
+    color: var(--on-surface-variant);
+    margin-top: 2px;
+  }
+  .sheet-body {
+    overflow-y: auto;
+    padding: var(--s-md) var(--s-lg) var(--s-lg);
+    flex: 1;
+  }
+  .sheet-body::-webkit-scrollbar { width: 0; }
+
+  .group-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    color: var(--on-surface-variant);
+    margin: var(--s-md) 0 var(--s-sm);
+  }
+  .group-label:first-child { margin-top: 0; }
+
+  /* macro chip used across designs */
+  .macro {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    padding: 2px 7px;
+    border-radius: 999px;
+  }
+  .macro.p { background: var(--protein); }
+  .macro.c { background: var(--carbs); }
+  .macro.f { background: var(--fat); }
+
+  /* ======================================================= */
+  /* DESIGN A — macro cards                                   */
+  /* ======================================================= */
+  .cardA {
+    background: var(--surface-container-lowest);
+    border: 1px solid var(--outline-variant);
+    border-radius: var(--r-md);
+    padding: var(--s-md);
+    margin-bottom: var(--s-sm);
+    display: flex;
+    align-items: center;
+    gap: var(--s-md);
+    box-shadow: 0 2px 8px rgba(19,27,46,0.06);
+  }
+  .cardA .info { flex: 1; min-width: 0; }
+  .cardA .name {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--on-surface);
+    margin-bottom: 6px;
+  }
+  .cardA .cal {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--on-surface-variant);
+    margin-right: 6px;
+  }
+  .cardA .macros { display: inline-flex; gap: 5px; vertical-align: middle; }
+  .addbtn {
+    flex: none;
+    width: 38px; height: 38px;
+    border-radius: 999px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    font-size: 22px;
+    line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+
+  /* ======================================================= */
+  /* DESIGN B — mini macro bars                               */
+  /* ======================================================= */
+  .cardB {
+    background: var(--surface-container-lowest);
+    border: 1px solid var(--outline-variant);
+    border-radius: var(--r-md);
+    padding: var(--s-md);
+    margin-bottom: var(--s-sm);
+    box-shadow: 0 2px 8px rgba(19,27,46,0.06);
+  }
+  .cardB .top {
+    display: flex; align-items: center; gap: var(--s-sm);
+    margin-bottom: 8px;
+  }
+  .cardB .name { flex: 1; font-weight: 600; font-size: 15px; }
+  .cardB .cal { font-size: 12px; font-weight: 700; color: var(--on-surface-variant); }
+  .cardB .addmini {
+    flex: none; width: 28px; height: 28px; border-radius: 999px;
+    background: var(--surface-container-high); color: var(--primary);
+    border: none; font-size: 18px; display: flex; align-items: center; justify-content: center; cursor: pointer;
+  }
+  .bar {
+    height: 22px; border-radius: var(--r-sm); overflow: hidden;
+    display: flex; background: var(--surface-container-highest);
+  }
+  .bar span {
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 10px; font-weight: 700;
+  }
+  .bar .p { background: var(--protein); }
+  .bar .c { background: var(--carbs); }
+  .bar .f { background: var(--fat); }
+
+  /* ======================================================= */
+  /* DESIGN C — quick-pick chips                              */
+  /* ======================================================= */
+  .filters {
+    display: flex; gap: 6px; margin-bottom: var(--s-sm);
+    position: sticky; top: 0;
+  }
+  .filter {
+    font-size: 12px; font-weight: 600; padding: 6px 14px; border-radius: 999px;
+    border: 1px solid var(--outline-variant); color: var(--on-surface-variant);
+    background: var(--surface-container-low);
+  }
+  .filter.active {
+    background: var(--secondary-container); color: var(--on-secondary-container);
+    border-color: transparent;
+  }
+  .chips { display: flex; flex-wrap: wrap; gap: var(--s-sm); }
+  .chip {
+    border: 1.5px dashed var(--outline-variant);
+    border-radius: var(--r-lg);
+    background: var(--surface-container-lowest);
+    padding: 8px 14px;
+    display: flex; flex-direction: column; gap: 2px;
+    cursor: pointer;
+  }
+  .chip .name { font-weight: 600; font-size: 13.5px; color: var(--on-surface); }
+  .chip .meta { font-size: 11px; font-weight: 700; color: var(--on-surface-variant); }
+  .chip .plus { color: var(--secondary); font-weight: 800; }
+
+  /* current / "before" phone */
+  .beforeTile {
+    padding: 12px 0; border-bottom: 0;
+  }
+  .beforeTile .name { font-size: 15px; }
+  .beforeTile .sub { font-size: 12px; color: var(--on-surface-variant); margin-top:2px; }
+</style>
+</head>
+<body>
+  <h1 class="page-title">"Log to Breakfast" picker — 3 directions</h1>
+  <p class="page-sub">Same data, same palette (navy / sky-blue surfaces, macro teal·blue·amber). Each direction moves the sheet away from the flat wall of text toward the app's card and macro-bar language.</p>
+
+  <div class="row">
+
+    <!-- ================= BEFORE ================= -->
+    <div class="col">
+      <div class="col-label">Current</div>
+      <div class="col-desc">Flat <code>ListTile</code> rows, repeated headers, tiny grey macro string. No hierarchy, no color.</div>
+      <div class="phone">
+        <div class="scrim"></div>
+        <div class="sheet">
+          <div class="grabber"></div>
+          <div class="sheet-head"><div class="sheet-title">Log to Breakfast</div></div>
+          <div class="sheet-body">
+            <div class="group-label">LUNCH</div>
+            <div class="beforeTile"><div class="name">Chicken &amp; rice bowl</div><div class="sub">620 cal · 45P · 16F · 65C</div></div>
+            <div class="beforeTile"><div class="name">Turkey sandwich</div><div class="sub">480 cal · 28P · 18F · 50C</div></div>
+            <div class="beforeTile"><div class="name">Caesar salad w/ chicken</div><div class="sub">430 cal · 35P · 24F · 18C</div></div>
+            <div class="beforeTile"><div class="name">Burrito</div><div class="sub">700 cal · 32P · 26F · 80C</div></div>
+            <div class="group-label">DINNER</div>
+            <div class="beforeTile"><div class="name">Salmon &amp; veggies</div><div class="sub">560 cal · 40P · 28F · 24C</div></div>
+            <div class="beforeTile"><div class="name">Spaghetti bolognese</div><div class="sub">720 cal · 34P · 24F · 92C</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= DESIGN A ================= -->
+    <div class="col">
+      <div class="col-label">A · Macro cards</div>
+      <div class="col-desc">Each usual is a card matching the Today cards. Name leads, calories + colored P/C/F pills below, a filled round add button on the right.</div>
+      <div class="phone">
+        <div class="scrim"></div>
+        <div class="sheet">
+          <div class="grabber"></div>
+          <div class="sheet-head">
+            <div class="sheet-title">Log to Breakfast</div>
+            <div class="sheet-sub">From your other meals</div>
+          </div>
+          <div class="sheet-body">
+            <div class="group-label">LUNCH</div>
+            <div class="cardA">
+              <div class="info">
+                <div class="name">Chicken &amp; rice bowl</div>
+                <div><span class="cal">620 cal</span><span class="macros"><span class="macro p">45 P</span><span class="macro c">65 C</span><span class="macro f">16 F</span></span></div>
+              </div>
+              <button class="addbtn">+</button>
+            </div>
+            <div class="cardA">
+              <div class="info">
+                <div class="name">Turkey sandwich</div>
+                <div><span class="cal">480 cal</span><span class="macros"><span class="macro p">28 P</span><span class="macro c">50 C</span><span class="macro f">18 F</span></span></div>
+              </div>
+              <button class="addbtn">+</button>
+            </div>
+            <div class="cardA">
+              <div class="info">
+                <div class="name">Caesar salad w/ chicken</div>
+                <div><span class="cal">430 cal</span><span class="macros"><span class="macro p">35 P</span><span class="macro c">18 C</span><span class="macro f">24 F</span></span></div>
+              </div>
+              <button class="addbtn">+</button>
+            </div>
+            <div class="group-label">DINNER</div>
+            <div class="cardA">
+              <div class="info">
+                <div class="name">Salmon &amp; veggies</div>
+                <div><span class="cal">560 cal</span><span class="macros"><span class="macro p">40 P</span><span class="macro c">24 C</span><span class="macro f">28 F</span></span></div>
+              </div>
+              <button class="addbtn">+</button>
+            </div>
+            <div class="cardA">
+              <div class="info">
+                <div class="name">Spaghetti bolognese</div>
+                <div><span class="cal">720 cal</span><span class="macros"><span class="macro p">34 P</span><span class="macro c">92 C</span><span class="macro f">24 F</span></span></div>
+              </div>
+              <button class="addbtn">+</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= DESIGN B ================= -->
+    <div class="col">
+      <div class="col-label">B · Mini macro bars</div>
+      <div class="col-desc">Each usual carries a small version of the app's signature segmented macro bar, so the sheet echoes the hero element on Today. Most on-brand.</div>
+      <div class="phone">
+        <div class="scrim"></div>
+        <div class="sheet">
+          <div class="grabber"></div>
+          <div class="sheet-head">
+            <div class="sheet-title">Log to Breakfast</div>
+            <div class="sheet-sub">From your other meals</div>
+          </div>
+          <div class="sheet-body">
+            <div class="group-label">LUNCH</div>
+            <div class="cardB">
+              <div class="top"><span class="name">Chicken &amp; rice bowl</span><span class="cal">620 cal</span><button class="addmini">+</button></div>
+              <div class="bar"><span class="p" style="flex:45">45</span><span class="c" style="flex:65">65</span><span class="f" style="flex:16">16</span></div>
+            </div>
+            <div class="cardB">
+              <div class="top"><span class="name">Turkey sandwich</span><span class="cal">480 cal</span><button class="addmini">+</button></div>
+              <div class="bar"><span class="p" style="flex:28">28</span><span class="c" style="flex:50">50</span><span class="f" style="flex:18">18</span></div>
+            </div>
+            <div class="cardB">
+              <div class="top"><span class="name">Caesar salad w/ chicken</span><span class="cal">430 cal</span><button class="addmini">+</button></div>
+              <div class="bar"><span class="p" style="flex:35">35</span><span class="c" style="flex:18">18</span><span class="f" style="flex:24">24</span></div>
+            </div>
+            <div class="group-label">DINNER</div>
+            <div class="cardB">
+              <div class="top"><span class="name">Salmon &amp; veggies</span><span class="cal">560 cal</span><button class="addmini">+</button></div>
+              <div class="bar"><span class="p" style="flex:40">40</span><span class="c" style="flex:24">24</span><span class="f" style="flex:28">28</span></div>
+            </div>
+            <div class="cardB">
+              <div class="top"><span class="name">Spaghetti bolognese</span><span class="cal">720 cal</span><button class="addmini">+</button></div>
+              <div class="bar"><span class="p" style="flex:34">34</span><span class="c" style="flex:92">92</span><span class="f" style="flex:24">24</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================= DESIGN C ================= -->
+    <div class="col">
+      <div class="col-label">C · Quick-pick chips</div>
+      <div class="col-desc">Reuses the existing dashed quick-pick pill from the Today sections, with a sticky meal filter. Most compact — many usuals fit without scrolling.</div>
+      <div class="phone">
+        <div class="scrim"></div>
+        <div class="sheet">
+          <div class="grabber"></div>
+          <div class="sheet-head">
+            <div class="sheet-title">Log to Breakfast</div>
+            <div class="sheet-sub">From your other meals</div>
+          </div>
+          <div class="sheet-body">
+            <div class="filters">
+              <div class="filter active">All</div>
+              <div class="filter">Lunch</div>
+              <div class="filter">Dinner</div>
+            </div>
+            <div class="group-label">LUNCH</div>
+            <div class="chips">
+              <div class="chip"><span class="name"><span class="plus">+ </span>Chicken &amp; rice bowl</span><span class="meta">620 cal · 45P · 65C · 16F</span></div>
+              <div class="chip"><span class="name"><span class="plus">+ </span>Turkey sandwich</span><span class="meta">480 cal · 28P · 50C · 18F</span></div>
+              <div class="chip"><span class="name"><span class="plus">+ </span>Caesar salad</span><span class="meta">430 cal · 35P · 18C · 24F</span></div>
+              <div class="chip"><span class="name"><span class="plus">+ </span>Burrito</span><span class="meta">700 cal · 32P · 80C · 26F</span></div>
+            </div>
+            <div class="group-label">DINNER</div>
+            <div class="chips">
+              <div class="chip"><span class="name"><span class="plus">+ </span>Salmon &amp; veggies</span><span class="meta">560 cal · 40P · 24C · 28F</span></div>
+              <div class="chip"><span class="name"><span class="plus">+ </span>Spaghetti bolognese</span><span class="meta">720 cal · 34P · 92C · 24F</span></div>
+              <div class="chip"><span class="name"><span class="plus">+ </span>Steak &amp; potatoes</span><span class="meta">650 cal · 46P · 55C · 22F</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

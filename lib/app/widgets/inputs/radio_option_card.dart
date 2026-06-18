@@ -38,7 +38,7 @@ class RadioOptionCard extends StatelessWidget {
       borderRadius: BorderRadius.circular(AppDesign.radius.sm),
       onTap: onTap,
       child: Container(
-        padding: EdgeInsets.all(AppDesign.spacing.lg),
+        padding: EdgeInsets.all(AppDesign.spacing.md),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(AppDesign.radius.sm),
           border: Border.all(

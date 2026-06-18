@@ -9,6 +9,8 @@ sealed class DailyLogEvent with _$DailyLogEvent {
     @Default(1) double quantity,
     String? usualMealId,
     String? photoPath,
+    DateTime? day,
+    TimeOfDay? dayStart,
   }) = MealLogged;
   const factory DailyLogEvent.mealEntryRemoved(String id) = MealEntryRemoved;
   const factory DailyLogEvent.mealEntryNutritionChanged(

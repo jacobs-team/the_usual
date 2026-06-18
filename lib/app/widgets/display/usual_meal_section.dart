@@ -4,9 +4,10 @@ import 'package:the_usual/app/core/dependencies/dependencies.dart';
 import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template usual_meal_section}
-/// One meal's usual meals: a heading, the saved meals as editable rows, and
-/// an inline composer as the last row to add a new one. Shared by onboarding
-/// and settings so both look and behave identically.
+/// One meal's usual meals: a heading and the saved meals as editable rows,
+/// optionally followed by inline controls to add a new one. The add controls
+/// show when [showAddControls] is set, as in onboarding; the settings view
+/// hides them and adds through its own action.
 /// {@endtemplate}
 class UsualMealSection extends StatelessWidget {
   /// {@macro usual_meal_section}
@@ -14,13 +15,17 @@ class UsualMealSection extends StatelessWidget {
     required this.mealOfTheDay,
     required this.usualMeals,
     required this.expandedByDefault,
-    required this.onAdded,
     required this.onNutritionChanged,
     required this.onNameChanged,
     required this.onRemoved,
+    this.onAdded,
     this.showHeader = true,
+    this.showAddControls = true,
     super.key,
-  });
+  }) : assert(
+         !showAddControls || onAdded != null,
+         'onAdded is required when showAddControls is true.',
+       );
 
   /// The meal this section represents.
   final MealOfTheDay mealOfTheDay;
@@ -35,8 +40,13 @@ class UsualMealSection extends StatelessWidget {
   /// already names the meal, e.g. the settings tab bar.
   final bool showHeader;
 
-  /// Called with the name and nutrition of a new usual meal.
-  final void Function(String name, Nutrition nutrition) onAdded;
+  /// Whether to show the inline add controls (the composer and the AI entry
+  /// button). Hidden where the surrounding UI provides its own add action.
+  final bool showAddControls;
+
+  /// Called with the name and nutrition of a new usual meal. Required when
+  /// [showAddControls] is set.
+  final void Function(String name, Nutrition nutrition)? onAdded;
 
   /// Called with a usual meal's id and its new nutrition.
   final void Function(String id, Nutrition nutrition) onNutritionChanged;
@@ -65,7 +75,7 @@ class UsualMealSection extends StatelessWidget {
             margin: EdgeInsets.only(bottom: AppDesign.spacing.sm),
             child: Padding(
               padding: EdgeInsets.fromLTRB(
-                AppDesign.spacing.lg,
+                AppDesign.spacing.md,
                 AppDesign.spacing.sm,
                 AppDesign.spacing.sm,
                 AppDesign.spacing.md,
@@ -81,34 +91,37 @@ class UsualMealSection extends StatelessWidget {
               ),
             ),
           ),
-        SizedBox(height: AppDesign.spacing.sm),
-        if (getIt<MealAiRepository>().isConfigured) ...[
-          FilledButton.tonalIcon(
-            onPressed: () async {
-              final results = await showModalBottomSheet<List<FoodEntryResult>>(
-                context: context,
-                isScrollControlled: true,
-                useSafeArea: true,
-                showDragHandle: false,
-                enableDrag: false,
-                isDismissible: false,
-                builder: (context) => const FoodEntrySheet(
-                  title: 'Add usual meals',
-                  confirmLabel: 'Add',
-                  showQuantity: false,
-                ),
-              );
-              if (results == null) return;
-              for (final result in results) {
-                onAdded(result.name, result.nutrition);
-              }
-            },
-            icon: const Icon(Icons.auto_awesome_outlined),
-            label: const Text('Add with a photo or description'),
-          ),
+        if (showAddControls) ...[
           SizedBox(height: AppDesign.spacing.sm),
+          if (getIt<MealAiRepository>().isConfigured) ...[
+            FilledButton.tonalIcon(
+              onPressed: () async {
+                final results =
+                    await showModalBottomSheet<List<FoodEntryResult>>(
+                      context: context,
+                      isScrollControlled: true,
+                      useSafeArea: true,
+                      showDragHandle: false,
+                      enableDrag: false,
+                      isDismissible: false,
+                      builder: (context) => const FoodEntrySheet(
+                        title: 'Add usual meals',
+                        confirmLabel: 'Add',
+                        showQuantity: false,
+                      ),
+                    );
+                if (results == null) return;
+                for (final result in results) {
+                  onAdded!(result.name, result.nutrition);
+                }
+              },
+              icon: const Icon(Icons.auto_awesome_outlined),
+              label: const Text('Add with a photo or description'),
+            ),
+            SizedBox(height: AppDesign.spacing.sm),
+          ],
+          UsualMealComposer(onAdd: onAdded!),
         ],
-        UsualMealComposer(onAdd: onAdded),
       ],
     );
   }

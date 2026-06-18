@@ -5,9 +5,9 @@ import 'package:the_usual/app/core/dependencies/dependencies.dart';
 import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template usual_meal_list}
-/// One meal's tab on the usual meals screen: the saved usual meals with an
-/// inline composer to add more. Kept alive so swiping between tabs doesn't
-/// rebuild its fields.
+/// One meal's tab on the usual meals screen: the saved usual meals, edited in
+/// place. New meals are added through the screen's floating action button. Kept
+/// alive so swiping between tabs doesn't rebuild its fields.
 /// {@endtemplate}
 class UsualMealList extends StatefulWidget {
   /// {@macro usual_meal_list}
@@ -44,29 +44,47 @@ class _UsualMealListState extends State<UsualMealList>
         return ListView(
           padding: EdgeInsets.all(AppDesign.spacing.lg),
           children: [
-            UsualMealSection(
-              mealOfTheDay: mealOfTheDay,
-              usualMeals: usualMeals,
-              expandedByDefault: expandNutritionByDefault,
-              showHeader: false,
-              onAdded: (name, nutrition) => getIt<UserSettingsBloc>().add(
-                UserSettingsEvent.usualMealAdded(mealOfTheDay, name, nutrition),
-              ),
-              onNutritionChanged: (id, nutrition) =>
-                  getIt<UserSettingsBloc>().add(
-                    UserSettingsEvent.usualMealNutritionChanged(
-                      mealOfTheDay,
-                      id,
-                      nutrition,
-                    ),
+            if (usualMeals.isEmpty)
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: AppDesign.spacing.xxl),
+                child: Text(
+                  'No usual ${mealOfTheDay.label.toLowerCase()} meals yet.\n'
+                  'Tap the + button to add one.',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
-              onNameChanged: (id, name) => getIt<UserSettingsBloc>().add(
-                UserSettingsEvent.usualMealNameChanged(mealOfTheDay, id, name),
+                ),
+              )
+            else
+              UsualMealSection(
+                mealOfTheDay: mealOfTheDay,
+                usualMeals: usualMeals,
+                expandedByDefault: expandNutritionByDefault,
+                showHeader: false,
+                showAddControls: false,
+                onNutritionChanged: (id, nutrition) =>
+                    getIt<UserSettingsBloc>().add(
+                      UserSettingsEvent.usualMealNutritionChanged(
+                        mealOfTheDay,
+                        id,
+                        nutrition,
+                      ),
+                    ),
+                onNameChanged: (id, name) => getIt<UserSettingsBloc>().add(
+                  UserSettingsEvent.usualMealNameChanged(
+                    mealOfTheDay,
+                    id,
+                    name,
+                  ),
+                ),
+                onRemoved: (id) => getIt<UserSettingsBloc>().add(
+                  UserSettingsEvent.usualMealRemoved(mealOfTheDay, id),
+                ),
               ),
-              onRemoved: (id) => getIt<UserSettingsBloc>().add(
-                UserSettingsEvent.usualMealRemoved(mealOfTheDay, id),
-              ),
-            ),
+            // Clears the floating action button so the last card isn't hidden
+            // behind it.
+            const SizedBox(height: kFloatingActionButtonMargin + 56),
           ],
         );
       },

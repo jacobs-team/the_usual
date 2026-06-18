@@ -5,6 +5,8 @@ import 'package:the_usual/app/app.dart';
 
 import '../../../../helpers/helpers.dart';
 
+final _pastDay = DateTime(2026, 6, 16);
+
 void main() {
   // The default day boundary is midnight, so a logical day equals a calendar
   // day in these tests.
@@ -73,6 +75,32 @@ void main() {
         act: (bloc) =>
             bloc.add(const DailyLogEvent.mealLogged(MealOfTheDay.lunch, '  ')),
         expect: () => <DailyLogState>[],
+      );
+
+      blocTest<DailyLogBloc, DailyLogState>(
+        'stamps loggedAt at the logical day start when a day is given',
+        build: DailyLogBloc.new,
+        act: (bloc) => bloc.add(
+          DailyLogEvent.mealLogged(
+            MealOfTheDay.dinner,
+            'Tacos',
+            nutrition: const Nutrition(calories: 650),
+            day: _pastDay,
+            dayStart: const TimeOfDay(hour: 4, minute: 0),
+          ),
+        ),
+        verify: (bloc) {
+          final entry = bloc.state.mealEntries.single;
+          expect(
+            entry.loggedAt,
+            equals(_pastDay.atDayStart(const TimeOfDay(hour: 4, minute: 0))),
+          );
+          expect(entry.mealOfTheDay, equals(MealOfTheDay.dinner));
+          expect(
+            entry.loggedAt.logicalDay(const TimeOfDay(hour: 4, minute: 0)),
+            equals(_pastDay),
+          );
+        },
       );
     });
 

@@ -42,6 +42,44 @@ class UsualMealsView extends StatelessWidget {
               UsualMealList(mealOfTheDay: mealOfTheDay),
           ],
         ),
+        // A Builder gives a context under the DefaultTabController so it can
+        // read the active tab and add to that meal.
+        floatingActionButton: Builder(
+          builder: (context) {
+            return FloatingActionButton(
+              tooltip: 'Add a usual meal',
+              onPressed: () async {
+                final activeTabIndex = DefaultTabController.of(context).index;
+                final mealOfTheDay = MealOfTheDay.values[activeTabIndex];
+                final results =
+                    await showModalBottomSheet<List<FoodEntryResult>>(
+                      context: context,
+                      isScrollControlled: true,
+                      useSafeArea: true,
+                      showDragHandle: false,
+                      enableDrag: false,
+                      isDismissible: false,
+                      builder: (context) => FoodEntrySheet(
+                        title: 'Add ${mealOfTheDay.label}',
+                        confirmLabel: 'Add',
+                        showQuantity: false,
+                      ),
+                    );
+                if (results == null) return;
+                for (final result in results) {
+                  getIt<UserSettingsBloc>().add(
+                    UserSettingsEvent.usualMealAdded(
+                      mealOfTheDay,
+                      result.name,
+                      result.nutrition,
+                    ),
+                  );
+                }
+              },
+              child: const Icon(Icons.add),
+            );
+          },
+        ),
       ),
     );
   }

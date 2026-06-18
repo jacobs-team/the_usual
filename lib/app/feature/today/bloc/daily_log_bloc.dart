@@ -116,9 +116,15 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
     final name = event.name.trim();
     if (name.isEmpty) return;
 
+    final day = event.day;
+    final dayStart = event.dayStart;
+    final loggedAt = day != null && dayStart != null
+        ? day.atDayStart(dayStart)
+        : clock.now();
+
     final mealLogEntry = MealLogEntry(
       id: _uuid.v4(),
-      loggedAt: clock.now(),
+      loggedAt: loggedAt,
       mealOfTheDay: event.mealOfTheDay,
       name: name,
       nutrition: event.nutrition,

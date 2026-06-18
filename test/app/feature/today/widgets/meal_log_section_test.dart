@@ -44,6 +44,8 @@ void main() {
       Map<MealOfTheDay, List<UsualMeal>> otherMealUsuals = const {},
       bool isCurrent = false,
       bool nutritionExpandedByDefault = false,
+      DateTime? day,
+      TimeOfDay? dayStart,
     }) {
       tester.view.physicalSize = const Size(1200, 3000);
       tester.view.devicePixelRatio = 1.0;
@@ -60,6 +62,8 @@ void main() {
               otherMealUsuals: otherMealUsuals,
               isCurrent: isCurrent,
               nutritionExpandedByDefault: nutritionExpandedByDefault,
+              day: day,
+              dayStart: dayStart,
             ),
           ],
         ),
@@ -79,7 +83,7 @@ void main() {
         nutritionExpandedByDefault: true,
       );
 
-      expect(find.text('350 cal · 0P · 0F · 0C'), findsOneWidget);
+      expect(find.text('350 cal · 0P · 0C · 0F'), findsOneWidget);
       expect(find.byType(LoggedEntryRow), findsOneWidget);
     });
 
@@ -108,6 +112,38 @@ void main() {
             'Oatmeal',
             nutrition: Nutrition(calories: 300),
             usualMealId: 'u',
+          ),
+        ),
+      ).called(1);
+    });
+
+    testWidgets('forwards day and dayStart when logging a quick pick', (
+      tester,
+    ) async {
+      await pumpSection(
+        tester,
+        quickPicks: const [
+          UsualMeal(
+            id: 'u',
+            name: 'Oatmeal',
+            nutrition: Nutrition(calories: 300),
+          ),
+        ],
+        day: DateTime(2026, 6, 16),
+        dayStart: const TimeOfDay(hour: 4, minute: 0),
+      );
+
+      await tester.tap(find.text('+ Oatmeal'));
+
+      verify(
+        () => dailyLogBloc.add(
+          DailyLogEvent.mealLogged(
+            MealOfTheDay.breakfast,
+            'Oatmeal',
+            nutrition: const Nutrition(calories: 300),
+            usualMealId: 'u',
+            day: DateTime(2026, 6, 16),
+            dayStart: const TimeOfDay(hour: 4, minute: 0),
           ),
         ),
       ).called(1);

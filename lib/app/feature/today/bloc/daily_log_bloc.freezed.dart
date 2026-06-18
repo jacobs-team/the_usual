@@ -137,10 +137,10 @@ return sampleDataSeeded(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  double quantity,  String? usualMealId,  String? photoPath)?  mealLogged,TResult Function( String id)?  mealEntryRemoved,TResult Function( String id,  Nutrition nutrition)?  mealEntryNutritionChanged,TResult Function( String id,  double quantity)?  mealEntryQuantityChanged,TResult Function( String id,  String usualMealId)?  mealEntryUsualMealLinked,TResult Function( double weight,  WeightUnit weightUnit)?  weightLogged,TResult Function( DateTime day,  double? weight,  WeightUnit weightUnit,  TimeOfDay dayStart)?  weightOnDayChanged,TResult Function()?  sampleDataSeeded,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  double quantity,  String? usualMealId,  String? photoPath,  DateTime? day,  TimeOfDay? dayStart)?  mealLogged,TResult Function( String id)?  mealEntryRemoved,TResult Function( String id,  Nutrition nutrition)?  mealEntryNutritionChanged,TResult Function( String id,  double quantity)?  mealEntryQuantityChanged,TResult Function( String id,  String usualMealId)?  mealEntryUsualMealLinked,TResult Function( double weight,  WeightUnit weightUnit)?  weightLogged,TResult Function( DateTime day,  double? weight,  WeightUnit weightUnit,  TimeOfDay dayStart)?  weightOnDayChanged,TResult Function()?  sampleDataSeeded,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case MealLogged() when mealLogged != null:
-return mealLogged(_that.mealOfTheDay,_that.name,_that.nutrition,_that.quantity,_that.usualMealId,_that.photoPath);case MealEntryRemoved() when mealEntryRemoved != null:
+return mealLogged(_that.mealOfTheDay,_that.name,_that.nutrition,_that.quantity,_that.usualMealId,_that.photoPath,_that.day,_that.dayStart);case MealEntryRemoved() when mealEntryRemoved != null:
 return mealEntryRemoved(_that.id);case MealEntryNutritionChanged() when mealEntryNutritionChanged != null:
 return mealEntryNutritionChanged(_that.id,_that.nutrition);case MealEntryQuantityChanged() when mealEntryQuantityChanged != null:
 return mealEntryQuantityChanged(_that.id,_that.quantity);case MealEntryUsualMealLinked() when mealEntryUsualMealLinked != null:
@@ -165,10 +165,10 @@ return sampleDataSeeded();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  double quantity,  String? usualMealId,  String? photoPath)  mealLogged,required TResult Function( String id)  mealEntryRemoved,required TResult Function( String id,  Nutrition nutrition)  mealEntryNutritionChanged,required TResult Function( String id,  double quantity)  mealEntryQuantityChanged,required TResult Function( String id,  String usualMealId)  mealEntryUsualMealLinked,required TResult Function( double weight,  WeightUnit weightUnit)  weightLogged,required TResult Function( DateTime day,  double? weight,  WeightUnit weightUnit,  TimeOfDay dayStart)  weightOnDayChanged,required TResult Function()  sampleDataSeeded,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  double quantity,  String? usualMealId,  String? photoPath,  DateTime? day,  TimeOfDay? dayStart)  mealLogged,required TResult Function( String id)  mealEntryRemoved,required TResult Function( String id,  Nutrition nutrition)  mealEntryNutritionChanged,required TResult Function( String id,  double quantity)  mealEntryQuantityChanged,required TResult Function( String id,  String usualMealId)  mealEntryUsualMealLinked,required TResult Function( double weight,  WeightUnit weightUnit)  weightLogged,required TResult Function( DateTime day,  double? weight,  WeightUnit weightUnit,  TimeOfDay dayStart)  weightOnDayChanged,required TResult Function()  sampleDataSeeded,}) {final _that = this;
 switch (_that) {
 case MealLogged():
-return mealLogged(_that.mealOfTheDay,_that.name,_that.nutrition,_that.quantity,_that.usualMealId,_that.photoPath);case MealEntryRemoved():
+return mealLogged(_that.mealOfTheDay,_that.name,_that.nutrition,_that.quantity,_that.usualMealId,_that.photoPath,_that.day,_that.dayStart);case MealEntryRemoved():
 return mealEntryRemoved(_that.id);case MealEntryNutritionChanged():
 return mealEntryNutritionChanged(_that.id,_that.nutrition);case MealEntryQuantityChanged():
 return mealEntryQuantityChanged(_that.id,_that.quantity);case MealEntryUsualMealLinked():
@@ -189,10 +189,10 @@ return sampleDataSeeded();}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  double quantity,  String? usualMealId,  String? photoPath)?  mealLogged,TResult? Function( String id)?  mealEntryRemoved,TResult? Function( String id,  Nutrition nutrition)?  mealEntryNutritionChanged,TResult? Function( String id,  double quantity)?  mealEntryQuantityChanged,TResult? Function( String id,  String usualMealId)?  mealEntryUsualMealLinked,TResult? Function( double weight,  WeightUnit weightUnit)?  weightLogged,TResult? Function( DateTime day,  double? weight,  WeightUnit weightUnit,  TimeOfDay dayStart)?  weightOnDayChanged,TResult? Function()?  sampleDataSeeded,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition,  double quantity,  String? usualMealId,  String? photoPath,  DateTime? day,  TimeOfDay? dayStart)?  mealLogged,TResult? Function( String id)?  mealEntryRemoved,TResult? Function( String id,  Nutrition nutrition)?  mealEntryNutritionChanged,TResult? Function( String id,  double quantity)?  mealEntryQuantityChanged,TResult? Function( String id,  String usualMealId)?  mealEntryUsualMealLinked,TResult? Function( double weight,  WeightUnit weightUnit)?  weightLogged,TResult? Function( DateTime day,  double? weight,  WeightUnit weightUnit,  TimeOfDay dayStart)?  weightOnDayChanged,TResult? Function()?  sampleDataSeeded,}) {final _that = this;
 switch (_that) {
 case MealLogged() when mealLogged != null:
-return mealLogged(_that.mealOfTheDay,_that.name,_that.nutrition,_that.quantity,_that.usualMealId,_that.photoPath);case MealEntryRemoved() when mealEntryRemoved != null:
+return mealLogged(_that.mealOfTheDay,_that.name,_that.nutrition,_that.quantity,_that.usualMealId,_that.photoPath,_that.day,_that.dayStart);case MealEntryRemoved() when mealEntryRemoved != null:
 return mealEntryRemoved(_that.id);case MealEntryNutritionChanged() when mealEntryNutritionChanged != null:
 return mealEntryNutritionChanged(_that.id,_that.nutrition);case MealEntryQuantityChanged() when mealEntryQuantityChanged != null:
 return mealEntryQuantityChanged(_that.id,_that.quantity);case MealEntryUsualMealLinked() when mealEntryUsualMealLinked != null:
@@ -211,7 +211,7 @@ return sampleDataSeeded();case _:
 
 
 class MealLogged implements DailyLogEvent {
-  const MealLogged(this.mealOfTheDay, this.name, {this.nutrition = const Nutrition(), this.quantity = 1, this.usualMealId, this.photoPath});
+  const MealLogged(this.mealOfTheDay, this.name, {this.nutrition = const Nutrition(), this.quantity = 1, this.usualMealId, this.photoPath, this.day, this.dayStart});
   
 
  final  MealOfTheDay mealOfTheDay;
@@ -220,6 +220,8 @@ class MealLogged implements DailyLogEvent {
 @JsonKey() final  double quantity;
  final  String? usualMealId;
  final  String? photoPath;
+ final  DateTime? day;
+ final  TimeOfDay? dayStart;
 
 /// Create a copy of DailyLogEvent
 /// with the given fields replaced by the non-null parameter values.
@@ -231,16 +233,16 @@ $MealLoggedCopyWith<MealLogged> get copyWith => _$MealLoggedCopyWithImpl<MealLog
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is MealLogged&&(identical(other.mealOfTheDay, mealOfTheDay) || other.mealOfTheDay == mealOfTheDay)&&(identical(other.name, name) || other.name == name)&&(identical(other.nutrition, nutrition) || other.nutrition == nutrition)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.usualMealId, usualMealId) || other.usualMealId == usualMealId)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MealLogged&&(identical(other.mealOfTheDay, mealOfTheDay) || other.mealOfTheDay == mealOfTheDay)&&(identical(other.name, name) || other.name == name)&&(identical(other.nutrition, nutrition) || other.nutrition == nutrition)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.usualMealId, usualMealId) || other.usualMealId == usualMealId)&&(identical(other.photoPath, photoPath) || other.photoPath == photoPath)&&(identical(other.day, day) || other.day == day)&&(identical(other.dayStart, dayStart) || other.dayStart == dayStart));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,mealOfTheDay,name,nutrition,quantity,usualMealId,photoPath);
+int get hashCode => Object.hash(runtimeType,mealOfTheDay,name,nutrition,quantity,usualMealId,photoPath,day,dayStart);
 
 @override
 String toString() {
-  return 'DailyLogEvent.mealLogged(mealOfTheDay: $mealOfTheDay, name: $name, nutrition: $nutrition, quantity: $quantity, usualMealId: $usualMealId, photoPath: $photoPath)';
+  return 'DailyLogEvent.mealLogged(mealOfTheDay: $mealOfTheDay, name: $name, nutrition: $nutrition, quantity: $quantity, usualMealId: $usualMealId, photoPath: $photoPath, day: $day, dayStart: $dayStart)';
 }
 
 
@@ -251,7 +253,7 @@ abstract mixin class $MealLoggedCopyWith<$Res> implements $DailyLogEventCopyWith
   factory $MealLoggedCopyWith(MealLogged value, $Res Function(MealLogged) _then) = _$MealLoggedCopyWithImpl;
 @useResult
 $Res call({
- MealOfTheDay mealOfTheDay, String name, Nutrition nutrition, double quantity, String? usualMealId, String? photoPath
+ MealOfTheDay mealOfTheDay, String name, Nutrition nutrition, double quantity, String? usualMealId, String? photoPath, DateTime? day, TimeOfDay? dayStart
 });
 
 
@@ -268,7 +270,7 @@ class _$MealLoggedCopyWithImpl<$Res>
 
 /// Create a copy of DailyLogEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? mealOfTheDay = null,Object? name = null,Object? nutrition = null,Object? quantity = null,Object? usualMealId = freezed,Object? photoPath = freezed,}) {
+@pragma('vm:prefer-inline') $Res call({Object? mealOfTheDay = null,Object? name = null,Object? nutrition = null,Object? quantity = null,Object? usualMealId = freezed,Object? photoPath = freezed,Object? day = freezed,Object? dayStart = freezed,}) {
   return _then(MealLogged(
 null == mealOfTheDay ? _self.mealOfTheDay : mealOfTheDay // ignore: cast_nullable_to_non_nullable
 as MealOfTheDay,null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
@@ -276,7 +278,9 @@ as String,nutrition: null == nutrition ? _self.nutrition : nutrition // ignore: 
 as Nutrition,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
 as double,usualMealId: freezed == usualMealId ? _self.usualMealId : usualMealId // ignore: cast_nullable_to_non_nullable
 as String?,photoPath: freezed == photoPath ? _self.photoPath : photoPath // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,day: freezed == day ? _self.day : day // ignore: cast_nullable_to_non_nullable
+as DateTime?,dayStart: freezed == dayStart ? _self.dayStart : dayStart // ignore: cast_nullable_to_non_nullable
+as TimeOfDay?,
   ));
 }
 

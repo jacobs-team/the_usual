@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
 import 'package:the_usual/design_system/design_system.dart';
@@ -24,6 +25,14 @@ class _HistoryViewState extends State<HistoryView> {
   final DailyLogBloc _dailyLogBloc = getIt<DailyLogBloc>();
   late DateTime _selectedMonth;
   late final PageController _pageController;
+
+  /// One scroll controller per month, by month, so tapping a calorie bar can
+  /// scroll that month's list to the tapped day.
+  final Map<DateTime, ItemScrollController> _monthScrollControllers = {};
+
+  /// One expansion controller per day card, by logical day, so a day can be
+  /// expanded once scrolled into view.
+  final Map<DateTime, ExpansibleController> _dayExpansionControllers = {};
 
   @override
   void initState() {
@@ -114,11 +123,43 @@ class _HistoryViewState extends State<HistoryView> {
                     onPageChanged: (index) => setState(
                       () => _selectedMonth = history[index].month,
                     ),
-                    itemBuilder: (context, index) {
-                      final monthHistory = history[index];
+                    itemBuilder: (context, monthIndex) {
+                      final monthHistory = history[monthIndex];
                       final localizations = MaterialLocalizations.of(context);
+                      final itemScrollController = _monthScrollControllers
+                          .putIfAbsent(
+                            monthHistory.month,
+                            ItemScrollController.new,
+                          );
 
-                      return ListView(
+                      // Scrolls the tapped day's card into view, then expands
+                      // it once built. The chart and month label are the list's
+                      // first item, so day cards are offset by one.
+                      void scrollToDay(HistoryDay historyDay) {
+                        final dayIndex = monthHistory.days.indexOf(historyDay);
+                        if (dayIndex < 0) return;
+                        unawaited(
+                          itemScrollController
+                              .scrollTo(
+                                index: dayIndex + 1,
+                                duration: AppDesign.durations.fast,
+                                curve: Curves.easeOut,
+                              )
+                              .then((_) {
+                                if (!mounted) return;
+                                final expansionController =
+                                    _dayExpansionControllers[historyDay.day];
+                                if (expansionController != null &&
+                                    !expansionController.isExpanded) {
+                                  expansionController.expand();
+                                }
+                              }),
+                        );
+                      }
+
+                      return ScrollablePositionedList.builder(
+                        itemScrollController: itemScrollController,
+                        itemCount: monthHistory.days.length + 1,
                         padding:
                             EdgeInsets.fromLTRB(
                               AppDesign.spacing.lg,
@@ -129,42 +170,60 @@ class _HistoryViewState extends State<HistoryView> {
                             EdgeInsets.only(
                               bottom: MediaQuery.paddingOf(context).bottom,
                             ),
-                        children: [
-                          BlocSelector<
-                            UserSettingsBloc,
-                            UserSettingsState,
-                            (double?, WeightUnit, int?)
-                          >(
-                            bloc: getIt<UserSettingsBloc>(),
-                            selector: (state) => (
-                              state.weightGoal,
-                              state.weightUnit,
-                              state.calorieGoal,
+                        itemBuilder: (context, itemIndex) {
+                          if (itemIndex == 0) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                BlocSelector<
+                                  UserSettingsBloc,
+                                  UserSettingsState,
+                                  (double?, WeightUnit, int?)
+                                >(
+                                  bloc: getIt<UserSettingsBloc>(),
+                                  selector: (state) => (
+                                    state.weightGoal,
+                                    state.weightUnit,
+                                    state.calorieGoal,
+                                  ),
+                                  builder: (context, goals) {
+                                    final (
+                                      weightGoal,
+                                      weightUnit,
+                                      calorieGoal,
+                                    ) = goals;
+                                    return MonthTrendsChart(
+                                      monthHistory: monthHistory,
+                                      weightGoal: weightGoal,
+                                      weightGoalUnit: weightUnit,
+                                      calorieGoal: calorieGoal,
+                                      onDayTapped: scrollToDay,
+                                    );
+                                  },
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    bottom: AppDesign.spacing.sm,
+                                  ),
+                                  child: SectionLabel(
+                                    localizations
+                                        .formatMonthYear(monthHistory.month)
+                                        .toUpperCase(),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
+
+                          final historyDay = monthHistory.days[itemIndex - 1];
+                          return _HistoryDayCard(
+                            controller: _dayExpansionControllers.putIfAbsent(
+                              historyDay.day,
+                              ExpansibleController.new,
                             ),
-                            builder: (context, goals) {
-                              final (weightGoal, weightUnit, calorieGoal) =
-                                  goals;
-                              return MonthTrendsChart(
-                                monthHistory: monthHistory,
-                                weightGoal: weightGoal,
-                                weightGoalUnit: weightUnit,
-                                calorieGoal: calorieGoal,
-                              );
-                            },
-                          ),
-                          Padding(
-                            padding: EdgeInsets.only(
-                              bottom: AppDesign.spacing.sm,
-                            ),
-                            child: SectionLabel(
-                              localizations
-                                  .formatMonthYear(monthHistory.month)
-                                  .toUpperCase(),
-                            ),
-                          ),
-                          for (final historyDay in monthHistory.days)
-                            _HistoryDayCard(historyDay: historyDay),
-                        ],
+                            historyDay: historyDay,
+                          );
+                        },
                       );
                     },
                   ),
@@ -344,9 +403,13 @@ class _MonthChip extends StatelessWidget {
 /// A single day in the history list: a summary that expands to the day's
 /// meals grouped by meal time.
 class _HistoryDayCard extends StatelessWidget {
-  const _HistoryDayCard({required this.historyDay});
+  const _HistoryDayCard({required this.historyDay, this.controller});
 
   final HistoryDay historyDay;
+
+  /// Drives the card's expansion so tapping its calorie bar can open it once
+  /// scrolled into view.
+  final ExpansibleController? controller;
 
   @override
   Widget build(BuildContext context) {
@@ -357,7 +420,9 @@ class _HistoryDayCard extends StatelessWidget {
     return Card(
       margin: EdgeInsets.only(bottom: AppDesign.spacing.sm),
       child: ExpansionTile(
+        controller: controller,
         shape: const Border(),
+        tilePadding: EdgeInsets.symmetric(horizontal: AppDesign.spacing.md),
         title: Text(localizations.formatMediumDate(historyDay.day)),
         subtitle: Row(
           children: [
@@ -372,9 +437,9 @@ class _HistoryDayCard extends StatelessWidget {
           ],
         ),
         childrenPadding: EdgeInsets.fromLTRB(
-          AppDesign.spacing.lg,
+          AppDesign.spacing.md,
           0,
-          AppDesign.spacing.lg,
+          AppDesign.spacing.md,
           AppDesign.spacing.md,
         ),
         expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
@@ -386,20 +451,37 @@ class _HistoryDayCard extends StatelessWidget {
             ],
           ),
           SizedBox(height: AppDesign.spacing.sm),
-          for (final mealOfTheDay in MealOfTheDay.values)
-            if (historyDay.mealEntries.any(
-              (mealLogEntry) => mealLogEntry.mealOfTheDay == mealOfTheDay,
-            )) ...[
-              SectionLabel(mealOfTheDay.label.toUpperCase()),
-              for (final mealLogEntry in historyDay.mealEntries)
-                if (mealLogEntry.mealOfTheDay == mealOfTheDay)
-                  LoggedEntryRow(
-                    key: ValueKey(mealLogEntry.id),
-                    mealLogEntry: mealLogEntry,
-                    expandedByDefault: false,
+          for (final mealOfTheDay in MealOfTheDay.values) ...[
+            Row(
+              children: [
+                Expanded(
+                  child: SectionLabel(mealOfTheDay.label.toUpperCase()),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.add),
+                  tooltip: 'Add ${mealOfTheDay.label}',
+                  onPressed: () => showModalBottomSheet<void>(
+                    context: context,
+                    isScrollControlled: true,
+                    useSafeArea: true,
+                    showDragHandle: true,
+                    builder: (_) => HistoryMealSheet(
+                      mealOfTheDay: mealOfTheDay,
+                      day: historyDay.day,
+                    ),
                   ),
-              SizedBox(height: AppDesign.spacing.sm),
-            ],
+                ),
+              ],
+            ),
+            for (final mealLogEntry in historyDay.mealEntries)
+              if (mealLogEntry.mealOfTheDay == mealOfTheDay)
+                LoggedEntryRow(
+                  key: ValueKey(mealLogEntry.id),
+                  mealLogEntry: mealLogEntry,
+                  expandedByDefault: false,
+                ),
+            SizedBox(height: AppDesign.spacing.sm),
+          ],
         ],
       ),
     );
