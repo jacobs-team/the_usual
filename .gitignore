@@ -118,3 +118,9 @@ lib/l10n/gen/
 
 config/*
 !config/example.json
+
+# Superpowers workflow: ignore ephemeral scratch (brainstorm sessions),
+# keep the curated specs and plans tracked.
+.superpowers/*
+!.superpowers/specs/
+!.superpowers/plans/

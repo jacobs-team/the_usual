@@ -31,11 +31,12 @@ _The Usual works on iOS, Android, Web, and Windows._
 
 ## Screenshots
 
-<!-- Add screenshots / GIFs here once captured.
-![Today](docs/screenshots/today.png)
-![AI meal entry](docs/screenshots/ai_entry.png)
-![History](docs/screenshots/history.png)
--->
+<p>
+  <img src="docs/screenshots/today.png" width="23%" alt="Today screen with the day's meals and calorie bar" />
+  <img src="docs/screenshots/log-meal.png" width="23%" alt="Logging a meal with AI-assisted nutrition" />
+  <img src="docs/screenshots/history.png" width="23%" alt="History with calorie and weight charts" />
+  <img src="docs/screenshots/onboarding-reminders.png" width="23%" alt="Choosing a reminder style during onboarding" />
+</p>
 
 ## Getting Started 🚀
 
