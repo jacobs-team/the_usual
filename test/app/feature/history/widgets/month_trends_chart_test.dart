@@ -20,10 +20,21 @@ void main() {
       );
     }
 
-    HistoryDay day(int dayOfMonth, {int? calories}) {
+    HistoryDay day(
+      int dayOfMonth, {
+      int? calories,
+      int? protein,
+      int? carbs,
+      int? fat,
+    }) {
       return (
         day: DateTime(2026, 6, dayOfMonth),
-        nutrition: Nutrition(calories: calories),
+        nutrition: Nutrition(
+          calories: calories,
+          protein: protein,
+          carbs: carbs,
+          fat: fat,
+        ),
         weightEntry: null,
         mealEntries: const <MealLogEntry>[],
       );
@@ -49,6 +60,7 @@ void main() {
       double? weightGoal,
       WeightUnit weightGoalUnit = WeightUnit.lb,
       int? calorieGoal,
+      ValueChanged<HistoryDay>? onDayTapped,
     }) async {
       await tester.pumpPumpPumpItUP(
         SizedBox(
@@ -59,7 +71,7 @@ void main() {
             weightGoal: weightGoal,
             weightGoalUnit: weightGoalUnit,
             calorieGoal: calorieGoal,
-            onDayTapped: (_) {},
+            onDayTapped: onDayTapped ?? (_) {},
           ),
         ),
       );
@@ -156,8 +168,9 @@ void main() {
     testWidgets(
       'draws the goal weight line below the trend when goal is under',
       (tester) async {
-        // The goal label is canvas-painted, so only the section header is a Text
-        // widget. A goal under the mean weight places its label below the line.
+        // The goal label is canvas-painted, so only the section header is a
+        // Text widget. A goal under the mean weight places its label below the
+        // line.
         await pumpChart(
           tester,
           monthHistory: month(
@@ -282,6 +295,44 @@ void main() {
       await tester.pump();
 
       expect(find.text('Avg 525'), findsOneWidget);
+    });
+
+    testWidgets('splits each calorie bar into macro segments', (tester) async {
+      await pumpChart(
+        tester,
+        monthHistory: month(
+          days: [
+            day(5, calories: 500, protein: 30, carbs: 50, fat: 20),
+            day(4, calories: 300, protein: 20, carbs: 30, fat: 10),
+          ],
+          averageCalories: 400,
+        ),
+      );
+
+      // Rendering exercises the macro-segment painter without error.
+      expect(find.byType(MonthTrendsChart), findsOneWidget);
+    });
+
+    testWidgets('tapping the calorie bars reports a day', (tester) async {
+      HistoryDay? tapped;
+      await pumpChart(
+        tester,
+        monthHistory: month(
+          days: [day(5, calories: 500), day(4, calories: 300)],
+          averageCalories: 400,
+        ),
+        onDayTapped: (historyDay) => tapped = historyDay,
+      );
+
+      await tester.tap(
+        find.descendant(
+          of: find.byType(MonthTrendsChart),
+          matching: find.byType(GestureDetector),
+        ),
+      );
+      await tester.pump();
+
+      expect(tapped, isNotNull);
     });
   });
 }

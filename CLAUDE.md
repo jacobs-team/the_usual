@@ -107,3 +107,4 @@
 - Use `mocktail` for mocking dependencies.
 - Call `initHydratedStorage()` in test setup when testing with `HydratedBloc`.
 - Always use random seed ordering for testing using the flag.
+- Don't assert on hardcoded UI strings (they change under localization), and locate widgets by type, key, or icon rather than `find.text(...)`. Exceptions exist, but prefer finding widgets over matching strings as the rule of thumb.

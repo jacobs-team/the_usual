@@ -110,6 +110,7 @@ class RemindersView extends StatelessWidget {
                                         mealReminder: mealReminder,
                                         onToggled: (enabled) =>
                                             getIt<OnboardingBloc>().add(
+                                              // ignore: lines_longer_than_80_chars
                                               OnboardingEvent.mealReminderToggled(
                                                 mealOfTheDay,
                                                 enabled: enabled,
@@ -117,6 +118,7 @@ class RemindersView extends StatelessWidget {
                                             ),
                                         onTimeChanged: (timeOfDay) =>
                                             getIt<OnboardingBloc>().add(
+                                              // ignore: lines_longer_than_80_chars
                                               OnboardingEvent.mealReminderTimeChanged(
                                                 mealOfTheDay,
                                                 timeOfDay,
@@ -128,6 +130,7 @@ class RemindersView extends StatelessWidget {
                                         skipLoggedMealReminders,
                                     onChanged: (value) =>
                                         getIt<OnboardingBloc>().add(
+                                          // ignore: lines_longer_than_80_chars
                                           OnboardingEvent.skipLoggedMealRemindersChanged(
                                             skipLoggedMealReminders: value,
                                           ),
@@ -171,6 +174,7 @@ class RemindersView extends StatelessWidget {
                                 await showDialog<void>(
                                   context: context,
                                   builder: (_) =>
+                                      // ignore: lines_longer_than_80_chars
                                       const EnableNotificationsInSettingsDialog(),
                                 );
                                 return;

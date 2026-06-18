@@ -209,5 +209,37 @@ void main() {
         expect(find.text('MAY'), findsOneWidget);
       },
     );
+
+    testWidgets('tapping a calorie bar scrolls to and expands that day', (
+      tester,
+    ) async {
+      useTallWindow(tester);
+      // Two days with calories so the calorie chart (and its bars) render.
+      stub(
+        DailyLogState(
+          mealEntries: [
+            meal(DateTime(2026, 6, 10, 8), calories: 400),
+            meal(DateTime(2026, 6, 14, 8), calories: 500),
+          ],
+        ),
+      );
+      await tester.pumpPumpPumpItUP(deps: [dailyLogBloc], const HistoryView());
+      await tester.pumpAndSettle();
+
+      expect(find.byType(MonthTrendsChart), findsOneWidget);
+      // Day cards start collapsed, so no meal rows are shown yet.
+      expect(find.byType(LoggedEntryRow), findsNothing);
+
+      await tester.tap(
+        find.descendant(
+          of: find.byType(MonthTrendsChart),
+          matching: find.byType(GestureDetector),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // The tapped day scrolled into view and expanded, revealing its meals.
+      expect(find.byType(LoggedEntryRow), findsWidgets);
+    });
   });
 }

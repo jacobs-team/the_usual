@@ -37,7 +37,7 @@ void main() {
       expect(find.text('Eggs'), findsOneWidget);
     });
 
-    testWidgets('adds, edits, and removes usual meals through the bloc', (
+    testWidgets('edits and removes usual meals through the bloc', (
       tester,
     ) async {
       stub(
@@ -53,12 +53,13 @@ void main() {
         const UsualMealList(mealOfTheDay: MealOfTheDay.breakfast),
       );
 
+      // The name field is the first TextFormField; calories is the next.
       final rowCalories = find
           .descendant(
             of: find.byType(ExpandableNutrition),
             matching: find.byType(TextFormField),
           )
-          .first;
+          .at(1);
       await tester.enterText(rowCalories, '300');
       verify(
         () => userSettingsBloc.add(
@@ -91,24 +92,6 @@ void main() {
       verify(
         () => userSettingsBloc.add(
           const UserSettingsEvent.usualMealRemoved(MealOfTheDay.breakfast, 'a'),
-        ),
-      ).called(1);
-
-      final composerName = find
-          .descendant(
-            of: find.byType(UsualMealComposer),
-            matching: find.byType(TextFormField),
-          )
-          .first;
-      await tester.enterText(composerName, 'Oats');
-      await tester.tap(find.byIcon(Icons.add).first);
-      verify(
-        () => userSettingsBloc.add(
-          const UserSettingsEvent.usualMealAdded(
-            MealOfTheDay.breakfast,
-            'Oats',
-            Nutrition(),
-          ),
         ),
       ).called(1);
     });

@@ -460,11 +460,8 @@ class _HistoryDayCard extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.add),
                   tooltip: 'Add ${mealOfTheDay.label}',
-                  onPressed: () => showModalBottomSheet<void>(
-                    context: context,
-                    isScrollControlled: true,
-                    useSafeArea: true,
-                    showDragHandle: true,
+                  onPressed: () => TheUsualBottomSheet.show<void>(
+                    context,
                     builder: (_) => HistoryMealSheet(
                       mealOfTheDay: mealOfTheDay,
                       day: historyDay.day,

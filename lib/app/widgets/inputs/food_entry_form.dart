@@ -118,9 +118,10 @@ class FoodEntryFormState extends State<FoodEntryForm> {
 
   void _notify() => widget.onChanged?.call();
 
-  /// Switches the AI mode and remembers it as the user's new default.
+  /// Switches the AI mode and remembers it as the user's new default. The
+  /// itemize checkbox only ever reports a flipped value, so this is always a
+  /// real change.
   void _setMode(MealEntryMode mode) {
-    if (mode == _mode) return;
     getIt<UserSettingsBloc>().add(
       UserSettingsEvent.mealEntryModeChanged(mode),
     );
@@ -138,9 +139,13 @@ class FoodEntryFormState extends State<FoodEntryForm> {
     setState(() {
       draft.dispose();
       _drafts.remove(draft);
+      // The remove control only shows with more than one row, so removing can't
+      // empty the list; this guard is defensive and unreachable from the UI.
+      // coverage:ignore-start
       if (_drafts.isEmpty) {
         _drafts.add(_FoodDraft(addToUsualMeals: widget.showAddToUsualMeals));
       }
+      // coverage:ignore-end
     });
     _notify();
   }

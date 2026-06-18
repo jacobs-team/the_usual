@@ -99,15 +99,10 @@ class _FirstLogViewState extends State<FirstLogView> {
                         above: OutlinedButton.icon(
                           onPressed: () async {
                             final results =
-                                await showModalBottomSheet<
+                                await TheUsualBottomSheet.show<
                                   List<FoodEntryResult>
                                 >(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  useSafeArea: true,
-                                  showDragHandle: false,
-                                  enableDrag: false,
-                                  isDismissible: false,
+                                  context,
                                   builder: (context) => const FoodEntrySheet(
                                     title: 'Log something else',
                                     confirmLabel: 'Log',

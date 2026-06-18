@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:the_usual/app/app.dart';
 
 import '../../../../helpers/helpers.dart';
@@ -81,6 +82,142 @@ void main() {
       verify(
         () => onboardingBloc.add(const OnboardingEvent.continuePressed()),
       ).called(1);
+    });
+
+    testWidgets('forwards the per-meal schedule interactions to the bloc', (
+      tester,
+    ) async {
+      useTallWindow(tester);
+      stubBloc(
+        const UserSettingsState(
+          mealReminders: {
+            MealOfTheDay.breakfast: MealReminder(
+              enabled: true,
+              timeOfDay: TimeOfDay(hour: 8, minute: 0),
+            ),
+          },
+        ),
+      );
+      await tester.pumpPumpPumpItUP(
+        deps: [onboardingBloc],
+        const RemindersView(),
+      );
+
+      // Pick a reminder style (the last card is "don't remind me").
+      await tester.tap(find.byType(RadioOptionCard).last);
+      verify(
+        () => onboardingBloc.add(
+          const OnboardingEvent.reminderStyleSelected(ReminderStyle.none),
+        ),
+      ).called(1);
+
+      // Switch the check-in schedule mode.
+      await tester.tap(find.text(MealCheckinScheduleMode.endOfDay.label));
+      verify(
+        () => onboardingBloc.add(
+          const OnboardingEvent.mealCheckinScheduleModeChanged(
+            MealCheckinScheduleMode.endOfDay,
+          ),
+        ),
+      ).called(1);
+
+      // Toggle the breakfast reminder off (its row switch comes first).
+      await tester.tap(find.byType(Switch).first);
+      verify(
+        () => onboardingBloc.add(
+          const OnboardingEvent.mealReminderToggled(
+            MealOfTheDay.breakfast,
+            enabled: false,
+          ),
+        ),
+      ).called(1);
+
+      // Toggle the skip-logged setting on.
+      await tester.tap(find.byType(SwitchListTile));
+      verify(
+        () => onboardingBloc.add(
+          const OnboardingEvent.skipLoggedMealRemindersChanged(
+            skipLoggedMealReminders: true,
+          ),
+        ),
+      ).called(1);
+
+      // Change the breakfast reminder time via the picker.
+      await tester.tap(find.byType(ActionChip));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+      verify(
+        () => onboardingBloc.add(
+          const OnboardingEvent.mealReminderTimeChanged(
+            MealOfTheDay.breakfast,
+            TimeOfDay(hour: 8, minute: 0),
+          ),
+        ),
+      ).called(1);
+    });
+
+    testWidgets('changes the end-of-day reminder time via the picker', (
+      tester,
+    ) async {
+      useTallWindow(tester);
+      // The default end-of-day reminder is 8:00 PM, which the picker keeps.
+      stubBloc(
+        const UserSettingsState(
+          mealCheckinScheduleMode: MealCheckinScheduleMode.endOfDay,
+        ),
+      );
+      await tester.pumpPumpPumpItUP(
+        deps: [onboardingBloc],
+        const RemindersView(),
+      );
+
+      await tester.tap(find.byType(ActionChip));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('OK'));
+      await tester.pumpAndSettle();
+
+      verify(
+        () => onboardingBloc.add(
+          const OnboardingEvent.endOfDayTimeChanged(
+            TimeOfDay(hour: 20, minute: 0),
+          ),
+        ),
+      ).called(1);
+    });
+
+    testWidgets('reverts and explains when notifications are denied', (
+      tester,
+    ) async {
+      useTallWindow(tester);
+      final notificationService = MockNotificationService();
+      when(
+        notificationService.requestPermission,
+      ).thenAnswer((_) async => PermissionStatus.denied);
+      // The default reminder style is notifications, which prompts the OS.
+      stubBloc(const UserSettingsState());
+      await tester.pumpPumpPumpItUP(
+        deps: [onboardingBloc, notificationService],
+        const RemindersView(),
+      );
+
+      await tester.tap(
+        find.descendant(
+          of: find.byType(OnboardingActions),
+          matching: find.byType(FilledButton),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      verify(
+        () => onboardingBloc.add(
+          const OnboardingEvent.reminderStyleSelected(ReminderStyle.onAppOpen),
+        ),
+      ).called(1);
+      expect(
+        find.byType(EnableNotificationsInSettingsDialog),
+        findsOneWidget,
+      );
     });
   });
 }

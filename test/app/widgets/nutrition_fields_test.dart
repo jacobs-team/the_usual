@@ -47,14 +47,14 @@ void main() {
       await tester.enterText(fieldAt(2), '12');
       expect(
         changed,
-        equals(const Nutrition(calories: 380, protein: 30, fat: 12)),
+        equals(const Nutrition(calories: 380, protein: 30, carbs: 12)),
       );
 
       await tester.enterText(fieldAt(3), '40');
       expect(
         changed,
         equals(
-          const Nutrition(calories: 380, protein: 30, fat: 12, carbs: 40),
+          const Nutrition(calories: 380, protein: 30, carbs: 12, fat: 40),
         ),
       );
     });

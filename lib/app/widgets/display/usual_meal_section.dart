@@ -97,13 +97,8 @@ class UsualMealSection extends StatelessWidget {
             FilledButton.tonalIcon(
               onPressed: () async {
                 final results =
-                    await showModalBottomSheet<List<FoodEntryResult>>(
-                      context: context,
-                      isScrollControlled: true,
-                      useSafeArea: true,
-                      showDragHandle: false,
-                      enableDrag: false,
-                      isDismissible: false,
+                    await TheUsualBottomSheet.show<List<FoodEntryResult>>(
+                      context,
                       builder: (context) => const FoodEntrySheet(
                         title: 'Add usual meals',
                         confirmLabel: 'Add',

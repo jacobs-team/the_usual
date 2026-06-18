@@ -116,7 +116,7 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
 
   static const _uuid = Uuid();
 
-  /// The step [offset] positions from the current one within [activeSteps],
+  /// The step [offset] positions from the current one within the active steps,
   /// clamped to the valid range.
   OnboardingStep _stepRelativeTo(OnboardingState state, int offset) {
     final steps = state.activeSteps;

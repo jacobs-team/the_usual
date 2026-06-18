@@ -52,13 +52,8 @@ class UsualMealsView extends StatelessWidget {
                 final activeTabIndex = DefaultTabController.of(context).index;
                 final mealOfTheDay = MealOfTheDay.values[activeTabIndex];
                 final results =
-                    await showModalBottomSheet<List<FoodEntryResult>>(
-                      context: context,
-                      isScrollControlled: true,
-                      useSafeArea: true,
-                      showDragHandle: false,
-                      enableDrag: false,
-                      isDismissible: false,
+                    await TheUsualBottomSheet.show<List<FoodEntryResult>>(
+                      context,
                       builder: (context) => FoodEntrySheet(
                         title: 'Add ${mealOfTheDay.label}',
                         confirmLabel: 'Add',

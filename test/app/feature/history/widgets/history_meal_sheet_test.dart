@@ -38,7 +38,7 @@ void main() {
       );
     });
 
-    testWidgets('shows the meal card with that meal\'s quick picks', (
+    testWidgets("shows the meal card with that meal's quick picks", (
       tester,
     ) async {
       tester.view.physicalSize = const Size(1200, 3000);

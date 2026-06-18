@@ -226,7 +226,8 @@ void main() {
 
       await tester.tap(find.text('Something else'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Cancel'));
+      // A fresh sheet has one row, so the only close icon is the sheet's.
+      await tester.tap(find.byIcon(Icons.close));
       await tester.pumpAndSettle();
 
       verifyNever(() => dailyLogBloc.add(any(that: isA<MealLogged>())));

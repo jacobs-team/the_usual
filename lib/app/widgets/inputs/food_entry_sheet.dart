@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:the_usual/app/widgets/inputs/food_entry_form.dart';
-import 'package:the_usual/design_system/design_system.dart';
+import 'package:the_usual/app/widgets/layout/the_usual_bottom_sheet.dart';
 
 /// {@template food_entry_sheet}
 /// Bottom sheet for capturing what the user ate, by hand or with AI assistance.
@@ -44,51 +44,25 @@ class _FoodEntrySheetState extends State<FoodEntrySheet> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final form = _formKey.currentState;
     final canConfirm = form != null && !form.isGenerating && form.hasContent;
-    // Lift the sheet above the keyboard, then keep the content clear of the
-    // home indicator with SafeArea. The status bar is handled by the route's
-    // useSafeArea, which strips the top padding here.
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.viewInsetsOf(context).bottom,
-      ),
-      child: SafeArea(
-        top: false,
-        child: SingleChildScrollView(
-          padding: EdgeInsets.all(AppDesign.spacing.lg),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(widget.title, style: textTheme.titleMedium),
-                  ),
-                  IconButton(
-                    visualDensity: VisualDensity.compact,
-                    onPressed: () => Navigator.of(context).pop(),
-                    icon: const Icon(Icons.close),
-                    tooltip: 'Close',
-                  ),
-                ],
-              ),
-              SizedBox(height: AppDesign.spacing.sm),
-              FoodEntryForm(
-                key: _formKey,
-                showQuantity: widget.showQuantity,
-                showAddToUsualMeals: widget.showAddToUsualMeals,
-                onChanged: () => setState(() {}),
-              ),
-              FilledButton(
-                onPressed: canConfirm ? _confirm : null,
-                child: Text(widget.confirmLabel),
-              ),
-            ],
+    return TheUsualBottomSheet(
+      title: widget.title,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          FoodEntryForm(
+            key: _formKey,
+            showQuantity: widget.showQuantity,
+            showAddToUsualMeals: widget.showAddToUsualMeals,
+            onChanged: () => setState(() {}),
           ),
-        ),
+          FilledButton(
+            onPressed: canConfirm ? _confirm : null,
+            child: Text(widget.confirmLabel),
+          ),
+        ],
       ),
     );
   }

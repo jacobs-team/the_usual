@@ -45,6 +45,7 @@ void main() {
           ),
           UsualMeal(id: 'v', name: 'Soup'),
         ],
+        MealOfTheDay.dinner: [UsualMeal(id: 'w', name: 'Steak')],
       });
 
       expect(find.text('Log to Breakfast'), findsOneWidget);
@@ -52,6 +53,13 @@ void main() {
       expect(find.text('Salad'), findsOneWidget);
       expect(find.text('250 cal'), findsOneWidget);
       expect(find.text('Soup'), findsOneWidget);
+      // A second group renders below the first, exercising the between-groups
+      // gap.
+      expect(
+        find.text(MealOfTheDay.dinner.label.toUpperCase()),
+        findsOneWidget,
+      );
+      expect(find.text('Steak'), findsOneWidget);
     });
 
     testWidgets('logs the tapped usual under the current meal', (tester) async {

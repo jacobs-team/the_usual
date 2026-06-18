@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -226,12 +228,41 @@ void main() {
 
       await tester.tap(find.text('I ate something else'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Cancel'));
+      // A fresh sheet has one row, so the only close icon is the sheet's.
+      await tester.tap(find.byIcon(Icons.close));
       await tester.pumpAndSettle();
 
       verifyNever(
         () => onboardingBloc.add(any(that: isA<SomethingElseLogged>())),
       );
+    });
+
+    testWidgets('shows a photo on a usual that has one', (tester) async {
+      final dir = Directory.systemTemp.createTempSync('first_log_photo');
+      addTearDown(() => dir.deleteSync(recursive: true));
+      final photo = File('${dir.path}/meal.png')
+        ..writeAsBytesSync(transparentPixel);
+
+      useTallWindow(tester);
+      stubBloc(
+        OnboardingState(
+          step: OnboardingStep.firstLog,
+          settings: UserSettingsState(
+            usuals: {
+              MealOfTheDay.breakfast: [
+                UsualMeal(id: 'a', name: 'Pancakes', photoPath: photo.path),
+              ],
+            },
+          ),
+        ),
+      );
+      await tester.pumpPumpPumpItUP(
+        deps: [onboardingBloc],
+        const FirstLogView(),
+      );
+      await tester.pump();
+
+      expect(find.byType(Image), findsWidgets);
     });
   });
 }

@@ -44,8 +44,8 @@ class HistoryMealSheet extends StatelessWidget {
           selector: (state) => state.mealEntries,
           builder: (context, mealEntries) {
             final breakdown = mealEntries.breakdownOn(day, dayStart);
-            return CustomScrollView(
-              shrinkWrap: true,
+            return TheUsualBottomSheet(
+              title: MaterialLocalizations.of(context).formatMediumDate(day),
               slivers: [
                 MealLogSection(
                   mealOfTheDay: mealOfTheDay,

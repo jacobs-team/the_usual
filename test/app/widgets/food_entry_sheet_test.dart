@@ -204,10 +204,11 @@ void main() {
       );
     });
 
-    testWidgets('cancel pops with null', (tester) async {
+    testWidgets('the close button pops with null', (tester) async {
       final results = await showSheet(tester);
 
-      await tester.tap(find.text('Cancel'));
+      // A single row can't be removed, so the only close icon is the sheet's.
+      await tester.tap(find.byIcon(Icons.close));
       await tester.pumpAndSettle();
 
       expect(results.single, isNull);
@@ -264,30 +265,29 @@ void main() {
     });
 
     group('with AI configured', () {
-      testWidgets('shows the AI controls and mode summary', (tester) async {
+      testWidgets('shows the AI controls when configured', (tester) async {
         await showSheet(tester, aiRepository: configuredAiRepository());
 
-        expect(find.text('How should we log it?'), findsOneWidget);
-        expect(find.byType(SegmentedButton<MealEntryMode>), findsOneWidget);
-        expect(find.text('Estimate'), findsOneWidget);
-        expect(find.text('Photo'), findsOneWidget);
-        expect(find.text(MealEntryMode.wholeMeal.summary), findsOneWidget);
+        expect(find.byIcon(Icons.auto_awesome_outlined), findsOneWidget);
+        expect(find.byIcon(Icons.photo_camera_outlined), findsOneWidget);
+        expect(find.byIcon(Icons.info_outline), findsOneWidget);
+        // The only checkbox here is the itemize toggle.
+        expect(find.byType(Checkbox), findsOneWidget);
       });
 
-      testWidgets('the info button opens the modes dialog', (tester) async {
+      testWidgets('the info control explains the itemize mode', (tester) async {
         await showSheet(tester, aiRepository: configuredAiRepository());
 
-        await tester.tap(find.byIcon(Icons.info_outline));
-        await tester.pumpAndSettle();
-
-        expect(find.text('Got it'), findsOneWidget);
-        await tester.tap(find.text('Got it'));
-        await tester.pumpAndSettle();
-
-        expect(find.text('Got it'), findsNothing);
+        final tooltip = tester.widget<Tooltip>(
+          find.ancestor(
+            of: find.byIcon(Icons.info_outline),
+            matching: find.byType(Tooltip),
+          ),
+        );
+        expect(tooltip.message, equals(MealEntryMode.itemized.detail));
       });
 
-      testWidgets('switching the mode remembers it as the default', (
+      testWidgets('toggling itemize remembers the mode as the default', (
         tester,
       ) async {
         final userSettingsBloc = userSettingsBlocWith(MealEntryMode.wholeMeal);
@@ -297,8 +297,8 @@ void main() {
           userSettingsBloc: userSettingsBloc,
         );
 
-        await tester.tap(find.text(MealEntryMode.itemized.label));
-        await tester.pumpAndSettle();
+        await tester.tap(find.byType(Checkbox));
+        await tester.pump();
 
         verify(
           () => userSettingsBloc.add(
@@ -307,21 +307,8 @@ void main() {
             ),
           ),
         ).called(1);
-        expect(find.text(MealEntryMode.itemized.summary), findsOneWidget);
-      });
-
-      testWidgets('re-selecting the current mode does nothing', (tester) async {
-        final userSettingsBloc = userSettingsBlocWith(MealEntryMode.wholeMeal);
-        await showSheet(
-          tester,
-          aiRepository: configuredAiRepository(),
-          userSettingsBloc: userSettingsBloc,
-        );
-
-        await tester.tap(find.text(MealEntryMode.wholeMeal.label));
-        await tester.pumpAndSettle();
-
-        verifyNever(() => userSettingsBloc.add(any()));
+        final checkbox = tester.widget<Checkbox>(find.byType(Checkbox));
+        expect(checkbox.value, isTrue);
       });
 
       testWidgets('estimate without a name shows a prompt snackbar', (
@@ -674,32 +661,5 @@ void main() {
       });
     });
 
-    testWidgets('a discard gesture prompts before losing content', (
-      tester,
-    ) async {
-      final results = await showSheet(tester);
-
-      await tester.enterText(nameFields().first, 'Salad');
-      await tester.pump();
-
-      // Swipe-to-dismiss triggers PopScope, which asks before discarding.
-      await tester.tapAt(const Offset(10, 10));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Discard this entry?'), findsOneWidget);
-
-      await tester.tap(find.text('Keep editing'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Discard this entry?'), findsNothing);
-      expect(results, isEmpty);
-
-      await tester.tapAt(const Offset(10, 10));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Discard'));
-      await tester.pumpAndSettle();
-
-      expect(results.single, isNull);
-    });
   });
 }

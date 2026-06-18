@@ -16,151 +16,115 @@ void main() {
       return onboardingBloc;
     }
 
-    setUp(() {
-      registerFallbackValue(const OnboardingEvent.continuePressed());
-    });
-
-    testWidgets('adds usualMealNameChanged when a saved name is edited', (
-      tester,
-    ) async {
+    Future<void> pumpView(WidgetTester tester, OnboardingBloc bloc) async {
       tester.view.physicalSize = const Size(1200, 3000);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpPumpPumpItUP(deps: [bloc], const BuildUsualsView());
+    }
 
-      final onboardingBloc = blocWith(
-        const OnboardingState(
-          settings: UserSettingsState(
-            expandNutritionByDefault: true,
-            usuals: {
-              MealOfTheDay.breakfast: [UsualMeal(id: 'a', name: 'Eggs')],
-            },
-          ),
-        ),
+    Finder continueButton() => find.descendant(
+      of: find.byType(OnboardingActions),
+      matching: find.byType(FilledButton),
+    );
+
+    Finder skipButton() => find.descendant(
+      of: find.byType(OnboardingActions),
+      matching: find.byType(TextButton),
+    );
+
+    testWidgets('shows a meal toggle and one form per meal', (tester) async {
+      await pumpView(tester, blocWith(const OnboardingState()));
+
+      expect(find.byType(SegmentedButton<MealOfTheDay>), findsOneWidget);
+      // The IndexedStack builds a form for every meal; non-selected ones are
+      // offstage, so don't skip them.
+      expect(
+        find.byType(FoodEntryForm, skipOffstage: false),
+        findsNWidgets(MealOfTheDay.values.length),
       );
-      await tester.pumpPumpPumpItUP(
-        deps: [onboardingBloc],
-        const BuildUsualsView(),
-      );
-
-      final nameField = find
-          .descendant(
-            of: find.byType(ExpandableNutrition),
-            matching: find.byType(TextField),
-          )
-          .first;
-      await tester.enterText(nameField, 'Scrambled eggs');
-
-      verify(
-        () => onboardingBloc.add(
-          const OnboardingEvent.usualMealNameChanged(
-            MealOfTheDay.breakfast,
-            'a',
-            'Scrambled eggs',
-          ),
-        ),
-      ).called(1);
+      expect(continueButton(), findsOneWidget);
     });
 
-    testWidgets('renders a section per meal', (tester) async {
-      tester.view.physicalSize = const Size(1200, 3000);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
+    testWidgets('selecting a meal switches the active form', (tester) async {
+      await pumpView(tester, blocWith(const OnboardingState()));
 
-      await tester.pumpPumpPumpItUP(
-        deps: [blocWith(const OnboardingState())],
-        const BuildUsualsView(),
+      final stack = find.byType(IndexedStack);
+      expect(tester.widget<IndexedStack>(stack).index, equals(0));
+
+      await tester.tap(find.text(MealOfTheDay.lunch.label));
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.widget<IndexedStack>(stack).index,
+        equals(MealOfTheDay.values.indexOf(MealOfTheDay.lunch)),
       );
-
-      expect(find.byType(UsualMealSection), findsNWidgets(4));
-      expect(find.text('Continue'), findsOneWidget);
     });
 
-    testWidgets('adds continuePressed and skipPressed from the actions', (
-      tester,
-    ) async {
+    testWidgets('Continue commits every meal then advances', (tester) async {
       final onboardingBloc = blocWith(const OnboardingState());
-      await tester.pumpPumpPumpItUP(
-        deps: [onboardingBloc],
-        const BuildUsualsView(),
-      );
+      await pumpView(tester, onboardingBloc);
 
-      await tester.tap(find.text('Continue'));
-      await tester.tap(find.text('Skip for now'));
+      await tester.tap(continueButton());
+      await tester.pump();
 
+      for (final mealOfTheDay in MealOfTheDay.values) {
+        verify(
+          () => onboardingBloc.add(
+            OnboardingEvent.usualsForMealReplaced(mealOfTheDay, const []),
+          ),
+        ).called(1);
+      }
       verify(
         () => onboardingBloc.add(const OnboardingEvent.continuePressed()),
       ).called(1);
+    });
+
+    testWidgets('Skip commits every meal then skips', (tester) async {
+      final onboardingBloc = blocWith(const OnboardingState());
+      await pumpView(tester, onboardingBloc);
+
+      await tester.tap(skipButton());
+      await tester.pump();
+
+      for (final mealOfTheDay in MealOfTheDay.values) {
+        verify(
+          () => onboardingBloc.add(
+            OnboardingEvent.usualsForMealReplaced(mealOfTheDay, const []),
+          ),
+        ).called(1);
+      }
       verify(
         () => onboardingBloc.add(const OnboardingEvent.skipPressed()),
       ).called(1);
     });
 
-    testWidgets('adds usualMealAdded from the first composer', (tester) async {
-      final onboardingBloc = blocWith(const OnboardingState());
-      await tester.pumpPumpPumpItUP(
-        deps: [onboardingBloc],
-        const BuildUsualsView(),
-      );
-
-      final firstComposerName = find
-          .descendant(
-            of: find.byType(UsualMealComposer).first,
-            matching: find.byType(TextFormField),
-          )
-          .first;
-      await tester.enterText(firstComposerName, 'Eggs');
-      await tester.tap(find.byIcon(Icons.add).first);
-
-      verify(
-        () => onboardingBloc.add(
-          const OnboardingEvent.usualMealAdded(
-            MealOfTheDay.breakfast,
-            'Eggs',
-            Nutrition(),
-          ),
-        ),
-      ).called(1);
-    });
-
-    testWidgets('edits and removes a saved usual meal', (tester) async {
+    testWidgets('seeds the selected meal from existing usuals and commits it', (
+      tester,
+    ) async {
       final onboardingBloc = blocWith(
         const OnboardingState(
           settings: UserSettingsState(
-            expandNutritionByDefault: true,
             usuals: {
               MealOfTheDay.breakfast: [UsualMeal(id: 'a', name: 'Eggs')],
             },
           ),
         ),
       );
-      await tester.pumpPumpPumpItUP(
-        deps: [onboardingBloc],
-        const BuildUsualsView(),
-      );
+      await pumpView(tester, onboardingBloc);
 
-      final rowCalories = find
-          .descendant(
-            of: find.byType(ExpandableNutrition),
-            matching: find.byType(TextFormField),
-          )
-          .first;
-      await tester.enterText(rowCalories, '275');
-      await tester.tap(find.byIcon(Icons.delete_forever_outlined).first);
+      // The breakfast form, selected first, seeds a row from the saved usual.
+      expect(find.text('Eggs'), findsOneWidget);
+
+      await tester.tap(continueButton());
+      await tester.pump();
 
       verify(
         () => onboardingBloc.add(
-          const OnboardingEvent.usualMealNutritionChanged(
-            MealOfTheDay.breakfast,
-            'a',
-            Nutrition(calories: 275),
-          ),
-        ),
-      ).called(1);
-      verify(
-        () => onboardingBloc.add(
-          const OnboardingEvent.usualMealRemoved(MealOfTheDay.breakfast, 'a'),
+          const OnboardingEvent.usualsForMealReplaced(MealOfTheDay.breakfast, [
+            (name: 'Eggs', nutrition: Nutrition()),
+          ]),
         ),
       ).called(1);
     });

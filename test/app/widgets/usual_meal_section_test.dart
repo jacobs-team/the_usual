@@ -46,7 +46,15 @@ void main() {
         ),
       );
 
-      await tester.enterText(find.byType(TextFormField).first, '275');
+      await tester.enterText(
+        find
+            .descendant(
+              of: find.byType(NutritionFields),
+              matching: find.byType(TextFormField),
+            )
+            .first,
+        '275',
+      );
 
       expect(changedId, equals('a'));
       expect(changedNutrition?.calories, equals(275));
@@ -172,7 +180,8 @@ void main() {
 
       await tester.tap(find.text('Add with a photo or description'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Cancel'));
+      // A fresh sheet has one row, so the only close icon is the sheet's.
+      await tester.tap(find.byIcon(Icons.close));
       await tester.pumpAndSettle();
 
       expect(addedCount, equals(0));

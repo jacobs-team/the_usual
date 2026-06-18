@@ -170,6 +170,46 @@ void main() {
       );
 
       blocTest<OnboardingBloc, OnboardingState>(
+        'usualsForMealReplaced keeps ids for unchanged names and drops blanks',
+        build: OnboardingBloc.new,
+        seed: () => const OnboardingState(
+          settings: UserSettingsState(
+            usuals: {
+              MealOfTheDay.breakfast: [UsualMeal(id: 'a', name: 'Eggs')],
+            },
+          ),
+        ),
+        act: (bloc) => bloc.add(
+          const OnboardingEvent.usualsForMealReplaced(MealOfTheDay.breakfast, [
+            (name: 'Eggs', nutrition: Nutrition(calories: 200)),
+            (name: 'Toast', nutrition: Nutrition(calories: 150)),
+            (name: '  ', nutrition: Nutrition()),
+          ]),
+        ),
+        expect: () => [
+          isA<OnboardingState>()
+              .having(
+                (s) => s.settings.usuals[MealOfTheDay.breakfast],
+                'breakfast usuals',
+                hasLength(2),
+              )
+              .having(
+                (s) => s.settings.usuals[MealOfTheDay.breakfast]!.first,
+                'kept meal keeps its id and takes the new nutrition',
+                isA<UsualMeal>()
+                    .having((m) => m.id, 'id', 'a')
+                    .having((m) => m.name, 'name', 'Eggs')
+                    .having((m) => m.nutrition.calories, 'calories', 200),
+              )
+              .having(
+                (s) => s.settings.usuals[MealOfTheDay.breakfast]!.last.name,
+                'appended meal name',
+                'Toast',
+              ),
+        ],
+      );
+
+      blocTest<OnboardingBloc, OnboardingState>(
         'usualMealRemoved drops the meal and any first-log selection of it',
         build: OnboardingBloc.new,
         seed: () => const OnboardingState(

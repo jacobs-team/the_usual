@@ -151,15 +151,10 @@ class MealLogSection extends StatelessWidget {
                         TextButton.icon(
                           onPressed: () async {
                             final results =
-                                await showModalBottomSheet<
+                                await TheUsualBottomSheet.show<
                                   List<FoodEntryResult>
                                 >(
-                                  context: context,
-                                  isScrollControlled: true,
-                                  useSafeArea: true,
-                                  showDragHandle: false,
-                                  enableDrag: false,
-                                  isDismissible: false,
+                                  context,
                                   builder: (context) => const FoodEntrySheet(
                                     title: 'Log something else',
                                     confirmLabel: 'Log',
@@ -194,11 +189,8 @@ class MealLogSection extends StatelessWidget {
                         ),
                         if (otherMealUsuals.isNotEmpty)
                           TextButton.icon(
-                            onPressed: () => showModalBottomSheet<void>(
-                              context: context,
-                              isScrollControlled: true,
-                              useSafeArea: true,
-                              showDragHandle: true,
+                            onPressed: () => TheUsualBottomSheet.show<void>(
+                              context,
                               builder: (_) => OtherMealUsualsSheet(
                                 mealOfTheDay: mealOfTheDay,
                                 usualsByMeal: otherMealUsuals,
