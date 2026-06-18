@@ -41,7 +41,7 @@ void main() {
       tester,
     ) async {
       useTallWindow(tester);
-      stubBloc(const OnboardingState(activeStepIndex: 5));
+      stubBloc(const OnboardingState(step: OnboardingStep.firstLog));
       await tester.pumpPumpPumpItUP(
         deps: [onboardingBloc],
         const FirstLogView(),
@@ -50,11 +50,29 @@ void main() {
       expect(find.textContaining('usual meals yet'), findsOneWidget);
     });
 
+    testWidgets('a usual with no photo shows no image placeholder', (
+      tester,
+    ) async {
+      useTallWindow(tester);
+      stubBloc(
+        OnboardingState(
+          step: OnboardingStep.firstLog,
+          settings: UserSettingsState(usuals: usualsForEveryMeal()),
+        ),
+      );
+      await tester.pumpPumpPumpItUP(
+        deps: [onboardingBloc],
+        const FirstLogView(),
+      );
+
+      expect(find.byIcon(Icons.image_outlined), findsNothing);
+    });
+
     testWidgets('toggles a food card', (tester) async {
       useTallWindow(tester);
       stubBloc(
         OnboardingState(
-          activeStepIndex: 5,
+          step: OnboardingStep.firstLog,
           settings: UserSettingsState(usuals: usualsForEveryMeal()),
         ),
       );
@@ -81,7 +99,7 @@ void main() {
       );
       stubBloc(
         OnboardingState(
-          activeStepIndex: 5,
+          step: OnboardingStep.firstLog,
           firstLogSelectedIds: const ['a'],
           settings: UserSettingsState(usuals: usualsForEveryMeal()),
         ),
@@ -106,7 +124,7 @@ void main() {
       useTallWindow(tester);
       stubBloc(
         OnboardingState(
-          activeStepIndex: 5,
+          step: OnboardingStep.firstLog,
           settings: UserSettingsState(usuals: usualsForEveryMeal()),
         ),
       );
@@ -125,7 +143,7 @@ void main() {
       useTallWindow(tester);
       stubBloc(
         OnboardingState(
-          activeStepIndex: 5,
+          step: OnboardingStep.firstLog,
           firstLogSelectedIds: const ['a'],
           settings: UserSettingsState(usuals: usualsForEveryMeal()),
         ),
@@ -146,7 +164,7 @@ void main() {
       useTallWindow(tester);
       stubBloc(
         OnboardingState(
-          activeStepIndex: 5,
+          step: OnboardingStep.firstLog,
           settings: UserSettingsState(usuals: usualsForEveryMeal()),
         ),
       );
@@ -168,7 +186,7 @@ void main() {
       useTallWindow(tester);
       stubBloc(
         OnboardingState(
-          activeStepIndex: 5,
+          step: OnboardingStep.firstLog,
           settings: UserSettingsState(usuals: usualsForEveryMeal()),
         ),
       );
@@ -197,7 +215,7 @@ void main() {
       useTallWindow(tester);
       stubBloc(
         OnboardingState(
-          activeStepIndex: 5,
+          step: OnboardingStep.firstLog,
           settings: UserSettingsState(usuals: usualsForEveryMeal()),
         ),
       );

@@ -38,6 +38,7 @@ class _WeightTrackingViewState extends State<WeightTrackingView> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: const OnboardingTopBar(step: OnboardingStep.weightTracking),
       body: SafeArea(
         child: Padding(

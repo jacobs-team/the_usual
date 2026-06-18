@@ -11,7 +11,7 @@ void main() {
 
     void stubBloc(UserSettingsState settings) {
       when(() => onboardingBloc.state).thenReturn(
-        OnboardingState(activeStepIndex: 5, settings: settings),
+        OnboardingState(step: OnboardingStep.goals, settings: settings),
       );
       when(
         () => onboardingBloc.stream,

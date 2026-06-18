@@ -8,8 +8,10 @@ part of 'onboarding_bloc.dart';
 
 _OnboardingState _$OnboardingStateFromJson(Map<String, dynamic> json) =>
     _OnboardingState(
-      version: (json['version'] as num?)?.toInt() ?? 1,
-      activeStepIndex: (json['activeStepIndex'] as num?)?.toInt() ?? 0,
+      version: (json['version'] as num?)?.toInt() ?? 2,
+      step:
+          $enumDecodeNullable(_$OnboardingStepEnumMap, json['step']) ??
+          OnboardingStep.welcome,
       settings: json['settings'] == null
           ? const UserSettingsState()
           : UserSettingsState.fromJson(
@@ -30,8 +32,18 @@ _OnboardingState _$OnboardingStateFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$OnboardingStateToJson(_OnboardingState instance) =>
     <String, dynamic>{
       'version': instance.version,
-      'activeStepIndex': instance.activeStepIndex,
+      'step': _$OnboardingStepEnumMap[instance.step]!,
       'settings': instance.settings.toJson(),
       'firstLogSelectedIds': instance.firstLogSelectedIds,
       'firstLogQuantities': instance.firstLogQuantities,
     };
+
+const _$OnboardingStepEnumMap = {
+  OnboardingStep.welcome: 'welcome',
+  OnboardingStep.buildUsuals: 'buildUsuals',
+  OnboardingStep.firstLog: 'firstLog',
+  OnboardingStep.reminders: 'reminders',
+  OnboardingStep.weightTracking: 'weightTracking',
+  OnboardingStep.goals: 'goals',
+  OnboardingStep.complete: 'complete',
+};

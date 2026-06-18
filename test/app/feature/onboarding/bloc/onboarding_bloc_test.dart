@@ -15,36 +15,45 @@ void main() {
 
     group('step navigation', () {
       blocTest<OnboardingBloc, OnboardingState>(
-        'continuePressed advances the active step index',
+        'continuePressed advances to the next step',
         build: OnboardingBloc.new,
+        seed: () => const OnboardingState(step: OnboardingStep.reminders),
         act: (bloc) => bloc.add(const OnboardingEvent.continuePressed()),
         expect: () => [
           isA<OnboardingState>().having(
-            (s) => s.activeStepIndex,
-            'activeStepIndex',
-            1,
+            (s) => s.step,
+            'step',
+            OnboardingStep.weightTracking,
           ),
         ],
       );
 
       blocTest<OnboardingBloc, OnboardingState>(
-        'backPressed decrements the active step index',
+        'backPressed returns to the previous step',
         build: OnboardingBloc.new,
-        seed: () => const OnboardingState(activeStepIndex: 2),
+        seed: () => const OnboardingState(step: OnboardingStep.weightTracking),
         act: (bloc) => bloc.add(const OnboardingEvent.backPressed()),
         expect: () => [
           isA<OnboardingState>().having(
-            (s) => s.activeStepIndex,
-            'activeStepIndex',
-            1,
+            (s) => s.step,
+            'step',
+            OnboardingStep.reminders,
           ),
         ],
+      );
+
+      blocTest<OnboardingBloc, OnboardingState>(
+        'continuePressed at the last step stays put',
+        build: OnboardingBloc.new,
+        seed: () => const OnboardingState(step: OnboardingStep.complete),
+        act: (bloc) => bloc.add(const OnboardingEvent.continuePressed()),
+        expect: () => <OnboardingState>[],
       );
 
       blocTest<OnboardingBloc, OnboardingState>(
         'resetPressed returns to the default state',
         build: OnboardingBloc.new,
-        seed: () => const OnboardingState(activeStepIndex: 3),
+        seed: () => const OnboardingState(step: OnboardingStep.goals),
         act: (bloc) => bloc.add(const OnboardingEvent.resetPressed()),
         expect: () => [const OnboardingState()],
       );
@@ -52,9 +61,9 @@ void main() {
 
     group('skipPressed', () {
       blocTest<OnboardingBloc, OnboardingState>(
-        'on reminderStyle falls back to onAppOpen and advances',
+        'on reminders falls back to onAppOpen and advances',
         build: OnboardingBloc.new,
-        seed: () => const OnboardingState(activeStepIndex: 2),
+        seed: () => const OnboardingState(step: OnboardingStep.reminders),
         act: (bloc) => bloc.add(const OnboardingEvent.skipPressed()),
         expect: () => [
           isA<OnboardingState>()
@@ -63,7 +72,7 @@ void main() {
                 'reminderStyle',
                 ReminderStyle.onAppOpen,
               )
-              .having((s) => s.activeStepIndex, 'activeStepIndex', 3),
+              .having((s) => s.step, 'step', OnboardingStep.weightTracking),
         ],
       );
 
@@ -72,7 +81,7 @@ void main() {
         'starting weight',
         build: OnboardingBloc.new,
         seed: () => const OnboardingState(
-          activeStepIndex: 4,
+          step: OnboardingStep.weightTracking,
           settings: UserSettingsState(startingWeight: 165),
         ),
         act: (bloc) => bloc.add(const OnboardingEvent.skipPressed()),
@@ -88,19 +97,20 @@ void main() {
                 'startingWeight',
                 isNull,
               )
-              .having((s) => s.activeStepIndex, 'activeStepIndex', 5),
+              .having((s) => s.step, 'step', OnboardingStep.goals),
         ],
       );
 
       blocTest<OnboardingBloc, OnboardingState>(
         'on any other step just advances',
         build: OnboardingBloc.new,
+        seed: () => const OnboardingState(step: OnboardingStep.buildUsuals),
         act: (bloc) => bloc.add(const OnboardingEvent.skipPressed()),
         expect: () => [
           isA<OnboardingState>().having(
-            (s) => s.activeStepIndex,
-            'activeStepIndex',
-            1,
+            (s) => s.step,
+            'step',
+            OnboardingStep.firstLog,
           ),
         ],
       );
@@ -603,7 +613,7 @@ void main() {
     group('hydration', () {
       test('toJson then fromJson round-trips the state', () {
         final bloc = OnboardingBloc();
-        const state = OnboardingState(activeStepIndex: 3);
+        const state = OnboardingState(step: OnboardingStep.goals);
 
         final restored = bloc.fromJson(bloc.toJson(state));
 
@@ -625,31 +635,11 @@ void main() {
   });
 
   group(OnboardingState, () {
-    test('activeSteps includes mealSchedule by default', () {
+    test('activeSteps is the full step list', () {
       expect(
         const OnboardingState().activeSteps,
-        contains(OnboardingStep.mealSchedule),
+        equals(OnboardingStep.values),
       );
-    });
-
-    test('activeSteps drops mealSchedule when reminders are off', () {
-      const state = OnboardingState(
-        settings: UserSettingsState(reminderStyle: ReminderStyle.none),
-      );
-
-      expect(state.activeSteps, isNot(contains(OnboardingStep.mealSchedule)));
-    });
-
-    test('step clamps an out-of-range index to the last step', () {
-      const state = OnboardingState(activeStepIndex: 99);
-
-      expect(state.step, equals(OnboardingStep.complete));
-    });
-
-    test('step resolves the active step for the index', () {
-      const state = OnboardingState(activeStepIndex: 1);
-
-      expect(state.step, equals(OnboardingStep.buildUsuals));
     });
 
     group('fromJson migration', () {
@@ -666,40 +656,81 @@ void main() {
         };
       }
 
-      test('v0 shifts an index at or past the goals insertion point up by '
-          'one', () {
-        final restored = OnboardingState.fromJson(
-          v0Json(activeStepIndex: 5),
-        );
+      Map<String, dynamic> v1Json({required int activeStepIndex}) {
+        return {
+          'version': 1,
+          'activeStepIndex': activeStepIndex,
+          'settings': const UserSettingsState().toJson(),
+          'firstLogSelectedIds': <String>[],
+          'firstLogQuantities': <String, double>{},
+        };
+      }
 
-        expect(restored.version, equals(1));
-        expect(restored.activeStepIndex, equals(6));
+      test('v1 index maps to the equivalent step by name', () {
+        final restored = OnboardingState.fromJson(v1Json(activeStepIndex: 1));
+
+        expect(restored.step, equals(OnboardingStep.buildUsuals));
+        expect(restored.version, equals(2));
       });
 
-      test('v0 leaves an index before the goals insertion point unchanged', () {
-        final restored = OnboardingState.fromJson(
-          v0Json(activeStepIndex: 3),
-        );
+      test('v1 reminderStyle index maps to reminders', () {
+        // v1 order index 2 was reminderStyle.
+        final restored = OnboardingState.fromJson(v1Json(activeStepIndex: 2));
 
-        expect(restored.version, equals(1));
-        expect(restored.activeStepIndex, equals(3));
+        expect(restored.step, equals(OnboardingStep.reminders));
       });
 
-      test('v0 uses the earlier insertion point when reminders are off', () {
+      test('v1 mealSchedule index maps to reminders', () {
+        // v1 order index 3 was mealSchedule.
+        final restored = OnboardingState.fromJson(v1Json(activeStepIndex: 3));
+
+        expect(restored.step, equals(OnboardingStep.reminders));
+      });
+
+      test('v1 completed users resolve to complete', () {
+        // v1 order index 7 was complete.
+        final restored = OnboardingState.fromJson(v1Json(activeStepIndex: 7));
+
+        expect(restored.step, equals(OnboardingStep.complete));
+      });
+
+      test('v1 index past the end clamps to complete', () {
+        final restored = OnboardingState.fromJson(v1Json(activeStepIndex: 99));
+
+        expect(restored.step, equals(OnboardingStep.complete));
+      });
+
+      test('v0 data resolves to the equivalent step', () {
+        // v0 predates goals; its order was [welcome, buildUsuals,
+        // reminderStyle, mealSchedule, weightTracking, firstLog, complete], so
+        // index 5 is firstLog.
+        final restored = OnboardingState.fromJson(v0Json(activeStepIndex: 5));
+
+        expect(restored.version, equals(2));
+        expect(restored.step, equals(OnboardingStep.firstLog));
+      });
+
+      test('v0 mealSchedule index maps to reminders', () {
+        // v0 order index 3 was mealSchedule, which collapses into reminders.
+        final restored = OnboardingState.fromJson(v0Json(activeStepIndex: 3));
+
+        expect(restored.step, equals(OnboardingStep.reminders));
+      });
+
+      test('v0 drops mealSchedule from the order when reminders are off', () {
+        // Order becomes [welcome, buildUsuals, reminderStyle, weightTracking,
+        // firstLog, complete], so index 4 is firstLog.
         final restored = OnboardingState.fromJson(
           v0Json(activeStepIndex: 4, reminderStyle: ReminderStyle.none),
         );
 
-        expect(restored.activeStepIndex, equals(5));
+        expect(restored.step, equals(OnboardingStep.firstLog));
       });
 
       test('a newer unknown version resolves to a completed onboarding', () {
         final restored = OnboardingState.fromJson({'version': 99});
 
-        expect(
-          restored.activeStepIndex,
-          equals(OnboardingStep.values.length),
-        );
+        expect(restored.step, equals(OnboardingStep.complete));
       });
     });
   });

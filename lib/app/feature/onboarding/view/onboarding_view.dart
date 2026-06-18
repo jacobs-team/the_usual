@@ -20,12 +20,10 @@ class OnboardingView extends StatelessWidget {
         return switch (step) {
           OnboardingStep.welcome => const WelcomeView(),
           OnboardingStep.buildUsuals => const BuildUsualsView(),
-          OnboardingStep.reminderStyle => const ReminderStyleView(),
-          OnboardingStep.mealSchedule => const MealScheduleView(),
+          OnboardingStep.firstLog => const FirstLogView(),
+          OnboardingStep.reminders => const RemindersView(),
           OnboardingStep.weightTracking => const WeightTrackingView(),
           OnboardingStep.goals => const GoalsView(),
-          OnboardingStep.firstLog => const FirstLogView(),
-          // TODO(onboarding): route to the home/log feature once it exists.
           OnboardingStep.complete => const CompleteView(),
         };
       },

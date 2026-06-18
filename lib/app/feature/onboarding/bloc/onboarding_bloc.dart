@@ -20,12 +20,12 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
     on<OnboardingEvent>(
       (event, emit) => switch (event) {
         BackPressed() => emit(
-          state.copyWith(activeStepIndex: state.activeStepIndex - 1),
+          state.copyWith(step: _stepRelativeTo(state, -1)),
         ),
         ResetPressed() => emit(const OnboardingState()),
         SkipPressed() => _onSkipPressed(event, emit),
         ContinuePressed() => emit(
-          state.copyWith(activeStepIndex: state.activeStepIndex + 1),
+          state.copyWith(step: _stepRelativeTo(state, 1)),
         ),
         UsualMealAdded() => _onUsualMealAdded(event, emit),
         UsualMealRemoved() => _onUsualMealRemoved(event, emit),
@@ -34,6 +34,7 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
           emit,
         ),
         UsualMealNameChanged() => _onUsualMealNameChanged(event, emit),
+        UsualsForMealReplaced() => _onUsualsForMealReplaced(event, emit),
         // TODO(onboarding): request OS notification permission when
         // ReminderStyle.notifications is picked, falling back to onAppOpen if
         // denied. Notification approach is an open item in docs/onboarding.
@@ -115,17 +116,27 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
 
   static const _uuid = Uuid();
 
+  /// The step [offset] positions from the current one within [activeSteps],
+  /// clamped to the valid range.
+  OnboardingStep _stepRelativeTo(OnboardingState state, int offset) {
+    final steps = state.activeSteps;
+    final index = steps.indexOf(state.step);
+    final next = (index + offset).clamp(0, steps.length - 1);
+    return steps[next];
+  }
+
   /// Skipping a step keeps its defaults, except where skipping signals
   /// opting out of the feature itself.
   void _onSkipPressed(SkipPressed event, Emitter<OnboardingState> emit) {
+    final nextStep = _stepRelativeTo(state, 1);
     emit(switch (state.step) {
       // Didn't choose how to be reminded: fall back to the least intrusive
       // style that keeps the core loop alive, without an OS permission prompt.
-      OnboardingStep.reminderStyle => state.copyWith(
+      OnboardingStep.reminders => state.copyWith(
         settings: state.settings.copyWith(
           reminderStyle: ReminderStyle.onAppOpen,
         ),
-        activeStepIndex: state.activeStepIndex + 1,
+        step: nextStep,
       ),
       // Didn't want to set up weigh-ins: turn weight check-ins off.
       OnboardingStep.weightTracking => state.copyWith(
@@ -133,9 +144,9 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
           weightCheckinFrequency: WeightCheckinFrequency.off,
           startingWeight: null,
         ),
-        activeStepIndex: state.activeStepIndex + 1,
+        step: nextStep,
       ),
-      _ => state.copyWith(activeStepIndex: state.activeStepIndex + 1),
+      _ => state.copyWith(step: nextStep),
     });
   }
 
@@ -238,6 +249,45 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
           usuals: {
             ...state.settings.usuals,
             event.mealOfTheDay: updatedUsualMeals,
+          },
+        ),
+      ),
+    );
+  }
+
+  /// Replaces a meal's usuals with the [event] entries, the editing surface in
+  /// onboarding's build-usuals step. An existing usual whose name is unchanged
+  /// keeps its id (so any first-log selection of it survives); a new or renamed
+  /// entry gets a fresh id. Blank names are dropped.
+  void _onUsualsForMealReplaced(
+    UsualsForMealReplaced event,
+    Emitter<OnboardingState> emit,
+  ) {
+    final existingUsualMeals =
+        state.settings.usuals[event.mealOfTheDay] ?? <UsualMeal>[];
+    final existingByName = {
+      for (final usualMeal in existingUsualMeals)
+        usualMeal.name.toLowerCase(): usualMeal,
+    };
+
+    final replacementUsualMeals = <UsualMeal>[];
+    for (final entry in event.usualMeals) {
+      final name = entry.name.trim();
+      if (name.isEmpty) continue;
+      final existing = existingByName[name.toLowerCase()];
+      replacementUsualMeals.add(
+        existing == null
+            ? UsualMeal(id: _uuid.v4(), name: name, nutrition: entry.nutrition)
+            : existing.copyWith(name: name, nutrition: entry.nutrition),
+      );
+    }
+
+    emit(
+      state.copyWith(
+        settings: state.settings.copyWith(
+          usuals: {
+            ...state.settings.usuals,
+            event.mealOfTheDay: replacementUsualMeals,
           },
         ),
       ),

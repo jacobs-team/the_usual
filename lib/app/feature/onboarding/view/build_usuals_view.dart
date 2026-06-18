@@ -1,21 +1,72 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
 import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template build_usuals_view}
-/// Second onboarding screen: build the per-meal usuals library by typing a
-/// name and optional calories for each meal time, all on one scrolling view.
+/// Second onboarding screen: build the per-meal usuals library. A meal-timing
+/// toggle selects which meal is being edited; below it the shared
+/// [FoodEntryForm] captures that meal's usuals with the same fields and AI
+/// assist used everywhere else the user enters food. Entries are committed to
+/// the draft when the step is left.
 /// {@endtemplate}
-class BuildUsualsView extends StatelessWidget {
+class BuildUsualsView extends StatefulWidget {
   /// {@macro build_usuals_view}
   const BuildUsualsView({super.key});
+
+  @override
+  State<BuildUsualsView> createState() => _BuildUsualsViewState();
+}
+
+class _BuildUsualsViewState extends State<BuildUsualsView> {
+  late MealOfTheDay _selectedMealOfTheDay;
+  late final Map<MealOfTheDay, GlobalKey<FoodEntryFormState>> _formKeys;
+  late final Map<MealOfTheDay, List<FoodEntryResult>> _initialFoods;
+
+  @override
+  void initState() {
+    super.initState();
+    _selectedMealOfTheDay = MealOfTheDay.values.first;
+    final usuals = getIt<OnboardingBloc>().state.settings.usuals;
+    _formKeys = {
+      for (final mealOfTheDay in MealOfTheDay.values)
+        mealOfTheDay: GlobalKey<FoodEntryFormState>(),
+    };
+    _initialFoods = {
+      for (final mealOfTheDay in MealOfTheDay.values)
+        mealOfTheDay: [
+          for (final usualMeal in usuals[mealOfTheDay] ?? const <UsualMeal>[])
+            (
+              name: usualMeal.name,
+              nutrition: usualMeal.nutrition,
+              quantity: 1.0,
+              addToUsualMeals: false,
+            ),
+        ],
+    };
+  }
+
+  /// Writes every meal's current rows back to the draft. Called when the step
+  /// is left so nothing the user entered, on any tab, is lost.
+  void _commitAllMeals() {
+    final onboardingBloc = getIt<OnboardingBloc>();
+    for (final mealOfTheDay in MealOfTheDay.values) {
+      final results =
+          _formKeys[mealOfTheDay]?.currentState?.results ?? const [];
+      onboardingBloc.add(
+        OnboardingEvent.usualsForMealReplaced(mealOfTheDay, [
+          for (final result in results)
+            (name: result.name, nutrition: result.nutrition),
+        ]),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: const OnboardingTopBar(step: OnboardingStep.buildUsuals),
       body: SafeArea(
         child: Padding(
@@ -23,90 +74,66 @@ class BuildUsualsView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Expanded(
-                child:
-                    BlocSelector<
-                      OnboardingBloc,
-                      OnboardingState,
-                      (Map<MealOfTheDay, List<UsualMeal>>, bool)
-                    >(
-                      bloc: getIt<OnboardingBloc>(),
-                      selector: (state) => (
-                        state.settings.usuals,
-                        state.settings.expandNutritionByDefault,
+              Text('Add your usual meals', style: textTheme.headlineSmall),
+              SizedBox(height: AppDesign.spacing.sm),
+              Text(
+                'Add what you usually eat for each meal. You can edit these '
+                'anytime — while logging, or later in Settings.',
+                style: textTheme.bodyMedium,
+              ),
+              SizedBox(height: AppDesign.spacing.lg),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: SegmentedButton<MealOfTheDay>(
+                  showSelectedIcon: false,
+                  segments: [
+                    for (final mealOfTheDay in MealOfTheDay.values)
+                      ButtonSegment(
+                        value: mealOfTheDay,
+                        label: Text(mealOfTheDay.label),
                       ),
-                      builder: (context, selected) {
-                        final (usuals, expandNutritionByDefault) = selected;
-                        return ListView(
-                          children: [
-                            Text(
-                              'Add your usual meals',
-                              style: textTheme.headlineSmall,
-                            ),
-                            SizedBox(height: AppDesign.spacing.md),
-                            Text(
-                              'Add what you usually eat for each meal. You can '
-                              'edit these anytime — on the fly while logging, '
-                              'or later in Settings.',
-                              style: textTheme.bodyMedium,
-                            ),
-                            SizedBox(height: AppDesign.spacing.xl),
-                            for (final mealOfTheDay in MealOfTheDay.values) ...[
-                              UsualMealSection(
-                                mealOfTheDay: mealOfTheDay,
-                                usualMeals:
-                                    usuals[mealOfTheDay] ?? const <UsualMeal>[],
-                                expandedByDefault: expandNutritionByDefault,
-                                onAdded: (name, nutrition) =>
-                                    getIt<OnboardingBloc>().add(
-                                      OnboardingEvent.usualMealAdded(
-                                        mealOfTheDay,
-                                        name,
-                                        nutrition,
-                                      ),
-                                    ),
-                                onNutritionChanged: (id, nutrition) =>
-                                    getIt<OnboardingBloc>().add(
-                                      OnboardingEvent.usualMealNutritionChanged(
-                                        mealOfTheDay,
-                                        id,
-                                        nutrition,
-                                      ),
-                                    ),
-                                onNameChanged: (id, name) =>
-                                    getIt<OnboardingBloc>().add(
-                                      OnboardingEvent.usualMealNameChanged(
-                                        mealOfTheDay,
-                                        id,
-                                        name,
-                                      ),
-                                    ),
-                                onRemoved: (id) => getIt<OnboardingBloc>().add(
-                                  OnboardingEvent.usualMealRemoved(
-                                    mealOfTheDay,
-                                    id,
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: AppDesign.spacing.xl),
-                            ],
-                          ],
-                        );
-                      },
-                    ),
+                  ],
+                  selected: {_selectedMealOfTheDay},
+                  onSelectionChanged: (selection) => setState(
+                    () => _selectedMealOfTheDay = selection.first,
+                  ),
+                ),
+              ),
+              SizedBox(height: AppDesign.spacing.lg),
+              Expanded(
+                child: IndexedStack(
+                  index: MealOfTheDay.values.indexOf(_selectedMealOfTheDay),
+                  children: [
+                    for (final mealOfTheDay in MealOfTheDay.values)
+                      SingleChildScrollView(
+                        child: FoodEntryForm(
+                          key: _formKeys[mealOfTheDay],
+                          initialFoods: _initialFoods[mealOfTheDay],
+                          showQuantity: false,
+                          autofocusFirst: false,
+                        ),
+                      ),
+                  ],
+                ),
               ),
               SizedBox(height: AppDesign.spacing.md),
               OnboardingActions(
                 primary: FilledButton(
-                  onPressed: () => getIt<OnboardingBloc>().add(
-                    const OnboardingEvent.continuePressed(),
-                  ),
+                  onPressed: () {
+                    _commitAllMeals();
+                    getIt<OnboardingBloc>().add(
+                      const OnboardingEvent.continuePressed(),
+                    );
+                  },
                   child: const Text('Continue'),
                 ),
                 secondary: TextButton(
-                  onPressed: () => getIt<OnboardingBloc>().add(
-                    const OnboardingEvent.skipPressed(),
-                  ),
+                  onPressed: () {
+                    _commitAllMeals();
+                    getIt<OnboardingBloc>().add(
+                      const OnboardingEvent.skipPressed(),
+                    );
+                  },
                   child: const Text('Skip for now'),
                 ),
               ),

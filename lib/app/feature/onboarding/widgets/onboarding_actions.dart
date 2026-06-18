@@ -24,17 +24,21 @@ class OnboardingActions extends StatelessWidget {
   /// Optional supporting content shown above [primary].
   final Widget? above;
 
+  /// Height reserved for the [above] and [secondary] slots so the primary
+  /// button keeps a stable position whether or not those slots are filled.
+  static const _slotHeight = 48.0;
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         if (above != null) ...[
-          SizedBox(height: 48, child: above),
+          SizedBox(height: _slotHeight, child: above),
           SizedBox(height: AppDesign.spacing.md),
         ],
         primary,
-        SizedBox(height: 48, child: secondary),
+        SizedBox(height: _slotHeight, child: secondary),
       ],
     );
   }

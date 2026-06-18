@@ -15,7 +15,7 @@ void main() {
     late NotificationService notificationService;
 
     const completeState = OnboardingState(
-      activeStepIndex: 7,
+      step: OnboardingStep.complete,
       firstLogSelectedIds: ['u'],
       settings: UserSettingsState(
         startingWeight: 165,
@@ -173,7 +173,7 @@ void main() {
       whenListen(
         onboardingBloc,
         Stream.value(completeState),
-        initialState: const OnboardingState(activeStepIndex: 5),
+        initialState: const OnboardingState(step: OnboardingStep.goals),
       );
       // Emitting a settings change drives the notification re-sync listener.
       whenListen(

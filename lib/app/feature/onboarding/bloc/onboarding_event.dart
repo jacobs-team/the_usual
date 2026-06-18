@@ -25,6 +25,10 @@ sealed class OnboardingEvent with _$OnboardingEvent {
     String id,
     String name,
   ) = UsualMealNameChanged;
+  const factory OnboardingEvent.usualsForMealReplaced(
+    MealOfTheDay mealOfTheDay,
+    List<({String name, Nutrition nutrition})> usualMeals,
+  ) = UsualsForMealReplaced;
   const factory OnboardingEvent.reminderStyleSelected(
     ReminderStyle reminderStyle,
   ) = ReminderStyleSelected;

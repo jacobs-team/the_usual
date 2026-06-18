@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Build Usuals — design directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --primary: #131B2E;
+    --on-primary: #FFFFFF;
+    --secondary: #00668A;
+    --secondary-container: #40C2FD;
+    --on-secondary-container: #004D6A;
+    --surface: #F8F9FF;
+    --on-surface: #0D1C2E;
+    --on-surface-variant: #45464D;
+    --lowest: #FFFFFF;
+    --low: #EFF4FF;
+    --container: #E6EEFF;
+    --high: #DCE9FF;
+    --highest: #D5E3FC;
+    --outline: #76777D;
+    --outline-variant: #C6C6CD;
+    --protein: #2E8B7F;
+    --carbs: #3E78B2;
+    --fat: #C68A2E;
+    --r-sm: 12px;
+    --r-md: 16px;
+    --r-lg: 24px;
+    --shadow: 0 4px 12px rgba(0,0,0,0.08);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #aeb6c4;
+    font-family: 'Hanken Grotesk', sans-serif;
+    color: var(--on-surface);
+    padding: 32px;
+  }
+  h1.page {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: #1d2433;
+    font-size: 22px;
+    margin: 0 0 4px;
+  }
+  p.page { color: #3a4151; margin: 0 0 24px; max-width: 1400px; }
+  .section-title {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: #1d2433; font-size: 18px; margin: 28px 0 14px;
+  }
+  .row { display: flex; gap: 22px; flex-wrap: wrap; align-items: flex-start; }
+  .col { width: 320px; }
+  .col h2 {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px; margin: 0 0 2px; color: #15203a;
+  }
+  .col .desc { font-size: 12.5px; color: #44506a; margin: 0 0 10px; min-height: 48px; }
+  .badge { display:inline-block; font-size:10px; font-weight:700; letter-spacing:.5px;
+    padding:2px 7px; border-radius:6px; margin-bottom:6px; text-transform:uppercase;}
+  .badge.cur { background:#d7263d22; color:#9a1b2c; }
+  .badge.rec { background:#0a7d3a22; color:#0a6e34; }
+  .badge.alt { background:#2a52be22; color:#23409c; }
+
+  /* phone frame */
+  .phone {
+    width: 320px; height: 660px; background: var(--surface);
+    border-radius: 36px; border: 9px solid #11151f;
+    box-shadow: 0 12px 30px rgba(0,0,0,.35);
+    overflow: hidden; position: relative; display: flex; flex-direction: column;
+  }
+  .phone .status {
+    height: 28px; display:flex; align-items:center; justify-content:center;
+    font-size: 11px; color: var(--on-surface-variant);
+  }
+  .appbar {
+    display:flex; align-items:center; gap:8px; padding: 4px 14px 10px;
+  }
+  .appbar .back { color: var(--on-surface); font-size: 18px; }
+  .dots { flex:1; display:flex; justify-content:center; gap:6px; }
+  .dot { width:8px; height:8px; border-radius:50%; background: var(--outline-variant); }
+  .dot.on { background: var(--primary); }
+  .skip { color: var(--secondary); font-size: 13px; font-weight:600; }
+  .body { flex:1; overflow:hidden; padding: 0 16px; }
+  .title { font-family:'Plus Jakarta Sans'; font-size:20px; font-weight:700; margin: 2px 0 4px; }
+  .sub { font-size: 12.5px; color: var(--on-surface-variant); margin: 0 0 14px; }
+
+  /* cards */
+  .card {
+    background: var(--lowest); border:1px solid var(--outline);
+    border-radius: var(--r-md); box-shadow: var(--shadow);
+    padding: 12px; margin-bottom: 10px;
+  }
+  .meal-h { font-family:'Plus Jakarta Sans'; font-weight:700; font-size:14px; margin: 14px 0 8px; }
+  .meal-h:first-child { margin-top: 0; }
+
+  .usual-row { display:flex; align-items:center; gap:8px; }
+  .usual-name { font-size:14px; font-weight:600; flex:1; }
+  .chev { color: var(--on-surface-variant); font-size: 14px; }
+  .trash { color: var(--on-surface-variant); font-size: 14px; }
+  .summary { font-size: 12px; color: var(--on-surface-variant); margin-top: 3px; display:flex; gap:8px; flex-wrap:wrap;}
+  .dotm { display:inline-flex; align-items:center; gap:4px; }
+  .dotm::before { content:''; width:7px; height:7px; border-radius:50%; background: var(--c); }
+
+  /* fields */
+  .fields { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+  .field { flex:1 1 60px; }
+  .field label { display:block; font-size:9px; font-weight:700; letter-spacing:.4px; color: var(--on-surface-variant); margin-bottom:3px; }
+  .field .inp {
+    background: var(--low); border:1px solid var(--outline-variant);
+    border-radius: var(--r-sm); padding:7px 9px; font-size:13px; text-align:right; color:#7a818f;
+  }
+  .field .inp.filled { color: var(--on-surface); }
+
+  /* tinted field variant (current sheet: white field on tinted card) */
+  .tintcard { background: var(--container); border:1px solid transparent; box-shadow:none; }
+  .tintcard .inp { background: var(--lowest); }
+
+  /* name input */
+  .nameinp {
+    background: var(--low); border:1px solid var(--outline-variant);
+    border-radius: var(--r-sm); padding:9px 11px; font-size:14px; color:#7a818f; flex:1;
+  }
+  .nameinp.filled { color: var(--on-surface); }
+
+  /* buttons */
+  .btn { border:none; border-radius: var(--r-md); padding:12px; font-size:14px; font-weight:600;
+    font-family:'Hanken Grotesk'; width:100%; text-align:center; cursor:default; }
+  .btn-primary { background: var(--primary); color: var(--on-primary); }
+  .btn-tonal { background: var(--high); color: var(--primary); display:flex; align-items:center; justify-content:center; gap:7px; }
+  .btn-out { background: var(--lowest); color: var(--primary); border:1px solid var(--outline-variant); }
+  .btn-text { background:transparent; color: var(--secondary); display:flex; align-items:center; gap:6px; width:auto; padding:8px 4px; }
+  .ai-ico { font-size: 15px; }
+
+  /* timing chips */
+  .chips { display:flex; gap:8px; flex-wrap:wrap; margin: 4px 0 6px; }
+  .chip { border-radius: 999px; padding:7px 14px; font-size:13px; font-weight:600;
+    background: var(--low); color: var(--on-surface-variant); border:1px solid var(--outline-variant); }
+  .chip.on { background: var(--secondary-container); color: var(--on-secondary-container); border-color: transparent; }
+  .seclabel { font-size:10px; font-weight:700; letter-spacing:.5px; color: var(--on-surface-variant); margin: 10px 0 6px; }
+
+  /* add pill row (compact, like settings) */
+  .pill {
+    display:flex; align-items:center; justify-content:space-between;
+    background: var(--lowest); border:1px solid var(--outline); border-radius: var(--r-md);
+    box-shadow: var(--shadow); padding:11px 13px; margin-bottom:8px;
+  }
+  .pill .nm { font-size:14px; font-weight:600; }
+  .pill .add { color: var(--secondary); font-size: 18px; }
+
+  /* scrim + sheet */
+  .scrim { position:absolute; inset:0; background: rgba(0,0,0,.45); display:flex; align-items:flex-end; }
+  .sheet {
+    background: var(--low); width:100%; border-radius: var(--r-lg) var(--r-lg) 0 0;
+    padding:16px; max-height: 92%; overflow:hidden;
+  }
+  .sheet-h { display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .sheet-h .t { font-family:'Plus Jakarta Sans'; font-weight:700; font-size:16px; }
+  .sheet-h .x { color: var(--on-surface-variant); font-size:16px; }
+  .ai-row { display:flex; gap:8px; align-items:center; margin-bottom:12px; }
+  .ai-btn { flex:1; background: var(--high); color: var(--primary); border-radius: var(--r-md);
+    padding:9px; font-size:13px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:6px; }
+  .ai-chk { font-size:12px; color: var(--on-surface-variant); display:flex; align-items:center; gap:4px; }
+  .box { width:15px;height:15px;border:1.5px solid var(--outline); border-radius:4px; display:inline-block;}
+  .note { font-size: 11px; color: var(--on-surface-variant); margin-top: 6px; }
+  .small { font-size: 11px; }
+</style>
+</head>
+<body>
+  <h1 class="page">"Add your usual meals" — design directions</h1>
+  <p class="page">All four mock the same step. The shared add-meal sheet (<b>FoodEntrySheet</b>) is redesigned to the app convention — <b>white card surface with tinted fields</b> — instead of today's inverted tinted-card / white-field look, and gains a meal-timing selector so one add flow can target any meal. Mockups are rough; the Flutter build reuses the real shared widgets.</p>
+
+  <div class="section-title">The build-usuals step</div>
+  <div class="row">
+
+    <!-- CURRENT -->
+    <div class="col">
+      <span class="badge cur">Current</span>
+      <h2>Today</h2>
+      <p class="desc">Stacked meals. Each usual is a white editable card with tinted fields, plus a tonal AI button and a separate inline name composer.</p>
+      <div class="phone">
+        <div class="status">9:41</div>
+        <div class="appbar"><span class="back">←</span><div class="dots"><span class="dot"></span><span class="dot on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><span class="skip">Skip</span></div>
+        <div class="body">
+          <div class="title">Add your usual meals</div>
+          <div class="sub">Add what you usually eat for each meal.</div>
+          <div class="meal-h">Breakfast (1)</div>
+          <div class="card">
+            <div class="usual-row"><span class="chev">⌄</span><span class="usual-name">Eggs &amp; toast</span><span class="trash">🗑</span></div>
+            <div class="fields">
+              <div class="field"><label>CAL</label><div class="inp filled">320</div></div>
+              <div class="field"><label>PROT</label><div class="inp filled">18</div></div>
+              <div class="field"><label>CARB</label><div class="inp filled">30</div></div>
+              <div class="field"><label>FAT</label><div class="inp filled">14</div></div>
+            </div>
+          </div>
+          <button class="btn btn-tonal" style="margin-bottom:8px"><span class="ai-ico">✨</span>Add with a photo or description</button>
+          <div class="usual-row"><div class="nameinp">Add a meal…</div><span style="color:var(--secondary);font-size:20px;margin-left:8px">＋</span></div>
+          <div class="meal-h">Lunch (0)</div>
+          <button class="btn btn-tonal"><span class="ai-ico">✨</span>Add with a photo or description</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- A -->
+    <div class="col">
+      <span class="badge rec">Option A · Recommended</span>
+      <h2>Compact list, sheet-driven</h2>
+      <p class="desc">Mirrors Settings &amp; Today exactly: usuals are compact tap-to-edit rows; one "Add" per meal opens the shared sheet. No inline fields, no composer.</p>
+      <div class="phone">
+        <div class="status">9:41</div>
+        <div class="appbar"><span class="back">←</span><div class="dots"><span class="dot"></span><span class="dot on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><span class="skip">Skip</span></div>
+        <div class="body">
+          <div class="title">Add your usual meals</div>
+          <div class="sub">Add what you usually eat. Tap one to edit.</div>
+          <div class="meal-h">Breakfast (2)</div>
+          <div class="pill"><div><div class="nm">Eggs &amp; toast</div><div class="summary"><span class="dotm" style="--c:var(--carbs)">320 cal</span><span>18p · 30c · 14f</span></div></div><span class="chev">›</span></div>
+          <div class="pill"><div><div class="nm">Greek yogurt</div><div class="summary"><span class="dotm" style="--c:var(--protein)">150 cal</span></div></div><span class="chev">›</span></div>
+          <button class="btn btn-out" style="margin-bottom:14px">＋ Add a breakfast</button>
+          <div class="meal-h">Lunch (1)</div>
+          <div class="pill"><div><div class="nm">Chicken salad</div><div class="summary"><span>420 cal</span></div></div><span class="chev">›</span></div>
+          <button class="btn btn-out">＋ Add a lunch</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- B -->
+    <div class="col">
+      <span class="badge alt">Option B</span>
+      <h2>One add button + meal picker</h2>
+      <p class="desc">A single grouped list with one prominent "Add a usual meal". The sheet opens with meal-timing chips so the user picks where it lands. Closest to your "select the meal timing" idea.</p>
+      <div class="phone">
+        <div class="status">9:41</div>
+        <div class="appbar"><span class="back">←</span><div class="dots"><span class="dot"></span><span class="dot on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><span class="skip">Skip</span></div>
+        <div class="body">
+          <div class="title">Add your usual meals</div>
+          <div class="sub">Build your library. Pick the meal for each.</div>
+          <div class="meal-h">Breakfast</div>
+          <div class="pill"><div><div class="nm">Eggs &amp; toast</div><div class="summary"><span>320 cal</span></div></div><span class="chev">›</span></div>
+          <div class="meal-h">Lunch</div>
+          <div class="pill"><div><div class="nm">Chicken salad</div><div class="summary"><span>420 cal</span></div></div><span class="chev">›</span></div>
+          <div class="meal-h">Dinner</div>
+          <div class="pill" style="opacity:.6"><div><div class="nm small">Nothing yet</div></div></div>
+          <button class="btn btn-primary" style="margin-top:12px">＋ Add a usual meal</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- C -->
+    <div class="col">
+      <span class="badge alt">Option C</span>
+      <h2>Unified inline cards</h2>
+      <p class="desc">Keep fast inline entry, but every card is the exact card+fields from the sheet — same white surface, same tinted fields. Drops the separate composer; "Add" appends a blank card.</p>
+      <div class="phone">
+        <div class="status">9:41</div>
+        <div class="appbar"><span class="back">←</span><div class="dots"><span class="dot"></span><span class="dot on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><span class="skip">Skip</span></div>
+        <div class="body">
+          <div class="title">Add your usual meals</div>
+          <div class="sub">Add what you usually eat for each meal.</div>
+          <div class="meal-h">Breakfast</div>
+          <div class="card">
+            <div class="usual-row"><div class="nameinp filled" style="border:none;background:transparent;padding-left:0">Eggs &amp; toast</div><span class="trash">🗑</span></div>
+            <div class="fields">
+              <div class="field"><label>CAL</label><div class="inp filled">320</div></div>
+              <div class="field"><label>PROT</label><div class="inp filled">18</div></div>
+              <div class="field"><label>CARB</label><div class="inp filled">30</div></div>
+              <div class="field"><label>FAT</label><div class="inp filled">14</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="usual-row"><div class="nameinp">Name…</div></div>
+            <div class="fields">
+              <div class="field"><label>CAL</label><div class="inp">—</div></div>
+              <div class="field"><label>PROT</label><div class="inp">—</div></div>
+              <div class="field"><label>CARB</label><div class="inp">—</div></div>
+              <div class="field"><label>FAT</label><div class="inp">—</div></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px"><button class="btn btn-out">＋ Add</button><button class="btn btn-tonal"><span class="ai-ico">✨</span>Photo / describe</button></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="section-title">The shared add-meal sheet — current vs redesigned</div>
+  <div class="row">
+
+    <!-- CURRENT SHEET -->
+    <div class="col">
+      <span class="badge cur">Current</span>
+      <h2>Tinted card, white fields</h2>
+      <p class="desc">The row is a tinted (surfaceContainer) card with white field fills — inverted from the rest of the app, which reads as "blue card, white inputs".</p>
+      <div class="phone">
+        <div class="status">9:41</div>
+        <div class="scrim">
+          <div class="sheet">
+            <div class="sheet-h"><span class="t">Add usual meals</span><span class="x">✕</span></div>
+            <div class="ai-row"><div class="ai-btn">✨ Estimate</div><div class="ai-btn">📷 Photo</div><div class="ai-chk"><span class="box"></span>Itemize</div></div>
+            <div class="card tintcard">
+              <div class="usual-row"><div class="nameinp" style="background:var(--lowest)">e.g. Chicken caesar salad</div></div>
+              <div class="fields">
+                <div class="field"><label>CALORIES</label><div class="inp">cal</div></div>
+                <div class="field"><label>PROTEIN</label><div class="inp">g</div></div>
+                <div class="field"><label>CARBS</label><div class="inp">g</div></div>
+                <div class="field"><label>FAT</label><div class="inp">g</div></div>
+              </div>
+            </div>
+            <button class="btn-text" style="border:none">＋ Add item</button>
+            <button class="btn btn-primary" style="margin-top:6px">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REDESIGNED SHEET -->
+    <div class="col">
+      <span class="badge rec">Redesigned (shared by A / B / C)</span>
+      <h2>White card, tinted fields + meal picker</h2>
+      <p class="desc">Flips to the app convention: white elevated card, tinted inputs — matching the list cards. A meal-timing row up top (shown for B) lets one sheet target any meal.</p>
+      <div class="phone">
+        <div class="status">9:41</div>
+        <div class="scrim">
+          <div class="sheet">
+            <div class="sheet-h"><span class="t">Add a usual meal</span><span class="x">✕</span></div>
+            <div class="seclabel">WHICH MEAL</div>
+            <div class="chips"><span class="chip on">Breakfast</span><span class="chip">Lunch</span><span class="chip">Dinner</span><span class="chip">Snack</span></div>
+            <div class="ai-row"><div class="ai-btn">✨ Estimate</div><div class="ai-btn">📷 Photo</div><div class="ai-chk"><span class="box"></span>Itemize</div></div>
+            <div class="card">
+              <div class="usual-row"><div class="nameinp">e.g. Chicken caesar salad</div></div>
+              <div class="fields">
+                <div class="field"><label>CALORIES</label><div class="inp">cal</div></div>
+                <div class="field"><label>PROTEIN</label><div class="inp">g</div></div>
+                <div class="field"><label>CARBS</label><div class="inp">g</div></div>
+                <div class="field"><label>FAT</label><div class="inp">g</div></div>
+              </div>
+            </div>
+            <button class="btn-text" style="border:none">＋ Add item</button>
+            <button class="btn btn-primary" style="margin-top:6px">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

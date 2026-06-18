@@ -44,6 +44,7 @@ class _GoalsViewState extends State<GoalsView> {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: const OnboardingTopBar(step: OnboardingStep.goals),
       body: SafeArea(
         child: Padding(

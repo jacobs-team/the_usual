@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,9 +7,13 @@ import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
 import 'package:the_usual/design_system/design_system.dart';
 
+/// Width-to-height ratio of a first-log grid card: roughly square with room
+/// for the name and an optional quantity stepper below the thumbnail.
+const _foodCardAspectRatio = 1.25;
+
 /// {@template first_log_view}
-/// Final onboarding screen: ask about the meal closest to the current time
-/// so the user's first real log happens inside onboarding.
+/// Onboarding screen that asks about the meal closest to the current time so
+/// the user's first real log happens inside onboarding.
 /// {@endtemplate}
 class FirstLogView extends StatefulWidget {
   /// {@macro first_log_view}
@@ -75,7 +81,7 @@ class _FirstLogViewState extends State<FirstLogView> {
                                 crossAxisCount: 2,
                                 mainAxisSpacing: AppDesign.spacing.md,
                                 crossAxisSpacing: AppDesign.spacing.md,
-                                childAspectRatio: 165 / 134,
+                                childAspectRatio: _foodCardAspectRatio,
                                 children: [
                                   for (final usualMeal in usualMeals)
                                     _FoodCard(
@@ -161,56 +167,62 @@ class _FoodCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return InkWell(
-      borderRadius: BorderRadius.circular(AppDesign.radius.sm),
-      onTap: () => getIt<OnboardingBloc>().add(
-        OnboardingEvent.firstLogItemToggled(usualMeal.id),
-      ),
-      child: Container(
-        padding: EdgeInsets.all(AppDesign.spacing.md),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(AppDesign.radius.sm),
-          border: Border.all(
-            color: selected
-                ? theme.colorScheme.primary
-                : theme.colorScheme.outlineVariant,
-            width: selected ? 2 : 1,
-          ),
+    final photoPath = usualMeal.photoPath;
+    return Card(
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppDesign.radius.md),
+        side: BorderSide(
+          color: selected
+              ? theme.colorScheme.primary
+              : theme.colorScheme.outlineVariant,
+          width: selected ? 2 : 1,
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(AppDesign.radius.sm),
-                ),
-                child: const Icon(Icons.image_outlined),
-              ),
-            ),
-            SizedBox(height: AppDesign.spacing.sm),
-            Text(
-              usualMeal.name,
-              style: theme.textTheme.bodyMedium,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            if (selected) ...[
+      ),
+      child: InkWell(
+        onTap: () => getIt<OnboardingBloc>().add(
+          OnboardingEvent.firstLogItemToggled(usualMeal.id),
+        ),
+        child: Padding(
+          padding: EdgeInsets.all(AppDesign.spacing.md),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (photoPath != null)
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(AppDesign.radius.sm),
+                    child: Image.file(
+                      File(photoPath),
+                      width: double.infinity,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                )
+              else
+                const Spacer(),
               SizedBox(height: AppDesign.spacing.sm),
-              QuantityStepper(
-                dense: true,
-                quantity: quantity,
-                onChanged: (quantity) => getIt<OnboardingBloc>().add(
-                  OnboardingEvent.firstLogItemQuantityChanged(
-                    usualMeal.id,
-                    quantity,
+              Text(
+                usualMeal.name,
+                style: theme.textTheme.bodyMedium,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              if (selected) ...[
+                SizedBox(height: AppDesign.spacing.sm),
+                QuantityStepper(
+                  dense: true,
+                  quantity: quantity,
+                  onChanged: (quantity) => getIt<OnboardingBloc>().add(
+                    OnboardingEvent.firstLogItemQuantityChanged(
+                      usualMeal.id,
+                      quantity,
+                    ),
                   ),
                 ),
-              ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

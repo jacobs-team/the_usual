@@ -11,7 +11,10 @@ void main() {
 
     void stubBloc(UserSettingsState settings) {
       when(() => onboardingBloc.state).thenReturn(
-        OnboardingState(activeStepIndex: 4, settings: settings),
+        OnboardingState(
+          step: OnboardingStep.weightTracking,
+          settings: settings,
+        ),
       );
       when(
         () => onboardingBloc.stream,
