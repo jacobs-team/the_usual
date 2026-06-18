@@ -28,6 +28,15 @@ void main() {
 
         expect(restored.calorieGoal, equals(1800));
       });
+
+      test('maps the removed onAppOpen reminder style to none', () {
+        final json = const UserSettingsState().toJson()
+          ..['reminderStyle'] = 'onAppOpen';
+
+        final restored = UserSettingsState.fromJson(json);
+
+        expect(restored.reminderStyle, equals(ReminderStyle.none));
+      });
     });
 
     group('currentMeal', () {

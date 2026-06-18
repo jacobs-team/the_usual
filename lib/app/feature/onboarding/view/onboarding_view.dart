@@ -24,7 +24,9 @@ class OnboardingView extends StatelessWidget {
           OnboardingStep.reminders => const RemindersView(),
           OnboardingStep.weightTracking => const WeightTrackingView(),
           OnboardingStep.goals => const GoalsView(),
-          OnboardingStep.complete => const CompleteView(),
+          // Completion has no screen of its own: the app routes to Today as
+          // soon as this step is reached, so render nothing in the meantime.
+          OnboardingStep.complete => const SizedBox.shrink(),
         };
       },
     );

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -7,13 +5,9 @@ import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
 import 'package:the_usual/design_system/design_system.dart';
 
-/// Width-to-height ratio of a first-log grid card: roughly square with room
-/// for the name and an optional quantity stepper below the thumbnail.
-const _foodCardAspectRatio = 1.25;
-
 /// {@template first_log_view}
-/// Onboarding screen that asks about the meal closest to the current time so
-/// the user's first real log happens inside onboarding.
+/// Onboarding screen that asks what the user ate today, listing every usual
+/// grouped by meal, so the user's first real log happens inside onboarding.
 /// {@endtemplate}
 class FirstLogView extends StatefulWidget {
   /// {@macro first_log_view}
@@ -34,60 +28,73 @@ class _FirstLogViewState extends State<FirstLogView> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
     return OnboardingScaffold(
-      appBar: const OnboardingTopBar(
-        step: OnboardingStep.firstLog,
-        showSkip: false,
-      ),
+      appBar: const OnboardingTopBar(step: OnboardingStep.firstLog),
       child:
           BlocSelector<
             OnboardingBloc,
             OnboardingState,
-            (List<UsualMeal>, List<String>, Map<String, double>)
+            (
+              Map<MealOfTheDay, List<UsualMeal>>,
+              List<String>,
+              Map<String, double>,
+            )
           >(
             bloc: getIt<OnboardingBloc>(),
             selector: (state) => (
-              state.settings.usuals[_mealOfTheDay] ?? <UsualMeal>[],
+              state.settings.usuals,
               state.firstLogSelectedIds,
               state.firstLogQuantities,
             ),
             builder: (context, selected) {
-              final (usualMeals, selectedIds, quantities) = selected;
+              final (usualsByMeal, selectedIds, quantities) = selected;
+              final mealsWithUsuals = [
+                for (final mealOfTheDay in MealOfTheDay.values)
+                  if ((usualsByMeal[mealOfTheDay] ?? const <UsualMeal>[])
+                      .isNotEmpty)
+                    mealOfTheDay,
+              ];
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    'Did you eat ${_mealOfTheDay.name} today?',
-                    style: textTheme.headlineSmall,
-                  ),
+                  Text('Did you eat today?', style: textTheme.headlineSmall),
                   SizedBox(height: AppDesign.spacing.sm),
                   const Text('Tap everything you had.'),
                   SizedBox(height: AppDesign.spacing.xl),
                   Expanded(
-                    child: usualMeals.isEmpty
-                        ? Center(
+                    child: mealsWithUsuals.isEmpty
+                        ? const Center(
                             child: Text(
-                              'No ${_mealOfTheDay.name} usual meals yet. '
-                              'Tap "I ate something else" to add what '
-                              'you had.',
+                              'No usual meals yet. Tap "I ate something else" '
+                              'to add what you had.',
                               textAlign: TextAlign.center,
                             ),
                           )
-                        : GridView.count(
-                            crossAxisCount: 2,
-                            mainAxisSpacing: AppDesign.spacing.md,
-                            crossAxisSpacing: AppDesign.spacing.md,
-                            childAspectRatio: _foodCardAspectRatio,
+                        : ListView(
                             children: [
-                              for (final usualMeal in usualMeals)
-                                _FoodCard(
-                                  usualMeal: usualMeal,
-                                  selected: selectedIds.contains(
-                                    usualMeal.id,
+                              for (final mealOfTheDay in mealsWithUsuals) ...[
+                                if (mealOfTheDay != mealsWithUsuals.first)
+                                  SizedBox(height: AppDesign.spacing.lg),
+                                Text(
+                                  mealOfTheDay.label.toUpperCase(),
+                                  style: textTheme.labelMedium?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
                                   ),
-                                  quantity: quantities[usualMeal.id] ?? 1,
                                 ),
+                                for (final usualMeal
+                                    in usualsByMeal[mealOfTheDay]!) ...[
+                                  SizedBox(height: AppDesign.spacing.sm),
+                                  _FoodCard(
+                                    usualMeal: usualMeal,
+                                    selected: selectedIds.contains(
+                                      usualMeal.id,
+                                    ),
+                                    quantity: quantities[usualMeal.id] ?? 1,
+                                  ),
+                                ],
+                              ],
                             ],
                           ),
                   ),
@@ -132,7 +139,7 @@ class _FirstLogViewState extends State<FirstLogView> {
                       onPressed: () => getIt<OnboardingBloc>().add(
                         const OnboardingEvent.continuePressed(),
                       ),
-                      child: Text("I didn't eat ${_mealOfTheDay.name}"),
+                      child: const Text("I haven't eaten yet"),
                     ),
                   ),
                 ],
@@ -157,15 +164,13 @@ class _FoodCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final photoPath = usualMeal.photoPath;
+    final colorScheme = theme.colorScheme;
     return Card(
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppDesign.radius.md),
         side: BorderSide(
-          color: selected
-              ? theme.colorScheme.primary
-              : theme.colorScheme.outlineVariant,
+          color: selected ? colorScheme.primary : colorScheme.outlineVariant,
           width: selected ? 2 : 1,
         ),
       ),
@@ -175,31 +180,33 @@ class _FoodCard extends StatelessWidget {
         ),
         child: Padding(
           padding: EdgeInsets.all(AppDesign.spacing.md),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          child: Row(
             children: [
-              if (photoPath != null)
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(AppDesign.radius.sm),
-                    child: Image.file(
-                      File(photoPath),
-                      width: double.infinity,
-                      fit: BoxFit.cover,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      usualMeal.name,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
-                )
-              else
-                const Spacer(),
-              SizedBox(height: AppDesign.spacing.sm),
-              Text(
-                usualMeal.name,
-                style: theme.textTheme.bodyMedium,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+                    if (!usualMeal.nutrition.isEmpty) ...[
+                      SizedBox(height: AppDesign.spacing.xs),
+                      DefaultTextStyle.merge(
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                        child: NutritionSummary(usualMeal.nutrition),
+                      ),
+                    ],
+                  ],
+                ),
               ),
-              if (selected) ...[
-                SizedBox(height: AppDesign.spacing.sm),
+              SizedBox(width: AppDesign.spacing.md),
+              if (selected)
                 QuantityStepper(
                   dense: true,
                   quantity: quantity,
@@ -209,8 +216,9 @@ class _FoodCard extends StatelessWidget {
                       quantity,
                     ),
                   ),
-                ),
-              ],
+                )
+              else
+                Icon(Icons.add, color: colorScheme.onSurfaceVariant),
             ],
           ),
         ),

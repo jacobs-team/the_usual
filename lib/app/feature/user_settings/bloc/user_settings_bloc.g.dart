@@ -121,7 +121,6 @@ Map<String, dynamic> _$UserSettingsStateToJson(
 
 const _$ReminderStyleEnumMap = {
   ReminderStyle.notifications: 'notifications',
-  ReminderStyle.onAppOpen: 'onAppOpen',
   ReminderStyle.none: 'none',
 };
 

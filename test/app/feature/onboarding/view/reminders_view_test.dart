@@ -71,7 +71,8 @@ void main() {
 
     testWidgets('adds continuePressed from the actions', (tester) async {
       useTallWindow(tester);
-      stubBloc(const UserSettingsState(reminderStyle: ReminderStyle.onAppOpen));
+      // A non-notifications style avoids the permission prompt on Continue.
+      stubBloc(const UserSettingsState(reminderStyle: ReminderStyle.none));
       await tester.pumpPumpPumpItUP(
         deps: [onboardingBloc],
         const RemindersView(),
@@ -211,7 +212,7 @@ void main() {
 
       verify(
         () => onboardingBloc.add(
-          const OnboardingEvent.reminderStyleSelected(ReminderStyle.onAppOpen),
+          const OnboardingEvent.reminderStyleSelected(ReminderStyle.none),
         ),
       ).called(1);
       expect(

@@ -59,9 +59,12 @@ void main() {
       expect(find.byType(FirstLogView), findsOneWidget);
     });
 
-    testWidgets('renders the completion screen', (tester) async {
+    testWidgets('renders no onboarding screen at the completion step', (
+      tester,
+    ) async {
+      // Completion has no screen of its own; the app routes to Today instead.
       await pumpAtStep(tester, OnboardingStep.complete);
-      expect(find.byType(CompleteView), findsOneWidget);
+      expect(find.byType(OnboardingScaffold), findsNothing);
     });
   });
 }

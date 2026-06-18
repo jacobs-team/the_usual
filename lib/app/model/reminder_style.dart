@@ -5,7 +5,6 @@ enum ReminderStyle {
     'A quick nudge at your meal times.',
     permissionNote: "We'll ask for permission next.",
   ),
-  onAppOpen('When I open the app', 'No pings. We ask when you launch.'),
   none("Don't remind me", 'Log on your own schedule.');
 
   const ReminderStyle(this.label, this.description, {this.permissionNote});

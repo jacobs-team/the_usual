@@ -150,16 +150,16 @@ class RemindersView extends StatelessWidget {
                     primary: FilledButton(
                       onPressed: () async {
                         // Choosing notifications prompts the OS first. If
-                        // it isn't granted, revert to the on-app-open style
-                        // and stay on this step so the user can continue
-                        // with the updated choice.
+                        // it isn't granted, revert to no reminders and stay on
+                        // this step so the user can continue with the updated
+                        // choice.
                         if (reminderStyle == ReminderStyle.notifications) {
                           final status = await getIt<NotificationService>()
                               .requestPermission();
                           if (!status.isGranted) {
                             getIt<OnboardingBloc>().add(
                               const OnboardingEvent.reminderStyleSelected(
-                                ReminderStyle.onAppOpen,
+                                ReminderStyle.none,
                               ),
                             );
                             if (!context.mounted) return;

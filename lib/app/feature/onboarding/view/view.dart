@@ -1,5 +1,4 @@
 export 'build_usuals_view.dart';
-export 'complete_view.dart';
 export 'first_log_view.dart';
 export 'goals_view.dart';
 export 'onboarding_view.dart';

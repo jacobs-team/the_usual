@@ -61,7 +61,7 @@ void main() {
 
     group('skipPressed', () {
       blocTest<OnboardingBloc, OnboardingState>(
-        'on reminders falls back to onAppOpen and advances',
+        'on reminders falls back to no reminders and advances',
         build: OnboardingBloc.new,
         seed: () => const OnboardingState(step: OnboardingStep.reminders),
         act: (bloc) => bloc.add(const OnboardingEvent.skipPressed()),
@@ -70,7 +70,7 @@ void main() {
               .having(
                 (s) => s.settings.reminderStyle,
                 'reminderStyle',
-                ReminderStyle.onAppOpen,
+                ReminderStyle.none,
               )
               .having((s) => s.step, 'step', OnboardingStep.weightTracking),
         ],
@@ -685,7 +685,7 @@ void main() {
     group('fromJson migration', () {
       Map<String, dynamic> v0Json({
         required int activeStepIndex,
-        ReminderStyle reminderStyle = ReminderStyle.onAppOpen,
+        ReminderStyle reminderStyle = ReminderStyle.notifications,
       }) {
         return {
           'version': 0,

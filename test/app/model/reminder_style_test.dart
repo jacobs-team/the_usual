@@ -15,15 +15,6 @@ void main() {
       );
     });
 
-    test('onAppOpen has no permission note', () {
-      expect(ReminderStyle.onAppOpen.label, equals('When I open the app'));
-      expect(
-        ReminderStyle.onAppOpen.description,
-        equals('No pings. We ask when you launch.'),
-      );
-      expect(ReminderStyle.onAppOpen.permissionNote, isNull);
-    });
-
     test('none has no permission note', () {
       expect(ReminderStyle.none.label, equals("Don't remind me"));
       expect(

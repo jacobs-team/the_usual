@@ -25,7 +25,10 @@ void main() {
         const ReminderStyleSection(),
       );
 
-      expect(find.byType(RadioOptionCard), findsNWidgets(3));
+      expect(
+        find.byType(RadioOptionCard),
+        findsNWidgets(ReminderStyle.values.length),
+      );
     });
 
     testWidgets('selects a non-notification style directly', (tester) async {

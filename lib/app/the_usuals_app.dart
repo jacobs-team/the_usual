@@ -26,6 +26,10 @@ class TheUsualsApp extends StatefulWidget {
 }
 
 class _TheUsualsAppState extends State<TheUsualsApp> {
+  /// App-level messenger so the post-onboarding snackbar shows while the user
+  /// is routed to Today.
+  final _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
   @override
   void initState() {
     super.initState();
@@ -118,6 +122,17 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
                 }
               }
             }
+            // Onboarding has no completion screen: drop the user into Today and
+            // point out that everything is editable in Settings.
+            getIt<AppRouter>().router.go(Routes.today);
+            _scaffoldMessengerKey.currentState?.showSnackBar(
+              const SnackBar(
+                content: Text(
+                  "You're all set. Change your goals or usual meals anytime "
+                  'in Settings.',
+                ),
+              ),
+            );
           },
         ),
       ],
@@ -127,6 +142,7 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
         builder: (context, themeMode) {
           return MaterialApp.router(
             debugShowCheckedModeBanner: false,
+            scaffoldMessengerKey: _scaffoldMessengerKey,
             routerConfig: getIt<AppRouter>().router,
             theme: AppTheme.light,
             darkTheme: AppTheme.dark,

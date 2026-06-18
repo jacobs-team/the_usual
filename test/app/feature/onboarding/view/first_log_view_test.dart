@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -16,7 +14,13 @@ void main() {
     Map<MealOfTheDay, List<UsualMeal>> usualsForEveryMeal() {
       return {
         for (final mealOfTheDay in MealOfTheDay.values)
-          mealOfTheDay: const [UsualMeal(id: 'a', name: 'Pancakes')],
+          mealOfTheDay: const [
+            UsualMeal(
+              id: 'a',
+              name: 'Pancakes',
+              nutrition: Nutrition(calories: 200),
+            ),
+          ],
       };
     }
 
@@ -67,7 +71,7 @@ void main() {
         const FirstLogView(),
       );
 
-      expect(find.byIcon(Icons.image_outlined), findsNothing);
+      expect(find.byType(Image), findsNothing);
     });
 
     testWidgets('toggles a food card', (tester) async {
@@ -162,7 +166,9 @@ void main() {
       ).called(1);
     });
 
-    testWidgets('the skip-meal action continues', (tester) async {
+    testWidgets('continuing without eating advances onboarding', (
+      tester,
+    ) async {
       useTallWindow(tester);
       stubBloc(
         OnboardingState(
@@ -175,7 +181,7 @@ void main() {
         const FirstLogView(),
       );
 
-      await tester.tap(find.textContaining("I didn't eat"));
+      await tester.tap(find.text("I haven't eaten yet"));
 
       verify(
         () => onboardingBloc.add(const OnboardingEvent.continuePressed()),
@@ -235,37 +241,6 @@ void main() {
       verifyNever(
         () => onboardingBloc.add(any(that: isA<SomethingElseLogged>())),
       );
-    });
-
-    testWidgets('shows a photo on a usual that has one', (tester) async {
-      // Pinned to breakfast so the seeded breakfast usual is the meal shown.
-      await withTestClock(() async {
-        final dir = Directory.systemTemp.createTempSync('first_log_photo');
-        addTearDown(() => dir.deleteSync(recursive: true));
-        final photo = File('${dir.path}/meal.png')
-          ..writeAsBytesSync(transparentPixel);
-
-        useTallWindow(tester);
-        stubBloc(
-          OnboardingState(
-            step: OnboardingStep.firstLog,
-            settings: UserSettingsState(
-              usuals: {
-                MealOfTheDay.breakfast: [
-                  UsualMeal(id: 'a', name: 'Pancakes', photoPath: photo.path),
-                ],
-              },
-            ),
-          ),
-        );
-        await tester.pumpPumpPumpItUP(
-          deps: [onboardingBloc],
-          const FirstLogView(),
-        );
-        await tester.pump();
-
-        expect(find.byType(Image), findsWidgets);
-      });
     });
   });
 }

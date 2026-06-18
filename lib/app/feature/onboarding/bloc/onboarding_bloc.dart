@@ -36,8 +36,8 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
         UsualMealNameChanged() => _onUsualMealNameChanged(event, emit),
         UsualsForMealReplaced() => _onUsualsForMealReplaced(event, emit),
         // TODO(onboarding): request OS notification permission when
-        // ReminderStyle.notifications is picked, falling back to onAppOpen if
-        // denied. Notification approach is an open item in docs/onboarding.
+        // ReminderStyle.notifications is picked, falling back to no reminders
+        // if denied. Notification approach is an open item in docs/onboarding.
         ReminderStyleSelected() => emit(
           state.copyWith(
             settings: state.settings.copyWith(
@@ -130,11 +130,11 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
   void _onSkipPressed(SkipPressed event, Emitter<OnboardingState> emit) {
     final nextStep = _stepRelativeTo(state, 1);
     emit(switch (state.step) {
-      // Didn't choose how to be reminded: fall back to the least intrusive
-      // style that keeps the core loop alive, without an OS permission prompt.
+      // Didn't choose how to be reminded: fall back to no reminders so the
+      // user can finish without an OS permission prompt.
       OnboardingStep.reminders => state.copyWith(
         settings: state.settings.copyWith(
-          reminderStyle: ReminderStyle.onAppOpen,
+          reminderStyle: ReminderStyle.none,
         ),
         step: nextStep,
       ),
