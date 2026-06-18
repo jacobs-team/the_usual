@@ -82,28 +82,30 @@ void main() {
     testWidgets('prefills the weight field from today and latest weigh-ins', (
       tester,
     ) async {
-      stubDailyLog(
-        DailyLogState(
-          weightEntries: [
-            WeightEntry(
-              id: 'today',
-              loggedAt: DateTime.now(),
-              weight: 165,
-              weightUnit: WeightUnit.lb,
-            ),
-          ],
-        ),
-      );
-      stubSettings(const UserSettingsState());
-      await pumpView(tester);
+      await withTestClock(() async {
+        stubDailyLog(
+          DailyLogState(
+            weightEntries: [
+              WeightEntry(
+                id: 'today',
+                loggedAt: testNow,
+                weight: 165,
+                weightUnit: WeightUnit.lb,
+              ),
+            ],
+          ),
+        );
+        stubSettings(const UserSettingsState());
+        await pumpView(tester);
 
-      final field = tester.widget<TextFormField>(
-        find.descendant(
-          of: find.byType(TheUsualTextField),
-          matching: find.byType(TextFormField),
-        ),
-      );
-      expect(field.initialValue, equals('165'));
+        final field = tester.widget<TextFormField>(
+          find.descendant(
+            of: find.byType(TheUsualTextField),
+            matching: find.byType(TextFormField),
+          ),
+        );
+        expect(field.initialValue, equals('165'));
+      });
     });
 
     testWidgets('reports a weight change through the bloc', (tester) async {

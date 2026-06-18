@@ -238,31 +238,34 @@ void main() {
     });
 
     testWidgets('shows a photo on a usual that has one', (tester) async {
-      final dir = Directory.systemTemp.createTempSync('first_log_photo');
-      addTearDown(() => dir.deleteSync(recursive: true));
-      final photo = File('${dir.path}/meal.png')
-        ..writeAsBytesSync(transparentPixel);
+      // Pinned to breakfast so the seeded breakfast usual is the meal shown.
+      await withTestClock(() async {
+        final dir = Directory.systemTemp.createTempSync('first_log_photo');
+        addTearDown(() => dir.deleteSync(recursive: true));
+        final photo = File('${dir.path}/meal.png')
+          ..writeAsBytesSync(transparentPixel);
 
-      useTallWindow(tester);
-      stubBloc(
-        OnboardingState(
-          step: OnboardingStep.firstLog,
-          settings: UserSettingsState(
-            usuals: {
-              MealOfTheDay.breakfast: [
-                UsualMeal(id: 'a', name: 'Pancakes', photoPath: photo.path),
-              ],
-            },
+        useTallWindow(tester);
+        stubBloc(
+          OnboardingState(
+            step: OnboardingStep.firstLog,
+            settings: UserSettingsState(
+              usuals: {
+                MealOfTheDay.breakfast: [
+                  UsualMeal(id: 'a', name: 'Pancakes', photoPath: photo.path),
+                ],
+              },
+            ),
           ),
-        ),
-      );
-      await tester.pumpPumpPumpItUP(
-        deps: [onboardingBloc],
-        const FirstLogView(),
-      );
-      await tester.pump();
+        );
+        await tester.pumpPumpPumpItUP(
+          deps: [onboardingBloc],
+          const FirstLogView(),
+        );
+        await tester.pump();
 
-      expect(find.byType(Image), findsWidgets);
+        expect(find.byType(Image), findsWidgets);
+      });
     });
   });
 }

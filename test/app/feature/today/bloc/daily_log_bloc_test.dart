@@ -221,7 +221,7 @@ void main() {
         build: DailyLogBloc.new,
         act: (bloc) => bloc.add(
           DailyLogEvent.weightOnDayChanged(
-            DateTime.now(),
+            testNow,
             170,
             WeightUnit.lb,
             dayStart,
@@ -240,11 +240,11 @@ void main() {
         'updates the existing entry for today',
         build: DailyLogBloc.new,
         seed: () => DailyLogState(
-          weightEntries: [weightEntry(id: 'today', loggedAt: DateTime.now())],
+          weightEntries: [weightEntry(id: 'today', loggedAt: testNow)],
         ),
         act: (bloc) => bloc.add(
           DailyLogEvent.weightOnDayChanged(
-            DateTime.now(),
+            testNow,
             172,
             WeightUnit.kg,
             dayStart,
@@ -271,13 +271,13 @@ void main() {
         build: DailyLogBloc.new,
         seed: () => DailyLogState(
           weightEntries: [
-            weightEntry(id: 'today', loggedAt: DateTime.now()),
+            weightEntry(id: 'today', loggedAt: testNow),
             weightEntry(id: 'old', loggedAt: DateTime(2020)),
           ],
         ),
         act: (bloc) => bloc.add(
           DailyLogEvent.weightOnDayChanged(
-            DateTime.now(),
+            testNow,
             null,
             WeightUnit.lb,
             dayStart,

@@ -135,7 +135,7 @@ void main() {
             mealEntries: [
               MealLogEntry(
                 id: 'm1',
-                loggedAt: DateTime.now(),
+                loggedAt: testNow,
                 mealOfTheDay: MealOfTheDay.breakfast,
                 name: 'Eggs',
                 nutrition: const Nutrition(calories: 300),

@@ -41,7 +41,7 @@ void main() {
     }) {
       return MealLogEntry(
         id: 'm1',
-        loggedAt: DateTime.now(),
+        loggedAt: testNow,
         mealOfTheDay: MealOfTheDay.breakfast,
         name: 'Eggs',
         nutrition: Nutrition(calories: calories),

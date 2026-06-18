@@ -30,7 +30,7 @@ void main() {
     MealLogEntry logged(String id, String name, {int? calories}) {
       return MealLogEntry(
         id: id,
-        loggedAt: DateTime.now(),
+        loggedAt: testNow,
         mealOfTheDay: MealOfTheDay.breakfast,
         name: name,
         nutrition: Nutrition(calories: calories),
