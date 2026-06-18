@@ -2,16 +2,9 @@
 // Thin image_picker platform glue: capturing a photo drives the picker plugin's
 // platform channel, which can't be exercised in a unit test.
 
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
-/// A photo chosen for AI meal estimation: its raw `bytes` and the `mediaType`
-/// MIME string Claude needs (`image/jpeg`, `image/png`, `image/gif`, or
-/// `image/webp`). One-off data handed straight to the estimator, so it needs no
-/// model of its own.
-typedef MealPhoto = ({Uint8List bytes, String mediaType});
+import 'package:the_usual/app/app.dart';
 
 /// Asks the user to pick a camera or photo-library source, lets them snap or
 /// choose a photo, and returns its bytes and MIME type. Returns null if they
@@ -45,7 +38,7 @@ Future<MealPhoto?> pickMealPhoto(BuildContext context) async {
   if (picked == null) return null;
 
   final bytes = await picked.readAsBytes();
-  return (bytes: bytes, mediaType: _imageMediaType(picked));
+  return MealPhoto(bytes: bytes, mediaType: _imageMediaType(picked));
 }
 
 /// Resolves an [XFile]'s MIME type to one Claude accepts, defaulting to

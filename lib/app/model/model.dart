@@ -1,4 +1,5 @@
 export 'ai_meal_suggestion.dart';
+export 'meal_photo.dart';
 export 'extensions/extensions.dart';
 export 'meal_checkin_schedule_mode.dart';
 export 'meal_entry_mode.dart';
