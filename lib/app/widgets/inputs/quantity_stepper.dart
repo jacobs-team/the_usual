@@ -16,7 +16,7 @@ class QuantityStepper extends StatefulWidget {
   const QuantityStepper({
     required this.quantity,
     required this.onChanged,
-    this.minQuantity = 1,
+    this.minQuantity = 0.1,
     this.dense = false,
     super.key,
   });
@@ -47,7 +47,12 @@ class _QuantityStepperState extends State<QuantityStepper> {
     final theme = Theme.of(context);
     final buttonSize = widget.dense ? 32.0 : 40.0;
     final iconSize = widget.dense ? 18.0 : AppDesign.iconSizes.md;
-    final canDecrement = widget.quantity > widget.minQuantity;
+    // Only step down when there's room without dropping below the floor, so a
+    // whole step stops at 1 while tenth steps can reach the 0.1 minimum. The
+    // epsilon absorbs the floating-point dust tenth steps leave behind.
+    const epsilon = 0.001;
+    final canDecrement =
+        widget.quantity - _step >= widget.minQuantity - epsilon;
 
     // In tenth mode the value always carries its decimal so the mode is legible
     // even at a whole number, e.g. "2.0"; in whole mode a trailing ".0" is
