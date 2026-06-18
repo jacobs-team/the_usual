@@ -158,5 +158,37 @@ void main() {
 
       expect(find.text('175'), findsOneWidget);
     });
+
+    testWidgets('syncs an externally-set weight even while focused', (
+      tester,
+    ) async {
+      final stateController = StreamController<DailyLogState>.broadcast();
+      addTearDown(stateController.close);
+
+      final dailyLogBloc = MockDailyLogBloc();
+      var currentState = const DailyLogState();
+      when(() => dailyLogBloc.state).thenAnswer((_) => currentState);
+      when(
+        () => dailyLogBloc.stream,
+      ).thenAnswer((_) => stateController.stream);
+
+      await tester.pumpPumpPumpItUP(
+        WeightEntryField(day: day),
+        deps: [dailyLogBloc],
+      );
+
+      final focusNode = tester
+          .widget<TextField>(find.byType(TextField))
+          .focusNode;
+      focusNode!.requestFocus();
+      await tester.pump();
+      expect(focusNode.hasFocus, isTrue);
+
+      currentState = DailyLogState(weightEntries: [weightEntryOn(day, 175)]);
+      stateController.add(currentState);
+      await tester.pump();
+
+      expect(find.text('175'), findsOneWidget);
+    });
   });
 }

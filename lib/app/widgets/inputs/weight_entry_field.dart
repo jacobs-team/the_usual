@@ -63,12 +63,16 @@ class _WeightEntryFieldState extends State<WeightEntryField> {
           previous.weightOn(widget.day, _dayStart) !=
           current.weightOn(widget.day, _dayStart),
       listener: (context, state) {
-        // Sync the field to externally-set weight (e.g. the "Use last"
-        // button), but never while the user is typing, so a trailing decimal
-        // isn't wiped mid-entry.
-        if (_focusNode.hasFocus) return;
         final dayWeight = state.weightOn(widget.day, _dayStart);
         final text = dayWeight == null ? '' : dayWeight.weight.trimmedDecimal;
+        // While the field is focused, skip the sync only when the state is
+        // echoing back what the user is typing, so a trailing decimal isn't
+        // wiped mid-entry. A value that differs from the field's content is an
+        // external change (e.g. the "Use last" button) and must still apply.
+        final isEchoOfTyping =
+            _focusNode.hasFocus &&
+            double.tryParse(_controller.text) == dayWeight?.weight;
+        if (isEchoOfTyping) return;
         if (_controller.text != text) _controller.text = text;
       },
       child:
