@@ -44,6 +44,10 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
         getIt<AppRouter>().router.go(Routes.today);
     _shareSubscription =
         getIt<ShareIngestService>().photoStream.listen(_handleSharedPhotos);
+    // Cold-start photos are fetched once here and NOT re-emitted on photoStream:
+    // the service drains and resets its initial-media buffer before the stream
+    // listener above is attached, so these two paths are mutually exclusive and
+    // a share can never open the sheet twice.
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final initial = await getIt<ShareIngestService>().takeInitialPhotos();
       if (initial.isNotEmpty) _handleSharedPhotos(initial);
@@ -61,7 +65,7 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
     final onboardingComplete =
         getIt<OnboardingBloc>().state.step == OnboardingStep.complete;
     if (!onboardingComplete) {
-      _pendingShare = photos;
+      _pendingShare = [..._pendingShare, ...photos];
       return;
     }
     unawaited(_openShareSheet(photos));
