@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:the_usual/app/app.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// The value [FoodEntrySheet] pops when the user confirms: the list of foods
 /// they entered and the meal slot those foods belong to.
@@ -80,6 +81,26 @@ class _FoodEntrySheetState extends State<FoodEntrySheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          if (widget.showMealSelector) ...[
+            SegmentedButton<MealOfTheDay>(
+              showSelectedIcon: false,
+              segments: [
+                for (final mealOfTheDay in MealOfTheDay.values)
+                  ButtonSegment(
+                    value: mealOfTheDay,
+                    label: Text(mealOfTheDay.label),
+                  ),
+              ],
+              selected: {
+                _formKey.currentState?.mealOfTheDay ?? MealOfTheDay.breakfast,
+              },
+              onSelectionChanged: (selection) {
+                _formKey.currentState?.changeMealOfTheDay(selection.first);
+                setState(() {});
+              },
+            ),
+            SizedBox(height: AppDesign.spacing.md),
+          ],
           FoodEntryForm(
             key: _formKey,
             showQuantity: widget.showQuantity,

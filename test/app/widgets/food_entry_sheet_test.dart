@@ -668,6 +668,62 @@ void main() {
     });
   });
 
+  group('meal slot selector', () {
+    setUp(() {
+      initHydratedStorage();
+      final repository = MockMealAiRepository();
+      when(() => repository.isConfigured).thenReturn(false);
+      final userSettingsBloc = MockUserSettingsBloc();
+      when(() => userSettingsBloc.state).thenReturn(const UserSettingsState());
+      when(() => userSettingsBloc.stream).thenAnswer((_) => const Stream.empty());
+      if (getIt.isRegistered<MealAiRepository>()) {
+        getIt.unregister<MealAiRepository>();
+      }
+      getIt.registerSingleton<MealAiRepository>(repository);
+      if (getIt.isRegistered<UserSettingsBloc>()) {
+        getIt.unregister<UserSettingsBloc>();
+      }
+      getIt.registerSingleton<UserSettingsBloc>(userSettingsBloc);
+      if (!getIt.isRegistered<FoodEntryBloc>()) {
+        getIt.registerFactory<FoodEntryBloc>(
+          () => FoodEntryBloc(
+            getIt<MealAiRepository>(),
+            getIt<UserSettingsBloc>(),
+          ),
+        );
+      }
+    });
+
+    testWidgets('shows the slot selector only when asked', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: FoodEntrySheet(
+              title: 'Log',
+              confirmLabel: 'Log',
+              showMealSelector: true,
+              initialMealOfTheDay: MealOfTheDay.dinner,
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(find.byType(SegmentedButton<MealOfTheDay>), findsOneWidget);
+    });
+
+    testWidgets('hides the slot selector by default', (tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: FoodEntrySheet(title: 'Log', confirmLabel: 'Log'),
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(find.byType(SegmentedButton<MealOfTheDay>), findsNothing);
+    });
+  });
+
   group('FoodEntrySheet pop shape', () {
     setUp(() {
       initHydratedStorage();
