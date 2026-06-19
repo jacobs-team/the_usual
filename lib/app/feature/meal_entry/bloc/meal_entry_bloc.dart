@@ -221,8 +221,9 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
     );
   }
 
-  /// Explicit photo-estimate request from the UI. [_onStarted] calls
-  /// [_runPhotoEstimate] directly for the auto-estimate on the share path.
+  /// Estimates nutrition from the held photos, sending the first row's typed
+  /// name as a hint when present. Explicit request from the UI; [_onStarted]
+  /// calls [_runPhotoEstimate] directly for the auto-estimate on the share path.
   Future<void> _onPhotoEstimateRequested(
     MealEntryPhotoEstimateRequested event,
     Emitter<MealEntryState> emit,

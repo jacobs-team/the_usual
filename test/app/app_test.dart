@@ -262,32 +262,59 @@ void main() {
       testWidgets(
         'a share while onboarding is complete opens the entry sheet',
         (tester) async {
-          // Onboarding is complete so shares open the sheet immediately.
-          when(
-            () => onboardingBloc.state,
-          ).thenReturn(
-            const OnboardingState(step: OnboardingStep.complete),
-          );
+          await withTestClock(() async {
+            // Onboarding is complete so shares open the sheet immediately.
+            when(
+              () => onboardingBloc.state,
+            ).thenReturn(
+              const OnboardingState(step: OnboardingStep.complete),
+            );
 
-          final shareController = StreamController<List<MealPhoto>>();
-          addTearDown(shareController.close);
-          when(
-            () => shareIngestService.photoStream,
-          ).thenAnswer((_) => shareController.stream);
+            final shareController = StreamController<List<MealPhoto>>();
+            addTearDown(shareController.close);
+            when(
+              () => shareIngestService.photoStream,
+            ).thenAnswer((_) => shareController.stream);
 
-          tester.view.physicalSize = const Size(1200, 3000);
-          tester.view.devicePixelRatio = 1.0;
-          addTearDown(tester.view.resetPhysicalSize);
-          addTearDown(tester.view.resetDevicePixelRatio);
+            tester.view.physicalSize = const Size(1200, 3000);
+            tester.view.devicePixelRatio = 1.0;
+            addTearDown(tester.view.resetPhysicalSize);
+            addTearDown(tester.view.resetDevicePixelRatio);
 
-          await tester.pumpWidget(TheUsualsApp(key: UniqueKey()));
-          await tester.pumpAndSettle();
+            await tester.pumpWidget(TheUsualsApp(key: UniqueKey()));
+            await tester.pumpAndSettle();
 
-          // Emit a share while the app is already running.
-          shareController.add([sharedPhoto]);
-          await tester.pumpAndSettle();
+            // Emit a share while the app is already running.
+            shareController.add([sharedPhoto]);
+            await tester.pumpAndSettle();
 
-          expect(find.byType(FoodEntrySheet), findsOneWidget);
+            expect(find.byType(FoodEntrySheet), findsOneWidget);
+
+            // The auto-estimate fills "Shared meal" (stubbed above). Tap confirm
+            // and verify the meal is dispatched to the log for the current slot.
+            // testNow is 9:30 AM, which resolves to MealOfTheDay.breakfast.
+            // The confirm FilledButton is the last one in the sheet; the form
+            // also contains AI assist buttons (Estimate, Photo) rendered earlier.
+            await tester.tap(
+              find
+                  .descendant(
+                    of: find.byType(FoodEntrySheet),
+                    matching: find.byType(FilledButton),
+                  )
+                  .last,
+            );
+            await tester.pumpAndSettle();
+
+            verify(
+              () => dailyLogBloc.add(
+                const DailyLogEvent.mealLogged(
+                  MealOfTheDay.breakfast,
+                  'Shared meal',
+                  nutrition: Nutrition(calories: 500),
+                ),
+              ),
+            ).called(1);
+          });
         },
       );
 
