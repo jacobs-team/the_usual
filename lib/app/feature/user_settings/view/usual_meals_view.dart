@@ -51,8 +51,8 @@ class UsualMealsView extends StatelessWidget {
               onPressed: () async {
                 final activeTabIndex = DefaultTabController.of(context).index;
                 final mealOfTheDay = MealOfTheDay.values[activeTabIndex];
-                final results =
-                    await TheUsualBottomSheet.show<List<FoodEntryResult>>(
+                final result =
+                    await TheUsualBottomSheet.show<FoodEntrySheetResult>(
                       context,
                       builder: (context) => FoodEntrySheet(
                         title: 'Add ${mealOfTheDay.label}',
@@ -60,13 +60,13 @@ class UsualMealsView extends StatelessWidget {
                         showQuantity: false,
                       ),
                     );
-                if (results == null) return;
-                for (final result in results) {
+                if (result == null) return;
+                for (final foodResult in result.foods) {
                   getIt<UserSettingsBloc>().add(
                     UserSettingsEvent.usualMealAdded(
                       mealOfTheDay,
-                      result.name,
-                      result.nutrition,
+                      foodResult.name,
+                      foodResult.nutrition,
                     ),
                   );
                 }

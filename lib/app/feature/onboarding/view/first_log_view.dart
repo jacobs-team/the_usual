@@ -102,9 +102,9 @@ class _FirstLogViewState extends State<FirstLogView> {
                   OnboardingActions(
                     above: OutlinedButton.icon(
                       onPressed: () async {
-                        final results =
+                        final result =
                             await TheUsualBottomSheet.show<
-                              List<FoodEntryResult>
+                              FoodEntrySheetResult
                             >(
                               context,
                               builder: (context) => const FoodEntrySheet(
@@ -112,14 +112,14 @@ class _FirstLogViewState extends State<FirstLogView> {
                                 confirmLabel: 'Log',
                               ),
                             );
-                        if (results == null) return;
-                        for (final result in results) {
+                        if (result == null) return;
+                        for (final foodResult in result.foods) {
                           getIt<OnboardingBloc>().add(
                             OnboardingEvent.somethingElseLogged(
                               _mealOfTheDay,
-                              result.name,
-                              nutrition: result.nutrition,
-                              quantity: result.quantity,
+                              foodResult.name,
+                              nutrition: foodResult.nutrition,
+                              quantity: foodResult.quantity,
                             ),
                           );
                         }

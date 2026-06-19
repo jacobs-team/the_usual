@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:the_usual/app/app.dart';
+import 'package:the_usual/app/core/dependencies/dependencies.dart';
 
 import '../../helpers/helpers.dart';
 
@@ -32,9 +33,10 @@ void main() {
       registerFallbackValue(transparentPixel);
     });
 
-    /// Opens the sheet from a button and records whatever it pops with. When
-    /// [aiRepository] or [userSettingsBloc] are given they replace the
-    /// defaults, so the AI controls render and the mode toggle is observable.
+    /// Opens the sheet from a button and records the foods from whatever it
+    /// pops with. When [aiRepository] or [userSettingsBloc] are given they
+    /// replace the defaults, so the AI controls render and the mode toggle is
+    /// observable.
     Future<List<List<FoodEntryResult>?>> showSheet(
       WidgetTester tester, {
       bool showAddToUsualMeals = false,
@@ -51,7 +53,8 @@ void main() {
         Builder(
           builder: (context) => ElevatedButton(
             onPressed: () async {
-              final result = await showModalBottomSheet<List<FoodEntryResult>>(
+              final sheetResult =
+                  await showModalBottomSheet<FoodEntrySheetResult>(
                 context: context,
                 builder: (_) => FoodEntrySheet(
                   title: 'Log food',
@@ -59,7 +62,7 @@ void main() {
                   showAddToUsualMeals: showAddToUsualMeals,
                 ),
               );
-              results.add(result);
+              results.add(sheetResult?.foods);
             },
             child: const Text('open'),
           ),
@@ -659,6 +662,68 @@ void main() {
 
         expect(find.byType(CircularProgressIndicator), findsNothing);
       });
+    });
+  });
+
+  group('FoodEntrySheet pop shape', () {
+    setUp(() {
+      initHydratedStorage();
+      final repository = MockMealAiRepository();
+      when(() => repository.isConfigured).thenReturn(false);
+      final userSettingsBloc = MockUserSettingsBloc();
+      when(() => userSettingsBloc.state).thenReturn(const UserSettingsState());
+      if (getIt.isRegistered<MealAiRepository>()) {
+        getIt.unregister<MealAiRepository>();
+      }
+      getIt.registerSingleton<MealAiRepository>(repository);
+      if (getIt.isRegistered<UserSettingsBloc>()) {
+        getIt.unregister<UserSettingsBloc>();
+      }
+      getIt.registerSingleton<UserSettingsBloc>(userSettingsBloc);
+      if (!getIt.isRegistered<FoodEntryBloc>()) {
+        getIt.registerFactory<FoodEntryBloc>(
+          () => FoodEntryBloc(
+            getIt<MealAiRepository>(),
+            getIt<UserSettingsBloc>(),
+          ),
+        );
+      }
+    });
+
+    testWidgets('confirm pops foods with the target slot', (tester) async {
+      FoodEntrySheetResult? popped;
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => ElevatedButton(
+                onPressed: () async {
+                  popped = await showModalBottomSheet<FoodEntrySheetResult>(
+                    context: context,
+                    builder: (_) => const FoodEntrySheet(
+                      title: 'Log',
+                      confirmLabel: 'Log',
+                      initialMealOfTheDay: MealOfTheDay.lunch,
+                    ),
+                  );
+                },
+                child: const Text('open'),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('open'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField).first, 'Soup');
+      await tester.pump();
+      await tester.tap(find.widgetWithText(FilledButton, 'Log'));
+      await tester.pumpAndSettle();
+
+      expect(popped, isNotNull);
+      expect(popped!.foods.single.name, equals('Soup'));
+      expect(popped!.mealOfTheDay, equals(MealOfTheDay.lunch));
     });
   });
 }

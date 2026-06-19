@@ -156,9 +156,9 @@ class MealLogSection extends StatelessWidget {
                       children: [
                         TextButton.icon(
                           onPressed: () async {
-                            final results =
+                            final result =
                                 await TheUsualBottomSheet.show<
-                                  List<FoodEntryResult>
+                                  FoodEntrySheetResult
                                 >(
                                   context,
                                   builder: (context) => const FoodEntrySheet(
@@ -167,23 +167,23 @@ class MealLogSection extends StatelessWidget {
                                     showAddToUsualMeals: true,
                                   ),
                                 );
-                            if (results == null) return;
-                            for (final result in results) {
-                              if (result.addToUsualMeals) {
+                            if (result == null) return;
+                            for (final foodResult in result.foods) {
+                              if (foodResult.addToUsualMeals) {
                                 getIt<UserSettingsBloc>().add(
                                   UserSettingsEvent.usualMealAdded(
                                     mealOfTheDay,
-                                    result.name,
-                                    result.nutrition,
+                                    foodResult.name,
+                                    foodResult.nutrition,
                                   ),
                                 );
                               }
                               getIt<DailyLogBloc>().add(
                                 DailyLogEvent.mealLogged(
                                   mealOfTheDay,
-                                  result.name,
-                                  nutrition: result.nutrition,
-                                  quantity: result.quantity,
+                                  foodResult.name,
+                                  nutrition: foodResult.nutrition,
+                                  quantity: foodResult.quantity,
                                   day: day,
                                   dayStart: dayStart,
                                 ),

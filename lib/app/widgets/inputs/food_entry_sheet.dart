@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:the_usual/app/widgets/inputs/food_entry_form.dart';
-import 'package:the_usual/app/widgets/layout/the_usual_bottom_sheet.dart';
+import 'package:the_usual/app/app.dart';
+
+/// The value [FoodEntrySheet] pops when the user confirms: the list of foods
+/// they entered and the meal slot those foods belong to.
+typedef FoodEntrySheetResult = ({
+  List<FoodEntryResult> foods,
+  MealOfTheDay mealOfTheDay,
+});
 
 /// {@template food_entry_sheet}
 /// Bottom sheet for capturing what the user ate, by hand or with AI assistance.
-/// Wraps a [FoodEntryForm] with a heading and a confirm button; pops with the
-/// list of [FoodEntryResult]s to log, or null when cancelled.
+/// Wraps a [FoodEntryForm] with a heading and a confirm button; pops with a
+/// [FoodEntrySheetResult] containing the foods and target meal slot, or null
+/// when cancelled.
 /// {@endtemplate}
 class FoodEntrySheet extends StatefulWidget {
   /// {@macro food_entry_sheet}
@@ -14,6 +21,10 @@ class FoodEntrySheet extends StatefulWidget {
     required this.confirmLabel,
     this.showAddToUsualMeals = false,
     this.showQuantity = true,
+    this.showMealSelector = false,
+    this.initialPhotos,
+    this.autoEstimate = false,
+    this.initialMealOfTheDay,
     super.key,
   });
 
@@ -29,6 +40,20 @@ class FoodEntrySheet extends StatefulWidget {
   /// Whether to show the quantity stepper. When false the quantity is always 1.
   final bool showQuantity;
 
+  /// Whether to show the meal slot selector. Wired in a later task; currently
+  /// defaults to false and has no visible effect.
+  final bool showMealSelector;
+
+  /// Photos to pre-load into the form (e.g. from the OS share target).
+  final List<MealPhoto>? initialPhotos;
+
+  /// When true and [initialPhotos] is non-empty, kicks a photo estimate
+  /// immediately after the form starts.
+  final bool autoEstimate;
+
+  /// The target meal slot to pre-select in the form.
+  final MealOfTheDay? initialMealOfTheDay;
+
   @override
   State<FoodEntrySheet> createState() => _FoodEntrySheetState();
 }
@@ -37,9 +62,12 @@ class _FoodEntrySheetState extends State<FoodEntrySheet> {
   final _formKey = GlobalKey<FoodEntryFormState>();
 
   void _confirm() {
-    final results = _formKey.currentState?.results ?? const [];
-    if (results.isEmpty) return;
-    Navigator.of(context).pop(results);
+    final form = _formKey.currentState;
+    final results = form?.results ?? const [];
+    if (results.isEmpty || form == null) return;
+    Navigator.of(context).pop(
+      (foods: results, mealOfTheDay: form.mealOfTheDay),
+    );
   }
 
   @override
@@ -56,6 +84,9 @@ class _FoodEntrySheetState extends State<FoodEntrySheet> {
             key: _formKey,
             showQuantity: widget.showQuantity,
             showAddToUsualMeals: widget.showAddToUsualMeals,
+            initialPhotos: widget.initialPhotos,
+            autoEstimate: widget.autoEstimate,
+            initialMealOfTheDay: widget.initialMealOfTheDay,
             onChanged: () => setState(() {}),
           ),
           FilledButton(

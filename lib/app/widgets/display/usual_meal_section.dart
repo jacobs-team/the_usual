@@ -96,8 +96,8 @@ class UsualMealSection extends StatelessWidget {
           if (getIt<MealAiRepository>().isConfigured) ...[
             FilledButton.tonalIcon(
               onPressed: () async {
-                final results =
-                    await TheUsualBottomSheet.show<List<FoodEntryResult>>(
+                final result =
+                    await TheUsualBottomSheet.show<FoodEntrySheetResult>(
                       context,
                       builder: (context) => const FoodEntrySheet(
                         title: 'Add usual meals',
@@ -105,9 +105,9 @@ class UsualMealSection extends StatelessWidget {
                         showQuantity: false,
                       ),
                     );
-                if (results == null) return;
-                for (final result in results) {
-                  onAdded!(result.name, result.nutrition);
+                if (result == null) return;
+                for (final foodResult in result.foods) {
+                  onAdded!(foodResult.name, foodResult.nutrition);
                 }
               },
               icon: const Icon(Icons.auto_awesome_outlined),
