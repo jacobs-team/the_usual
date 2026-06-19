@@ -89,6 +89,14 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
 
   static const _uuid = Uuid();
 
+  /// Shown when an estimate is requested but no AI key is configured.
+  static const _aiUnavailableMessage = 'Nutrition estimation needs an API key.';
+
+  /// Shown when an estimate request reaches the AI but fails. Deliberately
+  /// generic so backend error detail is never surfaced to the user.
+  static const _estimateFailedMessage =
+      'Could not estimate nutrition. Please try again.';
+
   /// Returns [state.foods] with the row whose id is [id] transformed by
   /// [transform]; other rows are left as-is.
   List<FoodDraft> _mapFood(String id, FoodDraft Function(FoodDraft) transform) {
@@ -156,6 +164,15 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
         .where((foodDraft) => foodDraft.name.trim().isNotEmpty)
         .toList();
     if (namedFoods.isEmpty) return;
+    if (!_mealAiRepository.isConfigured) {
+      emit(
+        state.copyWith(
+          status: MealEntryStatus.failure,
+          errorMessage: _aiUnavailableMessage,
+        ),
+      );
+      return;
+    }
 
     emit(
       state.copyWith(status: MealEntryStatus.generating, errorMessage: null),
@@ -181,11 +198,11 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
         return;
       }
       await _estimateEachRow(namedFoods, emit);
-    } on Object catch (error) {
+    } on Object {
       emit(
         state.copyWith(
           status: MealEntryStatus.failure,
-          errorMessage: 'Could not estimate nutrition: $error',
+          errorMessage: _estimateFailedMessage,
         ),
       );
     }
@@ -240,6 +257,15 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
 
   Future<void> _runPhotoEstimate(Emitter<MealEntryState> emit) async {
     if (state.photos.isEmpty) return;
+    if (!_mealAiRepository.isConfigured) {
+      emit(
+        state.copyWith(
+          status: MealEntryStatus.failure,
+          errorMessage: _aiUnavailableMessage,
+        ),
+      );
+      return;
+    }
     final firstName = state.foods.isEmpty ? '' : state.foods.first.name.trim();
     final hasDescription = firstName.isNotEmpty;
     emit(
@@ -263,11 +289,11 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
           ),
         ),
       );
-    } on Object catch (error) {
+    } on Object {
       emit(
         state.copyWith(
           status: MealEntryStatus.failure,
-          errorMessage: 'Could not estimate nutrition: $error',
+          errorMessage: _estimateFailedMessage,
         ),
       );
     }
