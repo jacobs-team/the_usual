@@ -13,6 +13,7 @@ void main() {
     late UserSettingsBloc userSettingsBloc;
     late DailyLogBloc dailyLogBloc;
     late NotificationService notificationService;
+    late ShareIngestService shareIngestService;
 
     const completeState = OnboardingState(
       step: OnboardingStep.complete,
@@ -80,11 +81,20 @@ void main() {
         ),
       ).thenAnswer((_) async {});
 
+      shareIngestService = MockShareIngestService();
+      when(
+        () => shareIngestService.photoStream,
+      ).thenAnswer((_) => const Stream.empty());
+      when(
+        () => shareIngestService.takeInitialPhotos(),
+      ).thenAnswer((_) async => const <MealPhoto>[]);
+
       GetIt.instance
         ..registerSingleton<OnboardingBloc>(onboardingBloc)
         ..registerSingleton<UserSettingsBloc>(userSettingsBloc)
         ..registerSingleton<DailyLogBloc>(dailyLogBloc)
         ..registerSingleton<NotificationService>(notificationService)
+        ..registerSingleton<ShareIngestService>(shareIngestService)
         ..registerLazySingleton<AppRouter>(AppRouter.new);
     });
 

@@ -22,6 +22,8 @@ class MockUserSettingsBloc
 
 class MockNotificationService extends Mock implements NotificationService {}
 
+class MockShareIngestService extends Mock implements ShareIngestService {}
+
 class MockFlutterLocalNotificationsPlugin extends Mock
     implements FlutterLocalNotificationsPlugin {}
 

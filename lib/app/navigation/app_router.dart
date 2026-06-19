@@ -21,6 +21,7 @@ class AppRouter {
     // this._authCubit
   ) {
     router = GoRouter(
+      navigatorKey: rootNavigatorKey,
       initialLocation: Routes.today,
       redirect: (context, state) {
         final onboardingComplete =
@@ -37,6 +38,11 @@ class AppRouter {
 
   /// The [GoRouter] instance used by the application.
   late final GoRouter router;
+
+  /// Navigator key for the root navigator, used to present overlays (e.g. the
+  /// share-to-log sheet) without a widget context.
+  static final GlobalKey<NavigatorState> rootNavigatorKey =
+      GlobalKey<NavigatorState>();
 
   /// The list of top-level and nested Routes.
   static final List<RouteBase> routes = [

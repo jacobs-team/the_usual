@@ -30,6 +30,11 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
   /// is routed to Today.
   final _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
+  StreamSubscription<List<MealPhoto>>? _shareSubscription;
+
+  /// Photos received before onboarding completes; drained when it does.
+  List<MealPhoto> _pendingShare = const [];
+
   @override
   void initState() {
     super.initState();
@@ -37,6 +42,69 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
     // Tapping a reminder takes the user to Today, where they log meals.
     getIt<NotificationService>().onReminderTapped = () =>
         getIt<AppRouter>().router.go(Routes.today);
+    _shareSubscription =
+        getIt<ShareIngestService>().photoStream.listen(_handleSharedPhotos);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final initial = await getIt<ShareIngestService>().takeInitialPhotos();
+      if (initial.isNotEmpty) _handleSharedPhotos(initial);
+    });
+  }
+
+  @override
+  void dispose() {
+    unawaited(_shareSubscription?.cancel());
+    super.dispose();
+  }
+
+  void _handleSharedPhotos(List<MealPhoto> photos) {
+    if (photos.isEmpty) return;
+    final onboardingComplete =
+        getIt<OnboardingBloc>().state.step == OnboardingStep.complete;
+    if (!onboardingComplete) {
+      _pendingShare = photos;
+      return;
+    }
+    unawaited(_openShareSheet(photos));
+  }
+
+  Future<void> _openShareSheet(List<MealPhoto> photos) async {
+    final navigatorContext = AppRouter.rootNavigatorKey.currentContext;
+    if (navigatorContext == null) return;
+    getIt<AppRouter>().router.go(Routes.today);
+    final result = await TheUsualBottomSheet.show<FoodEntrySheetResult>(
+      navigatorContext,
+      builder: (context) => FoodEntrySheet(
+        title: 'Log from photo',
+        confirmLabel: 'Log',
+        showMealSelector: true,
+        showAddToUsualMeals: true,
+        initialPhotos: photos,
+        autoEstimate: true,
+        initialMealOfTheDay: MealOfTheDay.fromTime(
+          TimeOfDay.fromDateTime(clock.now()),
+        ),
+      ),
+    );
+    if (result == null) return;
+    for (final foodResult in result.foods) {
+      if (foodResult.addToUsualMeals) {
+        getIt<UserSettingsBloc>().add(
+          UserSettingsEvent.usualMealAdded(
+            result.mealOfTheDay,
+            foodResult.name,
+            foodResult.nutrition,
+          ),
+        );
+      }
+      getIt<DailyLogBloc>().add(
+        DailyLogEvent.mealLogged(
+          result.mealOfTheDay,
+          foodResult.name,
+          nutrition: foodResult.nutrition,
+          quantity: foodResult.quantity,
+        ),
+      );
+    }
   }
 
   /// Reschedules reminders from the current settings, suppressing today's
@@ -125,6 +193,13 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
             // Onboarding has no completion screen: drop the user into Today and
             // point out that everything is editable in Settings.
             getIt<AppRouter>().router.go(Routes.today);
+            if (_pendingShare.isNotEmpty) {
+              final photos = _pendingShare;
+              _pendingShare = const [];
+              WidgetsBinding.instance.addPostFrameCallback(
+                (_) => _openShareSheet(photos),
+              );
+            }
             _scaffoldMessengerKey.currentState?.showSnackBar(
               const SnackBar(
                 content: Text(
