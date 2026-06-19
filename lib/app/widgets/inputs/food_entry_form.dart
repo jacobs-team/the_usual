@@ -77,10 +77,11 @@ class FoodEntryForm extends StatefulWidget {
 class FoodEntryFormState extends State<FoodEntryForm> {
   late final FoodEntryBloc _bloc;
 
-  // Tracks ids of food drafts whose addToUsualMeals has been set to the
-  // correct default for this form. When an estimate creates new drafts with
-  // new ids (which default to false in the bloc), the listener syncs them to
-  // widget.showAddToUsualMeals before the row renders.
+  /// Ids of food drafts that have already had their `addToUsualMeals` flag
+  /// synced to the form's [FoodEntryForm.showAddToUsualMeals] default. The
+  /// bloc always creates new rows with `addToUsualMeals: false`; the listener
+  /// fires a toggle event once per new id so each row starts checked when the
+  /// form-level default is true.
   final Set<String> _initializedFoodIds = {};
 
   static const _uuid = Uuid();
@@ -181,6 +182,8 @@ class FoodEntryFormState extends State<FoodEntryForm> {
           // estimate uses addToUsualMeals: false (the bloc doesn't know about
           // the form setting). Sync new ids to the correct default here so the
           // user sees each row checked by default, matching the old behavior.
+          final currentIds = state.foods.map((f) => f.id).toSet();
+          _initializedFoodIds.retainWhere(currentIds.contains);
           if (widget.showAddToUsualMeals) {
             for (final foodDraft in state.foods) {
               if (!_initializedFoodIds.contains(foodDraft.id)) {
@@ -194,149 +197,149 @@ class FoodEntryFormState extends State<FoodEntryForm> {
               }
             }
           } else {
-            _initializedFoodIds.addAll(state.foods.map((f) => f.id));
+            _initializedFoodIds.addAll(currentIds);
           }
         },
-        builder: (context, state) => _buildForm(context, state),
-      ),
-    );
-  }
-
-  Widget _buildForm(BuildContext context, MealEntryState state) {
-    final textTheme = Theme.of(context).textTheme;
-    final isGenerating = state.isGenerating;
-    final aiButtonStyle = FilledButton.styleFrom(
-      visualDensity: VisualDensity.compact,
-      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      padding: EdgeInsets.symmetric(
-        horizontal: AppDesign.spacing.md,
-        vertical: AppDesign.spacing.sm,
-      ),
-    );
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        if (_aiAvailable) ...[
-          Row(
+        builder: (context, state) {
+          final textTheme = Theme.of(context).textTheme;
+          final isGenerating = state.isGenerating;
+          final aiButtonStyle = FilledButton.styleFrom(
+            visualDensity: VisualDensity.compact,
+            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            padding: EdgeInsets.symmetric(
+              horizontal: AppDesign.spacing.md,
+              vertical: AppDesign.spacing.sm,
+            ),
+          );
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Expanded(
-                child: FilledButton.tonalIcon(
-                  style: aiButtonStyle,
-                  onPressed: isGenerating
-                      ? null
-                      : () {
-                          if (!_bloc.state.hasContent) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Type a meal name or description first.',
+              if (_aiAvailable) ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: FilledButton.tonalIcon(
+                        style: aiButtonStyle,
+                        onPressed: isGenerating
+                            ? null
+                            : () {
+                                if (!_bloc.state.hasContent) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Type a meal name or description first.',
+                                      ),
+                                    ),
+                                  );
+                                  return;
+                                }
+                                _bloc.add(
+                                  const MealEntryEvent.estimateRequested(),
+                                );
+                              },
+                        icon: const Icon(Icons.auto_awesome_outlined, size: 18),
+                        label: const Text('Estimate'),
+                      ),
+                    ),
+                    SizedBox(width: AppDesign.spacing.sm),
+                    Expanded(
+                      child: FilledButton.tonalIcon(
+                        style: aiButtonStyle,
+                        onPressed: isGenerating ? null : _photoWithAi,
+                        icon: const Icon(Icons.photo_camera_outlined, size: 18),
+                        label: const Text('Photo'),
+                      ),
+                    ),
+                    SizedBox(width: AppDesign.spacing.sm),
+                    Checkbox(
+                      visualDensity: VisualDensity.compact,
+                      value: state.mealEntryMode == MealEntryMode.itemized,
+                      onChanged: isGenerating
+                          ? null
+                          : (value) => _bloc.add(
+                                MealEntryEvent.entryModeToggled(
+                                  (value ?? false)
+                                      ? MealEntryMode.itemized
+                                      : MealEntryMode.wholeMeal,
                                 ),
                               ),
-                            );
-                            return;
-                          }
-                          _bloc.add(const MealEntryEvent.estimateRequested());
-                        },
-                  icon: const Icon(Icons.auto_awesome_outlined, size: 18),
-                  label: const Text('Estimate'),
+                    ),
+                    const Text('Itemize'),
+                    Tooltip(
+                      message: MealEntryMode.itemized.detail,
+                      triggerMode: TooltipTriggerMode.tap,
+                      showDuration: const Duration(seconds: 4),
+                      child: Padding(
+                        padding: EdgeInsets.all(AppDesign.spacing.xs),
+                        child: const Icon(Icons.info_outline, size: 18),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              SizedBox(width: AppDesign.spacing.sm),
-              Expanded(
-                child: FilledButton.tonalIcon(
-                  style: aiButtonStyle,
-                  onPressed: isGenerating ? null : _photoWithAi,
-                  icon: const Icon(Icons.photo_camera_outlined, size: 18),
-                  label: const Text('Photo'),
+                if (isGenerating) ...[
+                  SizedBox(height: AppDesign.spacing.sm),
+                  Row(
+                    children: [
+                      const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                      SizedBox(width: AppDesign.spacing.sm),
+                      Text('Estimating…', style: textTheme.bodySmall),
+                    ],
+                  ),
+                ],
+                SizedBox(height: AppDesign.spacing.md),
+              ],
+              for (var index = 0; index < state.foods.length; index++) ...[
+                if (index > 0) SizedBox(height: AppDesign.spacing.md),
+                _FoodEntryRow(
+                  key: ValueKey(state.foods[index].id),
+                  foodDraft: state.foods[index],
+                  autofocus: widget.autofocusFirst && index == 0,
+                  showQuantity: widget.showQuantity,
+                  showAddToUsualMeals: widget.showAddToUsualMeals,
+                  canRemove: state.foods.length > 1,
+                  onNameChanged: (name) => _bloc.add(
+                    MealEntryEvent.foodNameChanged(state.foods[index].id, name),
+                  ),
+                  onNutritionChanged: (nutrition) => _bloc.add(
+                    MealEntryEvent.foodNutritionChanged(
+                      state.foods[index].id,
+                      nutrition,
+                    ),
+                  ),
+                  onQuantityChanged: (quantity) => _bloc.add(
+                    MealEntryEvent.foodQuantityChanged(
+                      state.foods[index].id,
+                      quantity,
+                    ),
+                  ),
+                  onAddToUsualMealsToggled: (addToUsualMeals) => _bloc.add(
+                    MealEntryEvent.foodAddToUsualMealsToggled(
+                      state.foods[index].id,
+                      addToUsualMeals: addToUsualMeals,
+                    ),
+                  ),
+                  onRemove: () => _bloc.add(
+                    MealEntryEvent.foodRemoved(state.foods[index].id),
+                  ),
                 ),
-              ),
-              SizedBox(width: AppDesign.spacing.sm),
-              Checkbox(
-                visualDensity: VisualDensity.compact,
-                value: state.mealEntryMode == MealEntryMode.itemized,
-                onChanged: isGenerating
-                    ? null
-                    : (value) => _bloc.add(
-                          MealEntryEvent.entryModeToggled(
-                            (value ?? false)
-                                ? MealEntryMode.itemized
-                                : MealEntryMode.wholeMeal,
-                          ),
-                        ),
-              ),
-              const Text('Itemize'),
-              Tooltip(
-                message: MealEntryMode.itemized.detail,
-                triggerMode: TooltipTriggerMode.tap,
-                showDuration: const Duration(seconds: 4),
-                child: Padding(
-                  padding: EdgeInsets.all(AppDesign.spacing.xs),
-                  child: const Icon(Icons.info_outline, size: 18),
+              ],
+              Align(
+                alignment: Alignment.centerLeft,
+                child: TextButton.icon(
+                  onPressed: () => _bloc.add(const MealEntryEvent.foodAdded()),
+                  icon: const Icon(Icons.add),
+                  label: const Text('Add item'),
                 ),
               ),
             ],
-          ),
-          if (isGenerating) ...[
-            SizedBox(height: AppDesign.spacing.sm),
-            Row(
-              children: [
-                const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-                SizedBox(width: AppDesign.spacing.sm),
-                Text('Estimating…', style: textTheme.bodySmall),
-              ],
-            ),
-          ],
-          SizedBox(height: AppDesign.spacing.md),
-        ],
-        for (var index = 0; index < state.foods.length; index++) ...[
-          if (index > 0) SizedBox(height: AppDesign.spacing.md),
-          _FoodEntryRow(
-            key: ValueKey(state.foods[index].id),
-            foodDraft: state.foods[index],
-            autofocus: widget.autofocusFirst && index == 0,
-            showQuantity: widget.showQuantity,
-            showAddToUsualMeals: widget.showAddToUsualMeals,
-            canRemove: state.foods.length > 1,
-            onNameChanged: (name) => _bloc.add(
-              MealEntryEvent.foodNameChanged(state.foods[index].id, name),
-            ),
-            onNutritionChanged: (nutrition) => _bloc.add(
-              MealEntryEvent.foodNutritionChanged(
-                state.foods[index].id,
-                nutrition,
-              ),
-            ),
-            onQuantityChanged: (quantity) => _bloc.add(
-              MealEntryEvent.foodQuantityChanged(
-                state.foods[index].id,
-                quantity,
-              ),
-            ),
-            onAddToUsualMealsToggled: (addToUsualMeals) => _bloc.add(
-              MealEntryEvent.foodAddToUsualMealsToggled(
-                state.foods[index].id,
-                addToUsualMeals: addToUsualMeals,
-              ),
-            ),
-            onRemove: () => _bloc.add(
-              MealEntryEvent.foodRemoved(state.foods[index].id),
-            ),
-          ),
-        ],
-        Align(
-          alignment: Alignment.centerLeft,
-          child: TextButton.icon(
-            onPressed: () => _bloc.add(const MealEntryEvent.foodAdded()),
-            icon: const Icon(Icons.add),
-            label: const Text('Add item'),
-          ),
-        ),
-      ],
+          );
+        },
+      ),
     );
   }
 }
