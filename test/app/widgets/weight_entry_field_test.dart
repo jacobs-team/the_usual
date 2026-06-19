@@ -41,6 +41,9 @@ void main() {
       return bloc;
     }
 
+    String fieldText(WidgetTester tester) =>
+        tester.widget<TextField>(find.byType(TextField)).controller!.text;
+
     testWidgets('prefills with the day weight', (tester) async {
       final dailyLogBloc = dailyLogBlocWith([weightEntryOn(day, 165.5)]);
       await tester.pumpPumpPumpItUP(
@@ -48,7 +51,7 @@ void main() {
         deps: [dailyLogBloc],
       );
 
-      expect(find.text('165.5'), findsOneWidget);
+      expect(fieldText(tester), equals('165.5'));
     });
 
     testWidgets('typing a weight dispatches weightOnDayChanged', (
@@ -127,9 +130,9 @@ void main() {
         deps: [dailyLogBloc],
       );
 
-      expect(find.text('Use last (180)'), findsOneWidget);
+      expect(find.byType(TextButton), findsOneWidget);
 
-      await tester.tap(find.text('Use last (180)'));
+      await tester.tap(find.byType(TextButton));
       await tester.pump();
 
       verify(
@@ -151,7 +154,7 @@ void main() {
         deps: [dailyLogBloc],
       );
 
-      expect(find.textContaining('Use last'), findsNothing);
+      expect(find.byType(TextButton), findsNothing);
     });
 
     testWidgets('syncs the field to an externally-set weight', (tester) async {
@@ -170,7 +173,7 @@ void main() {
         deps: [dailyLogBloc],
       );
 
-      expect(find.text('175'), findsNothing);
+      expect(fieldText(tester), equals(''));
 
       currentState = DailyLogState(
         weightEntries: [weightEntryOn(day, 175)],
@@ -178,7 +181,7 @@ void main() {
       stateController.add(currentState);
       await tester.pump();
 
-      expect(find.text('175'), findsOneWidget);
+      expect(fieldText(tester), equals('175'));
     });
 
     testWidgets('syncs an externally-set weight even while focused', (
@@ -210,7 +213,7 @@ void main() {
       stateController.add(currentState);
       await tester.pump();
 
-      expect(find.text('175'), findsOneWidget);
+      expect(fieldText(tester), equals('175'));
     });
   });
 }

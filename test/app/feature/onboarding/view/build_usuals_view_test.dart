@@ -53,7 +53,15 @@ void main() {
       final stack = find.byType(IndexedStack);
       expect(tester.widget<IndexedStack>(stack).index, equals(0));
 
-      await tester.tap(find.text(MealOfTheDay.lunch.label));
+      const lunchIndex = 1;
+      await tester.tap(
+        find
+            .descendant(
+              of: find.byType(SegmentedButton<MealOfTheDay>),
+              matching: find.byType(Text),
+            )
+            .at(lunchIndex),
+      );
       await tester.pumpAndSettle();
 
       expect(
@@ -115,7 +123,10 @@ void main() {
       await pumpView(tester, onboardingBloc);
 
       // The breakfast form, selected first, seeds a row from the saved usual.
-      expect(find.text('Eggs'), findsOneWidget);
+      final nameField = tester.widget<TextFormField>(
+        find.byType(TextFormField).first,
+      );
+      expect(nameField.controller?.text, equals('Eggs'));
 
       await tester.tap(continueButton());
       await tester.pump();

@@ -80,7 +80,6 @@ void main() {
       );
 
       expect(find.byType(DevToolsView), findsOneWidget);
-      expect(find.text('Dev Tools'), findsOneWidget);
     });
 
     testWidgets('triggers toggleDebugApi when Debug API switch is toggled', (
@@ -91,7 +90,7 @@ void main() {
         const DevToolsView(),
       );
 
-      await tester.tap(find.text('Debug API'));
+      await tester.tap(find.byType(SwitchListTile));
 
       verify(() => devToolsCubit.toggleDebugApi()).called(1);
     });
@@ -102,7 +101,7 @@ void main() {
         const DevToolsView(),
       );
 
-      await tester.tap(find.text('Load sample history'));
+      await tester.tap(find.byIcon(Icons.history));
 
       verify(
         () => dailyLogBloc.add(const DailyLogEvent.sampleDataSeeded()),
@@ -121,13 +120,11 @@ void main() {
           const DevToolsView(),
         );
 
-        await tester.tap(find.text('Test Claude connection'));
+        await tester.tap(find.byIcon(Icons.auto_awesome_outlined));
         await tester.pump();
 
-        expect(
-          find.text('No ANTHROPIC_API_KEY set in config.'),
-          findsOneWidget,
-        );
+        expect(find.byType(SnackBar), findsOneWidget);
+        verifyNever(() => mealAiRepository.debugEcho(any()));
       });
 
       testWidgets('shows the reply when the echo succeeds', (tester) async {
@@ -141,7 +138,7 @@ void main() {
           const DevToolsView(),
         );
 
-        await tester.tap(find.text('Test Claude connection'));
+        await tester.tap(find.byIcon(Icons.auto_awesome_outlined));
         await tester.pump();
         await tester.pump();
 
@@ -161,7 +158,7 @@ void main() {
           const DevToolsView(),
         );
 
-        await tester.tap(find.text('Test Claude connection'));
+        await tester.tap(find.byIcon(Icons.auto_awesome_outlined));
         await tester.pump();
         await tester.pump();
 
@@ -180,12 +177,15 @@ void main() {
           const DevToolsView(),
         );
 
-        await tester.tap(find.text('Test meal extraction'));
+        await tester.tap(find.byIcon(Icons.restaurant_outlined));
         await tester.pump();
 
-        expect(
-          find.text('No ANTHROPIC_API_KEY set in config.'),
-          findsOneWidget,
+        expect(find.byType(SnackBar), findsOneWidget);
+        verifyNever(
+          () => mealAiRepository.suggestFromDescription(
+            any(),
+            mode: any(named: 'mode'),
+          ),
         );
       });
 
@@ -203,7 +203,7 @@ void main() {
           const DevToolsView(),
         );
 
-        await tester.tap(find.text('Test meal extraction'));
+        await tester.tap(find.byIcon(Icons.restaurant_outlined));
         await tester.pump();
         await tester.pump();
 
@@ -231,7 +231,7 @@ void main() {
           const DevToolsView(),
         );
 
-        await tester.tap(find.text('Test meal extraction'));
+        await tester.tap(find.byIcon(Icons.restaurant_outlined));
         await tester.pump();
         await tester.pump();
 
@@ -255,12 +255,15 @@ void main() {
           const DevToolsView(),
         );
 
-        await tester.tap(find.text('Test photo extraction'));
+        await tester.tap(find.byIcon(Icons.photo_camera_outlined));
         await tester.pump();
 
-        expect(
-          find.text('No ANTHROPIC_API_KEY set in config.'),
-          findsOneWidget,
+        expect(find.byType(SnackBar), findsOneWidget);
+        verifyNever(
+          () => mealAiRepository.suggestFromPhoto(
+            any(),
+            mode: any(named: 'mode'),
+          ),
         );
       });
 
@@ -274,17 +277,18 @@ void main() {
           const DevToolsView(),
         );
 
-        await tester.tap(find.text('Test photo extraction'));
+        await tester.tap(find.byIcon(Icons.photo_camera_outlined));
         await tester.pumpAndSettle();
 
-        expect(find.text('Photo source'), findsOneWidget);
+        expect(find.byType(SimpleDialog), findsOneWidget);
 
-        // Cancel the dialog without choosing a source: pickMealPhoto returns
-        // null and the handler returns early before touching the picker plugin.
+        // Cancel the dialog without choosing a source: pickMealPhotos returns
+        // an empty list and the handler returns early before touching the
+        // picker plugin.
         await tester.tapAt(const Offset(10, 10));
         await tester.pumpAndSettle();
 
-        expect(find.text('Photo source'), findsNothing);
+        expect(find.byType(SimpleDialog), findsNothing);
         verifyNever(
           () => mealAiRepository.suggestFromPhoto(
             any(),
@@ -310,9 +314,10 @@ void main() {
           const DevToolsView(),
         );
 
-        await tester.tap(find.text('Test photo extraction'));
+        await tester.tap(find.byIcon(Icons.photo_camera_outlined));
         await tester.pumpAndSettle();
-        await tester.tap(find.text('Camera'));
+        // First dialog option is the camera source.
+        await tester.tap(find.byType(SimpleDialogOption).first);
         await tester.pump();
         await tester.pump();
 
@@ -341,9 +346,10 @@ void main() {
           const DevToolsView(),
         );
 
-        await tester.tap(find.text('Test photo extraction'));
+        await tester.tap(find.byIcon(Icons.photo_camera_outlined));
         await tester.pumpAndSettle();
-        await tester.tap(find.text('Photo library'));
+        // Last dialog option is the photo-library source.
+        await tester.tap(find.byType(SimpleDialogOption).last);
         await tester.pump();
         await tester.pump();
 
@@ -362,10 +368,10 @@ void main() {
         const DevToolsView(),
       );
 
-      await tester.tap(find.text('Dump saved storage'));
+      await tester.tap(find.byIcon(Icons.bug_report_outlined));
       await tester.pump();
 
-      expect(find.text('Dump saved storage'), findsOneWidget);
+      expect(find.byIcon(Icons.bug_report_outlined), findsOneWidget);
     });
 
     group('Restore usuals from log', () {
@@ -421,11 +427,11 @@ void main() {
         );
 
         await tester.scrollUntilVisible(
-          find.text('Restore usuals from log'),
+          find.byIcon(Icons.restore),
           200,
           scrollable: find.byType(Scrollable).first,
         );
-        await tester.tap(find.text('Restore usuals from log'));
+        await tester.tap(find.byIcon(Icons.restore));
         await tester.pump();
 
         verify(() => userSettingsBloc.add(any())).called(1);
@@ -439,6 +445,8 @@ void main() {
         () => onboardingBloc.stream,
       ).thenAnswer((_) => const Stream.empty());
 
+      const onboardingPageKey = Key('onboarding-page');
+
       final router = GoRouter(
         initialLocation: '/dev',
         routes: [
@@ -448,7 +456,7 @@ void main() {
           ),
           GoRoute(
             path: Routes.onboarding,
-            builder: (_, _) => const Text('onboarding-page'),
+            builder: (_, _) => const SizedBox.shrink(key: onboardingPageKey),
           ),
         ],
       );
@@ -460,17 +468,17 @@ void main() {
       );
 
       await tester.scrollUntilVisible(
-        find.text('Reset app state'),
+        find.byIcon(Icons.restart_alt),
         200,
         scrollable: find.byType(Scrollable).first,
       );
-      await tester.tap(find.text('Reset app state'));
+      await tester.tap(find.byIcon(Icons.restart_alt));
       await tester.pumpAndSettle();
 
       verify(
         () => onboardingBloc.add(const OnboardingEvent.resetPressed()),
       ).called(1);
-      expect(find.text('onboarding-page'), findsOneWidget);
+      expect(find.byKey(onboardingPageKey), findsOneWidget);
     });
   });
 }

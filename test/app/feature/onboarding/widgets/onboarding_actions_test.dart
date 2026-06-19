@@ -9,11 +9,11 @@ void main() {
     testWidgets('renders the primary action only', (tester) async {
       await tester.pumpPumpPumpItUP(
         const OnboardingActions(
-          primary: Text('primary'),
+          primary: SizedBox(key: Key('primary')),
         ),
       );
 
-      expect(find.text('primary'), findsOneWidget);
+      expect(find.byKey(const Key('primary')), findsOneWidget);
     });
 
     testWidgets('renders the above and secondary slots when given', (
@@ -21,15 +21,15 @@ void main() {
     ) async {
       await tester.pumpPumpPumpItUP(
         const OnboardingActions(
-          primary: Text('primary'),
-          secondary: Text('secondary'),
-          above: Text('above'),
+          primary: SizedBox(key: Key('primary')),
+          secondary: SizedBox(key: Key('secondary')),
+          above: SizedBox(key: Key('above')),
         ),
       );
 
-      expect(find.text('primary'), findsOneWidget);
-      expect(find.text('secondary'), findsOneWidget);
-      expect(find.text('above'), findsOneWidget);
+      expect(find.byKey(const Key('primary')), findsOneWidget);
+      expect(find.byKey(const Key('secondary')), findsOneWidget);
+      expect(find.byKey(const Key('above')), findsOneWidget);
     });
   });
 }

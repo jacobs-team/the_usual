@@ -37,7 +37,12 @@ void main() {
         const ReminderStyleSection(),
       );
 
-      await tester.tap(find.text(ReminderStyle.none.label));
+      // Cards render in ReminderStyle.values order.
+      await tester.tap(
+        find.byType(RadioOptionCard).at(
+          ReminderStyle.values.indexOf(ReminderStyle.none),
+        ),
+      );
 
       verify(
         () => userSettingsBloc.add(
@@ -57,7 +62,11 @@ void main() {
         const ReminderStyleSection(),
       );
 
-      await tester.tap(find.text(ReminderStyle.notifications.label));
+      await tester.tap(
+        find.byType(RadioOptionCard).at(
+          ReminderStyle.values.indexOf(ReminderStyle.notifications),
+        ),
+      );
       await tester.pumpAndSettle();
 
       verify(
@@ -80,7 +89,11 @@ void main() {
         const ReminderStyleSection(),
       );
 
-      await tester.tap(find.text(ReminderStyle.notifications.label));
+      await tester.tap(
+        find.byType(RadioOptionCard).at(
+          ReminderStyle.values.indexOf(ReminderStyle.notifications),
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.byType(EnableNotificationsInSettingsDialog), findsOneWidget);

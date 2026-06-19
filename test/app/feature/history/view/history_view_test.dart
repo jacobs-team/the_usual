@@ -11,6 +11,18 @@ void main() {
   group(HistoryView, () {
     late DailyLogBloc dailyLogBloc;
 
+    // The month strip is the only horizontally scrolling list, so it anchors
+    // the month chips without reading their (localized) labels.
+    final monthStrip = find.byWidgetPredicate(
+      (widget) =>
+          widget is SingleChildScrollView &&
+          widget.scrollDirection == Axis.horizontal,
+    );
+    final monthChips = find.descendant(
+      of: monthStrip,
+      matching: find.byType(InkWell),
+    );
+
     void stub(DailyLogState state) {
       when(() => dailyLogBloc.state).thenReturn(state);
       when(() => dailyLogBloc.stream).thenAnswer((_) => const Stream.empty());
@@ -62,7 +74,9 @@ void main() {
         const HistoryView(),
       );
 
-      expect(find.textContaining('No history yet'), findsOneWidget);
+      // The empty branch shows neither the month strip nor any month pages.
+      expect(monthStrip, findsNothing);
+      expect(find.byType(PageView), findsNothing);
     });
 
     testWidgets('renders the month selector and day cards', (tester) async {
@@ -74,7 +88,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('History'), findsOneWidget);
+      expect(find.byType(TheUsualAppBar), findsOneWidget);
+      expect(monthStrip, findsOneWidget);
       expect(find.byType(ExpansionTile), findsWidgets);
     });
 
@@ -87,10 +102,13 @@ void main() {
       );
       await tester.pumpAndSettle();
 
+      // Day cards start collapsed, so no meal rows are shown yet.
+      expect(find.byType(LoggedEntryRow), findsNothing);
+
       await tester.tap(find.byType(ExpansionTile).first);
       await tester.pumpAndSettle();
 
-      expect(find.text('Eggs'), findsWidgets);
+      expect(find.byType(LoggedEntryRow), findsWidgets);
     });
 
     testWidgets('shows every meal with an add button on a day', (
@@ -119,11 +137,8 @@ void main() {
       await tester.tap(find.byType(ExpansionTile).first);
       await tester.pumpAndSettle();
 
-      expect(find.text('BREAKFAST'), findsOneWidget);
-      expect(find.text('LUNCH'), findsOneWidget);
-      expect(find.text('DINNER'), findsOneWidget);
-      expect(find.text('SNACKS'), findsOneWidget);
-      expect(find.byIcon(Icons.add), findsNWidgets(4));
+      // One add button per meal of the day.
+      expect(find.byIcon(Icons.add), findsNWidgets(MealOfTheDay.values.length));
     });
 
     testWidgets('tapping a meal add button opens the meal sheet', (
@@ -168,7 +183,7 @@ void main() {
       await tester.pumpAndSettle();
 
       // The earliest month is first in the strip; tap it to flip back.
-      await tester.tap(find.text('MAY'));
+      await tester.tap(monthChips.first);
       await tester.pumpAndSettle();
 
       expect(find.byType(PageView), findsOneWidget);
@@ -196,7 +211,8 @@ void main() {
         );
         await tester.pumpAndSettle();
 
-        expect(find.text('JUN'), findsOneWidget);
+        // Two months logged, so two chips in the strip.
+        expect(monthChips, findsNWidgets(2));
 
         final mayOnlyState = DailyLogState(
           mealEntries: [meal(DateTime(2026, 5, 10, 8), calories: 300)],
@@ -205,8 +221,10 @@ void main() {
         stateController.add(mayOnlyState);
         await tester.pumpAndSettle();
 
-        expect(find.text('JUN'), findsNothing);
-        expect(find.text('MAY'), findsOneWidget);
+        // The deleted month drops out of the strip, leaving one chip, and the
+        // page view stays mounted rather than crashing on the gone selection.
+        expect(monthChips, findsOneWidget);
+        expect(find.byType(PageView), findsOneWidget);
       },
     );
 

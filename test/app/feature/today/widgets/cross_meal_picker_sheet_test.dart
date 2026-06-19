@@ -48,18 +48,13 @@ void main() {
         MealOfTheDay.dinner: [UsualMeal(id: 'w', name: 'Steak')],
       });
 
-      expect(find.text('Log to Breakfast'), findsOneWidget);
-      expect(find.text('LUNCH'), findsOneWidget);
-      expect(find.text('Salad'), findsOneWidget);
-      expect(find.text('250 cal'), findsOneWidget);
-      expect(find.text('Soup'), findsOneWidget);
-      // A second group renders below the first, exercising the between-groups
-      // gap.
-      expect(
-        find.text(MealOfTheDay.dinner.label.toUpperCase()),
-        findsOneWidget,
+      // One tappable card per usual across both groups.
+      expect(find.byType(Card), findsNWidgets(3));
+      // Only the usual with nutrition renders a summary.
+      final summary = tester.widget<NutritionSummary>(
+        find.byType(NutritionSummary),
       );
-      expect(find.text('Steak'), findsOneWidget);
+      expect(summary.nutrition.calories, equals(250));
     });
 
     testWidgets('logs the tapped usual under the current meal', (tester) async {
@@ -73,7 +68,12 @@ void main() {
         ],
       });
 
-      await tester.tap(find.text('Salad'));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(Card),
+          matching: find.byType(InkWell),
+        ),
+      );
       await tester.pumpAndSettle();
 
       verify(
@@ -106,7 +106,12 @@ void main() {
         dayStart: const TimeOfDay(hour: 4, minute: 0),
       );
 
-      await tester.tap(find.text('Salad'));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(Card),
+          matching: find.byType(InkWell),
+        ),
+      );
       await tester.pumpAndSettle();
 
       verify(
@@ -141,7 +146,12 @@ void main() {
         dayStart: const TimeOfDay(hour: 4, minute: 0),
       );
 
-      await tester.tap(find.text('Salad'));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(Card),
+          matching: find.byType(InkWell),
+        ),
+      );
       await tester.pumpAndSettle();
 
       for (final day in [DateTime(2026, 6, 15), DateTime(2026, 6, 16)]) {

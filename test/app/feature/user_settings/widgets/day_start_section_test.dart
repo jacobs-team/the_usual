@@ -35,7 +35,7 @@ void main() {
         const DayStartSection(),
       );
 
-      expect(find.text('New day starts at'), findsOneWidget);
+      expect(find.byType(ListTile), findsOneWidget);
       expect(find.byType(ActionChip), findsOneWidget);
     });
 

@@ -6,14 +6,15 @@ import '../../../helpers/helpers.dart';
 
 void main() {
   group(TheUsualAppBar, () {
-    testWidgets('renders the string title when no title widget is given', (
+    testWidgets('renders a Text title when no title widget is given', (
       tester,
     ) async {
       await tester.pumpPumpPumpItUP(
         const Scaffold(appBar: TheUsualAppBar(title: 'History')),
       );
 
-      expect(find.text('History'), findsOneWidget);
+      final appBar = tester.widget<AppBar>(find.byType(AppBar));
+      expect(appBar.title, isA<Text>());
     });
 
     testWidgets('renders the title widget when provided', (tester) async {
@@ -27,7 +28,9 @@ void main() {
       );
 
       expect(find.byKey(const Key('custom-title')), findsOneWidget);
-      expect(find.text('Today'), findsNothing);
+
+      final appBar = tester.widget<AppBar>(find.byType(AppBar));
+      expect(appBar.title, isA<Icon>());
     });
   });
 }

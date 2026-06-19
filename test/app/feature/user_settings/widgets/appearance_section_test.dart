@@ -32,7 +32,14 @@ void main() {
         const AppearanceSection(),
       );
 
-      await tester.tap(find.text('Dark'));
+      // Segments render in ThemeMode.values order: system, light, dark.
+      final darkSegment = find
+          .descendant(
+            of: find.byType(ThemeModeSelector),
+            matching: find.byType(TextButton),
+          )
+          .at(ThemeMode.values.indexOf(ThemeMode.dark));
+      await tester.tap(darkSegment);
 
       verify(
         () => userSettingsBloc.add(

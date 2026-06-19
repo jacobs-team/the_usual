@@ -34,7 +34,8 @@ void main() {
           ),
           GoRoute(
             path: Routes.usualMeals,
-            builder: (_, _) => const Text('usual-meals-page'),
+            builder: (_, _) =>
+                const SizedBox.shrink(key: Key('usual-meals-page')),
           ),
         ],
       );
@@ -47,7 +48,11 @@ void main() {
         router: buildRouter(),
       );
 
-      expect(find.textContaining('1 items'), findsOneWidget);
+      // One usual was seeded, so the subtitle reflects that count.
+      final settingsNavRow = tester.widget<SettingsNavRow>(
+        find.byType(SettingsNavRow),
+      );
+      expect(settingsNavRow.subtitle, contains('1'));
     });
 
     testWidgets('navigates to the usual meals screen when tapped', (
@@ -62,7 +67,7 @@ void main() {
       await tester.tap(find.byType(SettingsNavRow));
       await tester.pumpAndSettle();
 
-      expect(find.text('usual-meals-page'), findsOneWidget);
+      expect(find.byKey(const Key('usual-meals-page')), findsOneWidget);
     });
   });
 }

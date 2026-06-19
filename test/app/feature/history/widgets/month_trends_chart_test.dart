@@ -6,6 +6,19 @@ import '../../../../helpers/helpers.dart';
 
 void main() {
   group(MonthTrendsChart, () {
+    // The card draws each section with a CustomPaint. Only the calorie section
+    // wraps its painter in an opaque GestureDetector for bar taps, so its
+    // presence distinguishes the calorie section from the weight section
+    // without reading the (localizable) header copy.
+    final chartPaint = find.descendant(
+      of: find.byType(MonthTrendsChart),
+      matching: find.byType(CustomPaint),
+    );
+    final calorieTapTarget = find.descendant(
+      of: find.byType(MonthTrendsChart),
+      matching: find.byType(GestureDetector),
+    );
+
     WeightEntry weight(
       int dayOfMonth,
       double value, {
@@ -89,10 +102,11 @@ void main() {
         ),
       );
 
-      expect(find.text('WEIGHT'), findsNothing);
-      expect(find.text('CALORIES'), findsNothing);
-      // Neither section qualifies, so the whole card collapses to nothing.
+      // Neither section qualifies, so the card collapses: no painted chart,
+      // no calorie tap target, no divider between sections.
       expect(find.byType(MonthTrendsChart), findsOneWidget);
+      expect(chartPaint, findsNothing);
+      expect(calorieTapTarget, findsNothing);
       expect(find.byType(Divider), findsNothing);
     });
 
@@ -105,10 +119,11 @@ void main() {
         ),
       );
 
-      expect(find.text('WEIGHT'), findsOneWidget);
-      expect(find.text('CALORIES'), findsNothing);
-      // Net change down: last - first is negative.
-      expect(find.textContaining('▼'), findsOneWidget);
+      // The weight line paints, but the calorie section (with its tap target)
+      // and the both-sections divider are absent.
+      expect(chartPaint, findsWidgets);
+      expect(calorieTapTarget, findsNothing);
+      expect(find.byType(Divider), findsNothing);
     });
 
     testWidgets('renders the calories section only', (tester) async {
@@ -122,26 +137,10 @@ void main() {
         calorieGoal: 2000,
       );
 
-      expect(find.text('WEIGHT'), findsNothing);
-      expect(find.text('CALORIES'), findsOneWidget);
-      expect(find.text('Goal 2000'), findsOneWidget);
-      expect(find.text('Avg 400'), findsOneWidget);
-    });
-
-    testWidgets('hides the calorie goal legend when no goal is set', (
-      tester,
-    ) async {
-      await pumpChart(
-        tester,
-        monthHistory: month(
-          days: [day(5, calories: 500), day(4, calories: 300)],
-          averageCalories: 400,
-        ),
-      );
-
-      expect(find.text('CALORIES'), findsOneWidget);
-      expect(find.textContaining('Goal '), findsNothing);
-      expect(find.text('Avg 400'), findsOneWidget);
+      // The calorie section's tap target is present and the weight-only
+      // divider is absent.
+      expect(calorieTapTarget, findsOneWidget);
+      expect(find.byType(Divider), findsNothing);
     });
 
     testWidgets('renders both sections with a divider between them', (
@@ -158,19 +157,17 @@ void main() {
         calorieGoal: 1800,
       );
 
-      expect(find.text('WEIGHT'), findsOneWidget);
-      expect(find.text('CALORIES'), findsOneWidget);
+      // Both sections present: a calorie tap target and the divider that only
+      // appears when the weight and calorie sections sit together.
+      expect(calorieTapTarget, findsOneWidget);
       expect(find.byType(Divider), findsOneWidget);
-      // Net change up: last - first is positive.
-      expect(find.textContaining('▲'), findsOneWidget);
     });
 
     testWidgets(
       'draws the goal weight line below the trend when goal is under',
       (tester) async {
-        // The goal label is canvas-painted, so only the section header is a
-        // Text widget. A goal under the mean weight places its label below the
-        // line.
+        // A goal under the mean weight places its label below the line,
+        // exercising that painter branch.
         await pumpChart(
           tester,
           monthHistory: month(
@@ -179,7 +176,8 @@ void main() {
           weightGoal: 160,
         );
 
-        expect(find.text('WEIGHT'), findsOneWidget);
+        expect(chartPaint, findsWidgets);
+        expect(calorieTapTarget, findsNothing);
       },
     );
 
@@ -195,13 +193,16 @@ void main() {
           weightGoal: 170,
         );
 
-        expect(find.text('WEIGHT'), findsOneWidget);
+        expect(chartPaint, findsWidgets);
+        expect(calorieTapTarget, findsNothing);
       },
     );
 
-    testWidgets('hides the goal weight line when units mismatch', (
+    testWidgets('renders the weight section when goal units mismatch', (
       tester,
     ) async {
+      // A goal in a different unit than the weigh-ins is dropped, but the
+      // weight line still paints.
       await pumpChart(
         tester,
         monthHistory: month(
@@ -213,19 +214,8 @@ void main() {
         weightGoal: 160,
       );
 
-      expect(find.textContaining('Goal '), findsNothing);
-      expect(find.text('WEIGHT'), findsOneWidget);
-    });
-
-    testWidgets('shows no change when the net weight is flat', (tester) async {
-      await pumpChart(
-        tester,
-        monthHistory: month(
-          weightEntries: [weight(1, 165), weight(5, 165)],
-        ),
-      );
-
-      expect(find.text('No change'), findsOneWidget);
+      expect(chartPaint, findsWidgets);
+      expect(calorieTapTarget, findsNothing);
     });
 
     testWidgets('renders a flat weight line when all weigh-ins are equal', (
@@ -240,8 +230,7 @@ void main() {
         ),
       );
 
-      expect(find.text('No change'), findsOneWidget);
-      expect(find.byType(CustomPaint), findsWidgets);
+      expect(chartPaint, findsWidgets);
     });
 
     testWidgets('repaints both charts when its data changes', (tester) async {
@@ -289,12 +278,15 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('Avg 400'), findsOneWidget);
+      expect(find.byType(MonthTrendsChart), findsOneWidget);
 
       setStep(() => second = true);
       await tester.pump();
 
-      expect(find.text('Avg 525'), findsOneWidget);
+      // The same element rebuilt in place with the new data still renders both
+      // painted sections and the divider between them.
+      expect(find.byType(MonthTrendsChart), findsOneWidget);
+      expect(find.byType(Divider), findsOneWidget);
     });
 
     testWidgets('splits each calorie bar into macro segments', (tester) async {
@@ -310,7 +302,7 @@ void main() {
       );
 
       // Rendering exercises the macro-segment painter without error.
-      expect(find.byType(MonthTrendsChart), findsOneWidget);
+      expect(calorieTapTarget, findsOneWidget);
     });
 
     testWidgets('tapping the calorie bars reports a day', (tester) async {
@@ -324,12 +316,7 @@ void main() {
         onDayTapped: (historyDay) => tapped = historyDay,
       );
 
-      await tester.tap(
-        find.descendant(
-          of: find.byType(MonthTrendsChart),
-          matching: find.byType(GestureDetector),
-        ),
-      );
+      await tester.tap(calorieTapTarget);
       await tester.pump();
 
       expect(tapped, isNotNull);

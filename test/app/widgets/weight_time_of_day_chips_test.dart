@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:the_usual/app/app.dart';
 
@@ -13,9 +14,10 @@ void main() {
         ),
       );
 
-      for (final timeOfDay in WeightTimeOfDay.values) {
-        expect(find.text(timeOfDay.label), findsOneWidget);
-      }
+      expect(
+        find.byType(ChoiceChip),
+        findsNWidgets(WeightTimeOfDay.values.length),
+      );
     });
 
     testWidgets('reports the chosen time of day when a chip is tapped', (
@@ -29,7 +31,11 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text(WeightTimeOfDay.night.label));
+      // Chips render in WeightTimeOfDay.values order.
+      final nightChip = find
+          .byType(ChoiceChip)
+          .at(WeightTimeOfDay.values.indexOf(WeightTimeOfDay.night));
+      await tester.tap(nightChip);
 
       expect(selected, equals(WeightTimeOfDay.night));
     });

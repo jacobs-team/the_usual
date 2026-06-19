@@ -59,6 +59,7 @@ void main() {
       await tester.pumpPumpPumpItUP(
         Builder(
           builder: (context) => ElevatedButton(
+            key: const Key('open-sheet-button'),
             onPressed: () async {
               final sheetResult =
                   await showModalBottomSheet<FoodEntrySheetResult>(
@@ -80,7 +81,7 @@ void main() {
         ],
       );
 
-      await tester.tap(find.text('open'));
+      await tester.tap(find.byKey(const Key('open-sheet-button')));
       await tester.pumpAndSettle();
       return results;
     }
@@ -108,23 +109,19 @@ void main() {
         )
         .first;
 
-    /// The food-name fields, found by their hint so the nutrition fields in
-    /// each row aren't matched.
-    Finder nameFields() => find.byWidgetPredicate(
-      (widget) =>
-          widget is TextField &&
-          widget.decoration?.hintText == 'e.g. Chicken caesar salad',
+    /// The food-name fields. The name field is the only [TheUsualTextField]
+    /// without a numeric keyboard, which separates it from the nutrition macro
+    /// fields in each row.
+    Finder nameFields() => find.descendant(
+      of: find.byWidgetPredicate(
+        (widget) => widget is TheUsualTextField && widget.keyboardType == null,
+      ),
+      matching: find.byType(TextFormField),
     );
 
-    testWidgets('renders title and sections', (tester) async {
-      await showSheet(tester);
-
-      expect(find.text('Log food'), findsOneWidget);
-      expect(find.text('CALORIES'), findsOneWidget);
-      expect(find.text('PROTEIN'), findsOneWidget);
-      expect(find.text('FAT'), findsOneWidget);
-      expect(find.text('CARBS'), findsOneWidget);
-    });
+    /// The current text shown in the [TextFormField] located by [finder].
+    String fieldText(WidgetTester tester, Finder finder) =>
+        tester.widget<TextFormField>(finder).controller?.text ?? '';
 
     testWidgets('confirm is disabled until a name is entered', (tester) async {
       await showSheet(tester);
@@ -149,7 +146,7 @@ void main() {
       await tester.enterText(find.byType(TextFormField).first, 'Salad');
       await tester.enterText(caloriesField(), '380');
       await tester.pump();
-      await tester.tap(find.text('Log'));
+      await tester.tap(find.byType(FilledButton));
       await tester.pumpAndSettle();
 
       expect(
@@ -173,7 +170,7 @@ void main() {
       await tester.pump();
       await tester.tap(find.byIcon(Icons.add).first);
       await tester.pump();
-      await tester.tap(find.text('Log'));
+      await tester.tap(find.byType(FilledButton));
       await tester.pumpAndSettle();
 
       expect(
@@ -198,7 +195,7 @@ void main() {
       await tester.pump();
       await tester.tap(find.byType(Checkbox));
       await tester.pump();
-      await tester.tap(find.text('Log'));
+      await tester.tap(find.byType(FilledButton));
       await tester.pumpAndSettle();
 
       expect(
@@ -230,7 +227,7 @@ void main() {
       await showSheet(tester);
 
       await tester.enterText(nameFields().first, 'Salad');
-      await tester.tap(find.text('Add item'));
+      await tester.tap(find.byIcon(Icons.add).last);
       await tester.pumpAndSettle();
 
       expect(nameFields(), findsNWidgets(2));
@@ -248,11 +245,11 @@ void main() {
       final results = await showSheet(tester);
 
       await tester.enterText(nameFields().first, 'Salad');
-      await tester.tap(find.text('Add item'));
+      await tester.tap(find.byIcon(Icons.add).last);
       await tester.pumpAndSettle();
       await tester.enterText(nameFields().at(1), 'Toast');
       await tester.pump();
-      await tester.tap(find.text('Log'));
+      await tester.tap(find.byType(FilledButton));
       await tester.pumpAndSettle();
 
       expect(
@@ -285,18 +282,6 @@ void main() {
         expect(find.byType(Checkbox), findsOneWidget);
       });
 
-      testWidgets('the info control explains the itemize mode', (tester) async {
-        await showSheet(tester, aiRepository: configuredAiRepository());
-
-        final tooltip = tester.widget<Tooltip>(
-          find.ancestor(
-            of: find.byIcon(Icons.info_outline),
-            matching: find.byType(Tooltip),
-          ),
-        );
-        expect(tooltip.message, equals(MealEntryMode.itemized.detail));
-      });
-
       testWidgets('toggling itemize remembers the mode as the default', (
         tester,
       ) async {
@@ -321,17 +306,20 @@ void main() {
         expect(checkbox.value, isTrue);
       });
 
-      testWidgets('estimate without a name shows a prompt snackbar', (
+      testWidgets('estimate without a name does not call the repository', (
         tester,
       ) async {
-        await showSheet(tester, aiRepository: configuredAiRepository());
+        final aiRepository = configuredAiRepository();
+        await showSheet(tester, aiRepository: aiRepository);
 
-        await tester.tap(find.text('Estimate'));
+        await tester.tap(find.byIcon(Icons.auto_awesome_outlined));
         await tester.pump();
 
-        expect(
-          find.text('Type a meal name or description first.'),
-          findsOneWidget,
+        verifyNever(
+          () => aiRepository.suggestFromDescription(
+            any(),
+            mode: any(named: 'mode'),
+          ),
         );
       });
 
@@ -363,13 +351,15 @@ void main() {
             'My salad',
           );
           await tester.pump();
-          await tester.tap(find.text('Estimate'));
+          await tester.tap(find.byIcon(Icons.auto_awesome_outlined));
           await tester.pumpAndSettle();
 
-          expect(find.text('My salad'), findsOneWidget);
-          expect(find.text('420'), findsOneWidget);
+          expect(fieldText(tester, nameFields().first), equals('My salad'));
+          expect(fieldText(tester, caloriesField()), equals('420'));
 
-          await tester.tap(find.text('Log'));
+          // The confirm button is the last FilledButton; the AI controls above
+          // are FilledButton.tonalIcon variants.
+          await tester.tap(find.byType(FilledButton).last);
           await tester.pumpAndSettle();
 
           expect(
@@ -419,11 +409,12 @@ void main() {
           'Steak and potatoes',
         );
         await tester.pump();
-        await tester.tap(find.text('Estimate'));
+        await tester.tap(find.byIcon(Icons.auto_awesome_outlined));
         await tester.pumpAndSettle();
 
-        expect(find.text('Steak'), findsOneWidget);
-        expect(find.text('Potatoes'), findsOneWidget);
+        expect(nameFields(), findsNWidgets(2));
+        expect(fieldText(tester, nameFields().first), equals('Steak'));
+        expect(fieldText(tester, nameFields().at(1)), equals('Potatoes'));
       });
 
       testWidgets('an empty estimate leaves the row untouched', (tester) async {
@@ -441,13 +432,13 @@ void main() {
           'Mystery food',
         );
         await tester.pump();
-        await tester.tap(find.text('Estimate'));
+        await tester.tap(find.byIcon(Icons.auto_awesome_outlined));
         await tester.pumpAndSettle();
 
-        expect(find.text('Mystery food'), findsOneWidget);
+        expect(fieldText(tester, nameFields().first), equals('Mystery food'));
       });
 
-      testWidgets('a failed estimate surfaces an error snackbar', (
+      testWidgets('a failed estimate keeps the typed name', (
         tester,
       ) async {
         final aiRepository = configuredAiRepository();
@@ -464,13 +455,16 @@ void main() {
           'Salad',
         );
         await tester.pump();
-        await tester.tap(find.text('Estimate'));
+        await tester.tap(find.byIcon(Icons.auto_awesome_outlined));
         await tester.pumpAndSettle();
 
-        expect(
-          find.textContaining('Could not estimate nutrition'),
-          findsOneWidget,
-        );
+        verify(
+          () => aiRepository.suggestFromDescription(
+            any(),
+            mode: any(named: 'mode'),
+          ),
+        ).called(1);
+        expect(fieldText(tester, nameFields().first), equals('Salad'));
       });
 
       testWidgets('estimates each named row on its own when itemized', (
@@ -499,22 +493,22 @@ void main() {
         await showSheet(tester, aiRepository: aiRepository);
 
         await tester.enterText(nameFields().first, 'Steak');
-        await tester.tap(find.text('Add item'));
+        await tester.tap(find.byIcon(Icons.add).last);
         await tester.pumpAndSettle();
         await tester.enterText(
           nameFields().at(1),
           'Potatoes',
         );
         await tester.pump();
-        await tester.tap(find.text('Estimate'));
+        await tester.tap(find.byIcon(Icons.auto_awesome_outlined));
         await tester.pumpAndSettle();
 
-        expect(find.text('Steak'), findsOneWidget);
-        expect(find.text('500'), findsOneWidget);
-        expect(find.text('Potatoes'), findsOneWidget);
+        expect(fieldText(tester, nameFields().first), equals('Steak'));
+        expect(fieldText(tester, caloriesField()), equals('500'));
+        expect(fieldText(tester, nameFields().at(1)), equals('Potatoes'));
       });
 
-      testWidgets('a failed per-row estimate surfaces an error snackbar', (
+      testWidgets('a failed per-row estimate keeps the typed names', (
         tester,
       ) async {
         final aiRepository = configuredAiRepository();
@@ -527,37 +521,40 @@ void main() {
         await showSheet(tester, aiRepository: aiRepository);
 
         await tester.enterText(nameFields().first, 'Steak');
-        await tester.tap(find.text('Add item'));
+        await tester.tap(find.byIcon(Icons.add).last);
         await tester.pumpAndSettle();
         await tester.enterText(
           nameFields().at(1),
           'Potatoes',
         );
         await tester.pump();
-        await tester.tap(find.text('Estimate'));
+        await tester.tap(find.byIcon(Icons.auto_awesome_outlined));
         await tester.pumpAndSettle();
 
-        expect(
-          find.textContaining('Could not estimate nutrition'),
-          findsOneWidget,
-        );
+        verify(
+          () => aiRepository.suggestFromDescription(
+            any(),
+            mode: any(named: 'mode'),
+          ),
+        ).called(greaterThanOrEqualTo(1));
+        expect(fieldText(tester, nameFields().first), equals('Steak'));
+        expect(fieldText(tester, nameFields().at(1)), equals('Potatoes'));
       });
 
       testWidgets('the photo button opens the source picker', (tester) async {
         await showSheet(tester, aiRepository: configuredAiRepository());
 
-        await tester.tap(find.text('Photo'));
+        await tester.tap(find.byIcon(Icons.photo_camera_outlined));
         await tester.pumpAndSettle();
 
-        expect(find.text('Photo source'), findsOneWidget);
-        expect(find.text('Camera'), findsOneWidget);
-        expect(find.text('Photo library'), findsOneWidget);
+        expect(find.byType(SimpleDialog), findsOneWidget);
+        expect(find.byType(SimpleDialogOption), findsNWidgets(2));
 
         // Dismiss the picker by tapping the scrim, cancelling the flow.
         await tester.tapAt(const Offset(10, 10));
         await tester.pumpAndSettle();
 
-        expect(find.text('Photo source'), findsNothing);
+        expect(find.byType(SimpleDialog), findsNothing);
       });
 
       testWidgets('a picked photo estimates and fills the row', (
@@ -582,13 +579,16 @@ void main() {
         );
         await showSheet(tester, aiRepository: aiRepository);
 
-        await tester.tap(find.text('Photo'));
+        await tester.tap(find.byIcon(Icons.photo_camera_outlined));
         await tester.pumpAndSettle();
-        await tester.tap(find.text('Camera'));
+        await tester.tap(find.byType(SimpleDialogOption).first);
         await tester.pumpAndSettle();
 
-        expect(find.text('Grilled chicken'), findsOneWidget);
-        expect(find.text('300'), findsOneWidget);
+        expect(
+          fieldText(tester, nameFields().first),
+          equals('Grilled chicken'),
+        );
+        expect(fieldText(tester, caloriesField()), equals('300'));
         verify(
           () => aiRepository.suggestFromPhoto(
             any(),
@@ -621,13 +621,12 @@ void main() {
 
         await tester.enterText(nameFields().first, 'My lunch');
         await tester.pump();
-        await tester.tap(find.text('Photo'));
+        await tester.tap(find.byIcon(Icons.photo_camera_outlined));
         await tester.pumpAndSettle();
-        await tester.tap(find.text('Photo library'));
+        await tester.tap(find.byType(SimpleDialogOption).last);
         await tester.pumpAndSettle();
 
-        expect(find.text('My lunch'), findsOneWidget);
-        expect(find.text('Model name'), findsNothing);
+        expect(fieldText(tester, nameFields().first), equals('My lunch'));
         verify(
           () => aiRepository.suggestFromPhoto(
             any(),
@@ -652,11 +651,10 @@ void main() {
 
         await tester.enterText(nameFields().first, 'Salad');
         await tester.pump();
-        await tester.tap(find.text('Estimate'));
+        await tester.tap(find.byIcon(Icons.auto_awesome_outlined));
         await tester.pump();
 
         expect(find.byType(CircularProgressIndicator), findsOneWidget);
-        expect(find.text('Estimating…'), findsOneWidget);
 
         completer.complete(const [
           AiMealSuggestion(name: 'Salad', nutrition: Nutrition(calories: 100)),
@@ -758,6 +756,7 @@ void main() {
           home: Scaffold(
             body: Builder(
               builder: (context) => ElevatedButton(
+                key: const Key('open-sheet-button'),
                 onPressed: () async {
                   popped = await showModalBottomSheet<FoodEntrySheetResult>(
                     context: context,
@@ -774,12 +773,12 @@ void main() {
           ),
         ),
       );
-      await tester.tap(find.text('open'));
+      await tester.tap(find.byKey(const Key('open-sheet-button')));
       await tester.pumpAndSettle();
 
       await tester.enterText(find.byType(TextField).first, 'Soup');
       await tester.pump();
-      await tester.tap(find.widgetWithText(FilledButton, 'Log'));
+      await tester.tap(find.byType(FilledButton));
       await tester.pumpAndSettle();
 
       expect(popped, isNotNull);

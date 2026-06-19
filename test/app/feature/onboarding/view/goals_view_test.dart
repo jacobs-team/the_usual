@@ -98,7 +98,12 @@ void main() {
       stubBloc(const UserSettingsState());
       await tester.pumpPumpPumpItUP(deps: [onboardingBloc], const GoalsView());
 
-      await tester.tap(find.text('Continue'));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(OnboardingActions),
+          matching: find.byType(FilledButton),
+        ),
+      );
 
       verify(
         () => onboardingBloc.add(const OnboardingEvent.continuePressed()),

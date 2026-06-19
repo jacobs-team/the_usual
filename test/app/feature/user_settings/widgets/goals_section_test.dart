@@ -27,8 +27,21 @@ void main() {
         const GoalsSection(),
       );
 
-      expect(find.text('2000'), findsOneWidget);
-      expect(find.text('70.0'), findsOneWidget);
+      final calorieField = tester.widget<EditableText>(
+        find.descendant(
+          of: find.byType(MacroField),
+          matching: find.byType(EditableText),
+        ),
+      );
+      expect(calorieField.controller.text, equals('2000'));
+
+      final weightField = tester.widget<EditableText>(
+        find.descendant(
+          of: find.byType(WeightInput),
+          matching: find.byType(EditableText),
+        ),
+      );
+      expect(weightField.controller.text, equals('70.0'));
     });
 
     testWidgets('dispatches calorieGoalChanged on calorie field change', (
@@ -84,7 +97,14 @@ void main() {
         const GoalsSection(),
       );
 
-      await tester.tap(find.widgetWithText(ChoiceChip, WeightUnit.kg.name));
+      // Unit chips render in WeightUnit.values order inside the weight field.
+      final kgChip = find
+          .descendant(
+            of: find.byType(WeightInput),
+            matching: find.byType(ChoiceChip),
+          )
+          .at(WeightUnit.values.indexOf(WeightUnit.kg));
+      await tester.tap(kgChip);
 
       verify(
         () => userSettingsBloc.add(

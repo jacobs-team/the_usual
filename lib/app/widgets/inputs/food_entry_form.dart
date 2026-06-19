@@ -303,6 +303,7 @@ class FoodEntryFormState extends State<FoodEntryForm> {
                   key: ValueKey(state.foods[index].id),
                   foodDraft: state.foods[index],
                   autofocus: widget.autofocusFirst && index == 0,
+                  showEstimateHint: _aiAvailable && index == 0,
                   showQuantity: widget.showQuantity,
                   showAddToUsualMeals: widget.showAddToUsualMeals,
                   canRemove: state.foods.length > 1,
@@ -356,6 +357,7 @@ class _FoodEntryRow extends StatefulWidget {
   const _FoodEntryRow({
     required this.foodDraft,
     required this.autofocus,
+    required this.showEstimateHint,
     required this.showQuantity,
     required this.showAddToUsualMeals,
     required this.canRemove,
@@ -369,6 +371,7 @@ class _FoodEntryRow extends StatefulWidget {
 
   final FoodDraft foodDraft;
   final bool autofocus;
+  final bool showEstimateHint;
   final bool showQuantity;
   final bool showAddToUsualMeals;
   final bool canRemove;
@@ -411,7 +414,7 @@ class _FoodEntryRowState extends State<_FoodEntryRow> {
                   child: TheUsualTextField(
                     controller: _nameController,
                     autofocus: widget.autofocus,
-                    hintText: 'e.g. Chicken caesar salad',
+                    hintText: 'e.g. Chicken (4oz) caesar salad',
                     onChanged: widget.onNameChanged,
                   ),
                 ),
@@ -423,9 +426,18 @@ class _FoodEntryRowState extends State<_FoodEntryRow> {
                   ),
               ],
             ),
+            if (widget.showEstimateHint) ...[
+              SizedBox(height: AppDesign.spacing.xs),
+              Text(
+                'Used with any photos to estimate nutrition. Adding amounts '
+                'or weights helps.',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
             SizedBox(height: AppDesign.spacing.md),
             NutritionFields(
-              key: ValueKey(widget.foodDraft.nutrition),
               dense: true,
               initial: widget.foodDraft.nutrition,
               onChanged: widget.onNutritionChanged,

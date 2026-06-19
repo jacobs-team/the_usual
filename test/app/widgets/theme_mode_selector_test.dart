@@ -11,9 +11,10 @@ void main() {
         ThemeModeSelector(themeMode: ThemeMode.system, onChanged: (_) {}),
       );
 
-      expect(find.text('System'), findsOneWidget);
-      expect(find.text('Light'), findsOneWidget);
-      expect(find.text('Dark'), findsOneWidget);
+      final segmentedButton = tester.widget<SegmentedButton<ThemeMode>>(
+        find.byType(SegmentedButton<ThemeMode>),
+      );
+      expect(segmentedButton.segments, hasLength(ThemeMode.values.length));
     });
 
     testWidgets('reports the chosen mode when a segment is tapped', (
@@ -27,7 +28,11 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('Dark'));
+      // Each segment renders as a TextButton in ThemeMode.values order.
+      final darkSegment = find
+          .byType(TextButton)
+          .at(ThemeMode.values.indexOf(ThemeMode.dark));
+      await tester.tap(darkSegment);
 
       expect(selected, equals(ThemeMode.dark));
     });

@@ -91,7 +91,18 @@ void main() {
         const MealScheduleSection(),
       );
 
-      await tester.tap(find.text(MealCheckinScheduleMode.endOfDay.label));
+      // Segments render in MealCheckinScheduleMode.values order.
+      final endOfDaySegment = find
+          .descendant(
+            of: find.byType(MealScheduleModeSelector),
+            matching: find.byType(TextButton),
+          )
+          .at(
+            MealCheckinScheduleMode.values.indexOf(
+              MealCheckinScheduleMode.endOfDay,
+            ),
+          );
+      await tester.tap(endOfDaySegment);
 
       verify(
         () => userSettingsBloc.add(

@@ -64,7 +64,18 @@ void main() {
         const WeightSection(),
       );
 
-      await tester.tap(find.text(WeightCheckinFrequency.weekly.label));
+      // Chips render in enum order inside their owning widget.
+      final frequencyChip = find
+          .descendant(
+            of: find.byType(WeightCheckinFrequencyChips),
+            matching: find.byType(ChoiceChip),
+          )
+          .at(
+            WeightCheckinFrequency.values.indexOf(
+              WeightCheckinFrequency.weekly,
+            ),
+          );
+      await tester.tap(frequencyChip);
       verify(
         () => userSettingsBloc.add(
           const UserSettingsEvent.weightCheckinFrequencySelected(
@@ -73,7 +84,13 @@ void main() {
         ),
       ).called(1);
 
-      await tester.tap(find.text(WeightTimeOfDay.night.label));
+      final timeOfDayChip = find
+          .descendant(
+            of: find.byType(WeightTimeOfDayChips),
+            matching: find.byType(ChoiceChip),
+          )
+          .at(WeightTimeOfDay.values.indexOf(WeightTimeOfDay.night));
+      await tester.tap(timeOfDayChip);
       verify(
         () => userSettingsBloc.add(
           const UserSettingsEvent.weightTimeOfDaySelected(
@@ -89,7 +106,13 @@ void main() {
         ),
       ).called(1);
 
-      await tester.tap(find.text('kg'));
+      final unitChip = find
+          .descendant(
+            of: find.byType(WeightInput),
+            matching: find.byType(ChoiceChip),
+          )
+          .at(WeightUnit.values.indexOf(WeightUnit.kg));
+      await tester.tap(unitChip);
       verify(
         () => userSettingsBloc.add(
           const UserSettingsEvent.weightUnitSelected(WeightUnit.kg),

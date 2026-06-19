@@ -83,7 +83,10 @@ void main() {
         nutritionExpandedByDefault: true,
       );
 
-      expect(find.text('350 cal · 0P · 0C · 0F'), findsOneWidget);
+      final summary = tester.widget<NutritionSummary>(
+        find.byType(NutritionSummary),
+      );
+      expect(summary.nutrition.calories, equals(350));
       expect(find.byType(LoggedEntryRow), findsOneWidget);
     });
 
@@ -101,9 +104,13 @@ void main() {
         ],
       );
 
-      expect(find.text('+ Oatmeal'), findsOneWidget);
+      final chip = find.descendant(
+        of: find.byType(MenuAnchor),
+        matching: find.byType(InkWell),
+      );
+      expect(chip, findsOneWidget);
 
-      await tester.tap(find.text('+ Oatmeal'));
+      await tester.tap(chip);
 
       verify(
         () => dailyLogBloc.add(
@@ -133,7 +140,12 @@ void main() {
         dayStart: const TimeOfDay(hour: 4, minute: 0),
       );
 
-      await tester.tap(find.text('+ Oatmeal'));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(MenuAnchor),
+          matching: find.byType(InkWell),
+        ),
+      );
 
       verify(
         () => dailyLogBloc.add(
@@ -165,7 +177,12 @@ void main() {
         dayStart: const TimeOfDay(hour: 4, minute: 0),
       );
 
-      await tester.tap(find.text('+ Oatmeal'));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(MenuAnchor),
+          matching: find.byType(InkWell),
+        ),
+      );
 
       verify(
         () => dailyLogBloc.add(
@@ -198,11 +215,11 @@ void main() {
     ) async {
       await pumpSection(tester);
 
-      await tester.tap(find.text('Something else'));
+      await tester.tap(find.byIcon(Icons.add));
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextFormField).first, 'Burrito');
       await tester.pump();
-      await tester.tap(find.text('Log'));
+      await tester.tap(find.byType(FilledButton));
       await tester.pumpAndSettle();
 
       verify(
@@ -226,13 +243,13 @@ void main() {
     ) async {
       await pumpSection(tester);
 
-      await tester.tap(find.text('Something else'));
+      await tester.tap(find.byIcon(Icons.add));
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextFormField).first, 'Burrito');
       await tester.pump();
       await tester.tap(find.byType(Checkbox));
       await tester.pump();
-      await tester.tap(find.text('Log'));
+      await tester.tap(find.byType(FilledButton));
       await tester.pumpAndSettle();
 
       verifyNever(
@@ -257,9 +274,7 @@ void main() {
         },
       );
 
-      expect(find.text('From another meal'), findsOneWidget);
-
-      await tester.tap(find.text('From another meal'));
+      await tester.tap(find.byIcon(Icons.restaurant_menu));
       await tester.pumpAndSettle();
 
       expect(find.byType(OtherMealUsualsSheet), findsOneWidget);
@@ -268,7 +283,7 @@ void main() {
     testWidgets('cancelling the sheet logs nothing', (tester) async {
       await pumpSection(tester);
 
-      await tester.tap(find.text('Something else'));
+      await tester.tap(find.byIcon(Icons.add));
       await tester.pumpAndSettle();
       // A fresh sheet has one row, so the only close icon is the sheet's.
       await tester.tap(find.byIcon(Icons.close));

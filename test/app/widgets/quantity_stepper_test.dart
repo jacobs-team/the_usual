@@ -6,6 +6,29 @@ import '../../helpers/helpers.dart';
 
 void main() {
   group(QuantityStepper, () {
+    // The step-size toggle is the stepper's only OutlinedButton; its label
+    // ('.1' / '1') is copy, so locate it by type rather than text.
+    Finder toggle() => find.descendant(
+      of: find.byType(QuantityStepper),
+      matching: find.byType(OutlinedButton),
+    );
+
+    // The value sits in a Text that isn't part of the toggle button.
+    String valueLabel(WidgetTester tester) {
+      final valueText = find.descendant(
+        of: find.byType(QuantityStepper),
+        matching: find.byType(Text),
+      );
+      for (final element in valueText.evaluate()) {
+        final isInsideToggle = element
+            .findAncestorWidgetOfExactType<OutlinedButton>();
+        if (isInsideToggle == null) {
+          return (element.widget as Text).data!;
+        }
+      }
+      throw StateError('no value label found');
+    }
+
     testWidgets('steps up by a whole one with plus', (tester) async {
       double? changed;
       await tester.pumpPumpPumpItUP(
@@ -52,19 +75,33 @@ void main() {
         QuantityStepper(quantity: 2, onChanged: (value) => changed = value),
       );
 
-      expect(find.text('.1'), findsOneWidget);
-      expect(find.text('2'), findsOneWidget);
+      expect(valueLabel(tester), equals('2'));
 
-      await tester.tap(find.text('.1'));
+      await tester.tap(toggle());
       await tester.pump();
 
-      expect(find.text('1'), findsOneWidget);
-      expect(find.text('2.0'), findsOneWidget);
+      expect(valueLabel(tester), equals('2.0'));
 
       await tester.tap(find.byIcon(Icons.add));
       await tester.pump();
 
       expect(changed, closeTo(2.1, 0.0001));
+    });
+
+    testWidgets('tenth steps emit a value free of floating-point dust', (
+      tester,
+    ) async {
+      double? changed;
+      await tester.pumpPumpPumpItUP(
+        QuantityStepper(quantity: 2.2, onChanged: (value) => changed = value),
+      );
+
+      await tester.tap(toggle());
+      await tester.pump();
+      await tester.tap(find.byIcon(Icons.add));
+      await tester.pump();
+
+      expect(changed, equals(2.3));
     });
 
     testWidgets('decimal display shows the value in tenth mode', (
@@ -74,10 +111,10 @@ void main() {
         QuantityStepper(quantity: 2.5, onChanged: (_) {}),
       );
 
-      await tester.tap(find.text('.1'));
+      await tester.tap(toggle());
       await tester.pump();
 
-      expect(find.text('2.5'), findsOneWidget);
+      expect(valueLabel(tester), equals('2.5'));
     });
 
     testWidgets('dense mode renders the stepper', (tester) async {

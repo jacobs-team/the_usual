@@ -46,11 +46,11 @@ void main() {
           ),
           GoRoute(
             path: Routes.settings,
-            builder: (_, _) => const Text('settings-page'),
+            builder: (_, _) => const SizedBox(key: Key('settings-page')),
           ),
           GoRoute(
             path: Routes.devTools,
-            builder: (_, _) => const Text('devtools-page'),
+            builder: (_, _) => const SizedBox(key: Key('devtools-page')),
           ),
         ],
       );
@@ -75,23 +75,15 @@ void main() {
       stubSettings(const UserSettingsState());
       await pumpView(tester);
 
-      expect(find.text('Today'), findsOneWidget);
       expect(find.byType(MealLogSection), findsNWidgets(4));
     });
 
-    testWidgets('shows a tappable date pill labelled Today by default', (
-      tester,
-    ) async {
+    testWidgets('shows a tappable date pill by default', (tester) async {
       stubDailyLog(const DailyLogState());
       stubSettings(const UserSettingsState());
       await pumpView(tester);
 
-      final pill = find.byKey(const Key('today-date-pill'));
-      expect(pill, findsOneWidget);
-      expect(
-        find.descendant(of: pill, matching: find.text('Today')),
-        findsOneWidget,
-      );
+      expect(find.byKey(const Key('today-date-pill')), findsOneWidget);
     });
 
     testWidgets('opens the date picker when the pill is tapped', (
@@ -180,7 +172,7 @@ void main() {
 
       await tester.tap(find.byIcon(Icons.settings_outlined));
       await tester.pumpAndSettle();
-      expect(find.text('settings-page'), findsOneWidget);
+      expect(find.byKey(const Key('settings-page')), findsOneWidget);
     });
 
     testWidgets('navigates to dev tools from the code icon', (tester) async {
@@ -190,7 +182,7 @@ void main() {
 
       await tester.tap(find.byIcon(Icons.code));
       await tester.pumpAndSettle();
-      expect(find.text('devtools-page'), findsOneWidget);
+      expect(find.byKey(const Key('devtools-page')), findsOneWidget);
     });
 
     testWidgets('navigates to goals when the nutrition bar set goal fires', (
@@ -206,7 +198,7 @@ void main() {
       nutritionBar.onSetGoal!();
       await tester.pumpAndSettle();
 
-      expect(find.text('settings-page'), findsOneWidget);
+      expect(find.byKey(const Key('settings-page')), findsOneWidget);
     });
 
     testWidgets('toggles the expand-nutrition setting through the bloc', (

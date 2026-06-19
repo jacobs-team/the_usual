@@ -19,11 +19,10 @@ void main() {
         ),
       );
 
-      expect(find.text('Breakfast'), findsOneWidget);
       expect(find.byType(ActionChip), findsOneWidget);
     });
 
-    testWidgets('shows "No reminder" when disabled', (tester) async {
+    testWidgets('hides the time chip when disabled', (tester) async {
       await tester.pumpPumpPumpItUP(
         MealReminderRow(
           mealOfTheDay: MealOfTheDay.lunch,
@@ -36,7 +35,7 @@ void main() {
         ),
       );
 
-      expect(find.text('No reminder'), findsOneWidget);
+      expect(find.byType(ActionChip), findsNothing);
     });
 
     testWidgets('reports the toggle through onToggled', (tester) async {

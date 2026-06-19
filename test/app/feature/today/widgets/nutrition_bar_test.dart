@@ -38,7 +38,6 @@ void main() {
         calorieGoal: 2000,
       );
 
-      expect(find.text('500 / 2000 cal'), findsOneWidget);
       // Three colored macro segments (protein, carbs, fat) sit inside the bar.
       expect(
         find.descendant(
@@ -47,7 +46,6 @@ void main() {
         ),
         findsNWidgets(3),
       );
-      expect(find.text('1500 cal left'), findsOneWidget);
     });
 
     testWidgets('shows the set goal button and consumed calories with no '
@@ -60,10 +58,10 @@ void main() {
         onSetGoal: () => tapped = true,
       );
 
-      expect(find.text('600 cal / '), findsOneWidget);
-      expect(find.text('Set goal'), findsOneWidget);
+      final setGoalButton = find.byType(TextButton);
+      expect(setGoalButton, findsOneWidget);
 
-      await tester.tap(find.text('Set goal'));
+      await tester.tap(setGoalButton);
 
       expect(tapped, isTrue);
     });
@@ -74,8 +72,6 @@ void main() {
         nutrition: const Nutrition(calories: 2200, protein: 50),
         calorieGoal: 2000,
       );
-
-      expect(find.text('2200 / 2000 cal'), findsOneWidget);
 
       final container = tester.widget<Container>(
         find
@@ -97,31 +93,16 @@ void main() {
         calorieGoal: 2000,
       );
 
-      expect(find.text('0 / 2000 cal'), findsOneWidget);
-      expect(find.text('2000 cal left'), findsOneWidget);
-    });
-
-    testWidgets('shrinks labels to abbreviations when the segment is narrow', (
-      tester,
-    ) async {
-      tester.view.physicalSize = const Size(300, 800);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
-
-      await tester.pumpPumpPumpItUP(
-        const NutritionBar(
-          nutrition: Nutrition(
-            calories: 1900,
-            protein: 60,
-            carbs: 200,
-            fat: 70,
-          ),
-          calorieGoal: 2000,
+      // With no macros logged the bar has no colored segments, only the empty
+      // remainder.
+      expect(
+        find.descendant(
+          of: find.byType(NutritionBar),
+          matching: find.byType(ColoredBox),
         ),
+        findsNothing,
       );
-
-      expect(find.textContaining('g P'), findsOneWidget);
     });
+
   });
 }

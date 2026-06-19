@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:the_usual/app/app.dart';
 
@@ -5,10 +6,12 @@ import '../../helpers/helpers.dart';
 
 void main() {
   group(SectionLabel, () {
-    testWidgets('renders its text', (tester) async {
-      await tester.pumpPumpPumpItUP(const SectionLabel('Meals'));
+    testWidgets('renders the given text as a Text', (tester) async {
+      const labelText = 'Meals';
+      await tester.pumpPumpPumpItUP(const SectionLabel(labelText));
 
-      expect(find.text('Meals'), findsOneWidget);
+      final text = tester.widget<Text>(find.byType(Text));
+      expect(text.data, equals(labelText));
     });
   });
 }

@@ -34,7 +34,17 @@ void main() {
       );
 
       expect(find.byType(UsualMealSection), findsOneWidget);
-      expect(find.text('Eggs'), findsOneWidget);
+
+      // The seeded usual's name fills the row's name field.
+      final nameField = tester.widget<EditableText>(
+        find
+            .descendant(
+              of: find.byType(ExpandableNutrition),
+              matching: find.byType(EditableText),
+            )
+            .first,
+      );
+      expect(nameField.controller.text, equals('Eggs'));
     });
 
     testWidgets('edits and removes usual meals through the bloc', (

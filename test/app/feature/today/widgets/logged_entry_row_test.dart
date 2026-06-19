@@ -106,7 +106,7 @@ void main() {
       // offers to push it onto the usual meal.
       await pumpRow(tester, entry(usualMealId: 'u', calories: 400));
 
-      await tester.tap(find.text('Update usual meal to match'));
+      await tester.tap(find.byIcon(Icons.sync));
 
       verify(
         () => userSettingsBloc.add(
@@ -137,9 +137,9 @@ void main() {
       );
       await pumpRow(tester, entry(usualMealId: 'u', calories: 350));
 
-      expect(find.text('Update usual meal to match'), findsOneWidget);
+      expect(find.byIcon(Icons.sync), findsOneWidget);
 
-      await tester.tap(find.text('Update usual meal to match'));
+      await tester.tap(find.byIcon(Icons.sync));
 
       verify(
         () => userSettingsBloc.add(
@@ -170,10 +170,7 @@ void main() {
       );
       await pumpRow(tester, entry(usualMealId: 'u'));
 
-      expect(
-        find.text("Clear this usual meal's nutrition"),
-        findsOneWidget,
-      );
+      expect(find.byIcon(Icons.sync), findsOneWidget);
     });
 
     testWidgets('shows no update button when nutrition already matches', (

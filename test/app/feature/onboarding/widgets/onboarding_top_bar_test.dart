@@ -26,7 +26,7 @@ void main() {
       );
 
       expect(find.byType(OnboardingTopBar), findsOneWidget);
-      expect(find.text('Skip'), findsOneWidget);
+      expect(find.byType(TextButton), findsOneWidget);
     });
 
     testWidgets('hides skip when showSkip is false', (tester) async {
@@ -40,7 +40,7 @@ void main() {
         ),
       );
 
-      expect(find.text('Skip'), findsNothing);
+      expect(find.byType(TextButton), findsNothing);
     });
 
     testWidgets('adds backPressed when the back arrow is tapped', (
@@ -68,7 +68,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('Skip'));
+      await tester.tap(find.byType(TextButton));
 
       verify(
         () => onboardingBloc.add(const OnboardingEvent.skipPressed()),

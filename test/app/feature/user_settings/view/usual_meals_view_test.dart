@@ -18,7 +18,8 @@ void main() {
           ),
           GoRoute(
             path: Routes.settings,
-            builder: (_, _) => const Text('settings-page'),
+            builder: (_, _) =>
+                const SizedBox.shrink(key: Key('settings-page')),
           ),
         ],
       );
@@ -39,7 +40,6 @@ void main() {
       await pumpView(tester);
 
       expect(find.byType(Tab), findsNWidgets(MealOfTheDay.values.length));
-      expect(find.text('Your usual meals'), findsOneWidget);
       expect(find.byType(UsualMealList), findsWidgets);
     });
 
@@ -49,7 +49,7 @@ void main() {
       await tester.tap(find.byType(BackButton));
       await tester.pumpAndSettle();
 
-      expect(find.text('settings-page'), findsOneWidget);
+      expect(find.byKey(const Key('settings-page')), findsOneWidget);
     });
 
     testWidgets('the add button logs a new usual to the active meal', (

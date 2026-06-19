@@ -44,6 +44,27 @@ class _NutritionFieldsState extends State<NutritionFields> {
   );
 
   @override
+  void didUpdateWidget(NutritionFields oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // The fields own what the user types; the controllers are not rebuilt from
+    // the bloc on every keystroke. Only pull a new [initial] in when it differs
+    // from what's shown, so an external change (e.g. an AI estimate) populates
+    // the fields without clobbering an in-progress edit echoing back.
+    if (widget.initial == oldWidget.initial) return;
+    _syncField(_caloriesController, widget.initial.calories);
+    _syncField(_proteinController, widget.initial.protein);
+    _syncField(_carbsController, widget.initial.carbs);
+    _syncField(_fatController, widget.initial.fat);
+  }
+
+  /// Sets [controller] to [value], unless it already shows that value — so the
+  /// echo of the user's own edit doesn't reset the field or its cursor.
+  void _syncField(TextEditingController controller, int? value) {
+    if (int.tryParse(controller.text) == value) return;
+    controller.text = value?.toString() ?? '';
+  }
+
+  @override
   void dispose() {
     _caloriesController.dispose();
     _proteinController.dispose();

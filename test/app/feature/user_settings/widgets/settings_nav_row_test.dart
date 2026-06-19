@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:the_usual/app/app.dart';
 
@@ -5,7 +6,9 @@ import '../../../../helpers/helpers.dart';
 
 void main() {
   group(SettingsNavRow, () {
-    testWidgets('renders the title and subtitle', (tester) async {
+    testWidgets('renders a tappable row with a trailing chevron', (
+      tester,
+    ) async {
       await tester.pumpPumpPumpItUP(
         SettingsNavRow(
           title: 'Your usual meals',
@@ -14,8 +17,8 @@ void main() {
         ),
       );
 
-      expect(find.text('Your usual meals'), findsOneWidget);
-      expect(find.text('3 items'), findsOneWidget);
+      expect(find.byType(ListTile), findsOneWidget);
+      expect(find.byIcon(Icons.chevron_right), findsOneWidget);
     });
 
     testWidgets('runs onTap when tapped', (tester) async {

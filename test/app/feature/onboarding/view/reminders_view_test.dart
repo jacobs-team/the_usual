@@ -78,7 +78,12 @@ void main() {
         const RemindersView(),
       );
 
-      await tester.tap(find.text('Continue'));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(OnboardingActions),
+          matching: find.byType(FilledButton),
+        ),
+      );
 
       verify(
         () => onboardingBloc.add(const OnboardingEvent.continuePressed()),
@@ -113,7 +118,17 @@ void main() {
       ).called(1);
 
       // Switch the check-in schedule mode.
-      await tester.tap(find.text(MealCheckinScheduleMode.endOfDay.label));
+      final endOfDayIndex = MealCheckinScheduleMode.values.indexOf(
+        MealCheckinScheduleMode.endOfDay,
+      );
+      await tester.tap(
+        find
+            .descendant(
+              of: find.byType(MealScheduleModeSelector),
+              matching: find.byType(Text),
+            )
+            .at(endOfDayIndex),
+      );
       verify(
         () => onboardingBloc.add(
           const OnboardingEvent.mealCheckinScheduleModeChanged(
@@ -146,7 +161,15 @@ void main() {
       // Change the breakfast reminder time via the picker.
       await tester.tap(find.byType(ActionChip));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('OK'));
+      // The time picker's confirm action is the last TextButton in its dialog.
+      await tester.tap(
+        find
+            .descendant(
+              of: find.byType(Dialog),
+              matching: find.byType(TextButton),
+            )
+            .last,
+      );
       await tester.pumpAndSettle();
       verify(
         () => onboardingBloc.add(
@@ -175,7 +198,15 @@ void main() {
 
       await tester.tap(find.byType(ActionChip));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('OK'));
+      // The time picker's confirm action is the last TextButton in its dialog.
+      await tester.tap(
+        find
+            .descendant(
+              of: find.byType(Dialog),
+              matching: find.byType(TextButton),
+            )
+            .last,
+      );
       await tester.pumpAndSettle();
 
       verify(

@@ -16,6 +16,7 @@ void main() {
   setUp(() {
     repository = MockMealAiRepository();
     userSettingsBloc = MockUserSettingsBloc();
+    when(() => repository.isConfigured).thenReturn(true);
     when(() => userSettingsBloc.state).thenReturn(
       const UserSettingsState(),
     );

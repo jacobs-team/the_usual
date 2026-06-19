@@ -26,6 +26,11 @@ void main() {
       test('keeps the decimal for fractional numbers', () {
         expect(165.5.trimmedDecimal, equals('165.5'));
       });
+
+      test('clears floating-point dust', () {
+        expect(2.3000000000000003.trimmedDecimal, equals('2.3'));
+        expect((0.1 + 0.2).trimmedDecimal, equals('0.3'));
+      });
     });
   });
 }

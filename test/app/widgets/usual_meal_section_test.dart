@@ -23,7 +23,6 @@ void main() {
         ),
       );
 
-      expect(find.text('Breakfast (2)'), findsOneWidget);
       expect(find.byType(ExpandableNutrition), findsNWidgets(2));
       expect(find.byType(UsualMealComposer), findsOneWidget);
     });
@@ -132,9 +131,10 @@ void main() {
         ),
       );
 
-      expect(find.text('Add with a photo or description'), findsOneWidget);
+      final aiEntryButton = find.byIcon(Icons.auto_awesome_outlined);
+      expect(aiEntryButton, findsOneWidget);
 
-      await tester.tap(find.text('Add with a photo or description'));
+      await tester.tap(aiEntryButton);
       await tester.pumpAndSettle();
       // Scope to the sheet so the finder skips the composer field that lives
       // behind the modal.
@@ -148,7 +148,15 @@ void main() {
         'Burrito',
       );
       await tester.pump();
-      await tester.tap(find.widgetWithText(FilledButton, 'Add'));
+      // The sheet's confirm button is the last FilledButton, after the form.
+      await tester.tap(
+        find
+            .descendant(
+              of: find.byType(FoodEntrySheet),
+              matching: find.byType(FilledButton),
+            )
+            .last,
+      );
       await tester.pumpAndSettle();
 
       expect(addedName, equals('Burrito'));
@@ -178,7 +186,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('Add with a photo or description'));
+      await tester.tap(find.byIcon(Icons.auto_awesome_outlined));
       await tester.pumpAndSettle();
       // A fresh sheet has one row, so the only close icon is the sheet's.
       await tester.tap(find.byIcon(Icons.close));

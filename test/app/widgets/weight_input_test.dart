@@ -16,8 +16,10 @@ void main() {
         ),
       );
 
-      expect(find.text('lb'), findsOneWidget);
-      expect(find.text('kg'), findsOneWidget);
+      expect(
+        find.byType(ChoiceChip),
+        findsNWidgets(WeightUnit.values.length),
+      );
     });
 
     testWidgets('parses entered text into a weight', (tester) async {
@@ -49,7 +51,9 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('kg'));
+      // Chips render in WeightUnit.values order, so kg is the second chip.
+      final kgIndex = WeightUnit.values.indexOf(WeightUnit.kg);
+      await tester.tap(find.byType(ChoiceChip).at(kgIndex));
 
       expect(unit, equals(WeightUnit.kg));
     });

@@ -59,4 +59,29 @@ void main() {
     expect(formKey.currentState!.results.single.name, equals('Toast'));
     expect(formKey.currentState!.hasContent, isTrue);
   });
+
+  testWidgets('keeps the nutrition field state while editing a value', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      const MaterialApp(home: Scaffold(body: FoodEntryForm())),
+    );
+    await tester.pump();
+
+    final stateBeforeEdit = tester.state(find.byType(NutritionFields));
+
+    final caloriesField = find
+        .descendant(
+          of: find.byType(NutritionFields),
+          matching: find.byType(TextFormField),
+        )
+        .first;
+    await tester.enterText(caloriesField, '5');
+    await tester.pumpAndSettle();
+
+    // The edit round-trips through the bloc and rebuilds the row. The field's
+    // own State (and thus its focus) must survive, or the user loses focus
+    // after a single character.
+    expect(tester.state(find.byType(NutritionFields)), same(stateBeforeEdit));
+  });
 }

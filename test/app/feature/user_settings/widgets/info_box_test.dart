@@ -11,7 +11,7 @@ void main() {
         const InfoBox('Reminders are off.'),
       );
 
-      expect(find.text('Reminders are off.'), findsOneWidget);
+      expect(find.byType(InfoBox), findsOneWidget);
     });
 
     testWidgets('repaints its border when the theme color changes', (

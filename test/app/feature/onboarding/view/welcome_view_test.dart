@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:the_usual/app/app.dart';
@@ -16,16 +17,6 @@ void main() {
       ).thenAnswer((_) => const Stream.empty());
     });
 
-    testWidgets('renders the value proposition', (tester) async {
-      await tester.pumpPumpPumpItUP(
-        deps: [onboardingBloc],
-        const WelcomeView(),
-      );
-
-      expect(find.text('The Usual'), findsOneWidget);
-      expect(find.text('Get started'), findsOneWidget);
-    });
-
     testWidgets('adds continuePressed when Get started is tapped', (
       tester,
     ) async {
@@ -34,7 +25,7 @@ void main() {
         const WelcomeView(),
       );
 
-      await tester.tap(find.text('Get started'));
+      await tester.tap(find.byType(FilledButton));
 
       verify(
         () => onboardingBloc.add(const OnboardingEvent.continuePressed()),

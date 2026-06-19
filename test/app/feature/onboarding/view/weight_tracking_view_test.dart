@@ -73,7 +73,17 @@ void main() {
         const WeightTrackingView(),
       );
 
-      await tester.tap(find.text(WeightCheckinFrequency.weekly.label));
+      final weeklyIndex = WeightCheckinFrequency.values.indexOf(
+        WeightCheckinFrequency.weekly,
+      );
+      await tester.tap(
+        find
+            .descendant(
+              of: find.byType(WeightCheckinFrequencyChips),
+              matching: find.byType(ChoiceChip),
+            )
+            .at(weeklyIndex),
+      );
       verify(
         () => onboardingBloc.add(
           const OnboardingEvent.weightCheckinFrequencySelected(
@@ -82,7 +92,15 @@ void main() {
         ),
       ).called(1);
 
-      await tester.tap(find.text(WeightTimeOfDay.night.label));
+      final nightIndex = WeightTimeOfDay.values.indexOf(WeightTimeOfDay.night);
+      await tester.tap(
+        find
+            .descendant(
+              of: find.byType(WeightTimeOfDayChips),
+              matching: find.byType(ChoiceChip),
+            )
+            .at(nightIndex),
+      );
       verify(
         () => onboardingBloc.add(
           const OnboardingEvent.weightTimeOfDaySelected(WeightTimeOfDay.night),
@@ -96,7 +114,15 @@ void main() {
         ),
       ).called(1);
 
-      await tester.tap(find.text('kg'));
+      final kgIndex = WeightUnit.values.indexOf(WeightUnit.kg);
+      await tester.tap(
+        find
+            .descendant(
+              of: find.byType(WeightInput),
+              matching: find.byType(ChoiceChip),
+            )
+            .at(kgIndex),
+      );
       verify(
         () => onboardingBloc.add(
           const OnboardingEvent.weightUnitSelected(WeightUnit.kg),
@@ -112,7 +138,12 @@ void main() {
         const WeightTrackingView(),
       );
 
-      await tester.tap(find.text('Continue'));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(OnboardingActions),
+          matching: find.byType(FilledButton),
+        ),
+      );
 
       verify(
         () => onboardingBloc.add(const OnboardingEvent.continuePressed()),

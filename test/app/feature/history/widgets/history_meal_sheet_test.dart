@@ -12,6 +12,10 @@ void main() {
 
     final day = DateTime(2026, 6, 16);
 
+    // A usual is offered as a quick pick chip, which is the sheet's only
+    // MenuAnchor, so it anchors the chip without reading its label.
+    final quickPickChip = find.byType(MenuAnchor);
+
     setUp(() {
       dailyLogBloc = MockDailyLogBloc();
       when(() => dailyLogBloc.state).thenReturn(const DailyLogState());
@@ -52,7 +56,7 @@ void main() {
       );
 
       expect(find.byType(MealLogSection), findsOneWidget);
-      expect(find.text('+ Tacos'), findsOneWidget);
+      expect(quickPickChip, findsOneWidget);
     });
 
     testWidgets('logs a quick pick onto the given day', (tester) async {
@@ -66,7 +70,9 @@ void main() {
         HistoryMealSheet(mealOfTheDay: MealOfTheDay.dinner, day: day),
       );
 
-      await tester.tap(find.text('+ Tacos'));
+      await tester.tap(
+        find.descendant(of: quickPickChip, matching: find.byType(InkWell)),
+      );
 
       verify(
         () => dailyLogBloc.add(

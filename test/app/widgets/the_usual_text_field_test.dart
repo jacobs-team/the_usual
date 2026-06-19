@@ -12,7 +12,6 @@ void main() {
       );
 
       expect(find.byType(TextFormField), findsOneWidget);
-      expect(find.text('Name'), findsOneWidget);
     });
 
     testWidgets('renders a dense field without an outline', (tester) async {

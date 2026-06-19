@@ -21,6 +21,7 @@ void main() {
         deps: [notificationService],
         Builder(
           builder: (context) => ElevatedButton(
+            key: const Key('open-dialog-button'),
             onPressed: () => showDialog<void>(
               context: context,
               builder: (_) => const EnableNotificationsInSettingsDialog(),
@@ -29,26 +30,38 @@ void main() {
           ),
         ),
       );
-      await tester.tap(find.text('open'));
+      await tester.tap(find.byKey(const Key('open-dialog-button')));
       await tester.pumpAndSettle();
     }
 
-    testWidgets('dismisses without opening settings on Not now', (
+    testWidgets('dismisses without opening settings on the dismiss action', (
       tester,
     ) async {
       await showDialogUnderTest(tester);
 
-      await tester.tap(find.text('Not now'));
+      // The dismiss action is the dialog's TextButton; the confirm action is a
+      // FilledButton.
+      await tester.tap(
+        find.descendant(
+          of: find.byType(EnableNotificationsInSettingsDialog),
+          matching: find.byType(TextButton),
+        ),
+      );
       await tester.pumpAndSettle();
 
       expect(find.byType(EnableNotificationsInSettingsDialog), findsNothing);
       verifyNever(() => notificationService.openSystemSettings());
     });
 
-    testWidgets('opens system settings on Open settings', (tester) async {
+    testWidgets('opens system settings on the confirm action', (tester) async {
       await showDialogUnderTest(tester);
 
-      await tester.tap(find.text('Open settings'));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(EnableNotificationsInSettingsDialog),
+          matching: find.byType(FilledButton),
+        ),
+      );
       await tester.pumpAndSettle();
 
       verify(() => notificationService.openSystemSettings()).called(1);

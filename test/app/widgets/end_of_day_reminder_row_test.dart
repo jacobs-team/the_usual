@@ -6,7 +6,9 @@ import '../../helpers/helpers.dart';
 
 void main() {
   group(EndOfDayReminderRow, () {
-    testWidgets('renders the daily check-in row', (tester) async {
+    testWidgets('renders the daily check-in row with a time chip', (
+      tester,
+    ) async {
       await tester.pumpPumpPumpItUP(
         EndOfDayReminderRow(
           mealReminder: const MealReminder(
@@ -17,8 +19,8 @@ void main() {
         ),
       );
 
-      expect(find.text('Daily check-in'), findsOneWidget);
-      expect(find.text('Covers all meals at once'), findsOneWidget);
+      expect(find.byType(ListTile), findsOneWidget);
+      expect(find.byType(ActionChip), findsOneWidget);
     });
 
     testWidgets('reports a picked time through onTimeChanged', (tester) async {

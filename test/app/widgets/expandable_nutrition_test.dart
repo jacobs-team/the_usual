@@ -6,6 +6,18 @@ import '../../helpers/helpers.dart';
 
 void main() {
   group(ExpandableNutrition, () {
+    // The collapsed name lives in the tile's title Text (rendered only when
+    // onNameChanged is null). Reading its data lets us assert the ×N prefix
+    // without matching on copy.
+    String titleText(WidgetTester tester) => tester.widget<Text>(
+      find
+          .descendant(
+            of: find.byType(ExpansionTile),
+            matching: find.byType(Text),
+          )
+          .first,
+    ).data!;
+
     testWidgets('collapsed shows a read-only summary, expanded reveals the '
         'fields', (tester) async {
       await tester.pumpPumpPumpItUP(
@@ -21,7 +33,7 @@ void main() {
       expect(find.byType(NutritionSummary), findsOneWidget);
       expect(find.byType(NutritionFields), findsNothing);
 
-      await tester.tap(find.text('Eggs'));
+      await tester.tap(find.byType(ExpansionTile));
       await tester.pumpAndSettle();
 
       expect(find.byType(NutritionFields), findsOneWidget);
@@ -68,8 +80,9 @@ void main() {
       expect(changedQuantity, equals(3));
     });
 
-    testWidgets('prefixes the name with ×N and shows a scaled summary when '
-        'quantity is over one', (tester) async {
+    testWidgets('shows a scaled summary when quantity is over one', (
+      tester,
+    ) async {
       await tester.pumpPumpPumpItUP(
         ExpandableNutrition(
           name: 'Eggs',
@@ -82,10 +95,12 @@ void main() {
         ),
       );
 
-      // The scaled-summary row that appears only while expanded with a
-      // quantity over one.
-      expect(find.text('×3 = '), findsOneWidget);
-      expect(find.text('300 cal'), findsOneWidget);
+      // While expanded with a quantity over one the scaled-summary row shows
+      // the per-unit nutrition multiplied by the quantity.
+      final scaledSummary = tester.widget<NutritionSummary>(
+        find.byType(NutritionSummary),
+      );
+      expect(scaledSummary.nutrition.calories, equals(300));
     });
 
     testWidgets('shows the ×N prefix on the collapsed name', (tester) async {
@@ -101,7 +116,7 @@ void main() {
         ),
       );
 
-      expect(find.text('×2 Eggs'), findsOneWidget);
+      expect(titleText(tester), equals('×2 Eggs'));
     });
 
     testWidgets('shows the ×N prefix for a fractional quantity', (
@@ -119,7 +134,7 @@ void main() {
         ),
       );
 
-      expect(find.text('×0.5 Eggs'), findsOneWidget);
+      expect(titleText(tester), equals('×0.5 Eggs'));
     });
 
     testWidgets('reflects an externally changed name', (tester) async {
@@ -205,11 +220,11 @@ void main() {
           expandedByDefault: true,
           onChanged: (_) {},
           onRemoved: () {},
-          expandedFooter: const Text('footer-content'),
+          expandedFooter: const SizedBox(key: Key('expanded-footer')),
         ),
       );
 
-      expect(find.text('footer-content'), findsOneWidget);
+      expect(find.byKey(const Key('expanded-footer')), findsOneWidget);
     });
   });
 }

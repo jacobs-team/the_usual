@@ -42,6 +42,10 @@ class _QuantityStepperState extends State<QuantityStepper> {
 
   double get _step => _stepByTenths ? 0.1 : 1;
 
+  /// Rounds a stepped value to the nearest tenth, clearing the floating-point
+  /// dust repeated 0.1 steps accumulate (2.2 + 0.1 becomes 2.3000000000000003).
+  double _cleanStep(double value) => (value * 10).roundToDouble() / 10;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -78,7 +82,8 @@ class _QuantityStepperState extends State<QuantityStepper> {
                 size: buttonSize,
                 iconSize: iconSize,
                 onPressed: canDecrement
-                    ? () => widget.onChanged(widget.quantity - _step)
+                    ? () =>
+                          widget.onChanged(_cleanStep(widget.quantity - _step))
                     : null,
               ),
               Container(
@@ -90,7 +95,8 @@ class _QuantityStepperState extends State<QuantityStepper> {
                 icon: Icons.add,
                 size: buttonSize,
                 iconSize: iconSize,
-                onPressed: () => widget.onChanged(widget.quantity + _step),
+                onPressed: () =>
+                    widget.onChanged(_cleanStep(widget.quantity + _step)),
               ),
             ],
           ),

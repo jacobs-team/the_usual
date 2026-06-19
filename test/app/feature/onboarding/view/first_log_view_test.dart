@@ -53,7 +53,8 @@ void main() {
         const FirstLogView(),
       );
 
-      expect(find.textContaining('usual meals yet'), findsOneWidget);
+      // With no usuals the food list is replaced by the empty-state message.
+      expect(find.byType(ListView), findsNothing);
     });
 
     testWidgets('a usual with no photo shows no image placeholder', (
@@ -87,7 +88,14 @@ void main() {
         const FirstLogView(),
       );
 
-      await tester.tap(find.text('Pancakes').first);
+      await tester.tap(
+        find
+            .descendant(
+              of: find.byType(Card),
+              matching: find.byType(InkWell),
+            )
+            .first,
+      );
 
       verify(
         () => onboardingBloc.add(
@@ -140,7 +148,10 @@ void main() {
       );
 
       final logIt = tester.widget<FilledButton>(
-        find.widgetWithText(FilledButton, 'Log it'),
+        find.descendant(
+          of: find.byType(OnboardingActions),
+          matching: find.byType(FilledButton),
+        ),
       );
       expect(logIt.onPressed, isNull);
     });
@@ -159,7 +170,12 @@ void main() {
         const FirstLogView(),
       );
 
-      await tester.tap(find.text('Log it'));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(OnboardingActions),
+          matching: find.byType(FilledButton),
+        ),
+      );
 
       verify(
         () => onboardingBloc.add(const OnboardingEvent.continuePressed()),
@@ -181,7 +197,12 @@ void main() {
         const FirstLogView(),
       );
 
-      await tester.tap(find.text("I haven't eaten yet"));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(OnboardingActions),
+          matching: find.byType(TextButton),
+        ),
+      );
 
       verify(
         () => onboardingBloc.add(const OnboardingEvent.continuePressed()),
@@ -203,11 +224,16 @@ void main() {
         const FirstLogView(),
       );
 
-      await tester.tap(find.text('I ate something else'));
+      await tester.tap(find.byType(OutlinedButton));
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextFormField).first, 'Burrito');
       await tester.pump();
-      await tester.tap(find.text('Log'));
+      await tester.tap(
+        find.descendant(
+          of: find.byType(FoodEntrySheet),
+          matching: find.byType(FilledButton),
+        ),
+      );
       await tester.pumpAndSettle();
 
       final captured = verify(
@@ -232,7 +258,7 @@ void main() {
         const FirstLogView(),
       );
 
-      await tester.tap(find.text('I ate something else'));
+      await tester.tap(find.byType(OutlinedButton));
       await tester.pumpAndSettle();
       // A fresh sheet has one row, so the only close icon is the sheet's.
       await tester.tap(find.byIcon(Icons.close));

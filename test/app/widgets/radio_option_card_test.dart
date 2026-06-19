@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:the_usual/app/app.dart';
 
@@ -5,9 +6,7 @@ import '../../helpers/helpers.dart';
 
 void main() {
   group(RadioOptionCard, () {
-    testWidgets('renders title, subtitle, and an optional note', (
-      tester,
-    ) async {
+    testWidgets('renders the note when one is given', (tester) async {
       await tester.pumpPumpPumpItUP(
         RadioOptionCard(
           title: 'Notifications',
@@ -18,9 +17,8 @@ void main() {
         ),
       );
 
-      expect(find.text('Notifications'), findsOneWidget);
-      expect(find.text('A quick nudge'), findsOneWidget);
-      expect(find.text('Asks permission'), findsOneWidget);
+      // Title, subtitle, and note each render as their own Text.
+      expect(find.byType(Text), findsNWidgets(3));
     });
 
     testWidgets('omits the note when none is given', (tester) async {
@@ -33,7 +31,21 @@ void main() {
         ),
       );
 
-      expect(find.text('No reminders'), findsOneWidget);
+      // Only the title and subtitle render; the note Text is absent.
+      expect(find.byType(Text), findsNWidgets(2));
+    });
+
+    testWidgets('shows the checked indicator when selected', (tester) async {
+      await tester.pumpPumpPumpItUP(
+        RadioOptionCard(
+          title: 'Notifications',
+          subtitle: 'A quick nudge',
+          selected: true,
+          onTap: () {},
+        ),
+      );
+
+      expect(find.byIcon(Icons.radio_button_checked), findsOneWidget);
     });
 
     testWidgets('calls onTap when tapped', (tester) async {
@@ -47,7 +59,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text('Tap me'));
+      await tester.tap(find.byType(RadioOptionCard));
 
       expect(tapped, isTrue);
     });

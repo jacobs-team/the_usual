@@ -17,7 +17,7 @@ void main() {
           ),
           GoRoute(
             path: Routes.today,
-            builder: (_, _) => const Text('today-page'),
+            builder: (_, _) => const SizedBox.shrink(key: Key('today-page')),
           ),
         ],
       );
@@ -40,7 +40,6 @@ void main() {
     testWidgets('renders every settings section', (tester) async {
       await pumpView(tester);
 
-      expect(find.text('Settings'), findsOneWidget);
       expect(find.byType(ReminderStyleSection), findsOneWidget);
       expect(find.byType(MealScheduleSection), findsOneWidget);
       expect(find.byType(WeightSection), findsOneWidget);
@@ -63,7 +62,7 @@ void main() {
       await tester.tap(find.byType(BackButton));
       await tester.pumpAndSettle();
 
-      expect(find.text('today-page'), findsOneWidget);
+      expect(find.byKey(const Key('today-page')), findsOneWidget);
     });
   });
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:the_usual/app/app.dart';
 
@@ -13,9 +14,10 @@ void main() {
         ),
       );
 
-      for (final frequency in WeightCheckinFrequency.values) {
-        expect(find.text(frequency.label), findsOneWidget);
-      }
+      expect(
+        find.byType(ChoiceChip),
+        findsNWidgets(WeightCheckinFrequency.values.length),
+      );
     });
 
     testWidgets('reports the chosen frequency when a chip is tapped', (
@@ -29,7 +31,13 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text(WeightCheckinFrequency.weekly.label));
+      // Chips render in WeightCheckinFrequency.values order.
+      final weeklyChip = find
+          .byType(ChoiceChip)
+          .at(WeightCheckinFrequency.values.indexOf(
+            WeightCheckinFrequency.weekly,
+          ));
+      await tester.tap(weeklyChip);
 
       expect(selected, equals(WeightCheckinFrequency.weekly));
     });

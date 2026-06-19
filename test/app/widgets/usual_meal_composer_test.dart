@@ -38,7 +38,15 @@ void main() {
       await tester.tap(find.byIcon(Icons.add));
       await tester.pump();
 
-      expect(find.text('Eggs'), findsNothing);
+      final nameField = tester.widget<TextField>(
+        find
+            .descendant(
+              of: find.byType(TextFormField).first,
+              matching: find.byType(TextField),
+            )
+            .first,
+      );
+      expect(nameField.controller!.text, isEmpty);
     });
 
     testWidgets('ignores submission with a blank name', (tester) async {
