@@ -21,7 +21,7 @@ void main() {
     Future<void> pumpSheet(
       WidgetTester tester,
       Map<MealOfTheDay, List<UsualMeal>> usualsByMeal, {
-      DateTime? day,
+      List<DateTime>? logDays,
       TimeOfDay? dayStart,
     }) {
       return tester.pumpPumpPumpItUP(
@@ -29,7 +29,7 @@ void main() {
         OtherMealUsualsSheet(
           mealOfTheDay: MealOfTheDay.breakfast,
           usualsByMeal: usualsByMeal,
-          day: day,
+          logDays: logDays,
           dayStart: dayStart,
         ),
       );
@@ -102,7 +102,7 @@ void main() {
             ),
           ],
         },
-        day: DateTime(2026, 6, 16),
+        logDays: [DateTime(2026, 6, 16)],
         dayStart: const TimeOfDay(hour: 4, minute: 0),
       );
 
@@ -121,6 +121,43 @@ void main() {
           ),
         ),
       ).called(1);
+    });
+
+    testWidgets('logs the tapped usual onto every day in a range', (
+      tester,
+    ) async {
+      await pumpSheet(
+        tester,
+        const {
+          MealOfTheDay.lunch: [
+            UsualMeal(
+              id: 'u',
+              name: 'Salad',
+              nutrition: Nutrition(calories: 250),
+            ),
+          ],
+        },
+        logDays: [DateTime(2026, 6, 15), DateTime(2026, 6, 16)],
+        dayStart: const TimeOfDay(hour: 4, minute: 0),
+      );
+
+      await tester.tap(find.text('Salad'));
+      await tester.pumpAndSettle();
+
+      for (final day in [DateTime(2026, 6, 15), DateTime(2026, 6, 16)]) {
+        verify(
+          () => dailyLogBloc.add(
+            DailyLogEvent.mealLogged(
+              MealOfTheDay.breakfast,
+              'Salad',
+              nutrition: const Nutrition(calories: 250),
+              usualMealId: 'u',
+              day: day,
+              dayStart: const TimeOfDay(hour: 4, minute: 0),
+            ),
+          ),
+        ).called(1);
+      }
     });
   });
 }

@@ -44,7 +44,7 @@ void main() {
     testWidgets('prefills with the day weight', (tester) async {
       final dailyLogBloc = dailyLogBlocWith([weightEntryOn(day, 165.5)]);
       await tester.pumpPumpPumpItUP(
-        WeightEntryField(day: day),
+        WeightEntryField(days: [day]),
         deps: [dailyLogBloc],
       );
 
@@ -56,7 +56,7 @@ void main() {
     ) async {
       final dailyLogBloc = dailyLogBlocWith([]);
       await tester.pumpPumpPumpItUP(
-        WeightEntryField(day: day),
+        WeightEntryField(days: [day]),
         deps: [dailyLogBloc],
       );
 
@@ -75,10 +75,32 @@ void main() {
       ).called(1);
     });
 
+    testWidgets('typing a weight writes it to every day in the range', (
+      tester,
+    ) async {
+      final days = [DateTime(2026, 6, 15), DateTime(2026, 6, 16)];
+      final dailyLogBloc = dailyLogBlocWith([]);
+      await tester.pumpPumpPumpItUP(
+        WeightEntryField(days: days),
+        deps: [dailyLogBloc],
+      );
+
+      await tester.enterText(find.byType(TextField), '170');
+      await tester.pump();
+
+      for (final day in days) {
+        verify(
+          () => dailyLogBloc.add(
+            DailyLogEvent.weightOnDayChanged(day, 170, WeightUnit.lb, dayStart),
+          ),
+        ).called(1);
+      }
+    });
+
     testWidgets('clearing the field dispatches a null weight', (tester) async {
       final dailyLogBloc = dailyLogBlocWith([weightEntryOn(day, 165)]);
       await tester.pumpPumpPumpItUP(
-        WeightEntryField(day: day),
+        WeightEntryField(days: [day]),
         deps: [dailyLogBloc],
       );
 
@@ -101,7 +123,7 @@ void main() {
       );
       final dailyLogBloc = dailyLogBlocWith([lastWeight]);
       await tester.pumpPumpPumpItUP(
-        WeightEntryField(day: day, showLastWeightButton: true),
+        WeightEntryField(days: [day], showLastWeightButton: true),
         deps: [dailyLogBloc],
       );
 
@@ -125,7 +147,7 @@ void main() {
         weightEntryOn(day.subtract(const Duration(days: 2)), 180),
       ]);
       await tester.pumpPumpPumpItUP(
-        WeightEntryField(day: day, showLastWeightButton: true),
+        WeightEntryField(days: [day], showLastWeightButton: true),
         deps: [dailyLogBloc],
       );
 
@@ -144,7 +166,7 @@ void main() {
       ).thenAnswer((_) => stateController.stream);
 
       await tester.pumpPumpPumpItUP(
-        WeightEntryField(day: day),
+        WeightEntryField(days: [day]),
         deps: [dailyLogBloc],
       );
 
@@ -173,7 +195,7 @@ void main() {
       ).thenAnswer((_) => stateController.stream);
 
       await tester.pumpPumpPumpItUP(
-        WeightEntryField(day: day),
+        WeightEntryField(days: [day]),
         deps: [dailyLogBloc],
       );
 

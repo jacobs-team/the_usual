@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
@@ -126,7 +128,7 @@ class FoodEntryFormState extends State<FoodEntryForm> {
 
   @override
   void dispose() {
-    _bloc.close();
+    unawaited(_bloc.close());
     super.dispose();
   }
 
@@ -229,7 +231,8 @@ class FoodEntryFormState extends State<FoodEntryForm> {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Text(
-                                        'Type a meal name or description first.',
+                                        'Type a meal name or description'
+                                        ' first.',
                                       ),
                                     ),
                                   );

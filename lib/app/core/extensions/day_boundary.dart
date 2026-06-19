@@ -22,3 +22,19 @@ extension DayBoundary on DateTime {
     Duration(hours: dayStart.hour, minutes: dayStart.minute),
   );
 }
+
+/// Calendar-day expansion of a date range.
+extension LogicalDaysInRange on DateTimeRange {
+  /// Every day this range covers, from [start] to [end] inclusive, each
+  /// returned date-only (midnight) so it can key a day bucket or stamp an
+  /// entry. A range whose [start] and [end] fall on the same day yields one.
+  List<DateTime> get logicalDays {
+    final firstDay = DateUtils.dateOnly(start);
+    final lastDay = DateUtils.dateOnly(end);
+    final dayCount = lastDay.difference(firstDay).inDays;
+    return [
+      for (var offset = 0; offset <= dayCount; offset++)
+        DateTime(firstDay.year, firstDay.month, firstDay.day + offset),
+    ];
+  }
+}

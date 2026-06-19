@@ -44,7 +44,6 @@ sealed class DailyLogEvent with _$DailyLogEvent {
     TimeOfDay dayStart,
   ) = WeightOnDayChanged;
 
-  // TODO(dev): temporary. Replaces the log with sample history; triggered from
   // Dev Tools. Remove before ship.
   const factory DailyLogEvent.sampleDataSeeded() = SampleDataSeeded;
 }

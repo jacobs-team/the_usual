@@ -78,7 +78,8 @@ class MealAiClient {
                 media: Media(
                   contentType: image.mediaType,
                   url:
-                      'data:${image.mediaType};base64,${base64Encode(image.bytes)}',
+                      'data:${image.mediaType};base64,'
+                      '${base64Encode(image.bytes)}',
                 ),
               ),
           ],

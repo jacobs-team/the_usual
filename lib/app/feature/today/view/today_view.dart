@@ -4,6 +4,7 @@ import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
 import 'package:the_usual/design_system/design_system.dart';
@@ -22,6 +23,12 @@ class TodayView extends StatefulWidget {
 
 class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
   Timer? _refreshTimer;
+
+  /// The day(s) the view shows and logs onto. Null is the live "today" view:
+  /// it follows the clock and stamps entries at the current time. A non-null
+  /// range is a specific single day (start == end) or a multi-day span the
+  /// user picked, whose logs fan across every day in it.
+  DateTimeRange? _selectedRange;
 
   @override
   void initState() {
@@ -65,8 +72,33 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
     final now = clock.now();
     final currentMeal = getIt<UserSettingsBloc>().state.currentMeal(now);
 
+    final selectedRange = _selectedRange;
+    final today = now.logicalDay(getIt<UserSettingsBloc>().state.dayStartTime);
+    final pillLabel = _pillLabel(selectedRange);
+
     return Scaffold(
-      appBar: const TheUsualAppBar(title: 'Today'),
+      appBar: TheUsualAppBar(
+        title: 'Today',
+        titleWidget: ActionChip(
+          key: const Key('today-date-pill'),
+          label: Text(pillLabel),
+          onPressed: () async {
+            final picked = await showDatePicker(
+              context: context,
+              firstDate: DateTime(2000),
+              lastDate: DateTime(2100),
+              initialDate: selectedRange?.start ?? today,
+            );
+            if (picked == null) return;
+            final pickedDay = DateUtils.dateOnly(picked);
+            setState(() {
+              _selectedRange = DateUtils.isSameDay(pickedDay, today)
+                  ? null
+                  : DateTimeRange(start: pickedDay, end: pickedDay);
+            });
+          },
+        ),
+      ),
       body: SafeArea(
         bottom: false,
         child:
@@ -90,6 +122,13 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
                   dayStartTime,
                 ) = selected;
                 final today = now.logicalDay(dayStartTime);
+                final selectedRange = _selectedRange;
+                final isToday = selectedRange == null;
+                final displayDay = selectedRange == null
+                    ? today
+                    : DateUtils.dateOnly(selectedRange.start);
+                final logDays = selectedRange?.logicalDays;
+                final logDayStart = selectedRange == null ? null : dayStartTime;
                 return BlocSelector<
                   DailyLogBloc,
                   DailyLogState,
@@ -99,7 +138,7 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
                   selector: (state) => state.mealEntries,
                   builder: (context, mealEntries) {
                     final breakdown = mealEntries.breakdownOn(
-                      today,
+                      displayDay,
                       dayStartTime,
                     );
                     return CustomScrollView(
@@ -115,7 +154,7 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
-                                _WeightTracker(day: today),
+                                _WeightTracker(days: logDays ?? [today]),
                                 SizedBox(height: AppDesign.spacing.lg),
                                 Row(
                                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -148,18 +187,20 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
                             quickPicks: mealEntries.orderedQuickPicks(
                               mealOfTheDay: mealOfTheDay,
                               usuals: usualMeals,
-                              day: today,
+                              day: displayDay,
                               dayStart: dayStartTime,
                             ),
                             otherMealUsuals: mealEntries.usualsFromOtherMeals(
                               mealOfTheDay: mealOfTheDay,
                               usuals: usualMeals,
-                              day: today,
+                              day: displayDay,
                               dayStart: dayStartTime,
                             ),
-                            isCurrent: mealOfTheDay == currentMeal,
+                            isCurrent: isToday && mealOfTheDay == currentMeal,
                             nutritionExpandedByDefault:
                                 expandNutritionByDefault,
+                            logDays: logDays,
+                            dayStart: logDayStart,
                           ),
                         SliverToBoxAdapter(
                           child: SizedBox(
@@ -174,6 +215,23 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
             ),
       ),
     );
+  }
+
+  /// The pill's label: "Today" for the live view, a single formatted date for
+  /// one selected day, or a "start – end" span for a range.
+  String _pillLabel(DateTimeRange? selectedRange) {
+    if (selectedRange == null) return 'Today';
+    final currentYear = clock.now().year;
+    // Drop the year for dates in the current year to keep the pill compact,
+    // but show it for other years so an off-year date isn't ambiguous.
+    String formatDate(DateTime date) =>
+        (date.year == currentYear ? DateFormat.MMMd() : DateFormat.yMMMd())
+            .format(date);
+    final startLabel = formatDate(selectedRange.start);
+    if (DateUtils.isSameDay(selectedRange.start, selectedRange.end)) {
+      return startLabel;
+    }
+    return '$startLabel – ${formatDate(selectedRange.end)}';
   }
 }
 
@@ -214,13 +272,14 @@ class _NutritionExpansionToggle extends StatelessWidget {
   }
 }
 
-/// Today's weight tracker: an inline field for [day]'s weigh-in, prefilled
+/// Today's weight tracker: an inline field for the day's weigh-in, prefilled
 /// with the last recorded weight as a hint.
 class _WeightTracker extends StatelessWidget {
-  const _WeightTracker({required this.day});
+  const _WeightTracker({required this.days});
 
-  /// The day whose weigh-in this field records.
-  final DateTime day;
+  /// The days whose weigh-in this field records. One day in the live/single-day
+  /// view; every day in a selected range.
+  final List<DateTime> days;
 
   @override
   Widget build(BuildContext context) {
@@ -239,7 +298,7 @@ class _WeightTracker extends StatelessWidget {
             SizedBox(width: AppDesign.spacing.sm),
             Text('Weight', style: theme.textTheme.bodyMedium),
             const Spacer(),
-            WeightEntryField(day: day, showLastWeightButton: true),
+            WeightEntryField(days: days, showLastWeightButton: true),
           ],
         ),
       ),

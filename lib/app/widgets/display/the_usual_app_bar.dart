@@ -11,10 +11,15 @@ import 'package:the_usual/l10n/l10n.dart';
 /// {@endtemplate}
 class TheUsualAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// {@macro the_usual_app_bar}
-  const TheUsualAppBar({required this.title, super.key});
+  const TheUsualAppBar({required this.title, this.titleWidget, super.key});
 
-  /// The text shown centered in the bar.
+  /// The text shown centered in the bar when [titleWidget] is null. Always set
+  /// as the semantic/fallback label even when a custom widget is supplied.
   final String title;
+
+  /// A custom widget shown centered in place of [title], e.g. the Today view's
+  /// tappable date pill.
+  final Widget? titleWidget;
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -23,7 +28,7 @@ class TheUsualAppBar extends StatelessWidget implements PreferredSizeWidget {
   Widget build(BuildContext context) {
     return AppBar(
       centerTitle: true,
-      title: Text(title),
+      title: titleWidget ?? Text(title),
       actions: [
         IconButton(
           onPressed: () => context.go(Routes.settings),

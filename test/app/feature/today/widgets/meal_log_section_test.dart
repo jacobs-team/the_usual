@@ -44,7 +44,7 @@ void main() {
       Map<MealOfTheDay, List<UsualMeal>> otherMealUsuals = const {},
       bool isCurrent = false,
       bool nutritionExpandedByDefault = false,
-      DateTime? day,
+      List<DateTime>? logDays,
       TimeOfDay? dayStart,
     }) {
       tester.view.physicalSize = const Size(1200, 3000);
@@ -62,7 +62,7 @@ void main() {
               otherMealUsuals: otherMealUsuals,
               isCurrent: isCurrent,
               nutritionExpandedByDefault: nutritionExpandedByDefault,
-              day: day,
+              logDays: logDays,
               dayStart: dayStart,
             ),
           ],
@@ -129,12 +129,56 @@ void main() {
             nutrition: Nutrition(calories: 300),
           ),
         ],
-        day: DateTime(2026, 6, 16),
+        logDays: [DateTime(2026, 6, 16)],
         dayStart: const TimeOfDay(hour: 4, minute: 0),
       );
 
       await tester.tap(find.text('+ Oatmeal'));
 
+      verify(
+        () => dailyLogBloc.add(
+          DailyLogEvent.mealLogged(
+            MealOfTheDay.breakfast,
+            'Oatmeal',
+            nutrition: const Nutrition(calories: 300),
+            usualMealId: 'u',
+            day: DateTime(2026, 6, 16),
+            dayStart: const TimeOfDay(hour: 4, minute: 0),
+          ),
+        ),
+      ).called(1);
+    });
+
+    testWidgets('logs a quick pick onto every day in a multi-day range', (
+      tester,
+    ) async {
+      await pumpSection(
+        tester,
+        quickPicks: const [
+          UsualMeal(
+            id: 'u',
+            name: 'Oatmeal',
+            nutrition: Nutrition(calories: 300),
+          ),
+        ],
+        logDays: [DateTime(2026, 6, 15), DateTime(2026, 6, 16)],
+        dayStart: const TimeOfDay(hour: 4, minute: 0),
+      );
+
+      await tester.tap(find.text('+ Oatmeal'));
+
+      verify(
+        () => dailyLogBloc.add(
+          DailyLogEvent.mealLogged(
+            MealOfTheDay.breakfast,
+            'Oatmeal',
+            nutrition: const Nutrition(calories: 300),
+            usualMealId: 'u',
+            day: DateTime(2026, 6, 15),
+            dayStart: const TimeOfDay(hour: 4, minute: 0),
+          ),
+        ),
+      ).called(1);
       verify(
         () => dailyLogBloc.add(
           DailyLogEvent.mealLogged(

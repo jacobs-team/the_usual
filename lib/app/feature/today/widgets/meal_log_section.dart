@@ -17,7 +17,7 @@ class MealLogSection extends StatelessWidget {
     required this.otherMealUsuals,
     required this.isCurrent,
     required this.nutritionExpandedByDefault,
-    this.day,
+    this.logDays,
     this.dayStart,
     super.key,
   });
@@ -42,12 +42,55 @@ class MealLogSection extends StatelessWidget {
   /// Whether each logged entry's nutrition fields start expanded for editing.
   final bool nutritionExpandedByDefault;
 
-  /// The day meals logged from this section are recorded onto. Null logs to
-  /// today; the History view passes the day being edited.
-  final DateTime? day;
+  /// The days meals logged from this section are recorded onto. Null logs to
+  /// today (stamped at the current time); a single-element list logs to one
+  /// day (the History view), and a multi-day list bulk-logs the same entry
+  /// onto every day in the range.
+  final List<DateTime>? logDays;
 
-  /// The user's day-start, used with [day] to stamp entries onto that day.
+  /// The user's day-start, used with [logDays] to stamp entries onto each day.
   final TimeOfDay? dayStart;
+
+  /// Logs [name] under [mealOfTheDay] onto every day in [logDays], or to today
+  /// when [logDays] is null.
+  void _logOntoTargetDays(
+    MealOfTheDay mealOfTheDay,
+    String name, {
+    Nutrition nutrition = const Nutrition(),
+    double quantity = 1,
+    String? usualMealId,
+    String? photoPath,
+  }) {
+    final targetDays = logDays;
+    final dailyLogBloc = getIt<DailyLogBloc>();
+    if (targetDays == null) {
+      dailyLogBloc.add(
+        DailyLogEvent.mealLogged(
+          mealOfTheDay,
+          name,
+          nutrition: nutrition,
+          quantity: quantity,
+          usualMealId: usualMealId,
+          photoPath: photoPath,
+        ),
+      );
+      return;
+    }
+    for (final day in targetDays) {
+      dailyLogBloc.add(
+        DailyLogEvent.mealLogged(
+          mealOfTheDay,
+          name,
+          nutrition: nutrition,
+          quantity: quantity,
+          usualMealId: usualMealId,
+          photoPath: photoPath,
+          day: day,
+          dayStart: dayStart,
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -129,16 +172,12 @@ class MealLogSection extends StatelessWidget {
                           for (final usualMeal in quickPicks)
                             _QuickPickChip(
                               label: '+ ${usualMeal.name}',
-                              onPressed: () => getIt<DailyLogBloc>().add(
-                                DailyLogEvent.mealLogged(
-                                  mealOfTheDay,
-                                  usualMeal.name,
-                                  nutrition: usualMeal.nutrition,
-                                  usualMealId: usualMeal.id,
-                                  photoPath: usualMeal.photoPath,
-                                  day: day,
-                                  dayStart: dayStart,
-                                ),
+                              onPressed: () => _logOntoTargetDays(
+                                mealOfTheDay,
+                                usualMeal.name,
+                                nutrition: usualMeal.nutrition,
+                                usualMealId: usualMeal.id,
+                                photoPath: usualMeal.photoPath,
                               ),
                               onRemove: () => getIt<UserSettingsBloc>().add(
                                 UserSettingsEvent.usualMealRemoved(
@@ -178,15 +217,11 @@ class MealLogSection extends StatelessWidget {
                                   ),
                                 );
                               }
-                              getIt<DailyLogBloc>().add(
-                                DailyLogEvent.mealLogged(
-                                  mealOfTheDay,
-                                  foodResult.name,
-                                  nutrition: foodResult.nutrition,
-                                  quantity: foodResult.quantity,
-                                  day: day,
-                                  dayStart: dayStart,
-                                ),
+                              _logOntoTargetDays(
+                                mealOfTheDay,
+                                foodResult.name,
+                                nutrition: foodResult.nutrition,
+                                quantity: foodResult.quantity,
                               );
                             }
                           },
@@ -200,7 +235,7 @@ class MealLogSection extends StatelessWidget {
                               builder: (_) => OtherMealUsualsSheet(
                                 mealOfTheDay: mealOfTheDay,
                                 usualsByMeal: otherMealUsuals,
-                                day: day,
+                                logDays: logDays,
                                 dayStart: dayStart,
                               ),
                             ),

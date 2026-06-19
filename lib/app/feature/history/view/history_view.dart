@@ -447,7 +447,7 @@ class _HistoryDayCard extends StatelessWidget {
           Row(
             children: [
               const Expanded(child: SectionLabel('WEIGHT')),
-              WeightEntryField(day: historyDay.day),
+              WeightEntryField(days: [historyDay.day]),
             ],
           ),
           SizedBox(height: AppDesign.spacing.sm),

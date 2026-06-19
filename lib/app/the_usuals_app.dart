@@ -45,7 +45,7 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
     _shareSubscription = getIt<ShareIngestService>().photoStream.listen(
       _handleSharedPhotos,
     );
-    // Cold-start photos are fetched once here and NOT re-emitted on photoStream:
+    // Cold-start photos are fetched once here and NOT re-emitted on photoStream
     // the service drains and resets its initial-media buffer before the stream
     // listener above is attached, so these two paths are mutually exclusive and
     // a share can never open the sheet twice.
@@ -85,8 +85,8 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
         showAddToUsualMeals: true,
         initialPhotos: photos,
         autoEstimate: true,
-        initialMealOfTheDay: MealOfTheDay.fromTime(
-          TimeOfDay.fromDateTime(clock.now()),
+        initialMealOfTheDay: getIt<UserSettingsBloc>().state.currentMeal(
+          clock.now(),
         ),
       ),
     );

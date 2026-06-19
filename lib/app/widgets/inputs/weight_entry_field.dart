@@ -6,26 +6,28 @@ import 'package:the_usual/app/core/dependencies/dependencies.dart';
 import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template weight_entry_field}
-/// An inline number field for a single day's weigh-in, prefilled with that
+/// An inline number field for a range of days' weigh-in, prefilled with that
 /// day's weight and hinting the last recorded weight. Typing a value sets the
-/// weigh-in for [day]; clearing it removes the weigh-in.
+/// weigh-in for [days]; clearing it removes the weigh-in.
 ///
-/// When [showLastWeightButton] is set and [day] has no weigh-in yet, a "Use
-/// last" button inside the field fills in the most recent recorded weight.
+/// When [showLastWeightButton] is set and the first day has no weigh-in yet, a
+/// "Use last" button inside the field fills in the most recent recorded weight.
 /// {@endtemplate}
 class WeightEntryField extends StatefulWidget {
   /// {@macro weight_entry_field}
   const WeightEntryField({
-    required this.day,
+    required this.days,
     this.showLastWeightButton = false,
     super.key,
   });
 
-  /// The day whose weigh-in this field edits.
-  final DateTime day;
+  /// The days whose weigh-in this field edits. The field displays and prefills
+  /// the weigh-in for the first day; entering or clearing a value writes it to
+  /// every day, so a multi-day range logs the same weight across all of them.
+  final List<DateTime> days;
 
   /// Whether to offer an in-field button that fills the last recorded weight
-  /// when [day] has no weigh-in.
+  /// when the first day has no weigh-in.
   final bool showLastWeightButton;
 
   @override
@@ -38,10 +40,12 @@ class _WeightEntryFieldState extends State<WeightEntryField> {
   late final TextEditingController _controller;
   final FocusNode _focusNode = FocusNode();
 
+  DateTime get _displayDay => widget.days.first;
+
   @override
   void initState() {
     super.initState();
-    final dayWeight = _dailyLogBloc.state.weightOn(widget.day, _dayStart);
+    final dayWeight = _dailyLogBloc.state.weightOn(_displayDay, _dayStart);
     _controller = TextEditingController(
       text: dayWeight == null ? '' : dayWeight.weight.trimmedDecimal,
     );
@@ -60,10 +64,10 @@ class _WeightEntryFieldState extends State<WeightEntryField> {
     return BlocListener<DailyLogBloc, DailyLogState>(
       bloc: _dailyLogBloc,
       listenWhen: (previous, current) =>
-          previous.weightOn(widget.day, _dayStart) !=
-          current.weightOn(widget.day, _dayStart),
+          previous.weightOn(_displayDay, _dayStart) !=
+          current.weightOn(_displayDay, _dayStart),
       listener: (context, state) {
-        final dayWeight = state.weightOn(widget.day, _dayStart);
+        final dayWeight = state.weightOn(_displayDay, _dayStart);
         final text = dayWeight == null ? '' : dayWeight.weight.trimmedDecimal;
         // While the field is focused, skip the sync only when the state is
         // echoing back what the user is typing, so a trailing decimal isn't
@@ -83,7 +87,7 @@ class _WeightEntryFieldState extends State<WeightEntryField> {
           >(
             bloc: _dailyLogBloc,
             selector: (state) =>
-                (state.weightOn(widget.day, _dayStart), state.latestWeight),
+                (state.weightOn(_displayDay, _dayStart), state.latestWeight),
             builder: (context, selected) {
               final (dayWeight, latestWeight) = selected;
               final canUseLast =
@@ -117,27 +121,35 @@ class _WeightEntryFieldState extends State<WeightEntryField> {
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           visualDensity: VisualDensity.compact,
                         ),
-                        onPressed: () => _dailyLogBloc.add(
-                          DailyLogEvent.weightOnDayChanged(
-                            widget.day,
-                            latestWeight.weight,
-                            latestWeight.weightUnit,
-                            _dayStart,
-                          ),
-                        ),
+                        onPressed: () {
+                          for (final day in widget.days) {
+                            _dailyLogBloc.add(
+                              DailyLogEvent.weightOnDayChanged(
+                                day,
+                                latestWeight.weight,
+                                latestWeight.weightUnit,
+                                _dayStart,
+                              ),
+                            );
+                          }
+                        },
                         child: Text(
                           'Use last (${latestWeight.weight.trimmedDecimal})',
                         ),
                       )
                     : null,
-                onChanged: (value) => _dailyLogBloc.add(
-                  DailyLogEvent.weightOnDayChanged(
-                    widget.day,
-                    double.tryParse(value),
-                    weightUnit,
-                    _dayStart,
-                  ),
-                ),
+                onChanged: (value) {
+                  for (final day in widget.days) {
+                    _dailyLogBloc.add(
+                      DailyLogEvent.weightOnDayChanged(
+                        day,
+                        double.tryParse(value),
+                        weightUnit,
+                        _dayStart,
+                      ),
+                    );
+                  }
+                },
               );
             },
           ),

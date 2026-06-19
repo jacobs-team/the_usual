@@ -13,7 +13,7 @@ class OtherMealUsualsSheet extends StatelessWidget {
   const OtherMealUsualsSheet({
     required this.mealOfTheDay,
     required this.usualsByMeal,
-    this.day,
+    this.logDays,
     this.dayStart,
     super.key,
   });
@@ -24,10 +24,11 @@ class OtherMealUsualsSheet extends StatelessWidget {
   /// Usuals from other meals, grouped by their own meal.
   final Map<MealOfTheDay, List<UsualMeal>> usualsByMeal;
 
-  /// The day a tapped usual is logged onto. Null logs to today.
-  final DateTime? day;
+  /// The days a tapped usual is logged onto. Null logs to today; a multi-day
+  /// list logs the usual onto every day in the range.
+  final List<DateTime>? logDays;
 
-  /// The user's day-start, used with [day] to stamp the entry onto that day.
+  /// The user's day-start, used with [logDays] to stamp entries onto each day.
   final TimeOfDay? dayStart;
 
   @override
@@ -55,17 +56,33 @@ class OtherMealUsualsSheet extends StatelessWidget {
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(
                   onTap: () {
-                    getIt<DailyLogBloc>().add(
-                      DailyLogEvent.mealLogged(
-                        mealOfTheDay,
-                        usualMeal.name,
-                        nutrition: usualMeal.nutrition,
-                        usualMealId: usualMeal.id,
-                        photoPath: usualMeal.photoPath,
-                        day: day,
-                        dayStart: dayStart,
-                      ),
-                    );
+                    final dailyLogBloc = getIt<DailyLogBloc>();
+                    final targetDays = logDays;
+                    if (targetDays == null) {
+                      dailyLogBloc.add(
+                        DailyLogEvent.mealLogged(
+                          mealOfTheDay,
+                          usualMeal.name,
+                          nutrition: usualMeal.nutrition,
+                          usualMealId: usualMeal.id,
+                          photoPath: usualMeal.photoPath,
+                        ),
+                      );
+                    } else {
+                      for (final day in targetDays) {
+                        dailyLogBloc.add(
+                          DailyLogEvent.mealLogged(
+                            mealOfTheDay,
+                            usualMeal.name,
+                            nutrition: usualMeal.nutrition,
+                            usualMealId: usualMeal.id,
+                            photoPath: usualMeal.photoPath,
+                            day: day,
+                            dayStart: dayStart,
+                          ),
+                        );
+                      }
+                    }
                     Navigator.of(context).pop();
                   },
                   child: Padding(

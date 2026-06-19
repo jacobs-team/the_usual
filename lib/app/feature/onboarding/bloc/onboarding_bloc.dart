@@ -35,9 +35,6 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
         ),
         UsualMealNameChanged() => _onUsualMealNameChanged(event, emit),
         UsualsForMealReplaced() => _onUsualsForMealReplaced(event, emit),
-        // TODO(onboarding): request OS notification permission when
-        // ReminderStyle.notifications is picked, falling back to no reminders
-        // if denied. Notification approach is an open item in docs/onboarding.
         ReminderStyleSelected() => emit(
           state.copyWith(
             settings: state.settings.copyWith(

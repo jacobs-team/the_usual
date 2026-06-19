@@ -79,6 +79,47 @@ void main() {
       expect(find.byType(MealLogSection), findsNWidgets(4));
     });
 
+    testWidgets('shows a tappable date pill labelled Today by default', (
+      tester,
+    ) async {
+      stubDailyLog(const DailyLogState());
+      stubSettings(const UserSettingsState());
+      await pumpView(tester);
+
+      final pill = find.byKey(const Key('today-date-pill'));
+      expect(pill, findsOneWidget);
+      expect(
+        find.descendant(of: pill, matching: find.text('Today')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('opens the date picker when the pill is tapped', (
+      tester,
+    ) async {
+      stubDailyLog(const DailyLogState());
+      stubSettings(const UserSettingsState());
+      await pumpView(tester);
+
+      await tester.tap(find.byKey(const Key('today-date-pill')));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(DatePickerDialog), findsOneWidget);
+    });
+
+    testWidgets('highlights the current meal in the live today view', (
+      tester,
+    ) async {
+      stubDailyLog(const DailyLogState());
+      stubSettings(const UserSettingsState());
+      await pumpView(tester);
+
+      final sections = tester
+          .widgetList<MealLogSection>(find.byType(MealLogSection))
+          .toList();
+      expect(sections.where((section) => section.isCurrent).length, equals(1));
+    });
+
     testWidgets('prefills the weight field from today and latest weigh-ins', (
       tester,
     ) async {

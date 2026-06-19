@@ -66,7 +66,7 @@ class HistoryMealSheet extends StatelessWidget {
                   ),
                   isCurrent: false,
                   nutritionExpandedByDefault: expandNutritionByDefault,
-                  day: day,
+                  logDays: [day],
                   dayStart: dayStart,
                 ),
               ],

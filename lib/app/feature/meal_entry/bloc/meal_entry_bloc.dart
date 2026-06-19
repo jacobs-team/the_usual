@@ -247,7 +247,8 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
 
   /// Estimates nutrition from the held photos, sending the first row's typed
   /// name as a hint when present. Explicit request from the UI; [_onStarted]
-  /// calls [_runPhotoEstimate] directly for the auto-estimate on the share path.
+  /// calls [_runPhotoEstimate] directly for the auto-estimate on the
+  /// share path.
   Future<void> _onPhotoEstimateRequested(
     MealEntryPhotoEstimateRequested event,
     Emitter<MealEntryState> emit,
@@ -300,7 +301,8 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
   }
 
   /// Builds rows from [suggestions]; when [keepFirstName] is set the first row
-  /// keeps that name instead of the model's. Empty result leaves rows unchanged.
+  /// keeps that name instead of the model's. Empty result leaves rows
+  /// unchanged.
   List<FoodDraft> _foodsFromSuggestions(
     List<AiMealSuggestion> suggestions, {
     String? keepFirstName,

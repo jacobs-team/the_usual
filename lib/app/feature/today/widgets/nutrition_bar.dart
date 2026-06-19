@@ -183,16 +183,20 @@ class NutritionBar extends StatelessWidget {
           if (emptyFlex > 0)
             Expanded(
               flex: emptyFlex,
-              child: Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AppDesign.spacing.xs,
-                  ),
-                  child: Text(
-                    '$remainingCalories cal left',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: remainingStyle,
+              child: Tooltip(
+                message: '$remainingCalories cal left',
+                triggerMode: TooltipTriggerMode.tap,
+                child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: AppDesign.spacing.xs,
+                    ),
+                    child: Text(
+                      '$remainingCalories cal left',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: remainingStyle,
+                    ),
                   ),
                 ),
               ),
