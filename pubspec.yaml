@@ -39,6 +39,7 @@ dependencies:
   genkit_anthropic: ^0.2.9
   schemantic: ^0.2.0
   image_picker: ^1.1.2
+  receive_sharing_intent: ^1.8.1
 
 dev_dependencies:
   bloc_test: ^10.0.0
