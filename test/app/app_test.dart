@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,6 +16,7 @@ void main() {
     late DailyLogBloc dailyLogBloc;
     late NotificationService notificationService;
     late ShareIngestService shareIngestService;
+    late MockMealAiRepository mealAiRepository;
 
     const completeState = OnboardingState(
       step: OnboardingStep.complete,
@@ -44,6 +47,8 @@ void main() {
         ),
       );
       registerFallbackValue(<MealOfTheDay, MealReminder>{});
+      registerFallbackValue(MealEntryMode.wholeMeal);
+      registerFallbackValue(<MealPhoto>[]);
     });
 
     setUp(() async {
@@ -89,12 +94,22 @@ void main() {
         () => shareIngestService.takeInitialPhotos(),
       ).thenAnswer((_) async => const <MealPhoto>[]);
 
+      mealAiRepository = MockMealAiRepository();
+      when(() => mealAiRepository.isConfigured).thenReturn(false);
+
       GetIt.instance
         ..registerSingleton<OnboardingBloc>(onboardingBloc)
         ..registerSingleton<UserSettingsBloc>(userSettingsBloc)
         ..registerSingleton<DailyLogBloc>(dailyLogBloc)
         ..registerSingleton<NotificationService>(notificationService)
         ..registerSingleton<ShareIngestService>(shareIngestService)
+        ..registerSingleton<MealAiRepository>(mealAiRepository)
+        ..registerFactory<FoodEntryBloc>(
+          () => FoodEntryBloc(
+            GetIt.instance<MealAiRepository>(),
+            GetIt.instance<UserSettingsBloc>(),
+          ),
+        )
         ..registerLazySingleton<AppRouter>(AppRouter.new);
     });
 
@@ -220,6 +235,113 @@ void main() {
           ),
         ),
       ).called(1);
+    });
+
+    group('share flow', () {
+      final sharedPhoto = MealPhoto(bytes: transparentPixel);
+
+      setUp(() {
+        // Stub AI so the auto-estimate triggered by the share sheet resolves.
+        when(() => mealAiRepository.isConfigured).thenReturn(true);
+        when(
+          () => mealAiRepository.suggestFromPhoto(
+            any(),
+            mode: any(named: 'mode'),
+            description: any(named: 'description'),
+          ),
+        ).thenAnswer(
+          (_) async => const [
+            AiMealSuggestion(
+              name: 'Shared meal',
+              nutrition: Nutrition(calories: 500),
+            ),
+          ],
+        );
+      });
+
+      testWidgets(
+        'a share while onboarding is complete opens the entry sheet',
+        (tester) async {
+          // Onboarding is complete so shares open the sheet immediately.
+          when(
+            () => onboardingBloc.state,
+          ).thenReturn(
+            const OnboardingState(step: OnboardingStep.complete),
+          );
+
+          final shareController = StreamController<List<MealPhoto>>();
+          addTearDown(shareController.close);
+          when(
+            () => shareIngestService.photoStream,
+          ).thenAnswer((_) => shareController.stream);
+
+          tester.view.physicalSize = const Size(1200, 3000);
+          tester.view.devicePixelRatio = 1.0;
+          addTearDown(tester.view.resetPhysicalSize);
+          addTearDown(tester.view.resetDevicePixelRatio);
+
+          await tester.pumpWidget(TheUsualsApp(key: UniqueKey()));
+          await tester.pumpAndSettle();
+
+          // Emit a share while the app is already running.
+          shareController.add([sharedPhoto]);
+          await tester.pumpAndSettle();
+
+          expect(find.byType(FoodEntrySheet), findsOneWidget);
+        },
+      );
+
+      testWidgets(
+        'a share while onboarding is incomplete is buffered and opens after onboarding completes',
+        (tester) async {
+          // Onboarding is not yet complete; shares must be buffered.
+          when(
+            () => onboardingBloc.state,
+          ).thenReturn(const OnboardingState());
+
+          final shareController = StreamController<List<MealPhoto>>.broadcast();
+          addTearDown(shareController.close);
+          when(
+            () => shareIngestService.photoStream,
+          ).thenAnswer((_) => shareController.stream);
+
+          // Broadcast so multiple listeners (MultiBlocListener + GoRouter) can
+          // each subscribe without throwing "Stream has already been listened to".
+          final onboardingController =
+              StreamController<OnboardingState>.broadcast();
+          addTearDown(onboardingController.close);
+          when(
+            () => onboardingBloc.stream,
+          ).thenAnswer((_) => onboardingController.stream);
+
+          tester.view.physicalSize = const Size(1200, 3000);
+          tester.view.devicePixelRatio = 1.0;
+          addTearDown(tester.view.resetPhysicalSize);
+          addTearDown(tester.view.resetDevicePixelRatio);
+
+          await tester.pumpWidget(TheUsualsApp(key: UniqueKey()));
+          await tester.pumpAndSettle();
+
+          // A share arrives before onboarding completes; sheet must not open yet.
+          shareController.add([sharedPhoto]);
+          await tester.pumpAndSettle();
+
+          expect(find.byType(FoodEntrySheet), findsNothing);
+
+          // Onboarding completes; the buffered share should now open the sheet.
+          when(
+            () => onboardingBloc.state,
+          ).thenReturn(
+            const OnboardingState(step: OnboardingStep.complete),
+          );
+          onboardingController.add(
+            const OnboardingState(step: OnboardingStep.complete),
+          );
+          await tester.pumpAndSettle();
+
+          expect(find.byType(FoodEntrySheet), findsOneWidget);
+        },
+      );
     });
   });
 }

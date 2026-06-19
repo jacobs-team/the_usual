@@ -72,7 +72,6 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
         MealEntryPhotosCleared() => emit(
           state.copyWith(photos: const []),
         ),
-        // Implemented in Task 5.
         MealEntryEstimateRequested() => _onEstimateRequested(event, emit),
         MealEntryPhotoEstimateRequested() => _onPhotoEstimateRequested(
           event,
@@ -222,9 +221,8 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
     );
   }
 
-  /// Estimates from the held [MealEntryState.photos]. Any name typed in the
-  /// first row is sent to sharpen the estimate, and kept over the model's name
-  /// in whole-meal mode.
+  /// Explicit photo-estimate request from the UI. [_onStarted] calls
+  /// [_runPhotoEstimate] directly for the auto-estimate on the share path.
   Future<void> _onPhotoEstimateRequested(
     MealEntryPhotoEstimateRequested event,
     Emitter<MealEntryState> emit,

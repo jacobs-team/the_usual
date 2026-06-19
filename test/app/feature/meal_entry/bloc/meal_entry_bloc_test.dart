@@ -56,6 +56,19 @@ void main() {
     );
 
     blocTest<FoodEntryBloc, MealEntryState>(
+      'started seeds photos into state',
+      build: build,
+      act: (bloc) => bloc.add(
+        MealEntryEvent.started(
+          photos: [MealPhoto(bytes: transparentPixel)],
+        ),
+      ),
+      expect: () => [
+        isA<MealEntryState>().having((s) => s.photos, 'photos', hasLength(1)),
+      ],
+    );
+
+    blocTest<FoodEntryBloc, MealEntryState>(
       'foodAdded appends an empty row',
       build: build,
       seed: () => const MealEntryState(foods: [FoodDraft(id: 'a')]),
@@ -182,6 +195,139 @@ void main() {
         seed: () =>
             const MealEntryState(foods: [FoodDraft(id: 'a', name: 'mystery')]),
         act: (bloc) => bloc.add(const MealEntryEvent.estimateRequested()),
+        expect: () => [
+          isA<MealEntryState>().having(
+            (s) => s.status,
+            'status',
+            MealEntryStatus.generating,
+          ),
+          isA<MealEntryState>()
+              .having((s) => s.status, 'status', MealEntryStatus.failure)
+              .having((s) => s.errorMessage, 'errorMessage', isNotNull),
+        ],
+      );
+
+      blocTest<FoodEntryBloc, MealEntryState>(
+        'multiple named rows are each estimated in place, keeping their names',
+        build: build,
+        setUp: () {
+          when(
+            () => repository.suggestFromDescription(
+              'chicken',
+              mode: any(named: 'mode'),
+            ),
+          ).thenAnswer(
+            (_) async => const [
+              AiMealSuggestion(
+                name: 'Chicken',
+                nutrition: Nutrition(calories: 200),
+              ),
+            ],
+          );
+          when(
+            () => repository.suggestFromDescription(
+              'rice',
+              mode: any(named: 'mode'),
+            ),
+          ).thenAnswer(
+            (_) async => const [
+              AiMealSuggestion(
+                name: 'Rice',
+                nutrition: Nutrition(calories: 150),
+              ),
+            ],
+          );
+        },
+        seed: () => const MealEntryState(
+          foods: [
+            FoodDraft(id: 'a', name: 'chicken'),
+            FoodDraft(id: 'b', name: 'rice'),
+          ],
+        ),
+        act: (bloc) => bloc.add(const MealEntryEvent.estimateRequested()),
+        expect: () => [
+          isA<MealEntryState>().having(
+            (s) => s.status,
+            'status',
+            MealEntryStatus.generating,
+          ),
+          isA<MealEntryState>()
+              .having((s) => s.status, 'status', MealEntryStatus.idle)
+              .having((s) => s.foods, 'foods', hasLength(2))
+              .having((s) => s.foods[0].name, 'row-0 name', 'chicken')
+              .having(
+                (s) => s.foods[0].nutrition.calories,
+                'row-0 calories',
+                200,
+              )
+              .having((s) => s.foods[1].name, 'row-1 name', 'rice')
+              .having(
+                (s) => s.foods[1].nutrition.calories,
+                'row-1 calories',
+                150,
+              ),
+        ],
+      );
+    });
+
+    group('photoEstimateRequested', () {
+      blocTest<FoodEntryBloc, MealEntryState>(
+        'success: emits generating then idle with nutrition filled',
+        build: build,
+        setUp: () {
+          when(
+            () => repository.suggestFromPhoto(
+              any(),
+              mode: any(named: 'mode'),
+              description: any(named: 'description'),
+            ),
+          ).thenAnswer(
+            (_) async => const [
+              AiMealSuggestion(
+                name: 'Salad',
+                nutrition: Nutrition(calories: 120),
+              ),
+            ],
+          );
+        },
+        seed: () => MealEntryState(
+          photos: [MealPhoto(bytes: transparentPixel)],
+        ),
+        act: (bloc) =>
+            bloc.add(const MealEntryEvent.photoEstimateRequested()),
+        expect: () => [
+          isA<MealEntryState>().having(
+            (s) => s.status,
+            'status',
+            MealEntryStatus.generating,
+          ),
+          isA<MealEntryState>()
+              .having((s) => s.status, 'status', MealEntryStatus.idle)
+              .having(
+                (s) => s.foods.single.nutrition.calories,
+                'calories',
+                120,
+              ),
+        ],
+      );
+
+      blocTest<FoodEntryBloc, MealEntryState>(
+        'failure: emits generating then failure with an error message',
+        build: build,
+        setUp: () {
+          when(
+            () => repository.suggestFromPhoto(
+              any(),
+              mode: any(named: 'mode'),
+              description: any(named: 'description'),
+            ),
+          ).thenThrow(StateError('photo error'));
+        },
+        seed: () => MealEntryState(
+          photos: [MealPhoto(bytes: transparentPixel)],
+        ),
+        act: (bloc) =>
+            bloc.add(const MealEntryEvent.photoEstimateRequested()),
         expect: () => [
           isA<MealEntryState>().having(
             (s) => s.status,

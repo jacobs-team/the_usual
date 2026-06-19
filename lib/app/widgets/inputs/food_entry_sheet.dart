@@ -41,8 +41,8 @@ class FoodEntrySheet extends StatefulWidget {
   /// Whether to show the quantity stepper. When false the quantity is always 1.
   final bool showQuantity;
 
-  /// Whether to show the meal slot selector. Wired in a later task; currently
-  /// defaults to false and has no visible effect.
+  /// Whether to show the meal-slot selector above the form (used by the
+  /// share-to-log path).
   final bool showMealSelector;
 
   /// Photos to pre-load into the form (e.g. from the OS share target).
@@ -64,10 +64,9 @@ class _FoodEntrySheetState extends State<FoodEntrySheet> {
 
   void _confirm() {
     final form = _formKey.currentState;
-    final results = form?.results ?? const [];
-    if (results.isEmpty || form == null) return;
+    if (form == null || form.results.isEmpty) return;
     Navigator.of(context).pop(
-      (foods: results, mealOfTheDay: form.mealOfTheDay),
+      (foods: form.results, mealOfTheDay: form.mealOfTheDay),
     );
   }
 
