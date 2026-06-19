@@ -159,10 +159,10 @@ class FoodEntryFormState extends State<FoodEntryForm> {
   bool get _aiAvailable => getIt<MealAiRepository>().isConfigured;
 
   Future<void> _photoWithAi() async {
-    final photo = await pickMealPhoto(context);
-    if (photo == null) return;
+    final photos = await pickMealPhotos(context);
+    if (photos.isEmpty) return;
     _bloc
-      ..add(MealEntryEvent.photosAdded([photo]))
+      ..add(MealEntryEvent.photosAdded(photos))
       ..add(const MealEntryEvent.photoEstimateRequested());
   }
 

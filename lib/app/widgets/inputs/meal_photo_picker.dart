@@ -7,10 +7,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:the_usual/app/app.dart';
 
 /// Asks the user to pick a camera or photo-library source, lets them snap or
-/// choose a photo, and returns its bytes and MIME type. Returns null if they
-/// cancel either step. The image is downscaled on capture to keep the upload
-/// size and token cost down.
-Future<MealPhoto?> pickMealPhoto(BuildContext context) async {
+/// choose one or more photos, and returns their bytes and MIME types. Returns
+/// [] if they cancel either step. Camera returns one photo; library supports
+/// multi-select. Images are downscaled on capture to keep upload size and token
+/// cost down.
+Future<List<MealPhoto>> pickMealPhotos(BuildContext context) async {
   final source = await showDialog<ImageSource>(
     context: context,
     builder: (context) => SimpleDialog(
@@ -27,18 +28,30 @@ Future<MealPhoto?> pickMealPhoto(BuildContext context) async {
       ],
     ),
   );
-  if (source == null) return null;
+  if (source == null) return const [];
 
-  final picked = await ImagePicker().pickImage(
-    source: source,
-    maxWidth: 1568,
-    maxHeight: 1568,
-    imageQuality: 85,
-  );
-  if (picked == null) return null;
+  final picker = ImagePicker();
+  final List<XFile> picked;
+  if (source == ImageSource.camera) {
+    final photo = await picker.pickImage(
+      source: ImageSource.camera,
+      maxWidth: 1568,
+      maxHeight: 1568,
+      imageQuality: 85,
+    );
+    picked = photo == null ? const [] : [photo];
+  } else {
+    picked = await picker.pickMultiImage(
+      maxWidth: 1568,
+      maxHeight: 1568,
+      imageQuality: 85,
+    );
+  }
 
-  final bytes = await picked.readAsBytes();
-  return MealPhoto(bytes: bytes, mediaType: _imageMediaType(picked));
+  return [
+    for (final file in picked)
+      MealPhoto(bytes: await file.readAsBytes(), mediaType: _imageMediaType(file)),
+  ];
 }
 
 /// Resolves an [XFile]'s MIME type to one Claude accepts, defaulting to

@@ -177,15 +177,15 @@ class DevToolsView extends StatelessWidget {
                 return;
               }
 
-              final photo = await pickMealPhoto(context);
-              if (photo == null) return;
+              final photos = await pickMealPhotos(context);
+              if (photos.isEmpty) return;
 
               messenger.showSnackBar(
                 const SnackBar(content: Text('Estimating…')),
               );
               try {
                 final suggestions = await repository.suggestFromPhoto(
-                  [photo],
+                  photos,
                   mode: MealEntryMode.wholeMeal,
                 );
                 final summary = suggestions

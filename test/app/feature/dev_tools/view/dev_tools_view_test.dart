@@ -26,6 +26,13 @@ class _FakeImagePickerPlatform extends ImagePickerPlatform {
     name: 'meal.png',
     mimeType: 'image/png',
   );
+
+  @override
+  Future<List<XFile>> getMultiImageWithOptions({
+    MultiImagePickerOptions options = const MultiImagePickerOptions(),
+  }) async => [
+    XFile.fromData(transparentPixel, name: 'meal.png', mimeType: 'image/png'),
+  ];
 }
 
 void main() {
