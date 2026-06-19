@@ -6,6 +6,10 @@ import 'package:the_usual/app/app.dart';
 import '../../../../helpers/helpers.dart';
 
 void main() {
+  setUpAll(() {
+    registerFallbackValue(MealEntryMode.wholeMeal);
+  });
+
   late MockMealAiRepository repository;
   late MockUserSettingsBloc userSettingsBloc;
 
@@ -122,5 +126,73 @@ void main() {
         ),
       ],
     );
+
+    group('estimateRequested', () {
+      blocTest<FoodEntryBloc, MealEntryState>(
+        'a single named row is estimated and the rows are replaced',
+        build: build,
+        setUp: () {
+          when(
+            () => repository.suggestFromDescription(
+              any(),
+              mode: any(named: 'mode'),
+            ),
+          ).thenAnswer(
+            (_) async => const [
+              AiMealSuggestion(
+                name: '2 eggs & toast',
+                nutrition: Nutrition(calories: 350),
+              ),
+            ],
+          );
+        },
+        seed: () => const MealEntryState(
+          foods: [FoodDraft(id: 'a', name: 'eggs and toast')],
+        ),
+        act: (bloc) => bloc.add(const MealEntryEvent.estimateRequested()),
+        expect: () => [
+          isA<MealEntryState>().having(
+            (s) => s.status,
+            'status',
+            MealEntryStatus.generating,
+          ),
+          isA<MealEntryState>()
+              .having((s) => s.status, 'status', MealEntryStatus.idle)
+              .having(
+                (s) => s.foods.single.nutrition.calories,
+                'calories',
+                350,
+              )
+              // whole-meal keeps the typed description as the name
+              .having((s) => s.foods.single.name, 'name', 'eggs and toast'),
+        ],
+      );
+
+      blocTest<FoodEntryBloc, MealEntryState>(
+        'a repository failure ends in failure status with a message',
+        build: build,
+        setUp: () {
+          when(
+            () => repository.suggestFromDescription(
+              any(),
+              mode: any(named: 'mode'),
+            ),
+          ).thenThrow(StateError('boom'));
+        },
+        seed: () =>
+            const MealEntryState(foods: [FoodDraft(id: 'a', name: 'mystery')]),
+        act: (bloc) => bloc.add(const MealEntryEvent.estimateRequested()),
+        expect: () => [
+          isA<MealEntryState>().having(
+            (s) => s.status,
+            'status',
+            MealEntryStatus.generating,
+          ),
+          isA<MealEntryState>()
+              .having((s) => s.status, 'status', MealEntryStatus.failure)
+              .having((s) => s.errorMessage, 'errorMessage', isNotNull),
+        ],
+      );
+    });
   });
 }
