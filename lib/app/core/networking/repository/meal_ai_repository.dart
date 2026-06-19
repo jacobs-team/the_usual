@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:injectable/injectable.dart';
 import 'package:schemantic/schemantic.dart';
 import 'package:the_usual/app/app.dart';
@@ -35,48 +33,41 @@ class MealAiRepository {
     return _estimate(prompt: _descriptionPrompt(description, mode), mode: mode);
   }
 
-  /// Estimates the food in a [photo] of the meal or its nutrition label,
+  /// Estimates the food in [photos] of the meal or its nutrition label,
   /// returning one combined item or a per-food breakdown per [mode]. When the
-  /// user has typed a [description] of the food it is sent alongside the photo
-  /// to sharpen the estimate. [imageMediaType] is the photo's MIME type and
-  /// must be one Claude accepts (`image/jpeg`, `image/png`, `image/gif`, or
-  /// `image/webp`).
+  /// user has typed a [description] of the food it is sent alongside the photos
+  /// to sharpen the estimate.
   Future<List<AiMealSuggestion>> suggestFromPhoto(
-    Uint8List photo, {
+    List<MealPhoto> photos, {
     required MealEntryMode mode,
     String? description,
-    String imageMediaType = 'image/jpeg',
   }) {
     return _estimate(
       prompt: _photoPrompt(mode, description),
       mode: mode,
-      image: photo,
-      imageMediaType: imageMediaType,
+      images: photos,
     );
   }
 
-  /// Sends [prompt] (with an optional [image]) to Claude and normalises the
+  /// Sends [prompt] (with optional [images]) to Claude and normalises the
   /// result to a list: itemized mode returns the model's list directly, while
   /// whole-meal mode returns its single item wrapped in a one-element list.
   Future<List<AiMealSuggestion>> _estimate({
     required String prompt,
     required MealEntryMode mode,
-    Uint8List? image,
-    String imageMediaType = 'image/jpeg',
+    List<MealPhoto> images = const <MealPhoto>[],
   }) async {
     if (mode == MealEntryMode.itemized) {
       return _client.generateStructured(
         prompt: prompt,
         outputSchema: _itemsSchema,
-        image: image,
-        imageMediaType: imageMediaType,
+        images: images,
       );
     }
     final suggestion = await _client.generateStructured(
       prompt: prompt,
       outputSchema: _suggestionSchema,
-      image: image,
-      imageMediaType: imageMediaType,
+      images: images,
     );
     return [suggestion];
   }

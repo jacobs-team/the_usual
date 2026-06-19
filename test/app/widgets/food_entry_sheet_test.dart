@@ -564,7 +564,6 @@ void main() {
             any(),
             mode: any(named: 'mode'),
             description: any(named: 'description'),
-            imageMediaType: any(named: 'imageMediaType'),
           ),
         ).thenAnswer(
           (_) async => const [
@@ -587,7 +586,6 @@ void main() {
           () => aiRepository.suggestFromPhoto(
             any(),
             mode: any(named: 'mode'),
-            imageMediaType: 'image/png',
           ),
         ).called(1);
       });
@@ -603,7 +601,6 @@ void main() {
             any(),
             mode: any(named: 'mode'),
             description: any(named: 'description'),
-            imageMediaType: any(named: 'imageMediaType'),
           ),
         ).thenAnswer(
           (_) async => const [
@@ -629,7 +626,6 @@ void main() {
             any(),
             mode: any(named: 'mode'),
             description: 'My lunch',
-            imageMediaType: 'image/png',
           ),
         ).called(1);
       });

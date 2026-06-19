@@ -2,12 +2,12 @@
 // Thin wrapper over the Genkit/Anthropic SDK that owns the live network
 // connection; it has no unit-testable logic apart from SDK calls.
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:genkit/genkit.dart';
 import 'package:genkit_anthropic/genkit_anthropic.dart';
 import 'package:injectable/injectable.dart';
 import 'package:schemantic/schemantic.dart';
+import 'package:the_usual/app/app.dart';
 import 'package:the_usual/environment.dart';
 
 /// {@template meal_ai_client}
@@ -57,27 +57,30 @@ class MealAiClient {
   /// resulting JSON into [T]. Throws when the model returns no structured
   /// output.
   ///
-  /// When [image] is supplied the request becomes multimodal: the prompt and
-  /// the image are sent together as a single user message so Claude can read
-  /// the picture. [imageMediaType] is the image's MIME type and must be one
-  /// Claude accepts (`image/jpeg`, `image/png`, `image/gif`, or `image/webp`).
+  /// When [images] is non-empty the request becomes multimodal: the prompt and
+  /// every image are sent together as a single user message so Claude can read
+  /// the pictures. Each [MealPhoto.mediaType] must be one Claude accepts
+  /// (`image/jpeg`, `image/png`, `image/gif`, or `image/webp`).
   Future<T> generateStructured<T>({
     required String prompt,
     required SchemanticType<T> outputSchema,
-    Uint8List? image,
-    String imageMediaType = 'image/jpeg',
+    List<MealPhoto> images = const <MealPhoto>[],
   }) async {
     List<Message>? messages;
-    if (image != null) {
-      final dataUrl = 'data:$imageMediaType;base64,${base64Encode(image)}';
+    if (images.isNotEmpty) {
       messages = [
         Message(
           role: Role.user,
           content: [
             TextPart(text: prompt),
-            MediaPart(
-              media: Media(contentType: imageMediaType, url: dataUrl),
-            ),
+            for (final image in images)
+              MediaPart(
+                media: Media(
+                  contentType: image.mediaType,
+                  url:
+                      'data:${image.mediaType};base64,${base64Encode(image.bytes)}',
+                ),
+              ),
           ],
         ),
       ];
@@ -86,7 +89,7 @@ class MealAiClient {
     final response = await _ai.generate<AnthropicOptions, T>(
       model: _model,
       config: _options,
-      prompt: image == null ? prompt : null,
+      prompt: images.isEmpty ? prompt : null,
       messages: messages,
       outputSchema: outputSchema,
     );

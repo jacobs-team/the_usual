@@ -238,13 +238,10 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
     final hasDescription = firstName.isNotEmpty;
     emit(state.copyWith(status: MealEntryStatus.generating, errorMessage: null));
     try {
-      // Phase 1: single photo. Task 8 switches this to pass all photos.
-      final photo = state.photos.first;
       final suggestions = await _mealAiRepository.suggestFromPhoto(
-        photo.bytes,
+        state.photos,
         mode: state.mealEntryMode,
         description: hasDescription ? firstName : null,
-        imageMediaType: photo.mediaType,
       );
       emit(
         state.copyWith(

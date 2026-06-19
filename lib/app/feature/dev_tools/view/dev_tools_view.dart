@@ -185,9 +185,8 @@ class DevToolsView extends StatelessWidget {
               );
               try {
                 final suggestions = await repository.suggestFromPhoto(
-                  photo.bytes,
+                  [photo],
                   mode: MealEntryMode.wholeMeal,
-                  imageMediaType: photo.mediaType,
                 );
                 final summary = suggestions
                     .map(

@@ -282,7 +282,6 @@ void main() {
           () => mealAiRepository.suggestFromPhoto(
             any(),
             mode: any(named: 'mode'),
-            imageMediaType: any(named: 'imageMediaType'),
           ),
         );
       });
@@ -296,7 +295,6 @@ void main() {
           () => mealAiRepository.suggestFromPhoto(
             any(),
             mode: any(named: 'mode'),
-            imageMediaType: any(named: 'imageMediaType'),
           ),
         ).thenAnswer((_) async => [breakfastSuggestion]);
 
@@ -315,7 +313,6 @@ void main() {
           () => mealAiRepository.suggestFromPhoto(
             any(),
             mode: any(named: 'mode'),
-            imageMediaType: any(named: 'imageMediaType'),
           ),
         ).called(1);
       });
@@ -329,7 +326,6 @@ void main() {
           () => mealAiRepository.suggestFromPhoto(
             any(),
             mode: any(named: 'mode'),
-            imageMediaType: any(named: 'imageMediaType'),
           ),
         ).thenThrow(_FakeMealAiException());
 
@@ -348,7 +344,6 @@ void main() {
           () => mealAiRepository.suggestFromPhoto(
             any(),
             mode: any(named: 'mode'),
-            imageMediaType: any(named: 'imageMediaType'),
           ),
         ).called(1);
       });

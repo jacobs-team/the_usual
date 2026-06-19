@@ -20,7 +20,7 @@ void main() {
   setUpAll(() {
     registerFallbackValue(_FakeSuggestionSchema());
     registerFallbackValue(_FakeItemsSchema());
-    registerFallbackValue(Uint8List(0));
+    registerFallbackValue(<MealPhoto>[]);
   });
 
   setUp(() {
@@ -36,8 +36,7 @@ void main() {
       () => client.generateStructured<AiMealSuggestion>(
         prompt: any(named: 'prompt'),
         outputSchema: any(named: 'outputSchema'),
-        image: any(named: 'image'),
-        imageMediaType: any(named: 'imageMediaType'),
+        images: any(named: 'images'),
       ),
     ).thenAnswer((invocation) async {
       final outputSchema =
@@ -52,8 +51,7 @@ void main() {
       () => client.generateStructured<List<AiMealSuggestion>>(
         prompt: any(named: 'prompt'),
         outputSchema: any(named: 'outputSchema'),
-        image: any(named: 'image'),
-        imageMediaType: any(named: 'imageMediaType'),
+        images: any(named: 'images'),
       ),
     ).thenAnswer((invocation) async {
       final outputSchema =
@@ -151,10 +149,9 @@ void main() {
         });
 
         final suggestions = await repository.suggestFromPhoto(
-          Uint8List.fromList([1, 2, 3]),
+          [MealPhoto(bytes: Uint8List.fromList([1, 2, 3]), mediaType: 'image/png')],
           mode: MealEntryMode.wholeMeal,
           description: 'grilled chicken',
-          imageMediaType: 'image/png',
         );
 
         expect(suggestions, hasLength(1));
@@ -166,8 +163,7 @@ void main() {
           () => client.generateStructured<AiMealSuggestion>(
             prompt: any(named: 'prompt'),
             outputSchema: any(named: 'outputSchema'),
-            image: any(named: 'image'),
-            imageMediaType: 'image/png',
+            images: any(named: 'images'),
           ),
         ).called(1);
       });
@@ -185,12 +181,37 @@ void main() {
         });
 
         final suggestions = await repository.suggestFromPhoto(
-          Uint8List.fromList([4, 5, 6]),
+          [MealPhoto(bytes: Uint8List.fromList([4, 5, 6]))],
           mode: MealEntryMode.itemized,
         );
 
         expect(suggestions, hasLength(1));
         expect(suggestions.single.name, equals('6 oz filet'));
+      });
+
+      test('sends every photo to the client in one request', () async {
+        stubWholeMeal(<String, dynamic>{
+          'name': 'plate',
+          'quantity': 1,
+          'nutrition': {'calories': 500},
+        });
+
+        await repository.suggestFromPhoto(
+          [
+            MealPhoto(bytes: Uint8List.fromList([1])),
+            MealPhoto(bytes: Uint8List.fromList([2])),
+          ],
+          mode: MealEntryMode.wholeMeal,
+        );
+
+        final captured = verify(
+          () => client.generateStructured<AiMealSuggestion>(
+            prompt: any(named: 'prompt'),
+            outputSchema: any(named: 'outputSchema'),
+            images: captureAny(named: 'images'),
+          ),
+        ).captured.single as List<MealPhoto>;
+        expect(captured, hasLength(2));
       });
     });
 
@@ -200,8 +221,7 @@ void main() {
           () => client.generateStructured<AiMealSuggestion>(
             prompt: any(named: 'prompt'),
             outputSchema: any(named: 'outputSchema'),
-            image: any(named: 'image'),
-            imageMediaType: any(named: 'imageMediaType'),
+            images: any(named: 'images'),
           ),
         ).thenThrow(StateError('no structured output'));
 
