@@ -28,6 +28,8 @@ import 'package:the_usual/app/core/service/file_cache_service.dart' as _i115;
 import 'package:the_usual/app/core/service/service.dart' as _i988;
 import 'package:the_usual/app/feature/dev_tools/cubit/dev_tools_cubit.dart'
     as _i818;
+import 'package:the_usual/app/feature/meal_entry/bloc/meal_entry_bloc.dart'
+    as _i1048;
 import 'package:the_usual/app/feature/onboarding/bloc/onboarding_bloc.dart'
     as _i640;
 import 'package:the_usual/app/feature/today/bloc/daily_log_bloc.dart' as _i155;
@@ -67,6 +69,12 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i6.CoffeeApi>(() => _i6.CoffeeApi(gh<_i538.RestClient>()));
     gh.singleton<_i310.MealAiRepository>(
       () => _i310.MealAiRepository(gh<_i538.MealAiClient>()),
+    );
+    gh.factory<_i1048.FoodEntryBloc>(
+      () => _i1048.FoodEntryBloc(
+        gh<_i538.MealAiRepository>(),
+        gh<_i538.UserSettingsBloc>(),
+      ),
     );
     return this;
   }
