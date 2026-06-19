@@ -62,13 +62,13 @@ void main() {
             onPressed: () async {
               final sheetResult =
                   await showModalBottomSheet<FoodEntrySheetResult>(
-                context: context,
-                builder: (_) => FoodEntrySheet(
-                  title: 'Log food',
-                  confirmLabel: 'Log',
-                  showAddToUsualMeals: showAddToUsualMeals,
-                ),
-              );
+                    context: context,
+                    builder: (_) => FoodEntrySheet(
+                      title: 'Log food',
+                      confirmLabel: 'Log',
+                      showAddToUsualMeals: showAddToUsualMeals,
+                    ),
+                  );
               results.add(sheetResult?.foods);
             },
             child: const Text('open'),
@@ -675,7 +675,9 @@ void main() {
       when(() => repository.isConfigured).thenReturn(false);
       final userSettingsBloc = MockUserSettingsBloc();
       when(() => userSettingsBloc.state).thenReturn(const UserSettingsState());
-      when(() => userSettingsBloc.stream).thenAnswer((_) => const Stream.empty());
+      when(
+        () => userSettingsBloc.stream,
+      ).thenAnswer((_) => const Stream.empty());
       if (getIt.isRegistered<MealAiRepository>()) {
         getIt.unregister<MealAiRepository>();
       }
@@ -696,7 +698,7 @@ void main() {
 
     testWidgets('shows the slot selector only when asked', (tester) async {
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: FoodEntrySheet(
               title: 'Log',

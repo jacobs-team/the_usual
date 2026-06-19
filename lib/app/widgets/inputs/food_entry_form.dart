@@ -175,8 +175,9 @@ class FoodEntryFormState extends State<FoodEntryForm> {
           widget.onChanged?.call();
           final message = state.errorMessage;
           if (state.status == MealEntryStatus.failure && message != null) {
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(message)));
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(message)));
           }
           // When showAddToUsualMeals is true, any food the bloc creates via an
           // estimate uses addToUsualMeals: false (the bloc doesn't know about
@@ -258,12 +259,12 @@ class FoodEntryFormState extends State<FoodEntryForm> {
                       onChanged: isGenerating
                           ? null
                           : (value) => _bloc.add(
-                                MealEntryEvent.entryModeToggled(
-                                  (value ?? false)
-                                      ? MealEntryMode.itemized
-                                      : MealEntryMode.wholeMeal,
-                                ),
+                              MealEntryEvent.entryModeToggled(
+                                (value ?? false)
+                                    ? MealEntryMode.itemized
+                                    : MealEntryMode.wholeMeal,
                               ),
+                            ),
                     ),
                     const Text('Itemize'),
                     Tooltip(

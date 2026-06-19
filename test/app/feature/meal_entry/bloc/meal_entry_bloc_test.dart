@@ -17,7 +17,7 @@ void main() {
     repository = MockMealAiRepository();
     userSettingsBloc = MockUserSettingsBloc();
     when(() => userSettingsBloc.state).thenReturn(
-      const UserSettingsState(mealEntryMode: MealEntryMode.wholeMeal),
+      const UserSettingsState(),
     );
   });
 
@@ -43,8 +43,8 @@ void main() {
       'started seeds the supplied foods and slot',
       build: build,
       act: (bloc) => bloc.add(
-        MealEntryEvent.started(
-          initialFoods: const [FoodDraft(id: 'x', name: 'Toast')],
+        const MealEntryEvent.started(
+          initialFoods: [FoodDraft(id: 'x', name: 'Toast')],
           mealOfTheDay: MealOfTheDay.dinner,
         ),
       ),
@@ -82,7 +82,8 @@ void main() {
       'foodNameChanged updates the matching row',
       build: build,
       seed: () => const MealEntryState(foods: [FoodDraft(id: 'a')]),
-      act: (bloc) => bloc.add(const MealEntryEvent.foodNameChanged('a', 'Eggs')),
+      act: (bloc) =>
+          bloc.add(const MealEntryEvent.foodNameChanged('a', 'Eggs')),
       expect: () => [
         isA<MealEntryState>().having(
           (s) => s.foods.single.name,
@@ -129,8 +130,9 @@ void main() {
     blocTest<FoodEntryBloc, MealEntryState>(
       'mealOfTheDayChanged updates the slot',
       build: build,
-      act: (bloc) =>
-          bloc.add(const MealEntryEvent.mealOfTheDayChanged(MealOfTheDay.lunch)),
+      act: (bloc) => bloc.add(
+        const MealEntryEvent.mealOfTheDayChanged(MealOfTheDay.lunch),
+      ),
       expect: () => [
         isA<MealEntryState>().having(
           (s) => s.mealOfTheDay,
@@ -192,8 +194,9 @@ void main() {
             ),
           ).thenThrow(StateError('boom'));
         },
-        seed: () =>
-            const MealEntryState(foods: [FoodDraft(id: 'a', name: 'mystery')]),
+        seed: () => const MealEntryState(
+          foods: [FoodDraft(id: 'a', name: 'mystery')],
+        ),
         act: (bloc) => bloc.add(const MealEntryEvent.estimateRequested()),
         expect: () => [
           isA<MealEntryState>().having(
@@ -293,8 +296,7 @@ void main() {
         seed: () => MealEntryState(
           photos: [MealPhoto(bytes: transparentPixel)],
         ),
-        act: (bloc) =>
-            bloc.add(const MealEntryEvent.photoEstimateRequested()),
+        act: (bloc) => bloc.add(const MealEntryEvent.photoEstimateRequested()),
         expect: () => [
           isA<MealEntryState>().having(
             (s) => s.status,
@@ -326,8 +328,7 @@ void main() {
         seed: () => MealEntryState(
           photos: [MealPhoto(bytes: transparentPixel)],
         ),
-        act: (bloc) =>
-            bloc.add(const MealEntryEvent.photoEstimateRequested()),
+        act: (bloc) => bloc.add(const MealEntryEvent.photoEstimateRequested()),
         expect: () => [
           isA<MealEntryState>().having(
             (s) => s.status,

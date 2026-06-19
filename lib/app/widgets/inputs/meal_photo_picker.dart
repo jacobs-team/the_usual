@@ -50,7 +50,10 @@ Future<List<MealPhoto>> pickMealPhotos(BuildContext context) async {
 
   return [
     for (final file in picked)
-      MealPhoto(bytes: await file.readAsBytes(), mediaType: _imageMediaType(file)),
+      MealPhoto(
+        bytes: await file.readAsBytes(),
+        mediaType: _imageMediaType(file),
+      ),
   ];
 }
 

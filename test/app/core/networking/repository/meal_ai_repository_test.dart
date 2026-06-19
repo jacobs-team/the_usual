@@ -149,7 +149,12 @@ void main() {
         });
 
         final suggestions = await repository.suggestFromPhoto(
-          [MealPhoto(bytes: Uint8List.fromList([1, 2, 3]), mediaType: 'image/png')],
+          [
+            MealPhoto(
+              bytes: Uint8List.fromList([1, 2, 3]),
+              mediaType: 'image/png',
+            ),
+          ],
           mode: MealEntryMode.wholeMeal,
           description: 'grilled chicken',
         );
@@ -181,7 +186,9 @@ void main() {
         });
 
         final suggestions = await repository.suggestFromPhoto(
-          [MealPhoto(bytes: Uint8List.fromList([4, 5, 6]))],
+          [
+            MealPhoto(bytes: Uint8List.fromList([4, 5, 6])),
+          ],
           mode: MealEntryMode.itemized,
         );
 
@@ -204,13 +211,15 @@ void main() {
           mode: MealEntryMode.wholeMeal,
         );
 
-        final captured = verify(
-          () => client.generateStructured<AiMealSuggestion>(
-            prompt: any(named: 'prompt'),
-            outputSchema: any(named: 'outputSchema'),
-            images: captureAny(named: 'images'),
-          ),
-        ).captured.single as List<MealPhoto>;
+        final captured =
+            verify(
+                  () => client.generateStructured<AiMealSuggestion>(
+                    prompt: any(named: 'prompt'),
+                    outputSchema: any(named: 'outputSchema'),
+                    images: captureAny(named: 'images'),
+                  ),
+                ).captured.single
+                as List<MealPhoto>;
         expect(captured, hasLength(2));
       });
     });

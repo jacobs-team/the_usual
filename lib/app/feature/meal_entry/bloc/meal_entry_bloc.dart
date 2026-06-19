@@ -25,7 +25,10 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
         MealEntryStarted() => _onStarted(event, emit),
         MealEntryFoodAdded() => emit(
           state.copyWith(
-            foods: [...state.foods, FoodDraft(id: _uuid.v4())],
+            foods: [
+              ...state.foods,
+              FoodDraft(id: _uuid.v4()),
+            ],
           ),
         ),
         MealEntryFoodRemoved() => _onFoodRemoved(event, emit),
@@ -154,7 +157,9 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
         .toList();
     if (namedFoods.isEmpty) return;
 
-    emit(state.copyWith(status: MealEntryStatus.generating, errorMessage: null));
+    emit(
+      state.copyWith(status: MealEntryStatus.generating, errorMessage: null),
+    );
     try {
       if (namedFoods.length == 1) {
         final description = namedFoods.first.name.trim();
@@ -202,7 +207,9 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
     final estimateById = <String, AiMealSuggestion>{};
     for (final (index, foodDraft) in namedFoods.indexed) {
       final suggestions = estimates[index];
-      if (suggestions.isNotEmpty) estimateById[foodDraft.id] = suggestions.first;
+      if (suggestions.isNotEmpty) {
+        estimateById[foodDraft.id] = suggestions.first;
+      }
     }
     emit(
       state.copyWith(
@@ -235,7 +242,9 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
     if (state.photos.isEmpty) return;
     final firstName = state.foods.isEmpty ? '' : state.foods.first.name.trim();
     final hasDescription = firstName.isNotEmpty;
-    emit(state.copyWith(status: MealEntryStatus.generating, errorMessage: null));
+    emit(
+      state.copyWith(status: MealEntryStatus.generating, errorMessage: null),
+    );
     try {
       final suggestions = await _mealAiRepository.suggestFromPhoto(
         state.photos,
@@ -247,8 +256,8 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
           status: MealEntryStatus.idle,
           foods: _foodsFromSuggestions(
             suggestions,
-            keepFirstName: hasDescription &&
-                    state.mealEntryMode == MealEntryMode.wholeMeal
+            keepFirstName:
+                hasDescription && state.mealEntryMode == MealEntryMode.wholeMeal
                 ? firstName
                 : null,
           ),

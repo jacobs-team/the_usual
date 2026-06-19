@@ -42,8 +42,9 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
     // Tapping a reminder takes the user to Today, where they log meals.
     getIt<NotificationService>().onReminderTapped = () =>
         getIt<AppRouter>().router.go(Routes.today);
-    _shareSubscription =
-        getIt<ShareIngestService>().photoStream.listen(_handleSharedPhotos);
+    _shareSubscription = getIt<ShareIngestService>().photoStream.listen(
+      _handleSharedPhotos,
+    );
     // Cold-start photos are fetched once here and NOT re-emitted on photoStream:
     // the service drains and resets its initial-media buffer before the stream
     // listener above is attached, so these two paths are mutually exclusive and
