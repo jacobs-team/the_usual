@@ -48,7 +48,13 @@ extension PumpApp on WidgetTester {
       ..registerSingleton<CoffeeApi>(MockCoffeeApi())
       ..registerSingleton<RestClient>(MockRestClient())
       ..registerSingleton<FileCacheService>(MockFileCacheService())
-      ..registerSingleton<MealAiRepository>(mealAiRepository);
+      ..registerSingleton<MealAiRepository>(mealAiRepository)
+      ..registerFactory<FoodEntryBloc>(
+        () => FoodEntryBloc(
+          getIt<MealAiRepository>(),
+          getIt<UserSettingsBloc>(),
+        ),
+      );
 
     for (final instance in [...deps]) {
       await _registerOverride(instance);

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
 import 'package:the_usual/design_system/design_system.dart';
+import 'package:uuid/uuid.dart';
 
 /// One food the user confirmed in a [FoodEntryForm]: its name, nutrition,
 /// quantity, and whether to also save it to the usual meals. One-off data
@@ -33,6 +35,9 @@ class FoodEntryForm extends StatefulWidget {
     this.showAddToUsualMeals = false,
     this.autofocusFirst = true,
     this.onChanged,
+    this.initialPhotos,
+    this.autoEstimate = false,
+    this.initialMealOfTheDay,
     super.key,
   });
 
@@ -52,260 +57,154 @@ class FoodEntryForm extends StatefulWidget {
   /// Called whenever the rows or the generating state change.
   final VoidCallback? onChanged;
 
+  /// Photos to pre-load into the form (e.g. from the OS share target).
+  final List<MealPhoto>? initialPhotos;
+
+  /// When true and [initialPhotos] is non-empty, kicks a photo estimate
+  /// immediately after the bloc starts (the share-to-log path).
+  final bool autoEstimate;
+
+  /// The target meal slot to pre-select.
+  final MealOfTheDay? initialMealOfTheDay;
+
   @override
   State<FoodEntryForm> createState() => FoodEntryFormState();
 }
 
-/// State for [FoodEntryForm]. Exposes [results] and [hasContent] so a host
-/// widget can read the entries and gate its confirm action.
+/// State for [FoodEntryForm]. Exposes [results], [hasContent], [isGenerating],
+/// [mealOfTheDay], and [changeMealOfTheDay] so host widgets can read entries
+/// and gate their confirm action via a [GlobalKey].
 class FoodEntryFormState extends State<FoodEntryForm> {
-  /// The foods being captured. Always at least one row.
-  final List<_FoodDraft> _drafts = [];
+  late final FoodEntryBloc _bloc;
 
-  late MealEntryMode _mode;
-  bool _isGenerating = false;
+  // Tracks ids of food drafts whose addToUsualMeals has been set to the
+  // correct default for this form. When an estimate creates new drafts with
+  // new ids (which default to false in the bloc), the listener syncs them to
+  // widget.showAddToUsualMeals before the row renders.
+  final Set<String> _initializedFoodIds = {};
+
+  static const _uuid = Uuid();
 
   @override
   void initState() {
     super.initState();
-    _mode = getIt<UserSettingsBloc>().state.mealEntryMode;
+    _bloc = getIt<FoodEntryBloc>();
     final initialFoods = widget.initialFoods;
+    final List<FoodDraft> initialDrafts;
     if (initialFoods == null || initialFoods.isEmpty) {
-      _drafts.add(_FoodDraft(addToUsualMeals: widget.showAddToUsualMeals));
+      final draft = FoodDraft(
+        id: _uuid.v4(),
+        addToUsualMeals: widget.showAddToUsualMeals,
+      );
+      _initializedFoodIds.add(draft.id);
+      initialDrafts = [draft];
     } else {
+      final drafts = <FoodDraft>[];
       for (final food in initialFoods) {
-        _drafts.add(
-          _FoodDraft(
-            name: food.name,
-            quantity: food.quantity,
-            nutrition: food.nutrition,
-            addToUsualMeals: food.addToUsualMeals,
-          ),
+        final draft = FoodDraft(
+          id: _uuid.v4(),
+          name: food.name,
+          quantity: food.quantity,
+          nutrition: food.nutrition,
+          addToUsualMeals: food.addToUsualMeals,
         );
+        _initializedFoodIds.add(draft.id);
+        drafts.add(draft);
       }
+      initialDrafts = drafts;
     }
+    _bloc.add(
+      MealEntryEvent.started(
+        initialFoods: initialDrafts,
+        photos: widget.initialPhotos ?? const [],
+        mealOfTheDay: widget.initialMealOfTheDay,
+        autoEstimate: widget.autoEstimate,
+      ),
+    );
   }
 
   @override
   void dispose() {
-    for (final draft in _drafts) {
-      draft.dispose();
-    }
+    _bloc.close();
     super.dispose();
   }
 
   /// The non-empty rows as results for the host to log or save.
   List<FoodEntryResult> get results => [
-    for (final draft in _drafts)
-      if (draft.nameController.text.trim().isNotEmpty)
+    for (final foodDraft in _bloc.state.foods)
+      if (foodDraft.name.trim().isNotEmpty)
         (
-          name: draft.nameController.text.trim(),
-          nutrition: draft.nutrition,
-          quantity: draft.quantity,
-          addToUsualMeals: widget.showAddToUsualMeals && draft.addToUsualMeals,
+          name: foodDraft.name.trim(),
+          nutrition: foodDraft.nutrition,
+          quantity: foodDraft.quantity,
+          addToUsualMeals:
+              widget.showAddToUsualMeals && foodDraft.addToUsualMeals,
         ),
   ];
 
   /// Whether any row has a name entered.
-  bool get hasContent =>
-      _drafts.any((draft) => draft.nameController.text.trim().isNotEmpty);
+  bool get hasContent => _bloc.state.hasContent;
 
   /// Whether an AI estimate is currently running.
-  bool get isGenerating => _isGenerating;
+  bool get isGenerating => _bloc.state.isGenerating;
 
-  /// Whether AI assistance is available (an API key is configured).
+  /// The currently selected meal slot.
+  MealOfTheDay get mealOfTheDay => _bloc.state.mealOfTheDay;
+
+  /// Switches the target meal slot.
+  void changeMealOfTheDay(MealOfTheDay mealOfTheDay) =>
+      _bloc.add(MealEntryEvent.mealOfTheDayChanged(mealOfTheDay));
+
   bool get _aiAvailable => getIt<MealAiRepository>().isConfigured;
 
-  void _notify() => widget.onChanged?.call();
-
-  /// Switches the AI mode and remembers it as the user's new default. The
-  /// itemize checkbox only ever reports a flipped value, so this is always a
-  /// real change.
-  void _setMode(MealEntryMode mode) {
-    getIt<UserSettingsBloc>().add(
-      UserSettingsEvent.mealEntryModeChanged(mode),
-    );
-    setState(() => _mode = mode);
-  }
-
-  void _addDraft() {
-    setState(() {
-      _drafts.add(_FoodDraft(addToUsualMeals: widget.showAddToUsualMeals));
-    });
-    _notify();
-  }
-
-  void _removeDraft(_FoodDraft draft) {
-    setState(() {
-      draft.dispose();
-      _drafts.remove(draft);
-      // The remove control only shows with more than one row, so removing can't
-      // empty the list; this guard is defensive and unreachable from the UI.
-      // coverage:ignore-start
-      if (_drafts.isEmpty) {
-        _drafts.add(_FoodDraft(addToUsualMeals: widget.showAddToUsualMeals));
-      }
-      // coverage:ignore-end
-    });
-    _notify();
-  }
-
-  /// Estimates nutrition with the AI. A single filled row is treated as a
-  /// description the AI may split per the selected [MealEntryMode]; several
-  /// filled rows are already itemized by the user, so each row is estimated on
-  /// its own and filled in place, keeping every row and its name.
-  Future<void> _estimateWithAi() async {
-    final messenger = ScaffoldMessenger.of(context);
-    final namedDrafts = _drafts
-        .where((draft) => draft.nameController.text.trim().isNotEmpty)
-        .toList();
-    if (namedDrafts.isEmpty) {
-      messenger.showSnackBar(
-        const SnackBar(content: Text('Type a meal name or description first.')),
-      );
-      return;
-    }
-    if (namedDrafts.length == 1) {
-      final description = namedDrafts.first.nameController.text.trim();
-      await _runEstimate(
-        messenger,
-        () => getIt<MealAiRepository>().suggestFromDescription(
-          description,
-          mode: _mode,
-        ),
-        keepFirstName: _mode == MealEntryMode.wholeMeal ? description : null,
-      );
-      return;
-    }
-    await _estimateEachRow(messenger, namedDrafts);
-  }
-
-  /// Estimates each of [namedDrafts] as its own single item, in parallel, and
-  /// rebuilds those rows with the estimated nutrition and quantity while
-  /// keeping their names. Rows are kept, so estimating never discards the items
-  /// the user already entered. Empty rows are left untouched.
-  Future<void> _estimateEachRow(
-    ScaffoldMessengerState messenger,
-    List<_FoodDraft> namedDrafts,
-  ) async {
-    final repository = getIt<MealAiRepository>();
-    setState(() => _isGenerating = true);
-    _notify();
-    try {
-      final estimates = await Future.wait([
-        for (final draft in namedDrafts)
-          repository.suggestFromDescription(
-            draft.nameController.text.trim(),
-            mode: MealEntryMode.wholeMeal,
-          ),
-      ]);
-      if (!mounted) return;
-      final estimateByDraft = <_FoodDraft, AiMealSuggestion>{};
-      for (final (index, draft) in namedDrafts.indexed) {
-        final suggestions = estimates[index];
-        if (suggestions.isNotEmpty) estimateByDraft[draft] = suggestions.first;
-      }
-      setState(() {
-        final rebuiltDrafts = <_FoodDraft>[];
-        for (final draft in _drafts) {
-          final estimate = estimateByDraft[draft];
-          if (estimate == null) {
-            rebuiltDrafts.add(draft);
-            continue;
-          }
-          rebuiltDrafts.add(
-            _FoodDraft(
-              name: draft.nameController.text,
-              quantity: estimate.quantity,
-              nutrition: estimate.nutrition,
-              addToUsualMeals: draft.addToUsualMeals,
-            ),
-          );
-          draft.dispose();
-        }
-        _drafts
-          ..clear()
-          ..addAll(rebuiltDrafts);
-      });
-    } on Object catch (error) {
-      messenger.showSnackBar(
-        SnackBar(content: Text('Could not estimate nutrition: $error')),
-      );
-    } finally {
-      if (mounted) setState(() => _isGenerating = false);
-      _notify();
-    }
-  }
-
-  /// Snaps or picks a photo and estimates the food from it. Any name the user
-  /// already typed is sent with the photo to sharpen the estimate, and is kept
-  /// instead of the model's name in whole-meal mode, so a typed description
-  /// stays as the user wrote it. With no name typed, the model names the food.
   Future<void> _photoWithAi() async {
-    final messenger = ScaffoldMessenger.of(context);
     final photo = await pickMealPhoto(context);
     if (photo == null) return;
-    final description = _drafts.first.nameController.text.trim();
-    final hasDescription = description.isNotEmpty;
-    await _runEstimate(
-      messenger,
-      () => getIt<MealAiRepository>().suggestFromPhoto(
-        photo.bytes,
-        mode: _mode,
-        description: hasDescription ? description : null,
-        imageMediaType: photo.mediaType,
-      ),
-      keepFirstName: hasDescription && _mode == MealEntryMode.wholeMeal
-          ? description
-          : null,
-    );
-  }
-
-  /// Runs [request] and replaces the rows with the estimate for the user to
-  /// review, surfacing any failure. When [keepFirstName] is set the first row's
-  /// name is kept instead of the model's, so a typed description stays as the
-  /// user wrote it.
-  Future<void> _runEstimate(
-    ScaffoldMessengerState messenger,
-    Future<List<AiMealSuggestion>> Function() request, {
-    String? keepFirstName,
-  }) async {
-    setState(() => _isGenerating = true);
-    _notify();
-    try {
-      final suggestions = await request();
-      if (!mounted || suggestions.isEmpty) return;
-      setState(() {
-        for (final draft in _drafts) {
-          draft.dispose();
-        }
-        _drafts
-          ..clear()
-          ..addAll([
-            for (final (index, suggestion) in suggestions.indexed)
-              _FoodDraft(
-                name: index == 0 && keepFirstName != null
-                    ? keepFirstName
-                    : suggestion.name,
-                quantity: suggestion.quantity,
-                nutrition: suggestion.nutrition,
-                addToUsualMeals: widget.showAddToUsualMeals,
-              ),
-          ]);
-      });
-    } on Object catch (error) {
-      messenger.showSnackBar(
-        SnackBar(content: Text('Could not estimate nutrition: $error')),
-      );
-    } finally {
-      if (mounted) setState(() => _isGenerating = false);
-      _notify();
-    }
+    _bloc
+      ..add(MealEntryEvent.photosAdded([photo]))
+      ..add(const MealEntryEvent.photoEstimateRequested());
   }
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider.value(
+      value: _bloc,
+      child: BlocConsumer<FoodEntryBloc, MealEntryState>(
+        listener: (context, state) {
+          widget.onChanged?.call();
+          final message = state.errorMessage;
+          if (state.status == MealEntryStatus.failure && message != null) {
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(message)));
+          }
+          // When showAddToUsualMeals is true, any food the bloc creates via an
+          // estimate uses addToUsualMeals: false (the bloc doesn't know about
+          // the form setting). Sync new ids to the correct default here so the
+          // user sees each row checked by default, matching the old behavior.
+          if (widget.showAddToUsualMeals) {
+            for (final foodDraft in state.foods) {
+              if (!_initializedFoodIds.contains(foodDraft.id)) {
+                _initializedFoodIds.add(foodDraft.id);
+                _bloc.add(
+                  MealEntryEvent.foodAddToUsualMealsToggled(
+                    foodDraft.id,
+                    addToUsualMeals: true,
+                  ),
+                );
+              }
+            }
+          } else {
+            _initializedFoodIds.addAll(state.foods.map((f) => f.id));
+          }
+        },
+        builder: (context, state) => _buildForm(context, state),
+      ),
+    );
+  }
+
+  Widget _buildForm(BuildContext context, MealEntryState state) {
     final textTheme = Theme.of(context).textTheme;
+    final isGenerating = state.isGenerating;
     final aiButtonStyle = FilledButton.styleFrom(
       visualDensity: VisualDensity.compact,
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -324,7 +223,21 @@ class FoodEntryFormState extends State<FoodEntryForm> {
               Expanded(
                 child: FilledButton.tonalIcon(
                   style: aiButtonStyle,
-                  onPressed: _isGenerating ? null : _estimateWithAi,
+                  onPressed: isGenerating
+                      ? null
+                      : () {
+                          if (!_bloc.state.hasContent) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Type a meal name or description first.',
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+                          _bloc.add(const MealEntryEvent.estimateRequested());
+                        },
                   icon: const Icon(Icons.auto_awesome_outlined, size: 18),
                   label: const Text('Estimate'),
                 ),
@@ -333,7 +246,7 @@ class FoodEntryFormState extends State<FoodEntryForm> {
               Expanded(
                 child: FilledButton.tonalIcon(
                   style: aiButtonStyle,
-                  onPressed: _isGenerating ? null : _photoWithAi,
+                  onPressed: isGenerating ? null : _photoWithAi,
                   icon: const Icon(Icons.photo_camera_outlined, size: 18),
                   label: const Text('Photo'),
                 ),
@@ -341,14 +254,16 @@ class FoodEntryFormState extends State<FoodEntryForm> {
               SizedBox(width: AppDesign.spacing.sm),
               Checkbox(
                 visualDensity: VisualDensity.compact,
-                value: _mode == MealEntryMode.itemized,
-                onChanged: _isGenerating
+                value: state.mealEntryMode == MealEntryMode.itemized,
+                onChanged: isGenerating
                     ? null
-                    : (value) => _setMode(
-                        (value ?? false)
-                            ? MealEntryMode.itemized
-                            : MealEntryMode.wholeMeal,
-                      ),
+                    : (value) => _bloc.add(
+                          MealEntryEvent.entryModeToggled(
+                            (value ?? false)
+                                ? MealEntryMode.itemized
+                                : MealEntryMode.wholeMeal,
+                          ),
+                        ),
               ),
               const Text('Itemize'),
               Tooltip(
@@ -362,7 +277,7 @@ class FoodEntryFormState extends State<FoodEntryForm> {
               ),
             ],
           ),
-          if (_isGenerating) ...[
+          if (isGenerating) ...[
             SizedBox(height: AppDesign.spacing.sm),
             Row(
               children: [
@@ -378,26 +293,45 @@ class FoodEntryFormState extends State<FoodEntryForm> {
           ],
           SizedBox(height: AppDesign.spacing.md),
         ],
-        for (var index = 0; index < _drafts.length; index++) ...[
+        for (var index = 0; index < state.foods.length; index++) ...[
           if (index > 0) SizedBox(height: AppDesign.spacing.md),
           _FoodEntryRow(
-            key: ObjectKey(_drafts[index]),
-            draft: _drafts[index],
+            key: ValueKey(state.foods[index].id),
+            foodDraft: state.foods[index],
             autofocus: widget.autofocusFirst && index == 0,
             showQuantity: widget.showQuantity,
             showAddToUsualMeals: widget.showAddToUsualMeals,
-            canRemove: _drafts.length > 1,
-            onChanged: () {
-              setState(() {});
-              _notify();
-            },
-            onRemove: () => _removeDraft(_drafts[index]),
+            canRemove: state.foods.length > 1,
+            onNameChanged: (name) => _bloc.add(
+              MealEntryEvent.foodNameChanged(state.foods[index].id, name),
+            ),
+            onNutritionChanged: (nutrition) => _bloc.add(
+              MealEntryEvent.foodNutritionChanged(
+                state.foods[index].id,
+                nutrition,
+              ),
+            ),
+            onQuantityChanged: (quantity) => _bloc.add(
+              MealEntryEvent.foodQuantityChanged(
+                state.foods[index].id,
+                quantity,
+              ),
+            ),
+            onAddToUsualMealsToggled: (addToUsualMeals) => _bloc.add(
+              MealEntryEvent.foodAddToUsualMealsToggled(
+                state.foods[index].id,
+                addToUsualMeals: addToUsualMeals,
+              ),
+            ),
+            onRemove: () => _bloc.add(
+              MealEntryEvent.foodRemoved(state.foods[index].id),
+            ),
           ),
         ],
         Align(
           alignment: Alignment.centerLeft,
           child: TextButton.icon(
-            onPressed: _addDraft,
+            onPressed: () => _bloc.add(const MealEntryEvent.foodAdded()),
             icon: const Icon(Icons.add),
             label: const Text('Add item'),
           ),
@@ -407,48 +341,54 @@ class FoodEntryFormState extends State<FoodEntryForm> {
   }
 }
 
-/// The mutable state of one food being captured: its name field plus the
-/// nutrition, quantity, and add-to-usuals choice. Owned by the form, which
-/// disposes it.
-class _FoodDraft {
-  _FoodDraft({
-    String name = '',
-    this.quantity = 1,
-    this.nutrition = const Nutrition(),
-    this.addToUsualMeals = false,
-  }) : nameController = TextEditingController(text: name);
-
-  final TextEditingController nameController;
-  double quantity;
-  Nutrition nutrition;
-  bool addToUsualMeals;
-
-  void dispose() => nameController.dispose();
-}
-
 /// One editable food row: name, optional quantity, nutrition, and an optional
 /// add-to-usuals toggle, with a remove control shown when more than one row is
 /// present. A white, elevated card (the app's themed Card) with the standard
 /// tinted field fills, so it reads the same here as in the rest of the app.
-class _FoodEntryRow extends StatelessWidget {
+class _FoodEntryRow extends StatefulWidget {
   const _FoodEntryRow({
-    required this.draft,
+    required this.foodDraft,
     required this.autofocus,
     required this.showQuantity,
     required this.showAddToUsualMeals,
     required this.canRemove,
-    required this.onChanged,
+    required this.onNameChanged,
+    required this.onNutritionChanged,
+    required this.onQuantityChanged,
+    required this.onAddToUsualMealsToggled,
     required this.onRemove,
     super.key,
   });
 
-  final _FoodDraft draft;
+  final FoodDraft foodDraft;
   final bool autofocus;
   final bool showQuantity;
   final bool showAddToUsualMeals;
   final bool canRemove;
-  final VoidCallback onChanged;
+  final ValueChanged<String> onNameChanged;
+  final ValueChanged<Nutrition> onNutritionChanged;
+  final ValueChanged<double> onQuantityChanged;
+  final ValueChanged<bool> onAddToUsualMealsToggled;
   final VoidCallback onRemove;
+
+  @override
+  State<_FoodEntryRow> createState() => _FoodEntryRowState();
+}
+
+class _FoodEntryRowState extends State<_FoodEntryRow> {
+  late final TextEditingController _nameController;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController(text: widget.foodDraft.name);
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -462,15 +402,15 @@ class _FoodEntryRow extends StatelessWidget {
               children: [
                 Expanded(
                   child: TheUsualTextField(
-                    controller: draft.nameController,
-                    autofocus: autofocus,
+                    controller: _nameController,
+                    autofocus: widget.autofocus,
                     hintText: 'e.g. Chicken caesar salad',
-                    onChanged: (_) => onChanged(),
+                    onChanged: widget.onNameChanged,
                   ),
                 ),
-                if (canRemove)
+                if (widget.canRemove)
                   IconButton(
-                    onPressed: onRemove,
+                    onPressed: widget.onRemove,
                     icon: const Icon(Icons.close),
                     tooltip: 'Remove',
                   ),
@@ -478,35 +418,31 @@ class _FoodEntryRow extends StatelessWidget {
             ),
             SizedBox(height: AppDesign.spacing.md),
             NutritionFields(
+              key: ValueKey(widget.foodDraft.nutrition),
               dense: true,
-              initial: draft.nutrition,
-              onChanged: (nutrition) => draft.nutrition = nutrition,
+              initial: widget.foodDraft.nutrition,
+              onChanged: widget.onNutritionChanged,
             ),
-            if (showQuantity || showAddToUsualMeals) ...[
+            if (widget.showQuantity || widget.showAddToUsualMeals) ...[
               SizedBox(height: AppDesign.spacing.md),
               Row(
                 children: [
-                  if (showQuantity)
+                  if (widget.showQuantity)
                     QuantityStepper(
                       dense: true,
-                      quantity: draft.quantity,
-                      onChanged: (quantity) {
-                        draft.quantity = quantity;
-                        onChanged();
-                      },
+                      quantity: widget.foodDraft.quantity,
+                      onChanged: widget.onQuantityChanged,
                     ),
                   const Spacer(),
-                  if (showAddToUsualMeals)
+                  if (widget.showAddToUsualMeals)
                     Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Checkbox(
                           visualDensity: VisualDensity.compact,
-                          value: draft.addToUsualMeals,
-                          onChanged: (value) {
-                            draft.addToUsualMeals = value ?? false;
-                            onChanged();
-                          },
+                          value: widget.foodDraft.addToUsualMeals,
+                          onChanged: (value) =>
+                              widget.onAddToUsualMealsToggled(value ?? false),
                         ),
                         const Text('Save as usual'),
                       ],
