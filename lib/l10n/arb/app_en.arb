@@ -20,6 +20,22 @@
     "@signIn": {
         "description": "Label for the sign in button or screen title"
     },
+    "signInWithGoogle": "Sign in with Google",
+    "@signInWithGoogle": {
+        "description": "Label for the Google sign-in button"
+    },
+    "continueAsGuest": "Continue as guest",
+    "@continueAsGuest": {
+        "description": "Action to use the app without signing in"
+    },
+    "signOut": "Sign out",
+    "@signOut": {
+        "description": "Action to sign out of the current account"
+    },
+    "signInFailed": "Could not sign in. Please try again.",
+    "@signInFailed": {
+        "description": "Error shown when Google sign-in fails"
+    },
     "coffee": "Coffee",
     "@coffee": {
         "description": "Label or category name for coffee"

@@ -23,11 +23,16 @@ class AppRouter {
     router = GoRouter(
       navigatorKey: rootNavigatorKey,
       initialLocation: Routes.today,
+      refreshListenable: getIt<AuthCubit>(),
       redirect: (context, state) {
         final onboardingComplete =
             getIt<OnboardingBloc>().state.step == OnboardingStep.complete;
-
         if (!onboardingComplete) return Routes.onboarding;
+
+        final status = getIt<AuthCubit>().state.status;
+        final atSignIn = state.matchedLocation == Routes.signIn;
+        if (status == AuthStatus.unknown && !atSignIn) return Routes.signIn;
+        if (status != AuthStatus.unknown && atSignIn) return Routes.today;
         return null;
       },
       routes: routes,
@@ -50,6 +55,12 @@ class AppRouter {
       path: Routes.onboarding,
       pageBuilder: (context, state) {
         return const NoTransitionPage(child: OnboardingView());
+      },
+    ),
+    GoRoute(
+      path: Routes.signIn,
+      pageBuilder: (context, state) {
+        return const NoTransitionPage(child: SignInView());
       },
     ),
     StatefulShellRoute.indexedStack(

@@ -97,7 +97,7 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
   static const _estimateFailedMessage =
       'Could not estimate nutrition. Please try again.';
 
-  /// Returns [state.foods] with the row whose id is [id] transformed by
+  /// Returns the food list with the row whose id is [id] transformed by
   /// [transform]; other rows are left as-is.
   List<FoodDraft> _mapFood(String id, FoodDraft Function(FoodDraft) transform) {
     return [

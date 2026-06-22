@@ -40,7 +40,7 @@ void main() {
         range.logicalDays,
         equals([
           DateTime(2026, 6, 30),
-          DateTime(2026, 7, 1),
+          DateTime(2026, 7),
           DateTime(2026, 7, 2),
         ]),
       );

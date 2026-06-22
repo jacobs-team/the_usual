@@ -667,7 +667,7 @@ void main() {
   });
 
   group('meal slot selector', () {
-    setUp(() {
+    setUp(() async {
       initHydratedStorage();
       final repository = MockMealAiRepository();
       when(() => repository.isConfigured).thenReturn(false);
@@ -677,11 +677,11 @@ void main() {
         () => userSettingsBloc.stream,
       ).thenAnswer((_) => const Stream.empty());
       if (getIt.isRegistered<MealAiRepository>()) {
-        getIt.unregister<MealAiRepository>();
+        await getIt.unregister<MealAiRepository>();
       }
       getIt.registerSingleton<MealAiRepository>(repository);
       if (getIt.isRegistered<UserSettingsBloc>()) {
-        getIt.unregister<UserSettingsBloc>();
+        await getIt.unregister<UserSettingsBloc>();
       }
       getIt.registerSingleton<UserSettingsBloc>(userSettingsBloc);
       if (!getIt.isRegistered<FoodEntryBloc>()) {
@@ -725,18 +725,18 @@ void main() {
   });
 
   group('FoodEntrySheet pop shape', () {
-    setUp(() {
+    setUp(() async {
       initHydratedStorage();
       final repository = MockMealAiRepository();
       when(() => repository.isConfigured).thenReturn(false);
       final userSettingsBloc = MockUserSettingsBloc();
       when(() => userSettingsBloc.state).thenReturn(const UserSettingsState());
       if (getIt.isRegistered<MealAiRepository>()) {
-        getIt.unregister<MealAiRepository>();
+        await getIt.unregister<MealAiRepository>();
       }
       getIt.registerSingleton<MealAiRepository>(repository);
       if (getIt.isRegistered<UserSettingsBloc>()) {
-        getIt.unregister<UserSettingsBloc>();
+        await getIt.unregister<UserSettingsBloc>();
       }
       getIt.registerSingleton<UserSettingsBloc>(userSettingsBloc);
       if (!getIt.isRegistered<FoodEntryBloc>()) {

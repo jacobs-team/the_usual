@@ -47,7 +47,6 @@ class _UserSettingsViewState extends State<UserSettingsView> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -86,12 +85,9 @@ class _UserSettingsViewState extends State<UserSettingsView> {
             SizedBox(height: AppDesign.spacing.sm),
             const AppearanceSection(),
             SizedBox(height: AppDesign.spacing.xl),
-            Center(
-              child: Text(
-                'No account. Your data stays on your phone.',
-                style: textTheme.bodySmall,
-              ),
-            ),
+            const SectionLabel('ACCOUNT'),
+            SizedBox(height: AppDesign.spacing.sm),
+            const AuthAccountTile(),
           ],
         ),
       ),

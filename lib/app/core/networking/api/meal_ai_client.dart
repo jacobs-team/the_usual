@@ -2,7 +2,9 @@
 // Thin wrapper over the Genkit/Anthropic SDK that owns the live network
 // connection; it has no unit-testable logic apart from SDK calls.
 import 'dart:convert';
+import 'dart:developer' as developer;
 
+import 'package:flutter/foundation.dart';
 import 'package:genkit/genkit.dart';
 import 'package:genkit_anthropic/genkit_anthropic.dart';
 import 'package:injectable/injectable.dart';
@@ -23,12 +25,14 @@ import 'package:the_usual/environment.dart';
 @singleton
 class MealAiClient {
   /// {@macro meal_ai_client}
-  MealAiClient()
+  MealAiClient(this._devToolsCubit)
     : _ai = Genkit(
         plugins: [anthropic(apiKey: EnvironmentConfig.anthropicApiKey)],
       );
 
   final Genkit _ai;
+
+  final DevToolsCubit _devToolsCubit;
 
   /// The Claude model used for meal extraction.
   static final ModelRef<AnthropicOptions> _model = anthropic.model(
@@ -42,13 +46,32 @@ class MealAiClient {
   /// Whether an Anthropic API key has been supplied at build time.
   bool get isConfigured => EnvironmentConfig.anthropicApiKey.isNotEmpty;
 
+  /// Whether AI traffic should be logged: debug builds with the in-app API
+  /// debug toggle on, mirroring the REST client's logger.
+  bool get _logEnabled => kDebugMode && _devToolsCubit.state.isApiDebug;
+
+  void _logRequest(String prompt, {int imageCount = 0}) {
+    if (!_logEnabled) return;
+    developer.log(
+      'request\nimages: $imageCount\nprompt: $prompt',
+      name: 'MealAiClient',
+    );
+  }
+
+  void _logResponse(Object? output) {
+    if (!_logEnabled) return;
+    developer.log('response\n$output', name: 'MealAiClient');
+  }
+
   /// Sends [prompt] to Claude and returns the response text.
   Future<String> generateText(String prompt) async {
+    _logRequest(prompt);
     final response = await _ai.generate<AnthropicOptions, dynamic>(
       model: _model,
       config: _options,
       prompt: prompt,
     );
+    _logResponse(response.text);
     return response.text;
   }
 
@@ -66,6 +89,7 @@ class MealAiClient {
     required SchemanticType<T> outputSchema,
     List<MealPhoto> images = const <MealPhoto>[],
   }) async {
+    _logRequest(prompt, imageCount: images.length);
     List<Message>? messages;
     if (images.isNotEmpty) {
       messages = [
@@ -98,6 +122,7 @@ class MealAiClient {
     if (output == null) {
       throw StateError('Claude returned no structured output for the request.');
     }
+    _logResponse(output);
     return output;
   }
 }

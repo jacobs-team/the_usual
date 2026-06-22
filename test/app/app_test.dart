@@ -17,6 +17,7 @@ void main() {
     late NotificationService notificationService;
     late ShareIngestService shareIngestService;
     late MockMealAiRepository mealAiRepository;
+    late AuthCubit authCubit;
 
     const completeState = OnboardingState(
       step: OnboardingStep.complete,
@@ -97,7 +98,15 @@ void main() {
       mealAiRepository = MockMealAiRepository();
       when(() => mealAiRepository.isConfigured).thenReturn(false);
 
+      authCubit = MockAuthCubit();
+      when(
+        () => authCubit.state,
+      ).thenReturn(const AuthState(status: AuthStatus.guest));
+      when(() => authCubit.stream).thenAnswer((_) => const Stream.empty());
+      when(() => authCubit.restoreOnStartup()).thenAnswer((_) async {});
+
       GetIt.instance
+        ..registerSingleton<AuthCubit>(authCubit)
         ..registerSingleton<OnboardingBloc>(onboardingBloc)
         ..registerSingleton<UserSettingsBloc>(userSettingsBloc)
         ..registerSingleton<DailyLogBloc>(dailyLogBloc)
@@ -290,11 +299,12 @@ void main() {
 
             expect(find.byType(FoodEntrySheet), findsOneWidget);
 
-            // The auto-estimate fills "Shared meal" (stubbed above). Tap confirm
-            // and verify the meal is dispatched to the log for the current slot.
-            // testNow is 9:30 AM, which resolves to MealOfTheDay.breakfast.
-            // The confirm FilledButton is the last one in the sheet; the form
-            // also contains AI assist buttons (Estimate, Photo) rendered earlier.
+            // The auto-estimate fills "Shared meal" (stubbed above). Tap
+            // confirm and verify the meal is dispatched to the log for the
+            // current slot. testNow is 9:30 AM, which resolves to
+            // MealOfTheDay.breakfast. The confirm FilledButton is the last
+            // one in the sheet; the form also contains AI assist buttons
+            // (Estimate, Photo) rendered earlier.
             await tester.tap(
               find
                   .descendant(
@@ -319,7 +329,8 @@ void main() {
       );
 
       testWidgets(
-        'a share while onboarding is incomplete is buffered and opens after onboarding completes',
+        'a share while onboarding is incomplete is buffered and opens '
+        'after onboarding completes',
         (tester) async {
           // Onboarding is not yet complete; shares must be buffered.
           when(
@@ -333,7 +344,8 @@ void main() {
           ).thenAnswer((_) => shareController.stream);
 
           // Broadcast so multiple listeners (MultiBlocListener + GoRouter) can
-          // each subscribe without throwing "Stream has already been listened to".
+          // each subscribe without throwing "Stream has already been
+          // listened to".
           final onboardingController =
               StreamController<OnboardingState>.broadcast();
           addTearDown(onboardingController.close);
@@ -349,7 +361,8 @@ void main() {
           await tester.pumpWidget(TheUsualsApp(key: UniqueKey()));
           await tester.pumpAndSettle();
 
-          // A share arrives before onboarding completes; sheet must not open yet.
+          // A share arrives before onboarding completes; sheet must not
+          // open yet.
           shareController.add([sharedPhoto]);
           await tester.pumpAndSettle();
 

@@ -38,6 +38,8 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
   @override
   void initState() {
     super.initState();
+    // Restore a previous Google session silently before first paint.
+    unawaited(getIt<AuthCubit>().restoreOnStartup());
     _syncNotifications();
     // Tapping a reminder takes the user to Today, where they log meals.
     getIt<NotificationService>().onReminderTapped = () =>

@@ -7,19 +7,20 @@ import 'package:the_usual/app/core/dependencies/dependencies.dart';
 import '../../helpers/helpers.dart';
 
 void main() {
-  setUp(() {
+  setUp(() async {
     initHydratedStorage();
     final repository = MockMealAiRepository();
     when(() => repository.isConfigured).thenReturn(false);
     final userSettingsBloc = MockUserSettingsBloc();
     when(() => userSettingsBloc.state).thenReturn(const UserSettingsState());
-    // getIt produces a fresh FoodEntryBloc per call; register the deps it needs.
+    // getIt produces a fresh FoodEntryBloc per call; register the deps
+    // it needs.
     if (getIt.isRegistered<MealAiRepository>()) {
-      getIt.unregister<MealAiRepository>();
+      await getIt.unregister<MealAiRepository>();
     }
     getIt.registerSingleton<MealAiRepository>(repository);
     if (getIt.isRegistered<UserSettingsBloc>()) {
-      getIt.unregister<UserSettingsBloc>();
+      await getIt.unregister<UserSettingsBloc>();
     }
     getIt.registerSingleton<UserSettingsBloc>(userSettingsBloc);
     if (!getIt.isRegistered<FoodEntryBloc>()) {

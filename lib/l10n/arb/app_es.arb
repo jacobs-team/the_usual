@@ -20,6 +20,22 @@
     "@signIn": {
         "description": "Etiqueta del botón o acción que permite al usuario iniciar sesión."
     },
+    "signInWithGoogle": "Iniciar sesión con Google",
+    "@signInWithGoogle": {
+        "description": "Etiqueta del botón de inicio de sesión con Google"
+    },
+    "continueAsGuest": "Continuar como invitado",
+    "@continueAsGuest": {
+        "description": "Acción para usar la app sin iniciar sesión"
+    },
+    "signOut": "Cerrar sesión",
+    "@signOut": {
+        "description": "Acción para cerrar la sesión de la cuenta actual"
+    },
+    "signInFailed": "No se pudo iniciar sesión. Inténtalo de nuevo.",
+    "@signInFailed": {
+        "description": "Error que se muestra cuando falla el inicio de sesión con Google"
+    },
     "coffee": "Café",     "coffeeTitle": "Explore Coffee",
 
     "@coffee": {
