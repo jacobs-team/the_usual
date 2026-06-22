@@ -97,6 +97,17 @@
 					<string>ShareMedia-$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 				</array>
 			</dict>
+			<dict>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<!-- Google Sign-In reversed client id (prod bundle
+					     com.jblankenship.theusual). Add the dev client's
+					     reversed id as a second string here when needed. -->
+					<string>com.googleusercontent.apps.926455129035-u1p1pcursgle34pmn9191bpdesgphbsa</string>
+				</array>
+			</dict>
 		</array>
 	</dict>
 </plist>

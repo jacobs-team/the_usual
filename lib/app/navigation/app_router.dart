@@ -17,19 +17,17 @@ import 'package:the_usual/app/core/dependencies/dependencies.dart';
 @singleton
 class AppRouter {
   /// {@macro app_router}
-  AppRouter(
-    // this._authCubit
-  ) {
+  AppRouter(this._authCubit) {
     router = GoRouter(
       navigatorKey: rootNavigatorKey,
       initialLocation: Routes.today,
-      refreshListenable: getIt<AuthCubit>(),
+      refreshListenable: _authCubit,
       redirect: (context, state) {
         final onboardingComplete =
             getIt<OnboardingBloc>().state.step == OnboardingStep.complete;
         if (!onboardingComplete) return Routes.onboarding;
 
-        final status = getIt<AuthCubit>().state.status;
+        final status = _authCubit.state.status;
         final atSignIn = state.matchedLocation == Routes.signIn;
         if (status == AuthStatus.unknown && !atSignIn) return Routes.signIn;
         if (status != AuthStatus.unknown && atSignIn) return Routes.today;
@@ -39,7 +37,7 @@ class AppRouter {
     );
   }
 
-  // final AuthCubit _authCubit;
+  final AuthCubit _authCubit;
 
   /// The [GoRouter] instance used by the application.
   late final GoRouter router;

@@ -19,9 +19,10 @@ import 'package:the_usual/app/core/dependencies/modules/hydrated_bloc_module.dar
 import 'package:the_usual/app/core/dependencies/modules/notification_module.dart'
     as _i833;
 import 'package:the_usual/app/core/networking/api/coffee_api.dart' as _i6;
+import 'package:the_usual/app/core/networking/api/meal_ai_client.dart' as _i455;
 import 'package:the_usual/app/core/networking/api/rest_client.dart' as _i13;
 import 'package:the_usual/app/core/networking/repository/auth_repository.dart'
-    as _i659;
+    as _i53;
 import 'package:the_usual/app/core/networking/repository/meal_ai_repository.dart'
     as _i310;
 import 'package:the_usual/app/core/service/file_cache_service.dart' as _i115;
@@ -60,16 +61,18 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i115.FileCacheService>(() => _i115.FileCacheService());
     gh.singleton<_i907.ShareIngestService>(() => _i907.ShareIngestService());
     gh.singleton<_i818.DevToolsCubit>(() => _i818.DevToolsCubit());
-    gh.singleton<_i874.AppRouter>(() => _i874.AppRouter());
     gh.lazySingleton<_i640.OnboardingBloc>(() => _i640.OnboardingBloc());
     gh.lazySingleton<_i155.DailyLogBloc>(() => _i155.DailyLogBloc());
     gh.lazySingleton<_i807.UserSettingsBloc>(() => _i807.UserSettingsBloc());
-    gh.lazySingleton<_i659.AuthRepository>(() => _i659.GoogleAuthRepository());
-    gh.singleton<_i608.AuthCubit>(
-      () => _i608.AuthCubit(gh<_i538.AuthRepository>()),
+    gh.lazySingleton<_i53.AuthRepository>(() => _i53.GoogleAuthRepository());
+    gh.singleton<_i455.MealAiClient>(
+      () => _i455.MealAiClient(gh<_i538.DevToolsCubit>()),
     );
     gh.singleton<_i310.MealAiRepository>(
       () => _i310.MealAiRepository(gh<_i538.MealAiClient>()),
+    );
+    gh.singleton<_i608.AuthCubit>(
+      () => _i608.AuthCubit(gh<_i538.AuthRepository>()),
     );
     gh.factory<_i1048.FoodEntryBloc>(
       () => _i1048.FoodEntryBloc(
@@ -80,6 +83,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i13.RestClient>(
       () => _i13.RestClient(gh<_i538.AuthCubit>(), gh<_i538.DevToolsCubit>()),
     );
+    gh.singleton<_i874.AppRouter>(() => _i874.AppRouter(gh<_i538.AuthCubit>()));
     gh.singleton<_i6.CoffeeApi>(() => _i6.CoffeeApi(gh<_i538.RestClient>()));
     return this;
   }

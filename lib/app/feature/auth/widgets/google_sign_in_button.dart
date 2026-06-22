@@ -1,3 +1,7 @@
+// ignore_for_file: avoid_catches_without_on_clauses
+
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
@@ -23,11 +27,18 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
     setState(() => _busy = true);
     try {
       await getIt<AuthCubit>().signInWithGoogle();
-    } on Exception {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(context.l10n.signInFailed)),
+    } catch (error, stackTrace) {
+      log(
+        'Google sign-in failed',
+        name: 'GoogleSignInButton',
+        error: error,
+        stackTrace: stackTrace,
       );
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('$error')));
+      }
     } finally {
       if (mounted) setState(() => _busy = false);
     }
