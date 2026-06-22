@@ -132,7 +132,12 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
       usualMealId: event.usualMealId,
       photoPath: event.photoPath,
     );
-    emit(state.copyWith(mealEntries: [...state.mealEntries, mealLogEntry]));
+    emit(
+      state.copyWith(
+        mealEntries: [...state.mealEntries, mealLogEntry],
+        justLoggedEntryId: mealLogEntry.id,
+      ),
+    );
   }
 
   void _onMealEntryNutritionChanged(

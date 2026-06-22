@@ -17,6 +17,7 @@ class MealLogSection extends StatelessWidget {
     required this.otherMealUsuals,
     required this.isCurrent,
     required this.nutritionExpandedByDefault,
+    this.justLoggedEntryId,
     this.logDays,
     this.dayStart,
     super.key,
@@ -41,6 +42,11 @@ class MealLogSection extends StatelessWidget {
 
   /// Whether each logged entry's nutrition fields start expanded for editing.
   final bool nutritionExpandedByDefault;
+
+  /// The most-recently-logged entry's id. Its row opens regardless of
+  /// [nutritionExpandedByDefault] so the user can adjust the quantity right
+  /// after logging.
+  final String? justLoggedEntryId;
 
   /// The days meals logged from this section are recorded onto. Null logs to
   /// today (stamped at the current time); a single-element list logs to one
@@ -152,10 +158,11 @@ class MealLogSection extends StatelessWidget {
                 itemCount: mealLogEntries.length,
                 itemBuilder: (context, index) {
                   final mealLogEntry = mealLogEntries[index];
+                  final justLogged = mealLogEntry.id == justLoggedEntryId;
                   return LoggedEntryRow(
                     key: ValueKey(mealLogEntry.id),
                     mealLogEntry: mealLogEntry,
-                    expandedByDefault: nutritionExpandedByDefault,
+                    expandedByDefault: nutritionExpandedByDefault || justLogged,
                   );
                 },
               ),

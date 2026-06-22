@@ -72,14 +72,11 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
         MealEntryPhotosAdded() => emit(
           state.copyWith(photos: [...state.photos, ...event.photos]),
         ),
+        MealEntryPhotoRemoved() => _onPhotoRemoved(event, emit),
         MealEntryPhotosCleared() => emit(
           state.copyWith(photos: const []),
         ),
         MealEntryEstimateRequested() => _onEstimateRequested(event, emit),
-        MealEntryPhotoEstimateRequested() => _onPhotoEstimateRequested(
-          event,
-          emit,
-        ),
       },
     );
   }
@@ -142,6 +139,15 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
     emit(state.copyWith(foods: remaining));
   }
 
+  void _onPhotoRemoved(
+    MealEntryPhotoRemoved event,
+    Emitter<MealEntryState> emit,
+  ) {
+    if (event.index < 0 || event.index >= state.photos.length) return;
+    final remaining = [...state.photos]..removeAt(event.index);
+    emit(state.copyWith(photos: remaining));
+  }
+
   void _onEntryModeToggled(
     MealEntryModeToggled event,
     Emitter<MealEntryState> emit,
@@ -152,14 +158,19 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
     emit(state.copyWith(mealEntryMode: event.mealEntryMode));
   }
 
-  /// Estimates nutrition from the rows. A single named row is sent as a
-  /// description the mode may split; several named rows are already itemized by
-  /// the user, so each is estimated on its own and filled in place keeping its
-  /// name.
+  /// Estimates nutrition for the entry. With photos attached this estimates
+  /// from the photos (sending any typed description as a hint). Otherwise a
+  /// single named row is sent as a description the mode may split, and several
+  /// named rows are already itemized by the user, so each is estimated on its
+  /// own and filled in place keeping its name.
   Future<void> _onEstimateRequested(
     MealEntryEstimateRequested event,
     Emitter<MealEntryState> emit,
   ) async {
+    if (state.photos.isNotEmpty) {
+      await _runPhotoEstimate(emit);
+      return;
+    }
     final namedFoods = state.foods
         .where((foodDraft) => foodDraft.name.trim().isNotEmpty)
         .toList();
@@ -189,9 +200,7 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
             status: MealEntryStatus.idle,
             foods: _foodsFromSuggestions(
               suggestions,
-              keepFirstName: state.mealEntryMode == MealEntryMode.wholeMeal
-                  ? description
-                  : null,
+              keepFirstName: _nameToKeep(description, suggestions),
             ),
           ),
         );
@@ -246,16 +255,9 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
   }
 
   /// Estimates nutrition from the held photos, sending the first row's typed
-  /// name as a hint when present. Explicit request from the UI; [_onStarted]
-  /// calls [_runPhotoEstimate] directly for the auto-estimate on the
-  /// share path.
-  Future<void> _onPhotoEstimateRequested(
-    MealEntryPhotoEstimateRequested event,
-    Emitter<MealEntryState> emit,
-  ) async {
-    await _runPhotoEstimate(emit);
-  }
-
+  /// name as a hint when present. Reached from the Estimate action when photos
+  /// are attached, and called directly by [_onStarted] for the auto-estimate
+  /// on the share path.
   Future<void> _runPhotoEstimate(Emitter<MealEntryState> emit) async {
     if (state.photos.isEmpty) return;
     if (!_mealAiRepository.isConfigured) {
@@ -283,10 +285,10 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
           status: MealEntryStatus.idle,
           foods: _foodsFromSuggestions(
             suggestions,
-            keepFirstName:
-                hasDescription && state.mealEntryMode == MealEntryMode.wholeMeal
-                ? firstName
-                : null,
+            keepFirstName: _nameToKeep(
+              hasDescription ? firstName : null,
+              suggestions,
+            ),
           ),
         ),
       );
@@ -298,6 +300,17 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
         ),
       );
     }
+  }
+
+  /// The typed [description] to preserve as the first row's name after an
+  /// estimate, or null to let the AI name every row. The user's text is kept as
+  /// long as it is non-empty, unless they asked to itemize and the AI actually
+  /// returned more than one food to split the description into.
+  String? _nameToKeep(String? description, List<AiMealSuggestion> suggestions) {
+    if (description == null || description.isEmpty) return null;
+    final splittingIntoItems =
+        state.mealEntryMode == MealEntryMode.itemized && suggestions.length > 1;
+    return splittingIntoItems ? null : description;
   }
 
   /// Builds rows from [suggestions]; when [keepFirstName] is set the first row

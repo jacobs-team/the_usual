@@ -274,7 +274,7 @@ void main() {
       );
     });
 
-    group('photoEstimateRequested', () {
+    group('estimateRequested with photos attached', () {
       blocTest<FoodEntryBloc, MealEntryState>(
         'success: emits generating then idle with nutrition filled',
         build: build,
@@ -297,7 +297,7 @@ void main() {
         seed: () => MealEntryState(
           photos: [MealPhoto(bytes: transparentPixel)],
         ),
-        act: (bloc) => bloc.add(const MealEntryEvent.photoEstimateRequested()),
+        act: (bloc) => bloc.add(const MealEntryEvent.estimateRequested()),
         expect: () => [
           isA<MealEntryState>().having(
             (s) => s.status,
@@ -329,7 +329,7 @@ void main() {
         seed: () => MealEntryState(
           photos: [MealPhoto(bytes: transparentPixel)],
         ),
-        act: (bloc) => bloc.add(const MealEntryEvent.photoEstimateRequested()),
+        act: (bloc) => bloc.add(const MealEntryEvent.estimateRequested()),
         expect: () => [
           isA<MealEntryState>().having(
             (s) => s.status,
