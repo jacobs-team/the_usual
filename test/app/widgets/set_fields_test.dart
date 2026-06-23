@@ -80,5 +80,68 @@ void main() {
       await tester.pump();
       expect(find.byIcon(Icons.close), findsNothing);
     });
+
+    group('bodyweight mode', () {
+      testWidgets(
+        'empty weight emits null weight and weightAutoEstimated true',
+        (tester) async {
+          List<WorkoutSet>? emitted;
+          await tester.pumpPumpPumpItUP(
+            SetFields(
+              initial: const [WorkoutSet()],
+              weightUnit: WeightUnit.lb,
+              bodyweight: true,
+              onChanged: (sets) => emitted = sets,
+            ),
+          );
+
+          await tester.enterText(find.byKey(const Key('set-reps-0')), '10');
+          expect(emitted, isNotNull);
+          expect(emitted!.first.weight, isNull);
+          expect(emitted!.first.weightAutoEstimated, isTrue);
+        },
+      );
+
+      testWidgets(
+        'typed weight emits that weight and weightAutoEstimated false',
+        (tester) async {
+          List<WorkoutSet>? emitted;
+          await tester.pumpPumpPumpItUP(
+            SetFields(
+              initial: const [WorkoutSet()],
+              weightUnit: WeightUnit.lb,
+              bodyweight: true,
+              onChanged: (sets) => emitted = sets,
+            ),
+          );
+
+          await tester.enterText(
+            find.byKey(const Key('set-weight-0')),
+            '135',
+          );
+          expect(emitted, isNotNull);
+          expect(emitted!.first.weight, equals(135.0));
+          expect(emitted!.first.weightAutoEstimated, isFalse);
+        },
+      );
+
+      testWidgets(
+        'bodyweight false always emits weightAutoEstimated false',
+        (tester) async {
+          List<WorkoutSet>? emitted;
+          await tester.pumpPumpPumpItUP(
+            SetFields(
+              initial: const [WorkoutSet()],
+              weightUnit: WeightUnit.lb,
+              onChanged: (sets) => emitted = sets,
+            ),
+          );
+
+          await tester.enterText(find.byKey(const Key('set-reps-0')), '8');
+          expect(emitted, isNotNull);
+          expect(emitted!.first.weightAutoEstimated, isFalse);
+        },
+      );
+    });
   });
 }

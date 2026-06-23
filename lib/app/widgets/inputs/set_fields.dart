@@ -15,6 +15,7 @@ class SetFields extends StatefulWidget {
     required this.onChanged,
     required this.weightUnit,
     this.dense = false,
+    this.bodyweight = false,
     super.key,
   });
 
@@ -29,6 +30,10 @@ class SetFields extends StatefulWidget {
 
   /// Compact inline styling.
   final bool dense;
+
+  /// When true the weight field shows an 'auto' hint and an empty weight emits
+  /// [WorkoutSet] with [WorkoutSet.weightAutoEstimated] set to true.
+  final bool bodyweight;
 
   @override
   State<SetFields> createState() => _SetFieldsState();
@@ -69,12 +74,22 @@ class _SetFieldsState extends State<SetFields> {
   void _emit() {
     final sets = [
       for (var i = 0; i < _weightControllers.length; i++)
-        WorkoutSet(
-          weight: double.tryParse(_weightControllers[i].text),
-          reps: int.tryParse(_repsControllers[i].text),
-        ),
+        _buildSet(i),
     ];
     widget.onChanged(sets);
+  }
+
+  WorkoutSet _buildSet(int index) {
+    final weight = double.tryParse(_weightControllers[index].text);
+    final reps = int.tryParse(_repsControllers[index].text);
+    if (widget.bodyweight) {
+      return WorkoutSet(
+        weight: weight,
+        reps: reps,
+        weightAutoEstimated: weight == null,
+      );
+    }
+    return WorkoutSet(weight: weight, reps: reps);
   }
 
   void _addSet() {
@@ -136,6 +151,7 @@ class _SetFieldsState extends State<SetFields> {
                         RegExp(r'^\d{0,4}\.?\d{0,1}'),
                       ),
                     ],
+                    hintText: widget.bodyweight ? 'auto' : null,
                     suffixText: ' ${widget.weightUnit.name}',
                     onChanged: (_) => _emit(),
                   ),
