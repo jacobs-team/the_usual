@@ -92,7 +92,6 @@ class NotificationService {
     Set<MealOfTheDay> mealsLoggedToday = const {},
     bool weighedInToday = false,
     WorkoutReminder workoutReminder = const WorkoutReminder(
-      enabled: false,
       timeOfDay: TimeOfDay(hour: 18, minute: 0),
     ),
   }) async {

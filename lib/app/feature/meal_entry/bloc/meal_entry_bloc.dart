@@ -201,6 +201,7 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
             foods: _foodsFromSuggestions(
               suggestions,
               keepFirstName: _nameToKeep(description, suggestions),
+              addToUsualMeals: namedFoods.first.addToUsualMeals,
             ),
           ),
         );
@@ -289,6 +290,8 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
               hasDescription ? firstName : null,
               suggestions,
             ),
+            addToUsualMeals:
+                state.foods.isNotEmpty && state.foods.first.addToUsualMeals,
           ),
         ),
       );
@@ -318,6 +321,7 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
   /// unchanged.
   List<FoodDraft> _foodsFromSuggestions(
     List<AiMealSuggestion> suggestions, {
+    required bool addToUsualMeals,
     String? keepFirstName,
   }) {
     if (suggestions.isEmpty) return state.foods;
@@ -330,6 +334,9 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
               : suggestion.name,
           quantity: suggestion.quantity,
           nutrition: suggestion.nutrition,
+          // Estimating replaces the rows but must not change the user's
+          // save-as-usual choice; carry it over from the row they were editing.
+          addToUsualMeals: addToUsualMeals,
         ),
     ];
   }

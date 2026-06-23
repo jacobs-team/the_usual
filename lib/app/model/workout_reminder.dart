@@ -13,9 +13,8 @@ part 'workout_reminder.g.dart';
 abstract class WorkoutReminder with _$WorkoutReminder {
   /// {@macro workout_reminder}
   const factory WorkoutReminder({
-    @Default(false) bool enabled,
+    @TimeOfDayConverter() required TimeOfDay timeOfDay, @Default(false) bool enabled,
     @Default(<int>{}) Set<int> daysOfWeek,
-    @TimeOfDayConverter() required TimeOfDay timeOfDay,
   }) = _WorkoutReminder;
 
   factory WorkoutReminder.fromJson(Map<String, dynamic> json) =>

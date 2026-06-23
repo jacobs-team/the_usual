@@ -73,8 +73,7 @@ class _SetFieldsState extends State<SetFields> {
 
   void _emit() {
     final sets = [
-      for (var i = 0; i < _weightControllers.length; i++)
-        _buildSet(i),
+      for (var i = 0; i < _weightControllers.length; i++) _buildSet(i),
     ];
     widget.onChanged(sets);
   }
@@ -140,7 +139,6 @@ class _SetFieldsState extends State<SetFields> {
             index: i,
             count: _weightControllers.length,
             weightUnit: widget.weightUnit,
-            bodyweight: widget.bodyweight,
             onChanged: _emit,
             onRemove: () => _removeSet(i),
           ),
@@ -161,7 +159,6 @@ class _SetRow extends StatelessWidget {
     required this.index,
     required this.count,
     required this.weightUnit,
-    required this.bodyweight,
     required this.onChanged,
     required this.onRemove,
     super.key,
@@ -172,62 +169,66 @@ class _SetRow extends StatelessWidget {
   final int index;
   final int count;
   final WeightUnit weightUnit;
-  final bool bodyweight;
   final VoidCallback onChanged;
   final VoidCallback onRemove;
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: AppDesign.spacing.xs),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 120,
-            child: TheUsualTextField(
-              key: Key('set-weight-$index'),
-              controller: weightController,
-              dense: true,
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
+    return Row(
+      children: [
+        SizedBox(
+          width: 120,
+          child: TheUsualTextField(
+            key: Key('set-weight-$index'),
+            controller: weightController,
+            dense: true,
+            textAlign: TextAlign.right,
+            keyboardType: const TextInputType.numberWithOptions(
+              decimal: true,
+            ),
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(
+                RegExp(r'^\d{0,4}\.?\d{0,1}'),
               ),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(
-                  RegExp(r'^\d{0,4}\.?\d{0,1}'),
+            ],
+            suffixIcon: Padding(
+              padding: EdgeInsets.only(right: AppDesign.spacing.sm),
+              child: Text(
+                weightUnit.name,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
-              ],
-              hintText: bodyweight ? 'auto' : weightUnit.name,
-              suffixText: ' ${weightUnit.name}',
-              onChanged: (_) => onChanged(),
+              ),
             ),
+            suffixIconConstraints: const BoxConstraints(),
+            onChanged: (_) => onChanged(),
           ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: AppDesign.spacing.sm),
-            child: const Text('×'),
+        ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: AppDesign.spacing.sm),
+          child: const Text('×'),
+        ),
+        SizedBox(
+          width: 96,
+          child: MacroField(
+            key: Key('set-reps-$index'),
+            controller: repsController,
+            unit: 'reps',
+            maxDigits: 3,
+            dense: true,
+            textAlign: TextAlign.right,
+            onChanged: (_) => onChanged(),
           ),
-          SizedBox(
-            width: 80,
-            child: TheUsualTextField(
-              key: Key('set-reps-$index'),
-              controller: repsController,
-              dense: true,
-              keyboardType: TextInputType.number,
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-                LengthLimitingTextInputFormatter(3),
-              ],
-              hintText: 'reps',
-              suffixText: ' reps',
-              onChanged: (_) => onChanged(),
-            ),
+        ),
+        if (count > 1)
+          IconButton(
+            icon: const Icon(Icons.close),
+            onPressed: onRemove,
+            visualDensity: VisualDensity.compact,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
           ),
-          if (count > 1)
-            IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: onRemove,
-            ),
-        ],
-      ),
+      ],
     );
   }
 }

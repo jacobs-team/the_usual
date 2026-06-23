@@ -6,7 +6,7 @@ import '../../helpers/helpers.dart';
 
 void main() {
   group(ExpandableWorkout, () {
-    final testSets = const [
+    const testSets = [
       WorkoutSet(weight: 100, reps: 8),
       WorkoutSet(weight: 100, reps: 6),
     ];
@@ -47,8 +47,9 @@ void main() {
       expect(removed, isTrue);
     });
 
-    testWidgets('when expandedByDefault is true, SetFields is shown',
-        (tester) async {
+    testWidgets('when expandedByDefault is true, SetFields is shown', (
+      tester,
+    ) async {
       await tester.pumpPumpPumpItUP(
         ExpandableWorkout(
           name: 'Bench Press',
@@ -63,8 +64,9 @@ void main() {
       expect(find.byType(SetFields), findsOneWidget);
     });
 
-    testWidgets('editing in SetFields propagates through onChanged',
-        (tester) async {
+    testWidgets('editing in SetFields propagates through onChanged', (
+      tester,
+    ) async {
       List<WorkoutSet>? changedSets;
       await tester.pumpPumpPumpItUP(
         ExpandableWorkout(
@@ -72,7 +74,7 @@ void main() {
           sets: const [WorkoutSet()],
           weightUnit: WeightUnit.kg,
           expandedByDefault: true,
-          onChanged: (List<WorkoutSet> sets) => changedSets = sets,
+          onChanged: (sets) => changedSets = sets,
           onRemoved: () {},
         ),
       );
@@ -87,8 +89,9 @@ void main() {
       );
     });
 
-    testWidgets('removes the entry when the trailing button is pressed',
-        (tester) async {
+    testWidgets('removes the entry when the trailing button is pressed', (
+      tester,
+    ) async {
       var removed = false;
       await tester.pumpPumpPumpItUP(
         ExpandableWorkout(
@@ -122,8 +125,9 @@ void main() {
       expect(find.byKey(const Key('expanded-footer')), findsOneWidget);
     });
 
-    testWidgets('forwards name edits when onNameChanged is provided',
-        (tester) async {
+    testWidgets('forwards name edits when onNameChanged is provided', (
+      tester,
+    ) async {
       String? changedName;
       await tester.pumpPumpPumpItUP(
         ExpandableWorkout(
@@ -132,7 +136,7 @@ void main() {
           weightUnit: WeightUnit.kg,
           expandedByDefault: false,
           onChanged: (_) {},
-          onNameChanged: (String name) => changedName = name,
+          onNameChanged: (name) => changedName = name,
           onRemoved: () {},
         ),
       );

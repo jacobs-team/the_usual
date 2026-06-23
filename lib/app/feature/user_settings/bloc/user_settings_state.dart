@@ -118,7 +118,6 @@ abstract class UserSettingsState with _$UserSettingsState {
     /// The workout check-in reminder.
     @Default(
       WorkoutReminder(
-        enabled: false,
         timeOfDay: TimeOfDay(hour: 18, minute: 0),
       ),
     )

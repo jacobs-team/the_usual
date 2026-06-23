@@ -15,7 +15,7 @@ void main() {
             timeOfDay: TimeOfDay(hour: 18, minute: 0),
           ),
           onToggled: (value) => toggled = value,
-          onDayToggled: (_, __) {},
+          onDayToggled: (_, _) {},
           onTimeChanged: (_) {},
         ),
       );
@@ -34,7 +34,6 @@ void main() {
           WorkoutReminderRow(
             workoutReminder: const WorkoutReminder(
               enabled: true,
-              daysOfWeek: {},
               timeOfDay: TimeOfDay(hour: 18, minute: 0),
             ),
             onToggled: (_) {},
@@ -57,11 +56,10 @@ void main() {
       await tester.pumpPumpPumpItUP(
         WorkoutReminderRow(
           workoutReminder: const WorkoutReminder(
-            enabled: false,
             timeOfDay: TimeOfDay(hour: 18, minute: 0),
           ),
           onToggled: (_) {},
-          onDayToggled: (_, __) {},
+          onDayToggled: (_, _) {},
           onTimeChanged: (_) {},
         ),
       );

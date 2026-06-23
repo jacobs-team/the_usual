@@ -288,7 +288,7 @@ void main() {
       (tester) async {
         whenListen(
           onboardingBloc,
-          Stream.value(const OnboardingState(step: OnboardingStep.welcome)),
+          Stream.value(const OnboardingState()),
           initialState: const OnboardingState(step: OnboardingStep.complete),
         );
 

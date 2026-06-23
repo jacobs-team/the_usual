@@ -39,7 +39,7 @@ void main() {
     WorkoutLogState twoMonthState() {
       return WorkoutLogState(
         workoutEntries: [
-          entry(DateTime(2026, 5, 10, 8), weight: 100),
+          entry(DateTime(2026, 5, 10, 8)),
           entry(DateTime(2026, 5, 15, 8), weight: 110),
           entry(DateTime(2026, 6, 10, 8), weight: 120),
           entry(DateTime(2026, 6, 14, 8), weight: 130),

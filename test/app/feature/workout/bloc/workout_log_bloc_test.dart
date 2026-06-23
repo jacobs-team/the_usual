@@ -175,7 +175,7 @@ void main() {
       expect(entries.single.id, equals('a'));
     });
 
-    test('volumeOn sums the volume of that day\'s entries', () {
+    test("volumeOn sums the volume of that day's entries", () {
       final state = WorkoutLogState(
         workoutEntries: [
           workoutLogEntry('a', DateTime(2026, 6, 14, 8)),
@@ -212,7 +212,7 @@ void main() {
       }
 
       test('returns empty when no workouts have been logged', () {
-        final state = const WorkoutLogState();
+        const state = WorkoutLogState();
         expect(state.historyByMonth(dayStart), isEmpty);
       });
 

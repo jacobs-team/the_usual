@@ -37,7 +37,6 @@ class LoggedWorkoutRow extends StatelessWidget {
       onRemoved: () => getIt<WorkoutLogBloc>().add(
         WorkoutLogEvent.workoutRemoved(workoutLogEntry.id),
       ),
-      onNameChanged: null,
     );
   }
 }

@@ -613,7 +613,7 @@ void main() {
       );
 
       blocTest<UserSettingsBloc, UserSettingsState>(
-        'usualWorkoutSetsChanged replaces the usual\'s sets',
+        "usualWorkoutSetsChanged replaces the usual's sets",
         build: UserSettingsBloc.new,
         seed: () => const UserSettingsState(
           usualWorkouts: {
@@ -760,7 +760,6 @@ void main() {
     test('toJson then fromJson round-trips a populated usuals map', () {
       final bloc = UserSettingsBloc();
       const state = UserSettingsState(
-        version: 2,
         usuals: {
           MealOfTheDay.breakfast: [
             UsualMeal(

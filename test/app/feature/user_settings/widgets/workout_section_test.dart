@@ -23,7 +23,7 @@ void main() {
 
     testWidgets('tapping the kg chip dispatches workoutWeightUnitSelected(kg)',
         (tester) async {
-      stub(const UserSettingsState(workoutWeightUnit: WeightUnit.lb));
+      stub(const UserSettingsState());
       await tester.pumpPumpPumpItUP(
         deps: [userSettingsBloc],
         const WorkoutSection(),
@@ -42,11 +42,8 @@ void main() {
         'toggling the reminder switch dispatches workoutReminderToggled(enabled: true)',
         (tester) async {
       stub(
-        UserSettingsState(
-          workoutReminder: WorkoutReminder(
-            enabled: false,
-            timeOfDay: const TimeOfDay(hour: 18, minute: 0),
-          ),
+        const UserSettingsState(
+          
         ),
       );
       await tester.pumpPumpPumpItUP(
@@ -67,11 +64,10 @@ void main() {
         'tapping day chip 3 dispatches workoutReminderDayToggled(3, enabled: true)',
         (tester) async {
       stub(
-        UserSettingsState(
+        const UserSettingsState(
           workoutReminder: WorkoutReminder(
             enabled: true,
-            daysOfWeek: const {},
-            timeOfDay: const TimeOfDay(hour: 18, minute: 0),
+            timeOfDay: TimeOfDay(hour: 18, minute: 0),
           ),
         ),
       );

@@ -120,7 +120,7 @@ void main() {
     testWidgets(
         'the save-as-usual checkbox is absent when showAddToUsuals is false',
         (tester) async {
-      await showSheet(tester, showAddToUsuals: false);
+      await showSheet(tester);
       // The bodyweight checkbox is always present; the save-as-usual one is not.
       expect(
         find.byKey(const Key('bodyweight-checkbox')),

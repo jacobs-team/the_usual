@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:the_usual/app/app.dart';
+import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template macro_field}
 /// A [TheUsualTextField] specialized for a nutrition value: numeric keyboard,
-/// digits-only input capped at [maxDigits], and a [unit] suffix (e.g. " cal" or
-/// " g"). Parses the text to an int for its callbacks.
+/// digits-only input capped at [maxDigits], and a permanent [unit] label shown
+/// at the trailing edge (e.g. "cal" or "g") that stays visible whether the
+/// field is empty or filled. Parses the text to an int for its callbacks.
 /// {@endtemplate}
 class MacroField extends StatelessWidget {
   /// {@macro macro_field}
@@ -14,7 +16,7 @@ class MacroField extends StatelessWidget {
     this.controller,
     this.initialValue,
     this.focusNode,
-    this.hintText = '—',
+    this.hintText,
     this.maxDigits = 4,
     this.autoSize = false,
     this.dense = false,
@@ -37,8 +39,9 @@ class MacroField extends StatelessWidget {
   /// Focus node for the field.
   final FocusNode? focusNode;
 
-  /// Placeholder shown when the field is empty.
-  final String hintText;
+  /// Placeholder shown when the field is empty. Null shows no placeholder, so
+  /// only the permanent [unit] label remains.
+  final String? hintText;
 
   /// Maximum number of digits the field accepts.
   final int maxDigits;
@@ -79,7 +82,16 @@ class MacroField extends StatelessWidget {
         FilteringTextInputFormatter.digitsOnly,
         LengthLimitingTextInputFormatter(maxDigits),
       ],
-      suffixText: ' $unit',
+      suffixIcon: Padding(
+        padding: EdgeInsets.only(right: AppDesign.spacing.sm),
+        child: Text(
+          unit,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ),
+      suffixIconConstraints: const BoxConstraints(),
       onChanged: onChanged == null
           ? null
           : (value) => onChanged(int.tryParse(value)),
