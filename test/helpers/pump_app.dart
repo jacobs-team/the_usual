@@ -42,6 +42,9 @@ extension PumpApp on WidgetTester {
     final mealAiRepository = MockMealAiRepository();
     when(() => mealAiRepository.isConfigured).thenReturn(false);
 
+    final workoutAiRepository = MockWorkoutAiRepository();
+    when(() => workoutAiRepository.isConfigured).thenReturn(false);
+
     getIt
       ..registerSingleton<AuthCubit>(authCubit)
       ..registerSingleton<ConnectivityCubit>(MockConnectivityCubit())
@@ -55,6 +58,7 @@ extension PumpApp on WidgetTester {
       ..registerSingleton<RestClient>(MockRestClient())
       ..registerSingleton<FileCacheService>(MockFileCacheService())
       ..registerSingleton<MealAiRepository>(mealAiRepository)
+      ..registerSingleton<WorkoutAiRepository>(workoutAiRepository)
       ..registerFactory<FoodEntryBloc>(
         () => FoodEntryBloc(
           getIt<MealAiRepository>(),
@@ -148,6 +152,10 @@ extension PumpApp on WidgetTester {
       getIt
         ..unregister<MealAiRepository>()
         ..registerSingleton<MealAiRepository>(instance);
+    } else if (instance is WorkoutAiRepository) {
+      getIt
+        ..unregister<WorkoutAiRepository>()
+        ..registerSingleton<WorkoutAiRepository>(instance);
     }
   }
 }

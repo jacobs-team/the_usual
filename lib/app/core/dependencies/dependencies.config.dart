@@ -27,6 +27,8 @@ import 'package:the_usual/app/core/networking/repository/meal_ai_repository.dart
     as _i310;
 import 'package:the_usual/app/core/networking/repository/sync_repository.dart'
     as _i142;
+import 'package:the_usual/app/core/networking/repository/workout_ai_repository.dart'
+    as _i491;
 import 'package:the_usual/app/core/service/file_cache_service.dart' as _i115;
 import 'package:the_usual/app/core/service/service.dart' as _i988;
 import 'package:the_usual/app/core/service/share_ingest_service.dart' as _i907;
@@ -82,6 +84,9 @@ extension GetItInjectableX on _i174.GetIt {
     );
     gh.singleton<_i310.MealAiRepository>(
       () => _i310.MealAiRepository(gh<_i538.MealAiClient>()),
+    );
+    gh.singleton<_i491.WorkoutAiRepository>(
+      () => _i491.WorkoutAiRepository(gh<_i538.MealAiClient>()),
     );
     gh.singleton<_i608.AuthCubit>(
       () => _i608.AuthCubit(
