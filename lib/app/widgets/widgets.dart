@@ -25,6 +25,7 @@ export 'layout/layout.dart';
 export 'layout/the_usual_bottom_sheet.dart';
 export 'selectors/end_of_day_reminder_row.dart';
 export 'selectors/meal_reminder_row.dart';
+export 'selectors/workout_reminder_row.dart';
 export 'selectors/meal_schedule_mode_selector.dart';
 export 'selectors/skip_logged_reminders_tile.dart';
 export 'selectors/theme_mode_selector.dart';
