@@ -179,7 +179,7 @@ class _SetRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: AppDesign.spacing.sm),
+      padding: EdgeInsets.only(bottom: AppDesign.spacing.xs),
       child: Row(
         children: [
           SizedBox(
