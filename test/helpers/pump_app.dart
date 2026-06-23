@@ -28,6 +28,11 @@ extension PumpApp on WidgetTester {
     final dailyLogBloc = MockDailyLogBloc();
     when(() => dailyLogBloc.state).thenReturn(const DailyLogState());
     when(() => dailyLogBloc.stream).thenAnswer((_) => const Stream.empty());
+    final workoutLogBloc = MockWorkoutLogBloc();
+    when(() => workoutLogBloc.state).thenReturn(const WorkoutLogState());
+    when(
+      () => workoutLogBloc.stream,
+    ).thenAnswer((_) => const Stream.empty());
     final userSettingsBloc = MockUserSettingsBloc();
     when(() => userSettingsBloc.state).thenReturn(const UserSettingsState());
     when(
@@ -43,6 +48,7 @@ extension PumpApp on WidgetTester {
       ..registerSingleton<DevToolsCubit>(MockDevToolsCubit())
       ..registerSingleton<OnboardingBloc>(onboardingBloc)
       ..registerSingleton<DailyLogBloc>(dailyLogBloc)
+      ..registerSingleton<WorkoutLogBloc>(workoutLogBloc)
       ..registerSingleton<UserSettingsBloc>(userSettingsBloc)
       ..registerSingleton<NotificationService>(MockNotificationService())
       ..registerSingleton<CoffeeApi>(MockCoffeeApi())
@@ -114,6 +120,10 @@ extension PumpApp on WidgetTester {
       getIt
         ..unregister<DailyLogBloc>()
         ..registerSingleton<DailyLogBloc>(instance);
+    } else if (instance is WorkoutLogBloc) {
+      getIt
+        ..unregister<WorkoutLogBloc>()
+        ..registerSingleton<WorkoutLogBloc>(instance);
     } else if (instance is UserSettingsBloc) {
       getIt
         ..unregister<UserSettingsBloc>()

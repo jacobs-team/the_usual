@@ -16,6 +16,9 @@ class MockOnboardingBloc extends MockBloc<OnboardingEvent, OnboardingState>
 class MockDailyLogBloc extends MockBloc<DailyLogEvent, DailyLogState>
     implements DailyLogBloc {}
 
+class MockWorkoutLogBloc extends MockBloc<WorkoutLogEvent, WorkoutLogState>
+    implements WorkoutLogBloc {}
+
 class MockUserSettingsBloc
     extends MockBloc<UserSettingsEvent, UserSettingsState>
     implements UserSettingsBloc {}
