@@ -33,8 +33,7 @@ sealed class MealEntryEvent with _$MealEntryEvent {
       MealEntryMealOfTheDayChanged;
   const factory MealEntryEvent.photosAdded(List<MealPhoto> photos) =
       MealEntryPhotosAdded;
+  const factory MealEntryEvent.photoRemoved(int index) = MealEntryPhotoRemoved;
   const factory MealEntryEvent.photosCleared() = MealEntryPhotosCleared;
   const factory MealEntryEvent.estimateRequested() = MealEntryEstimateRequested;
-  const factory MealEntryEvent.photoEstimateRequested() =
-      MealEntryPhotoEstimateRequested;
 }

@@ -160,12 +160,12 @@ class FoodEntryFormState extends State<FoodEntryForm> {
 
   bool get _aiAvailable => getIt<MealAiRepository>().isConfigured;
 
-  Future<void> _photoWithAi() async {
+  /// Attaches photos for the next estimate. The estimate isn't sent here; the
+  /// user presses Estimate to send the photos (with any typed description).
+  Future<void> _attachPhotos() async {
     final photos = await pickMealPhotos(context);
     if (photos.isEmpty) return;
-    _bloc
-      ..add(MealEntryEvent.photosAdded(photos))
-      ..add(const MealEntryEvent.photoEstimateRequested());
+    _bloc.add(MealEntryEvent.photosAdded(photos));
   }
 
   @override
@@ -227,11 +227,14 @@ class FoodEntryFormState extends State<FoodEntryForm> {
                         onPressed: isGenerating
                             ? null
                             : () {
-                                if (!_bloc.state.hasContent) {
+                                final hasInput =
+                                    _bloc.state.hasContent ||
+                                    _bloc.state.photos.isNotEmpty;
+                                if (!hasInput) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Text(
-                                        'Type a meal name or description'
+                                        'Type a meal name or add a photo'
                                         ' first.',
                                       ),
                                     ),
@@ -250,7 +253,7 @@ class FoodEntryFormState extends State<FoodEntryForm> {
                     Expanded(
                       child: FilledButton.tonalIcon(
                         style: aiButtonStyle,
-                        onPressed: isGenerating ? null : _photoWithAi,
+                        onPressed: isGenerating ? null : _attachPhotos,
                         icon: const Icon(Icons.photo_camera_outlined, size: 18),
                         label: const Text('Photo'),
                       ),
@@ -281,6 +284,16 @@ class FoodEntryFormState extends State<FoodEntryForm> {
                     ),
                   ],
                 ),
+                if (state.photos.isNotEmpty) ...[
+                  SizedBox(height: AppDesign.spacing.sm),
+                  _AttachedPhotos(
+                    photos: state.photos,
+                    onRemove: isGenerating
+                        ? null
+                        : (index) =>
+                              _bloc.add(MealEntryEvent.photoRemoved(index)),
+                  ),
+                ],
                 if (isGenerating) ...[
                   SizedBox(height: AppDesign.spacing.sm),
                   Row(
@@ -341,6 +354,68 @@ class FoodEntryFormState extends State<FoodEntryForm> {
                   label: const Text('Add item'),
                 ),
               ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
+/// A horizontal strip of thumbnails for the photos attached to the next
+/// estimate, each with a remove button. Shown once the user has added at least
+/// one photo, so they can see what will be sent before pressing Estimate.
+class _AttachedPhotos extends StatelessWidget {
+  const _AttachedPhotos({required this.photos, required this.onRemove});
+
+  final List<MealPhoto> photos;
+
+  /// Removes the photo at the given index, or null while an estimate runs.
+  final ValueChanged<int>? onRemove;
+
+  @override
+  Widget build(BuildContext context) {
+    const thumbnailSize = 64.0;
+    return SizedBox(
+      height: thumbnailSize,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: photos.length,
+        separatorBuilder: (context, index) =>
+            SizedBox(width: AppDesign.spacing.sm),
+        itemBuilder: (context, index) {
+          return Stack(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(AppDesign.spacing.sm),
+                child: Image.memory(
+                  photos[index].bytes,
+                  width: thumbnailSize,
+                  height: thumbnailSize,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              if (onRemove != null)
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  child: GestureDetector(
+                    onTap: () => onRemove!(index),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Colors.black54,
+                        borderRadius: BorderRadius.circular(
+                          AppDesign.spacing.sm,
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.close,
+                        size: 16,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
             ],
           );
         },

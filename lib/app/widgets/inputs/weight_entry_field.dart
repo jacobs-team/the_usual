@@ -52,6 +52,21 @@ class _WeightEntryFieldState extends State<WeightEntryField> {
   }
 
   @override
+  void didUpdateWidget(WeightEntryField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // The day this field edits changes when the user picks a different day on
+    // Today. Re-seed the field from the new day's weigh-in: the bloc listener
+    // only reacts to stored-weight changes, so a day switch on its own would
+    // otherwise leave the previous day's value showing.
+    if (!DateUtils.isSameDay(oldWidget.days.first, widget.days.first)) {
+      final dayWeight = _dailyLogBloc.state.weightOn(_displayDay, _dayStart);
+      _controller.text = dayWeight == null
+          ? ''
+          : dayWeight.weight.trimmedDecimal;
+    }
+  }
+
+  @override
   void dispose() {
     _controller.dispose();
     _focusNode.dispose();

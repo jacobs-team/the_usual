@@ -584,6 +584,11 @@ void main() {
         await tester.tap(find.byType(SimpleDialogOption).first);
         await tester.pumpAndSettle();
 
+        // Attaching a photo no longer auto-estimates; the user presses Estimate
+        // to send it.
+        await tester.tap(find.byIcon(Icons.auto_awesome_outlined));
+        await tester.pumpAndSettle();
+
         expect(
           fieldText(tester, nameFields().first),
           equals('Grilled chicken'),
@@ -624,6 +629,11 @@ void main() {
         await tester.tap(find.byIcon(Icons.photo_camera_outlined));
         await tester.pumpAndSettle();
         await tester.tap(find.byType(SimpleDialogOption).last);
+        await tester.pumpAndSettle();
+
+        // Attaching a photo no longer auto-estimates; the user presses Estimate
+        // to send the photo with the typed description.
+        await tester.tap(find.byIcon(Icons.auto_awesome_outlined));
         await tester.pumpAndSettle();
 
         expect(fieldText(tester, nameFields().first), equals('My lunch'));
