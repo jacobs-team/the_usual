@@ -154,7 +154,7 @@ class _SetFieldsState extends State<SetFields> {
   }
 }
 
-class _SetRow extends StatefulWidget {
+class _SetRow extends StatelessWidget {
   const _SetRow({
     required this.weightController,
     required this.repsController,
@@ -177,37 +177,6 @@ class _SetRow extends StatefulWidget {
   final VoidCallback onRemove;
 
   @override
-  State<_SetRow> createState() => _SetRowState();
-}
-
-class _SetRowState extends State<_SetRow> {
-  late final FocusNode _weightFocus;
-  late final FocusNode _repsFocus;
-
-  @override
-  void initState() {
-    super.initState();
-    _weightFocus = FocusNode();
-    _repsFocus = FocusNode();
-    _weightFocus.addListener(() => setState(() {}));
-    _repsFocus.addListener(() => setState(() {}));
-  }
-
-  @override
-  void dispose() {
-    _weightFocus.dispose();
-    _repsFocus.dispose();
-    super.dispose();
-  }
-
-  TextStyle _suffixStyle(BuildContext context, bool focused) {
-    final colorScheme = Theme.of(context).colorScheme;
-    return TextStyle(
-      color: focused ? colorScheme.onSurfaceVariant : colorScheme.outline,
-    );
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(bottom: AppDesign.spacing.sm),
@@ -216,9 +185,8 @@ class _SetRowState extends State<_SetRow> {
           SizedBox(
             width: 120,
             child: TheUsualTextField(
-              key: Key('set-weight-${widget.index}'),
-              controller: widget.weightController,
-              focusNode: _weightFocus,
+              key: Key('set-weight-$index'),
+              controller: weightController,
               dense: true,
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
@@ -228,10 +196,8 @@ class _SetRowState extends State<_SetRow> {
                   RegExp(r'^\d{0,4}\.?\d{0,1}'),
                 ),
               ],
-              hintText: widget.bodyweight ? 'auto' : null,
-              suffixText: ' ${widget.weightUnit.name}',
-              suffixStyle: _suffixStyle(context, _weightFocus.hasFocus),
-              onChanged: (_) => widget.onChanged(),
+              hintText: bodyweight ? 'AUTO' : weightUnit.name.toUpperCase(),
+              onChanged: (_) => onChanged(),
             ),
           ),
           Padding(
@@ -241,24 +207,22 @@ class _SetRowState extends State<_SetRow> {
           SizedBox(
             width: 80,
             child: TheUsualTextField(
-              key: Key('set-reps-${widget.index}'),
-              controller: widget.repsController,
-              focusNode: _repsFocus,
+              key: Key('set-reps-$index'),
+              controller: repsController,
               dense: true,
               keyboardType: TextInputType.number,
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
                 LengthLimitingTextInputFormatter(3),
               ],
-              suffixText: ' reps',
-              suffixStyle: _suffixStyle(context, _repsFocus.hasFocus),
-              onChanged: (_) => widget.onChanged(),
+              hintText: 'REPS',
+              onChanged: (_) => onChanged(),
             ),
           ),
-          if (widget.count > 1)
+          if (count > 1)
             IconButton(
               icon: const Icon(Icons.close),
-              onPressed: widget.onRemove,
+              onPressed: onRemove,
             ),
         ],
       ),
