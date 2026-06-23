@@ -16,6 +16,5 @@ abstract class Routes {
   static const String usualMeals = '/settings/$usualMealsSegment';
   static const String usualMealsSegment = 'usuals';
   // static const String favorites = '/favorites';
-  static const String signIn = '/sign-in';
   static const String devTools = '/dev-tools';
 }

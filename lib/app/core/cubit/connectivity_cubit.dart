@@ -17,16 +17,21 @@ import 'package:injectable/injectable.dart';
 class ConnectivityCubit extends Cubit<bool> {
   /// {@macro connectivity_cubit}
   ConnectivityCubit() : super(true) {
-    _subscription = Connectivity().onConnectivityChanged.listen((results) {
-      final isConnected =
-          results.contains(ConnectivityResult.wifi) ||
-          results.contains(ConnectivityResult.mobile) ||
-          results.contains(ConnectivityResult.ethernet);
-      emit(isConnected);
-    });
+    _subscription = _connectivity.onConnectivityChanged.listen(_onResults);
+    // [onConnectivityChanged] only fires on change, so seed from the current
+    // state too, otherwise the initial value is a guess until the first change.
+    unawaited(_connectivity.checkConnectivity().then(_onResults));
   }
 
+  final Connectivity _connectivity = Connectivity();
   late final StreamSubscription<List<ConnectivityResult>> _subscription;
+
+  void _onResults(List<ConnectivityResult> results) {
+    // Per connectivity_plus, the only disconnected state is [none]. A VPN and
+    // the iOS simulator report [other], which is still connected, so a
+    // wifi/mobile/ethernet whitelist wrongly reads those as offline.
+    emit(results.isNotEmpty && !results.contains(ConnectivityResult.none));
+  }
 
   @override
   Future<void> close() async {

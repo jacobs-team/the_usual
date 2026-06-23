@@ -26,6 +26,15 @@ abstract class OnboardingState with _$OnboardingState {
     /// meal id. An item absent from the map defaults to one. Whole counts saved
     /// by older versions read back fine, since json reads each value as a num.
     @Default(<String, double>{}) Map<String, double> firstLogQuantities,
+
+    /// True when onboarding was marked complete programmatically rather than by
+    /// the user finishing the flow — a returning signed-in user resuming on a
+    /// fresh install whose cloud data is already applied. The completion
+    /// listener uses it to skip committing the (empty) draft over cloud data.
+    /// Transient: never persisted.
+    @JsonKey(includeFromJson: false, includeToJson: false)
+    @Default(false)
+    bool completedSilently,
   }) = _OnboardingState;
 
   const OnboardingState._();

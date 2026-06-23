@@ -106,6 +106,14 @@ abstract class UserSettingsState with _$UserSettingsState {
   /// The version written by the current app.
   static const _currentVersion = 1;
 
+  /// The total number of saved usual meals across all meal timings.
+  int get usualMealCount =>
+      usuals.values.fold(0, (count, usualMeals) => count + usualMeals.length);
+
+  /// Whether the usuals library alone marks an established user: more than one
+  /// saved usual meal.
+  bool get hasEstablishedUsuals => usualMealCount > 1;
+
   factory UserSettingsState.fromJson(Map<String, dynamic> json) =>
       UserSettingsState._fromVersionedJson(json);
 

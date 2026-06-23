@@ -23,6 +23,12 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
           state.copyWith(step: _stepRelativeTo(state, -1)),
         ),
         ResetPressed() => emit(const OnboardingState()),
+        MarkCompleted() => emit(
+          state.copyWith(
+            step: OnboardingStep.complete,
+            completedSilently: true,
+          ),
+        ),
         SkipPressed() => _onSkipPressed(event, emit),
         ContinuePressed() => emit(
           state.copyWith(step: _stepRelativeTo(state, 1)),

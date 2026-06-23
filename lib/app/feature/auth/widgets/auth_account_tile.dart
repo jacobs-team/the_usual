@@ -31,7 +31,22 @@ class AuthAccountTile extends StatelessWidget {
               title: Text(user.displayName ?? user.email),
               subtitle: user.displayName == null ? null : Text(user.email),
               trailing: TextButton(
-                onPressed: () => getIt<AuthCubit>().signOut(),
+                onPressed: () async {
+                  try {
+                    await getIt<AuthCubit>().signOut();
+                  } on SignOutOfflineException {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Connect to the internet to sign out, so your '
+                            'data is saved to the cloud first.',
+                          ),
+                        ),
+                      );
+                    }
+                  }
+                },
                 child: Text(context.l10n.signOut),
               ),
             ),

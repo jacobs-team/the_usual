@@ -2,10 +2,13 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:ui';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:the_usual/firebase_options.dart';
 
 /// Signature for reporting uncaught errors, e.g. to a crash-reporting service.
 typedef ErrorReporter = void Function(Object error, StackTrace stackTrace);
@@ -54,7 +57,14 @@ Future<void> bootstrap(
   Bloc.observer = AppBlocObserver(onError);
 
   usePathUrlStrategy();
-  WidgetsFlutterBinding.ensureInitialized();
+  final widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  // Hold the native splash until the auth session is resolved (see
+  // AuthCubit.ready), so a restored session lands on the right screen instead
+  // of flashing onboarding.
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(await builder());
 }

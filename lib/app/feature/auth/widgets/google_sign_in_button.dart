@@ -14,7 +14,12 @@ import 'package:the_usual/l10n/l10n.dart';
 /// {@endtemplate}
 class GoogleSignInButton extends StatefulWidget {
   /// {@macro google_sign_in_button}
-  const GoogleSignInButton({super.key});
+  const GoogleSignInButton({this.onSignedIn, super.key});
+
+  /// Called after a sign-in attempt finishes (whether or not it succeeded or
+  /// was cancelled). Callers should check [AuthCubit] state to decide what to
+  /// do, e.g. the onboarding welcome screen advancing only when signed in.
+  final VoidCallback? onSignedIn;
 
   @override
   State<GoogleSignInButton> createState() => _GoogleSignInButtonState();
@@ -27,6 +32,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
     setState(() => _busy = true);
     try {
       await getIt<AuthCubit>().signInWithGoogle();
+      widget.onSignedIn?.call();
     } catch (error, stackTrace) {
       log(
         'Google sign-in failed',
@@ -37,7 +43,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
       if (mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(SnackBar(content: Text('$error')));
+        ).showSnackBar(SnackBar(content: Text(context.l10n.signInFailed)));
       }
     } finally {
       if (mounted) setState(() => _busy = false);

@@ -44,6 +44,10 @@ sealed class DailyLogEvent with _$DailyLogEvent {
     TimeOfDay dayStart,
   ) = WeightOnDayChanged;
 
+  /// Replaces the entire log with state downloaded from the cloud on sign-in.
+  const factory DailyLogEvent.stateRestored(DailyLogState state) =
+      DailyLogStateRestored;
+
   // Dev Tools. Remove before ship.
   const factory DailyLogEvent.sampleDataSeeded() = SampleDataSeeded;
 }

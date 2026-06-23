@@ -77,6 +77,17 @@ abstract class DailyLogState with _$DailyLogState {
     return null;
   }
 
+  /// Whether the log alone marks an established user: any logged meal, or
+  /// weigh-ins on more than one logical day (rolling over at [dayStart]).
+  bool hasEstablishedLog(TimeOfDay dayStart) {
+    if (mealEntries.isNotEmpty) return true;
+    final weighInDays = <DateTime>{
+      for (final weightEntry in weightEntries)
+        weightEntry.loggedAt.logicalDay(dayStart),
+    };
+    return weighInDays.length > 1;
+  }
+
   /// The most recent weigh-in, or null when none have been recorded.
   WeightEntry? get latestWeight {
     if (weightEntries.isEmpty) return null;

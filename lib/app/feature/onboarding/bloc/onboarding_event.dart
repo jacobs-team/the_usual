@@ -4,6 +4,12 @@ part of 'onboarding_bloc.dart';
 sealed class OnboardingEvent with _$OnboardingEvent {
   const factory OnboardingEvent.backPressed() = BackPressed;
   const factory OnboardingEvent.resetPressed() = ResetPressed;
+
+  /// Marks onboarding complete without the user going through the flow, for a
+  /// returning signed-in user whose cloud data is already applied. Sets
+  /// [OnboardingState.completedSilently] so the completion listener skips
+  /// committing the draft.
+  const factory OnboardingEvent.markCompleted() = MarkCompleted;
   const factory OnboardingEvent.skipPressed() = SkipPressed;
   const factory OnboardingEvent.continuePressed() = ContinuePressed;
   const factory OnboardingEvent.usualMealAdded(

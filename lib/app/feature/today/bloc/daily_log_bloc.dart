@@ -40,6 +40,7 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
         MealEntryUsualMealLinked() => _onMealEntryUsualMealLinked(event, emit),
         WeightLogged() => _onWeightLogged(event, emit),
         WeightOnDayChanged() => _onWeightOnDayChanged(event, emit),
+        DailyLogStateRestored() => emit(event.state),
         SampleDataSeeded() => _onSampleDataSeeded(emit),
       },
     );

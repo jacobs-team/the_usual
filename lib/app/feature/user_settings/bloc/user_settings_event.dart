@@ -5,6 +5,10 @@ sealed class UserSettingsEvent with _$UserSettingsEvent {
   const factory UserSettingsEvent.settingsCommitted(
     UserSettingsState settings,
   ) = SettingsCommitted;
+
+  /// Replaces all settings with state downloaded from the cloud on sign-in.
+  const factory UserSettingsEvent.stateRestored(UserSettingsState settings) =
+      SettingsStateRestored;
   const factory UserSettingsEvent.reminderStyleSelected(
     ReminderStyle reminderStyle,
   ) = SettingsReminderStyleSelected;

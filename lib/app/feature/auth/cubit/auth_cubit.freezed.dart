@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AuthState implements DiagnosticableTreeMixin {
 
- int get version; AuthStatus get status; AuthUser? get user;
+ int get version; AuthStatus get status; AuthUser? get user;@JsonKey(includeFromJson: false, includeToJson: false) SignInPrompt? get pendingPrompt;
 /// Create a copy of AuthState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,21 +29,21 @@ $AuthStateCopyWith<AuthState> get copyWith => _$AuthStateCopyWithImpl<AuthState>
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'AuthState'))
-    ..add(DiagnosticsProperty('version', version))..add(DiagnosticsProperty('status', status))..add(DiagnosticsProperty('user', user));
+    ..add(DiagnosticsProperty('version', version))..add(DiagnosticsProperty('status', status))..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('pendingPrompt', pendingPrompt));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AuthState&&(identical(other.version, version) || other.version == version)&&(identical(other.status, status) || other.status == status)&&(identical(other.user, user) || other.user == user));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AuthState&&(identical(other.version, version) || other.version == version)&&(identical(other.status, status) || other.status == status)&&(identical(other.user, user) || other.user == user)&&(identical(other.pendingPrompt, pendingPrompt) || other.pendingPrompt == pendingPrompt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,version,status,user);
+int get hashCode => Object.hash(runtimeType,version,status,user,pendingPrompt);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'AuthState(version: $version, status: $status, user: $user)';
+  return 'AuthState(version: $version, status: $status, user: $user, pendingPrompt: $pendingPrompt)';
 }
 
 
@@ -54,7 +54,7 @@ abstract mixin class $AuthStateCopyWith<$Res>  {
   factory $AuthStateCopyWith(AuthState value, $Res Function(AuthState) _then) = _$AuthStateCopyWithImpl;
 @useResult
 $Res call({
- int version, AuthStatus status, AuthUser? user
+ int version, AuthStatus status, AuthUser? user,@JsonKey(includeFromJson: false, includeToJson: false) SignInPrompt? pendingPrompt
 });
 
 
@@ -71,12 +71,13 @@ class _$AuthStateCopyWithImpl<$Res>
 
 /// Create a copy of AuthState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? version = null,Object? status = null,Object? user = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? version = null,Object? status = null,Object? user = freezed,Object? pendingPrompt = freezed,}) {
   return _then(_self.copyWith(
 version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
 as int,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as AuthStatus,user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
-as AuthUser?,
+as AuthUser?,pendingPrompt: freezed == pendingPrompt ? _self.pendingPrompt : pendingPrompt // ignore: cast_nullable_to_non_nullable
+as SignInPrompt?,
   ));
 }
 /// Create a copy of AuthState
@@ -173,10 +174,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int version,  AuthStatus status,  AuthUser? user)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int version,  AuthStatus status,  AuthUser? user, @JsonKey(includeFromJson: false, includeToJson: false)  SignInPrompt? pendingPrompt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AuthState() when $default != null:
-return $default(_that.version,_that.status,_that.user);case _:
+return $default(_that.version,_that.status,_that.user,_that.pendingPrompt);case _:
   return orElse();
 
 }
@@ -194,10 +195,10 @@ return $default(_that.version,_that.status,_that.user);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int version,  AuthStatus status,  AuthUser? user)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int version,  AuthStatus status,  AuthUser? user, @JsonKey(includeFromJson: false, includeToJson: false)  SignInPrompt? pendingPrompt)  $default,) {final _that = this;
 switch (_that) {
 case _AuthState():
-return $default(_that.version,_that.status,_that.user);case _:
+return $default(_that.version,_that.status,_that.user,_that.pendingPrompt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -214,10 +215,10 @@ return $default(_that.version,_that.status,_that.user);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int version,  AuthStatus status,  AuthUser? user)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int version,  AuthStatus status,  AuthUser? user, @JsonKey(includeFromJson: false, includeToJson: false)  SignInPrompt? pendingPrompt)?  $default,) {final _that = this;
 switch (_that) {
 case _AuthState() when $default != null:
-return $default(_that.version,_that.status,_that.user);case _:
+return $default(_that.version,_that.status,_that.user,_that.pendingPrompt);case _:
   return null;
 
 }
@@ -229,12 +230,13 @@ return $default(_that.version,_that.status,_that.user);case _:
 
 @JsonSerializable(explicitToJson: true)
 class _AuthState extends AuthState with DiagnosticableTreeMixin {
-  const _AuthState({this.version = 2, this.status = AuthStatus.unknown, this.user}): super._();
+  const _AuthState({this.version = 2, this.status = AuthStatus.unknown, this.user, @JsonKey(includeFromJson: false, includeToJson: false) this.pendingPrompt}): super._();
   factory _AuthState.fromJson(Map<String, dynamic> json) => _$AuthStateFromJson(json);
 
 @override@JsonKey() final  int version;
 @override@JsonKey() final  AuthStatus status;
 @override final  AuthUser? user;
+@override@JsonKey(includeFromJson: false, includeToJson: false) final  SignInPrompt? pendingPrompt;
 
 /// Create a copy of AuthState
 /// with the given fields replaced by the non-null parameter values.
@@ -250,21 +252,21 @@ Map<String, dynamic> toJson() {
 void debugFillProperties(DiagnosticPropertiesBuilder properties) {
   properties
     ..add(DiagnosticsProperty('type', 'AuthState'))
-    ..add(DiagnosticsProperty('version', version))..add(DiagnosticsProperty('status', status))..add(DiagnosticsProperty('user', user));
+    ..add(DiagnosticsProperty('version', version))..add(DiagnosticsProperty('status', status))..add(DiagnosticsProperty('user', user))..add(DiagnosticsProperty('pendingPrompt', pendingPrompt));
 }
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AuthState&&(identical(other.version, version) || other.version == version)&&(identical(other.status, status) || other.status == status)&&(identical(other.user, user) || other.user == user));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AuthState&&(identical(other.version, version) || other.version == version)&&(identical(other.status, status) || other.status == status)&&(identical(other.user, user) || other.user == user)&&(identical(other.pendingPrompt, pendingPrompt) || other.pendingPrompt == pendingPrompt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,version,status,user);
+int get hashCode => Object.hash(runtimeType,version,status,user,pendingPrompt);
 
 @override
 String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
-  return 'AuthState(version: $version, status: $status, user: $user)';
+  return 'AuthState(version: $version, status: $status, user: $user, pendingPrompt: $pendingPrompt)';
 }
 
 
@@ -275,7 +277,7 @@ abstract mixin class _$AuthStateCopyWith<$Res> implements $AuthStateCopyWith<$Re
   factory _$AuthStateCopyWith(_AuthState value, $Res Function(_AuthState) _then) = __$AuthStateCopyWithImpl;
 @override @useResult
 $Res call({
- int version, AuthStatus status, AuthUser? user
+ int version, AuthStatus status, AuthUser? user,@JsonKey(includeFromJson: false, includeToJson: false) SignInPrompt? pendingPrompt
 });
 
 
@@ -292,12 +294,13 @@ class __$AuthStateCopyWithImpl<$Res>
 
 /// Create a copy of AuthState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? version = null,Object? status = null,Object? user = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? version = null,Object? status = null,Object? user = freezed,Object? pendingPrompt = freezed,}) {
   return _then(_AuthState(
 version: null == version ? _self.version : version // ignore: cast_nullable_to_non_nullable
 as int,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
 as AuthStatus,user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
-as AuthUser?,
+as AuthUser?,pendingPrompt: freezed == pendingPrompt ? _self.pendingPrompt : pendingPrompt // ignore: cast_nullable_to_non_nullable
+as SignInPrompt?,
   ));
 }
 

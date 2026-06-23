@@ -55,11 +55,12 @@ extension UserSettingsEventPatterns on UserSettingsEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( SettingsCommitted value)?  settingsCommitted,TResult Function( SettingsReminderStyleSelected value)?  reminderStyleSelected,TResult Function( SettingsMealCheckinScheduleModeChanged value)?  mealCheckinScheduleModeChanged,TResult Function( SettingsMealReminderToggled value)?  mealReminderToggled,TResult Function( SettingsMealReminderTimeChanged value)?  mealReminderTimeChanged,TResult Function( SettingsEndOfDayTimeChanged value)?  endOfDayTimeChanged,TResult Function( SettingsWeightCheckinFrequencySelected value)?  weightCheckinFrequencySelected,TResult Function( SettingsWeightTimeOfDaySelected value)?  weightTimeOfDaySelected,TResult Function( SettingsWeightUnitSelected value)?  weightUnitSelected,TResult Function( SettingsStartingWeightChanged value)?  startingWeightChanged,TResult Function( SettingsCalorieGoalChanged value)?  calorieGoalChanged,TResult Function( SettingsWeightGoalChanged value)?  weightGoalChanged,TResult Function( SettingsThemeModeSelected value)?  themeModeSelected,TResult Function( SettingsExpandNutritionByDefaultChanged value)?  expandNutritionByDefaultChanged,TResult Function( SettingsSkipLoggedMealRemindersChanged value)?  skipLoggedMealRemindersChanged,TResult Function( SettingsDayStartTimeChanged value)?  dayStartTimeChanged,TResult Function( SettingsMealEntryModeChanged value)?  mealEntryModeChanged,TResult Function( SettingsUsualMealAdded value)?  usualMealAdded,TResult Function( SettingsUsualMealRemoved value)?  usualMealRemoved,TResult Function( SettingsUsualMealNutritionChanged value)?  usualMealNutritionChanged,TResult Function( SettingsUsualMealNameChanged value)?  usualMealNameChanged,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( SettingsCommitted value)?  settingsCommitted,TResult Function( SettingsStateRestored value)?  stateRestored,TResult Function( SettingsReminderStyleSelected value)?  reminderStyleSelected,TResult Function( SettingsMealCheckinScheduleModeChanged value)?  mealCheckinScheduleModeChanged,TResult Function( SettingsMealReminderToggled value)?  mealReminderToggled,TResult Function( SettingsMealReminderTimeChanged value)?  mealReminderTimeChanged,TResult Function( SettingsEndOfDayTimeChanged value)?  endOfDayTimeChanged,TResult Function( SettingsWeightCheckinFrequencySelected value)?  weightCheckinFrequencySelected,TResult Function( SettingsWeightTimeOfDaySelected value)?  weightTimeOfDaySelected,TResult Function( SettingsWeightUnitSelected value)?  weightUnitSelected,TResult Function( SettingsStartingWeightChanged value)?  startingWeightChanged,TResult Function( SettingsCalorieGoalChanged value)?  calorieGoalChanged,TResult Function( SettingsWeightGoalChanged value)?  weightGoalChanged,TResult Function( SettingsThemeModeSelected value)?  themeModeSelected,TResult Function( SettingsExpandNutritionByDefaultChanged value)?  expandNutritionByDefaultChanged,TResult Function( SettingsSkipLoggedMealRemindersChanged value)?  skipLoggedMealRemindersChanged,TResult Function( SettingsDayStartTimeChanged value)?  dayStartTimeChanged,TResult Function( SettingsMealEntryModeChanged value)?  mealEntryModeChanged,TResult Function( SettingsUsualMealAdded value)?  usualMealAdded,TResult Function( SettingsUsualMealRemoved value)?  usualMealRemoved,TResult Function( SettingsUsualMealNutritionChanged value)?  usualMealNutritionChanged,TResult Function( SettingsUsualMealNameChanged value)?  usualMealNameChanged,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case SettingsCommitted() when settingsCommitted != null:
-return settingsCommitted(_that);case SettingsReminderStyleSelected() when reminderStyleSelected != null:
+return settingsCommitted(_that);case SettingsStateRestored() when stateRestored != null:
+return stateRestored(_that);case SettingsReminderStyleSelected() when reminderStyleSelected != null:
 return reminderStyleSelected(_that);case SettingsMealCheckinScheduleModeChanged() when mealCheckinScheduleModeChanged != null:
 return mealCheckinScheduleModeChanged(_that);case SettingsMealReminderToggled() when mealReminderToggled != null:
 return mealReminderToggled(_that);case SettingsMealReminderTimeChanged() when mealReminderTimeChanged != null:
@@ -97,11 +98,12 @@ return usualMealNameChanged(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( SettingsCommitted value)  settingsCommitted,required TResult Function( SettingsReminderStyleSelected value)  reminderStyleSelected,required TResult Function( SettingsMealCheckinScheduleModeChanged value)  mealCheckinScheduleModeChanged,required TResult Function( SettingsMealReminderToggled value)  mealReminderToggled,required TResult Function( SettingsMealReminderTimeChanged value)  mealReminderTimeChanged,required TResult Function( SettingsEndOfDayTimeChanged value)  endOfDayTimeChanged,required TResult Function( SettingsWeightCheckinFrequencySelected value)  weightCheckinFrequencySelected,required TResult Function( SettingsWeightTimeOfDaySelected value)  weightTimeOfDaySelected,required TResult Function( SettingsWeightUnitSelected value)  weightUnitSelected,required TResult Function( SettingsStartingWeightChanged value)  startingWeightChanged,required TResult Function( SettingsCalorieGoalChanged value)  calorieGoalChanged,required TResult Function( SettingsWeightGoalChanged value)  weightGoalChanged,required TResult Function( SettingsThemeModeSelected value)  themeModeSelected,required TResult Function( SettingsExpandNutritionByDefaultChanged value)  expandNutritionByDefaultChanged,required TResult Function( SettingsSkipLoggedMealRemindersChanged value)  skipLoggedMealRemindersChanged,required TResult Function( SettingsDayStartTimeChanged value)  dayStartTimeChanged,required TResult Function( SettingsMealEntryModeChanged value)  mealEntryModeChanged,required TResult Function( SettingsUsualMealAdded value)  usualMealAdded,required TResult Function( SettingsUsualMealRemoved value)  usualMealRemoved,required TResult Function( SettingsUsualMealNutritionChanged value)  usualMealNutritionChanged,required TResult Function( SettingsUsualMealNameChanged value)  usualMealNameChanged,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( SettingsCommitted value)  settingsCommitted,required TResult Function( SettingsStateRestored value)  stateRestored,required TResult Function( SettingsReminderStyleSelected value)  reminderStyleSelected,required TResult Function( SettingsMealCheckinScheduleModeChanged value)  mealCheckinScheduleModeChanged,required TResult Function( SettingsMealReminderToggled value)  mealReminderToggled,required TResult Function( SettingsMealReminderTimeChanged value)  mealReminderTimeChanged,required TResult Function( SettingsEndOfDayTimeChanged value)  endOfDayTimeChanged,required TResult Function( SettingsWeightCheckinFrequencySelected value)  weightCheckinFrequencySelected,required TResult Function( SettingsWeightTimeOfDaySelected value)  weightTimeOfDaySelected,required TResult Function( SettingsWeightUnitSelected value)  weightUnitSelected,required TResult Function( SettingsStartingWeightChanged value)  startingWeightChanged,required TResult Function( SettingsCalorieGoalChanged value)  calorieGoalChanged,required TResult Function( SettingsWeightGoalChanged value)  weightGoalChanged,required TResult Function( SettingsThemeModeSelected value)  themeModeSelected,required TResult Function( SettingsExpandNutritionByDefaultChanged value)  expandNutritionByDefaultChanged,required TResult Function( SettingsSkipLoggedMealRemindersChanged value)  skipLoggedMealRemindersChanged,required TResult Function( SettingsDayStartTimeChanged value)  dayStartTimeChanged,required TResult Function( SettingsMealEntryModeChanged value)  mealEntryModeChanged,required TResult Function( SettingsUsualMealAdded value)  usualMealAdded,required TResult Function( SettingsUsualMealRemoved value)  usualMealRemoved,required TResult Function( SettingsUsualMealNutritionChanged value)  usualMealNutritionChanged,required TResult Function( SettingsUsualMealNameChanged value)  usualMealNameChanged,}){
 final _that = this;
 switch (_that) {
 case SettingsCommitted():
-return settingsCommitted(_that);case SettingsReminderStyleSelected():
+return settingsCommitted(_that);case SettingsStateRestored():
+return stateRestored(_that);case SettingsReminderStyleSelected():
 return reminderStyleSelected(_that);case SettingsMealCheckinScheduleModeChanged():
 return mealCheckinScheduleModeChanged(_that);case SettingsMealReminderToggled():
 return mealReminderToggled(_that);case SettingsMealReminderTimeChanged():
@@ -135,11 +137,12 @@ return usualMealNameChanged(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( SettingsCommitted value)?  settingsCommitted,TResult? Function( SettingsReminderStyleSelected value)?  reminderStyleSelected,TResult? Function( SettingsMealCheckinScheduleModeChanged value)?  mealCheckinScheduleModeChanged,TResult? Function( SettingsMealReminderToggled value)?  mealReminderToggled,TResult? Function( SettingsMealReminderTimeChanged value)?  mealReminderTimeChanged,TResult? Function( SettingsEndOfDayTimeChanged value)?  endOfDayTimeChanged,TResult? Function( SettingsWeightCheckinFrequencySelected value)?  weightCheckinFrequencySelected,TResult? Function( SettingsWeightTimeOfDaySelected value)?  weightTimeOfDaySelected,TResult? Function( SettingsWeightUnitSelected value)?  weightUnitSelected,TResult? Function( SettingsStartingWeightChanged value)?  startingWeightChanged,TResult? Function( SettingsCalorieGoalChanged value)?  calorieGoalChanged,TResult? Function( SettingsWeightGoalChanged value)?  weightGoalChanged,TResult? Function( SettingsThemeModeSelected value)?  themeModeSelected,TResult? Function( SettingsExpandNutritionByDefaultChanged value)?  expandNutritionByDefaultChanged,TResult? Function( SettingsSkipLoggedMealRemindersChanged value)?  skipLoggedMealRemindersChanged,TResult? Function( SettingsDayStartTimeChanged value)?  dayStartTimeChanged,TResult? Function( SettingsMealEntryModeChanged value)?  mealEntryModeChanged,TResult? Function( SettingsUsualMealAdded value)?  usualMealAdded,TResult? Function( SettingsUsualMealRemoved value)?  usualMealRemoved,TResult? Function( SettingsUsualMealNutritionChanged value)?  usualMealNutritionChanged,TResult? Function( SettingsUsualMealNameChanged value)?  usualMealNameChanged,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( SettingsCommitted value)?  settingsCommitted,TResult? Function( SettingsStateRestored value)?  stateRestored,TResult? Function( SettingsReminderStyleSelected value)?  reminderStyleSelected,TResult? Function( SettingsMealCheckinScheduleModeChanged value)?  mealCheckinScheduleModeChanged,TResult? Function( SettingsMealReminderToggled value)?  mealReminderToggled,TResult? Function( SettingsMealReminderTimeChanged value)?  mealReminderTimeChanged,TResult? Function( SettingsEndOfDayTimeChanged value)?  endOfDayTimeChanged,TResult? Function( SettingsWeightCheckinFrequencySelected value)?  weightCheckinFrequencySelected,TResult? Function( SettingsWeightTimeOfDaySelected value)?  weightTimeOfDaySelected,TResult? Function( SettingsWeightUnitSelected value)?  weightUnitSelected,TResult? Function( SettingsStartingWeightChanged value)?  startingWeightChanged,TResult? Function( SettingsCalorieGoalChanged value)?  calorieGoalChanged,TResult? Function( SettingsWeightGoalChanged value)?  weightGoalChanged,TResult? Function( SettingsThemeModeSelected value)?  themeModeSelected,TResult? Function( SettingsExpandNutritionByDefaultChanged value)?  expandNutritionByDefaultChanged,TResult? Function( SettingsSkipLoggedMealRemindersChanged value)?  skipLoggedMealRemindersChanged,TResult? Function( SettingsDayStartTimeChanged value)?  dayStartTimeChanged,TResult? Function( SettingsMealEntryModeChanged value)?  mealEntryModeChanged,TResult? Function( SettingsUsualMealAdded value)?  usualMealAdded,TResult? Function( SettingsUsualMealRemoved value)?  usualMealRemoved,TResult? Function( SettingsUsualMealNutritionChanged value)?  usualMealNutritionChanged,TResult? Function( SettingsUsualMealNameChanged value)?  usualMealNameChanged,}){
 final _that = this;
 switch (_that) {
 case SettingsCommitted() when settingsCommitted != null:
-return settingsCommitted(_that);case SettingsReminderStyleSelected() when reminderStyleSelected != null:
+return settingsCommitted(_that);case SettingsStateRestored() when stateRestored != null:
+return stateRestored(_that);case SettingsReminderStyleSelected() when reminderStyleSelected != null:
 return reminderStyleSelected(_that);case SettingsMealCheckinScheduleModeChanged() when mealCheckinScheduleModeChanged != null:
 return mealCheckinScheduleModeChanged(_that);case SettingsMealReminderToggled() when mealReminderToggled != null:
 return mealReminderToggled(_that);case SettingsMealReminderTimeChanged() when mealReminderTimeChanged != null:
@@ -176,10 +179,11 @@ return usualMealNameChanged(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( UserSettingsState settings)?  settingsCommitted,TResult Function( ReminderStyle reminderStyle)?  reminderStyleSelected,TResult Function( MealCheckinScheduleMode mealCheckinScheduleMode)?  mealCheckinScheduleModeChanged,TResult Function( MealOfTheDay mealOfTheDay,  bool enabled)?  mealReminderToggled,TResult Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)?  mealReminderTimeChanged,TResult Function( TimeOfDay timeOfDay)?  endOfDayTimeChanged,TResult Function( WeightCheckinFrequency weightCheckinFrequency)?  weightCheckinFrequencySelected,TResult Function( WeightTimeOfDay weightTimeOfDay)?  weightTimeOfDaySelected,TResult Function( WeightUnit weightUnit)?  weightUnitSelected,TResult Function( double? weight)?  startingWeightChanged,TResult Function( int? calorieGoal)?  calorieGoalChanged,TResult Function( double? weightGoal)?  weightGoalChanged,TResult Function( ThemeMode themeMode)?  themeModeSelected,TResult Function( bool expandNutritionByDefault)?  expandNutritionByDefaultChanged,TResult Function( bool skipLoggedMealReminders)?  skipLoggedMealRemindersChanged,TResult Function( TimeOfDay dayStartTime)?  dayStartTimeChanged,TResult Function( MealEntryMode mealEntryMode)?  mealEntryModeChanged,TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  usualMealAdded,TResult Function( MealOfTheDay mealOfTheDay,  String id)?  usualMealRemoved,TResult Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)?  usualMealNutritionChanged,TResult Function( MealOfTheDay mealOfTheDay,  String id,  String name)?  usualMealNameChanged,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( UserSettingsState settings)?  settingsCommitted,TResult Function( UserSettingsState settings)?  stateRestored,TResult Function( ReminderStyle reminderStyle)?  reminderStyleSelected,TResult Function( MealCheckinScheduleMode mealCheckinScheduleMode)?  mealCheckinScheduleModeChanged,TResult Function( MealOfTheDay mealOfTheDay,  bool enabled)?  mealReminderToggled,TResult Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)?  mealReminderTimeChanged,TResult Function( TimeOfDay timeOfDay)?  endOfDayTimeChanged,TResult Function( WeightCheckinFrequency weightCheckinFrequency)?  weightCheckinFrequencySelected,TResult Function( WeightTimeOfDay weightTimeOfDay)?  weightTimeOfDaySelected,TResult Function( WeightUnit weightUnit)?  weightUnitSelected,TResult Function( double? weight)?  startingWeightChanged,TResult Function( int? calorieGoal)?  calorieGoalChanged,TResult Function( double? weightGoal)?  weightGoalChanged,TResult Function( ThemeMode themeMode)?  themeModeSelected,TResult Function( bool expandNutritionByDefault)?  expandNutritionByDefaultChanged,TResult Function( bool skipLoggedMealReminders)?  skipLoggedMealRemindersChanged,TResult Function( TimeOfDay dayStartTime)?  dayStartTimeChanged,TResult Function( MealEntryMode mealEntryMode)?  mealEntryModeChanged,TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  usualMealAdded,TResult Function( MealOfTheDay mealOfTheDay,  String id)?  usualMealRemoved,TResult Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)?  usualMealNutritionChanged,TResult Function( MealOfTheDay mealOfTheDay,  String id,  String name)?  usualMealNameChanged,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case SettingsCommitted() when settingsCommitted != null:
-return settingsCommitted(_that.settings);case SettingsReminderStyleSelected() when reminderStyleSelected != null:
+return settingsCommitted(_that.settings);case SettingsStateRestored() when stateRestored != null:
+return stateRestored(_that.settings);case SettingsReminderStyleSelected() when reminderStyleSelected != null:
 return reminderStyleSelected(_that.reminderStyle);case SettingsMealCheckinScheduleModeChanged() when mealCheckinScheduleModeChanged != null:
 return mealCheckinScheduleModeChanged(_that.mealCheckinScheduleMode);case SettingsMealReminderToggled() when mealReminderToggled != null:
 return mealReminderToggled(_that.mealOfTheDay,_that.enabled);case SettingsMealReminderTimeChanged() when mealReminderTimeChanged != null:
@@ -217,10 +221,11 @@ return usualMealNameChanged(_that.mealOfTheDay,_that.id,_that.name);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( UserSettingsState settings)  settingsCommitted,required TResult Function( ReminderStyle reminderStyle)  reminderStyleSelected,required TResult Function( MealCheckinScheduleMode mealCheckinScheduleMode)  mealCheckinScheduleModeChanged,required TResult Function( MealOfTheDay mealOfTheDay,  bool enabled)  mealReminderToggled,required TResult Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)  mealReminderTimeChanged,required TResult Function( TimeOfDay timeOfDay)  endOfDayTimeChanged,required TResult Function( WeightCheckinFrequency weightCheckinFrequency)  weightCheckinFrequencySelected,required TResult Function( WeightTimeOfDay weightTimeOfDay)  weightTimeOfDaySelected,required TResult Function( WeightUnit weightUnit)  weightUnitSelected,required TResult Function( double? weight)  startingWeightChanged,required TResult Function( int? calorieGoal)  calorieGoalChanged,required TResult Function( double? weightGoal)  weightGoalChanged,required TResult Function( ThemeMode themeMode)  themeModeSelected,required TResult Function( bool expandNutritionByDefault)  expandNutritionByDefaultChanged,required TResult Function( bool skipLoggedMealReminders)  skipLoggedMealRemindersChanged,required TResult Function( TimeOfDay dayStartTime)  dayStartTimeChanged,required TResult Function( MealEntryMode mealEntryMode)  mealEntryModeChanged,required TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)  usualMealAdded,required TResult Function( MealOfTheDay mealOfTheDay,  String id)  usualMealRemoved,required TResult Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)  usualMealNutritionChanged,required TResult Function( MealOfTheDay mealOfTheDay,  String id,  String name)  usualMealNameChanged,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( UserSettingsState settings)  settingsCommitted,required TResult Function( UserSettingsState settings)  stateRestored,required TResult Function( ReminderStyle reminderStyle)  reminderStyleSelected,required TResult Function( MealCheckinScheduleMode mealCheckinScheduleMode)  mealCheckinScheduleModeChanged,required TResult Function( MealOfTheDay mealOfTheDay,  bool enabled)  mealReminderToggled,required TResult Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)  mealReminderTimeChanged,required TResult Function( TimeOfDay timeOfDay)  endOfDayTimeChanged,required TResult Function( WeightCheckinFrequency weightCheckinFrequency)  weightCheckinFrequencySelected,required TResult Function( WeightTimeOfDay weightTimeOfDay)  weightTimeOfDaySelected,required TResult Function( WeightUnit weightUnit)  weightUnitSelected,required TResult Function( double? weight)  startingWeightChanged,required TResult Function( int? calorieGoal)  calorieGoalChanged,required TResult Function( double? weightGoal)  weightGoalChanged,required TResult Function( ThemeMode themeMode)  themeModeSelected,required TResult Function( bool expandNutritionByDefault)  expandNutritionByDefaultChanged,required TResult Function( bool skipLoggedMealReminders)  skipLoggedMealRemindersChanged,required TResult Function( TimeOfDay dayStartTime)  dayStartTimeChanged,required TResult Function( MealEntryMode mealEntryMode)  mealEntryModeChanged,required TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)  usualMealAdded,required TResult Function( MealOfTheDay mealOfTheDay,  String id)  usualMealRemoved,required TResult Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)  usualMealNutritionChanged,required TResult Function( MealOfTheDay mealOfTheDay,  String id,  String name)  usualMealNameChanged,}) {final _that = this;
 switch (_that) {
 case SettingsCommitted():
-return settingsCommitted(_that.settings);case SettingsReminderStyleSelected():
+return settingsCommitted(_that.settings);case SettingsStateRestored():
+return stateRestored(_that.settings);case SettingsReminderStyleSelected():
 return reminderStyleSelected(_that.reminderStyle);case SettingsMealCheckinScheduleModeChanged():
 return mealCheckinScheduleModeChanged(_that.mealCheckinScheduleMode);case SettingsMealReminderToggled():
 return mealReminderToggled(_that.mealOfTheDay,_that.enabled);case SettingsMealReminderTimeChanged():
@@ -254,10 +259,11 @@ return usualMealNameChanged(_that.mealOfTheDay,_that.id,_that.name);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( UserSettingsState settings)?  settingsCommitted,TResult? Function( ReminderStyle reminderStyle)?  reminderStyleSelected,TResult? Function( MealCheckinScheduleMode mealCheckinScheduleMode)?  mealCheckinScheduleModeChanged,TResult? Function( MealOfTheDay mealOfTheDay,  bool enabled)?  mealReminderToggled,TResult? Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)?  mealReminderTimeChanged,TResult? Function( TimeOfDay timeOfDay)?  endOfDayTimeChanged,TResult? Function( WeightCheckinFrequency weightCheckinFrequency)?  weightCheckinFrequencySelected,TResult? Function( WeightTimeOfDay weightTimeOfDay)?  weightTimeOfDaySelected,TResult? Function( WeightUnit weightUnit)?  weightUnitSelected,TResult? Function( double? weight)?  startingWeightChanged,TResult? Function( int? calorieGoal)?  calorieGoalChanged,TResult? Function( double? weightGoal)?  weightGoalChanged,TResult? Function( ThemeMode themeMode)?  themeModeSelected,TResult? Function( bool expandNutritionByDefault)?  expandNutritionByDefaultChanged,TResult? Function( bool skipLoggedMealReminders)?  skipLoggedMealRemindersChanged,TResult? Function( TimeOfDay dayStartTime)?  dayStartTimeChanged,TResult? Function( MealEntryMode mealEntryMode)?  mealEntryModeChanged,TResult? Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  usualMealAdded,TResult? Function( MealOfTheDay mealOfTheDay,  String id)?  usualMealRemoved,TResult? Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)?  usualMealNutritionChanged,TResult? Function( MealOfTheDay mealOfTheDay,  String id,  String name)?  usualMealNameChanged,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( UserSettingsState settings)?  settingsCommitted,TResult? Function( UserSettingsState settings)?  stateRestored,TResult? Function( ReminderStyle reminderStyle)?  reminderStyleSelected,TResult? Function( MealCheckinScheduleMode mealCheckinScheduleMode)?  mealCheckinScheduleModeChanged,TResult? Function( MealOfTheDay mealOfTheDay,  bool enabled)?  mealReminderToggled,TResult? Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)?  mealReminderTimeChanged,TResult? Function( TimeOfDay timeOfDay)?  endOfDayTimeChanged,TResult? Function( WeightCheckinFrequency weightCheckinFrequency)?  weightCheckinFrequencySelected,TResult? Function( WeightTimeOfDay weightTimeOfDay)?  weightTimeOfDaySelected,TResult? Function( WeightUnit weightUnit)?  weightUnitSelected,TResult? Function( double? weight)?  startingWeightChanged,TResult? Function( int? calorieGoal)?  calorieGoalChanged,TResult? Function( double? weightGoal)?  weightGoalChanged,TResult? Function( ThemeMode themeMode)?  themeModeSelected,TResult? Function( bool expandNutritionByDefault)?  expandNutritionByDefaultChanged,TResult? Function( bool skipLoggedMealReminders)?  skipLoggedMealRemindersChanged,TResult? Function( TimeOfDay dayStartTime)?  dayStartTimeChanged,TResult? Function( MealEntryMode mealEntryMode)?  mealEntryModeChanged,TResult? Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  usualMealAdded,TResult? Function( MealOfTheDay mealOfTheDay,  String id)?  usualMealRemoved,TResult? Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)?  usualMealNutritionChanged,TResult? Function( MealOfTheDay mealOfTheDay,  String id,  String name)?  usualMealNameChanged,}) {final _that = this;
 switch (_that) {
 case SettingsCommitted() when settingsCommitted != null:
-return settingsCommitted(_that.settings);case SettingsReminderStyleSelected() when reminderStyleSelected != null:
+return settingsCommitted(_that.settings);case SettingsStateRestored() when stateRestored != null:
+return stateRestored(_that.settings);case SettingsReminderStyleSelected() when reminderStyleSelected != null:
 return reminderStyleSelected(_that.reminderStyle);case SettingsMealCheckinScheduleModeChanged() when mealCheckinScheduleModeChanged != null:
 return mealCheckinScheduleModeChanged(_that.mealCheckinScheduleMode);case SettingsMealReminderToggled() when mealReminderToggled != null:
 return mealReminderToggled(_that.mealOfTheDay,_that.enabled);case SettingsMealReminderTimeChanged() when mealReminderTimeChanged != null:
@@ -343,6 +349,81 @@ class _$SettingsCommittedCopyWithImpl<$Res>
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') $Res call({Object? settings = null,}) {
   return _then(SettingsCommitted(
+null == settings ? _self.settings : settings // ignore: cast_nullable_to_non_nullable
+as UserSettingsState,
+  ));
+}
+
+/// Create a copy of UserSettingsEvent
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$UserSettingsStateCopyWith<$Res> get settings {
+  
+  return $UserSettingsStateCopyWith<$Res>(_self.settings, (value) {
+    return _then(_self.copyWith(settings: value));
+  });
+}
+}
+
+/// @nodoc
+
+
+class SettingsStateRestored implements UserSettingsEvent {
+  const SettingsStateRestored(this.settings);
+  
+
+ final  UserSettingsState settings;
+
+/// Create a copy of UserSettingsEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SettingsStateRestoredCopyWith<SettingsStateRestored> get copyWith => _$SettingsStateRestoredCopyWithImpl<SettingsStateRestored>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SettingsStateRestored&&(identical(other.settings, settings) || other.settings == settings));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,settings);
+
+@override
+String toString() {
+  return 'UserSettingsEvent.stateRestored(settings: $settings)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $SettingsStateRestoredCopyWith<$Res> implements $UserSettingsEventCopyWith<$Res> {
+  factory $SettingsStateRestoredCopyWith(SettingsStateRestored value, $Res Function(SettingsStateRestored) _then) = _$SettingsStateRestoredCopyWithImpl;
+@useResult
+$Res call({
+ UserSettingsState settings
+});
+
+
+$UserSettingsStateCopyWith<$Res> get settings;
+
+}
+/// @nodoc
+class _$SettingsStateRestoredCopyWithImpl<$Res>
+    implements $SettingsStateRestoredCopyWith<$Res> {
+  _$SettingsStateRestoredCopyWithImpl(this._self, this._then);
+
+  final SettingsStateRestored _self;
+  final $Res Function(SettingsStateRestored) _then;
+
+/// Create a copy of UserSettingsEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? settings = null,}) {
+  return _then(SettingsStateRestored(
 null == settings ? _self.settings : settings // ignore: cast_nullable_to_non_nullable
 as UserSettingsState,
   ));

@@ -25,6 +25,8 @@ import 'package:the_usual/app/core/networking/repository/auth_repository.dart'
     as _i53;
 import 'package:the_usual/app/core/networking/repository/meal_ai_repository.dart'
     as _i310;
+import 'package:the_usual/app/core/networking/repository/sync_repository.dart'
+    as _i142;
 import 'package:the_usual/app/core/service/file_cache_service.dart' as _i115;
 import 'package:the_usual/app/core/service/service.dart' as _i988;
 import 'package:the_usual/app/core/service/share_ingest_service.dart' as _i907;
@@ -64,6 +66,13 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i640.OnboardingBloc>(() => _i640.OnboardingBloc());
     gh.lazySingleton<_i155.DailyLogBloc>(() => _i155.DailyLogBloc());
     gh.lazySingleton<_i807.UserSettingsBloc>(() => _i807.UserSettingsBloc());
+    gh.singleton<_i142.SyncRepository>(
+      () => _i142.SyncRepository(
+        gh<_i538.DailyLogBloc>(),
+        gh<_i538.UserSettingsBloc>(),
+        gh<_i538.OnboardingBloc>(),
+      ),
+    );
     gh.lazySingleton<_i53.AuthRepository>(() => _i53.GoogleAuthRepository());
     gh.singleton<_i455.MealAiClient>(
       () => _i455.MealAiClient(gh<_i538.DevToolsCubit>()),
@@ -72,7 +81,11 @@ extension GetItInjectableX on _i174.GetIt {
       () => _i310.MealAiRepository(gh<_i538.MealAiClient>()),
     );
     gh.singleton<_i608.AuthCubit>(
-      () => _i608.AuthCubit(gh<_i538.AuthRepository>()),
+      () => _i608.AuthCubit(
+        gh<_i538.AuthRepository>(),
+        gh<_i538.SyncRepository>(),
+        gh<_i538.ConnectivityCubit>(),
+      ),
     );
     gh.factory<_i1048.FoodEntryBloc>(
       () => _i1048.FoodEntryBloc(

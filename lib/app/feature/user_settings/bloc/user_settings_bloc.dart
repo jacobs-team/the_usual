@@ -23,6 +23,7 @@ class UserSettingsBloc
     on<UserSettingsEvent>(
       (event, emit) => switch (event) {
         SettingsCommitted() => emit(event.settings),
+        SettingsStateRestored() => emit(event.settings),
         SettingsReminderStyleSelected() => emit(
           state.copyWith(reminderStyle: event.reminderStyle),
         ),

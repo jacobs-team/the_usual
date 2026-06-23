@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
 import 'package:the_usual/design_system/design_system.dart';
@@ -40,6 +41,14 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
     super.initState();
     // Restore a previous Google session silently before first paint.
     unawaited(getIt<AuthCubit>().restoreOnStartup());
+    // Hold the native splash until the session is resolved and synced, so the
+    // first frame is the right screen. The timeout is a safety net so a stalled
+    // auth stream can never leave the splash up indefinitely.
+    unawaited(
+      getIt<AuthCubit>().ready
+          .timeout(const Duration(seconds: 5), onTimeout: () {})
+          .whenComplete(FlutterNativeSplash.remove),
+    );
     _syncNotifications();
     // Tapping a reminder takes the user to Today, where they log meals.
     getIt<NotificationService>().onReminderTapped = () =>
@@ -144,6 +153,68 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
     );
   }
 
+  /// Turns a sign-in [prompt] into a dialog, then routes the user's choice back
+  /// to the cubit. Shown over the root navigator so it covers the sign-in
+  /// screen or Settings, wherever the sign-in was triggered.
+  Future<void> _showSignInPrompt(SignInPrompt prompt) async {
+    final navigatorContext = AppRouter.rootNavigatorKey.currentContext;
+    if (navigatorContext == null) return;
+    final authCubit = getIt<AuthCubit>();
+    switch (prompt) {
+      case SignInPrompt.keepOrStartFresh:
+        final keep = await showDialog<bool>(
+          context: navigatorContext,
+          barrierDismissible: false,
+          builder: (context) => AlertDialog(
+            title: const Text('Bring your data to this account?'),
+            content: const Text(
+              'You can keep the meals and usuals you logged as a guest, or '
+              'start fresh. Starting fresh permanently deletes the guest data '
+              'on this device.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Start fresh'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Keep my data'),
+              ),
+            ],
+          ),
+        );
+        if (keep == null) return;
+        await (keep ? authCubit.keepGuestData() : authCubit.startFresh());
+      case SignInPrompt.replaceLocalWithCloud:
+        final replace = await showDialog<bool>(
+          context: navigatorContext,
+          barrierDismissible: false,
+          builder: (context) => AlertDialog(
+            title: const Text("Replace this device's data?"),
+            content: const Text(
+              'This account already has data saved in the cloud. Signing in '
+              'downloads it and permanently replaces the guest data on this '
+              'device.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Replace'),
+              ),
+            ],
+          ),
+        );
+        await (replace ?? false
+            ? authCubit.confirmReplaceWithCloud()
+            : authCubit.cancelSignIn());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocListener(
@@ -157,19 +228,38 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
           bloc: getIt<DailyLogBloc>(),
           listener: (context, state) => _syncNotifications(),
         ),
-        // BlocListener<AuthCubit, AuthState>(
-        //   bloc: getIt<AuthCubit>(),
-        //   listenWhen: (previous, current) =>
-        //       previous.signedIn && !current.signedIn,
-        //   listener: (context, state) =>
-        //       getIt<CoffeeBloc>().add(const ClearFeed()),
-        // ),
+        // A sign-in that needs a guest-data decision raises a prompt; turn it
+        // into a dialog over whichever screen triggered the sign-in.
+        BlocListener<AuthCubit, AuthState>(
+          bloc: getIt<AuthCubit>(),
+          listenWhen: (previous, current) =>
+              previous.pendingPrompt != current.pendingPrompt &&
+              current.pendingPrompt != null,
+          listener: (context, state) => _showSignInPrompt(state.pendingPrompt!),
+        ),
+        // A sync operation that emptied the device resets onboarding; route the
+        // user back through it.
+        BlocListener<OnboardingBloc, OnboardingState>(
+          bloc: getIt<OnboardingBloc>(),
+          listenWhen: (previous, current) =>
+              previous.step == OnboardingStep.complete &&
+              current.step != OnboardingStep.complete,
+          listener: (context, state) =>
+              getIt<AppRouter>().router.go(Routes.onboarding),
+        ),
         BlocListener<OnboardingBloc, OnboardingState>(
           bloc: getIt<OnboardingBloc>(),
           listenWhen: (previous, current) =>
               previous.step != OnboardingStep.complete &&
               current.step == OnboardingStep.complete,
           listener: (context, state) {
+            // A returning signed-in user resuming on a fresh install: cloud
+            // data is already applied, so land them in the app without
+            // committing the empty draft over it.
+            if (state.completedSilently) {
+              getIt<AppRouter>().router.go(Routes.today);
+              return;
+            }
             final settings = state.settings;
             getIt<UserSettingsBloc>().add(
               UserSettingsEvent.settingsCommitted(settings),

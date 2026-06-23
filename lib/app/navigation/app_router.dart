@@ -26,11 +26,9 @@ class AppRouter {
         final onboardingComplete =
             getIt<OnboardingBloc>().state.step == OnboardingStep.complete;
         if (!onboardingComplete) return Routes.onboarding;
-
-        final status = _authCubit.state.status;
-        final atSignIn = state.matchedLocation == Routes.signIn;
-        if (status == AuthStatus.unknown && !atSignIn) return Routes.signIn;
-        if (status != AuthStatus.unknown && atSignIn) return Routes.today;
+        // Onboarding is the only gate: signing in or staying offline is chosen
+        // on its first screen. Once complete, never sit on that route.
+        if (state.matchedLocation == Routes.onboarding) return Routes.today;
         return null;
       },
       routes: routes,
@@ -53,12 +51,6 @@ class AppRouter {
       path: Routes.onboarding,
       pageBuilder: (context, state) {
         return const NoTransitionPage(child: OnboardingView());
-      },
-    ),
-    GoRoute(
-      path: Routes.signIn,
-      pageBuilder: (context, state) {
-        return const NoTransitionPage(child: SignInView());
       },
     ),
     StatefulShellRoute.indexedStack(
