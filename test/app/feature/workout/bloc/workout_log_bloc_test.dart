@@ -199,5 +199,54 @@ void main() {
       expect(state.version, equals(99));
       expect(state.workoutEntries, isEmpty);
     });
+
+    group('historyByMonth', () {
+      WorkoutLogEntry entry(String id, DateTime loggedAt, {double weight = 100, int reps = 10}) {
+        return WorkoutLogEntry(
+          id: id,
+          loggedAt: loggedAt,
+          workoutGroupId: 'push',
+          name: id,
+          sets: [WorkoutSet(weight: weight, reps: reps)],
+        );
+      }
+
+      test('returns empty when no workouts have been logged', () {
+        final state = const WorkoutLogState();
+        expect(state.historyByMonth(dayStart), isEmpty);
+      });
+
+      test('buckets entries into months with per-day volume and month average', () {
+        // Two entries on May 14 (volume 1000 each = 2000 total for the day),
+        // one entry on June 3 (volume 1000).
+        final state = WorkoutLogState(
+          workoutEntries: [
+            entry('may-a', DateTime(2026, 5, 14, 8)),
+            entry('may-b', DateTime(2026, 5, 14, 18)),
+            entry('jun-a', DateTime(2026, 6, 3, 10)),
+          ],
+        );
+
+        final months = state.historyByMonth(dayStart);
+
+        // Oldest month first.
+        expect(months.length, equals(2));
+        expect(months[0].month, equals(DateTime(2026, 5)));
+        expect(months[1].month, equals(DateTime(2026, 6)));
+
+        // May: one day with volume = 2 * (100 * 10) = 2000.
+        final mayMonth = months[0];
+        expect(mayMonth.days.length, equals(1));
+        expect(mayMonth.days[0].volume, equals(2000.0));
+        expect(mayMonth.days[0].workoutEntries.length, equals(2));
+        expect(mayMonth.averageVolume, equals(2000.0));
+
+        // June: one day with volume = 100 * 10 = 1000.
+        final juneMonth = months[1];
+        expect(juneMonth.days.length, equals(1));
+        expect(juneMonth.days[0].volume, equals(1000.0));
+        expect(juneMonth.averageVolume, equals(1000.0));
+      });
+    });
   });
 }
