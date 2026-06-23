@@ -9,6 +9,7 @@ void main() {
   group(WorkoutLogSection, () {
     late WorkoutLogBloc workoutLogBloc;
     late UserSettingsBloc userSettingsBloc;
+    late DailyLogBloc dailyLogBloc;
 
     setUp(() {
       workoutLogBloc = MockWorkoutLogBloc();
@@ -20,6 +21,11 @@ void main() {
       when(() => userSettingsBloc.state).thenReturn(const UserSettingsState());
       when(
         () => userSettingsBloc.stream,
+      ).thenAnswer((_) => const Stream.empty());
+      dailyLogBloc = MockDailyLogBloc();
+      when(() => dailyLogBloc.state).thenReturn(const DailyLogState());
+      when(
+        () => dailyLogBloc.stream,
       ).thenAnswer((_) => const Stream.empty());
       registerFallbackValue(
         const WorkoutLogEvent.workoutRemoved('x'),
@@ -59,7 +65,7 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
       return tester.pumpPumpPumpItUP(
-        deps: [workoutLogBloc, userSettingsBloc],
+        deps: [workoutLogBloc, userSettingsBloc, dailyLogBloc],
         CustomScrollView(
           slivers: [
             WorkoutLogSection(

@@ -189,6 +189,22 @@ class WorkoutLogSection extends StatelessWidget {
                     SizedBox(height: AppDesign.spacing.sm),
                     TextButton.icon(
                       onPressed: () async {
+                        final latestWeight =
+                            getIt<DailyLogBloc>().state.latestWeight;
+                        final userSettings =
+                            getIt<UserSettingsBloc>().state;
+                        double? bodyWeight;
+                        if (latestWeight != null) {
+                          bodyWeight = weightUnit.convertFrom(
+                            latestWeight.weight,
+                            latestWeight.weightUnit,
+                          );
+                        } else if (userSettings.startingWeight != null) {
+                          bodyWeight = weightUnit.convertFrom(
+                            userSettings.startingWeight!,
+                            userSettings.weightUnit,
+                          );
+                        }
                         final result =
                             await TheUsualBottomSheet.show<WorkoutEntryResult>(
                               context,
@@ -197,6 +213,7 @@ class WorkoutLogSection extends StatelessWidget {
                                 confirmLabel: 'Log',
                                 weightUnit: weightUnit,
                                 showAddToUsuals: true,
+                                bodyWeight: bodyWeight,
                               ),
                             );
                         if (result == null) return;
