@@ -124,9 +124,7 @@ class WorkoutEntrySheetState extends State<WorkoutEntrySheet> {
     final name = _nameController.text.trim();
     var sets = _currentSets;
 
-    if (_bodyweightChecked &&
-        widget.bodyWeight != null &&
-        _aiAvailable) {
+    if (_bodyweightChecked && widget.bodyWeight != null && _aiAvailable) {
       setState(() => _estimating = true);
       try {
         final estimate = await getIt<WorkoutAiRepository>()
@@ -249,6 +247,7 @@ class WorkoutEntrySheetState extends State<WorkoutEntrySheet> {
                   ),
                   SizedBox(height: AppDesign.spacing.sm),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Checkbox(
                         key: const Key('bodyweight-checkbox'),
@@ -264,31 +263,42 @@ class WorkoutEntrySheetState extends State<WorkoutEntrySheet> {
                           );
                         },
                       ),
-                      const Expanded(
-                        child: Text('Estimate set weight based on body weight'),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Estimate set weight based on body weight',
+                            ),
+                            Text(
+                              'e.g. push-ups, pull-ups',
+                              key: const Key('bodyweight-help'),
+                              style: Theme.of(context).textTheme.bodySmall
+                                  ?.copyWith(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onSurfaceVariant,
+                                  ),
+                            ),
+                            if (_bodyweightHintShown &&
+                                widget.bodyWeight == null)
+                              Text(
+                                'Add your body weight to estimate bodyweight '
+                                'sets. Log it on the Today view or set a '
+                                'starting weight in Settings.',
+                                key: const Key('bodyweight-hint'),
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.error,
+                                    ),
+                              ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(left: AppDesign.spacing.sm),
-                    child: Text(
-                      'e.g. push-ups, pull-ups',
-                      key: const Key('bodyweight-help'),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ),
-                  if (_bodyweightHintShown && widget.bodyWeight == null)
-                    Text(
-                      'Add your body weight to estimate bodyweight sets. '
-                      'Log it on the Today view or set a starting weight '
-                      'in Settings.',
-                      key: const Key('bodyweight-hint'),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.error,
-                      ),
-                    ),
                   if (widget.showAddToUsuals) ...[
                     Row(
                       children: [
