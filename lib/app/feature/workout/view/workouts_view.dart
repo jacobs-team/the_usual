@@ -195,47 +195,53 @@ class _WorkoutsViewState extends State<WorkoutsView> {
                         logDays: logDays,
                         dayStart: logDayStart,
                       ),
-                    SliverToBoxAdapter(
-                      child: TextButton.icon(
-                        key: const Key('add-workout-group'),
-                        onPressed: () {
-                          final nameController = TextEditingController();
-                          showDialog<void>(
-                            context: context,
-                            builder: (dialogContext) => AlertDialog(
-                              title: const Text('Add group'),
-                              content: TheUsualTextField(
-                                controller: nameController,
-                                hintText: 'Group name',
-                                autofocus: true,
-                                textCapitalization:
-                                    TextCapitalization.sentences,
+                    SliverPadding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: AppDesign.spacing.md,
+                      ),
+                      sliver: SliverToBoxAdapter(
+                        child: TextButton.icon(
+                          key: const Key('add-workout-group'),
+                          onPressed: () {
+                            final nameController = TextEditingController();
+                            showDialog<void>(
+                              context: context,
+                              builder: (dialogContext) => AlertDialog(
+                                title: const Text('Add group'),
+                                content: TheUsualTextField(
+                                  controller: nameController,
+                                  hintText: 'Group name',
+                                  autofocus: true,
+                                  textCapitalization:
+                                      TextCapitalization.sentences,
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(dialogContext).pop(),
+                                    child: const Text('Cancel'),
+                                  ),
+                                  FilledButton(
+                                    key: const Key('add-group-submit'),
+                                    onPressed: () {
+                                      final name = nameController.text.trim();
+                                      if (name.isEmpty) return;
+                                      Navigator.of(dialogContext).pop();
+                                      getIt<UserSettingsBloc>().add(
+                                        UserSettingsEvent.workoutGroupAdded(
+                                          name,
+                                        ),
+                                      );
+                                    },
+                                    child: const Text('Add'),
+                                  ),
+                                ],
                               ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () =>
-                                      Navigator.of(dialogContext).pop(),
-                                  child: const Text('Cancel'),
-                                ),
-                                FilledButton(
-                                  onPressed: () {
-                                    final name = nameController.text.trim();
-                                    if (name.isEmpty) return;
-                                    Navigator.of(dialogContext).pop();
-                                    getIt<UserSettingsBloc>().add(
-                                      UserSettingsEvent.workoutGroupAdded(
-                                        name,
-                                      ),
-                                    );
-                                  },
-                                  child: const Text('Add'),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.add),
-                        label: const Text('Add group'),
+                            );
+                          },
+                          icon: const Icon(Icons.add),
+                          label: const Text('Add group'),
+                        ),
                       ),
                     ),
                     SliverToBoxAdapter(

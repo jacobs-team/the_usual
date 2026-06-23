@@ -124,14 +124,11 @@ void main() {
       ).called(1);
     });
 
-    testWidgets('editing the group name and submitting calls onRenamed', (
-      tester,
-    ) async {
+    testWidgets('editing the group name calls onRenamed', (tester) async {
       String? captured;
       await pumpSection(tester, onRenamed: (value) => captured = value);
 
       await tester.enterText(find.byKey(const Key('group-name-push')), 'Chest');
-      await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pump();
 
       expect(captured, equals('Chest'));

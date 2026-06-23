@@ -94,7 +94,6 @@ void main() {
         find.byKey(const Key('group-name-push')),
         'Press Day',
       );
-      await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pump();
 
       verify(
@@ -194,7 +193,7 @@ void main() {
           ),
           'Arms',
         );
-        await tester.tap(find.text('Add'));
+        await tester.tap(find.byKey(const Key('add-group-submit')));
         await tester.pump();
 
         verify(

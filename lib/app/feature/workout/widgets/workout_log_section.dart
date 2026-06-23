@@ -269,6 +269,7 @@ class _EditableGroupNameState extends State<_EditableGroupName> {
       controller: _controller,
       dense: true,
       textCapitalization: TextCapitalization.sentences,
+      onChanged: _submit,
       onSubmitted: _submit,
     );
   }
