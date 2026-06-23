@@ -149,6 +149,7 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
         skipLoggedMealReminders: settings.skipLoggedMealReminders,
         mealsLoggedToday: mealsLoggedToday,
         weighedInToday: weighedInToday,
+        workoutReminder: settings.workoutReminder,
       ),
     );
   }

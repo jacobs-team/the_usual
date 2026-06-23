@@ -27,6 +27,7 @@ class NotificationService {
   // Stable notification ids per reminder so a resync replaces, not duplicates.
   static const _endOfDayId = 100;
   static const _weightBaseId = 200;
+  static const _workoutBaseId = 300;
 
   // Weigh-ins that aren't daily can't use a native repeat, so a window of
   // upcoming occurrences is scheduled and topped up on each [sync].
@@ -90,6 +91,10 @@ class NotificationService {
     bool skipLoggedMealReminders = false,
     Set<MealOfTheDay> mealsLoggedToday = const {},
     bool weighedInToday = false,
+    WorkoutReminder workoutReminder = const WorkoutReminder(
+      enabled: false,
+      timeOfDay: TimeOfDay(hour: 18, minute: 0),
+    ),
   }) async {
     await _plugin.cancelAll();
     if (reminderStyle != ReminderStyle.notifications) return;
@@ -131,6 +136,18 @@ class NotificationService {
         weightTimeOfDay,
         skipToday: skipWeightToday,
       );
+    }
+
+    if (workoutReminder.enabled) {
+      for (final dayOfWeek in workoutReminder.daysOfWeek) {
+        await _scheduleWeekly(
+          id: _workoutBaseId + dayOfWeek,
+          title: 'Did you work out today?',
+          body: 'Tap to log it in The Usual.',
+          dayOfWeek: dayOfWeek,
+          time: workoutReminder.timeOfDay,
+        );
+      }
     }
   }
 
@@ -185,6 +202,28 @@ class NotificationService {
       notificationDetails: _details,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time,
+    );
+  }
+
+  Future<void> _scheduleWeekly({
+    required int id,
+    required String title,
+    required String body,
+    required int dayOfWeek,
+    required TimeOfDay time,
+  }) async {
+    var scheduled = _nextInstanceOf(time);
+    while (scheduled.weekday != dayOfWeek) {
+      scheduled = scheduled.add(const Duration(days: 1));
+    }
+    await _plugin.zonedSchedule(
+      id: id,
+      scheduledDate: scheduled,
+      title: title,
+      body: body,
+      notificationDetails: _details,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+      matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
     );
   }
 

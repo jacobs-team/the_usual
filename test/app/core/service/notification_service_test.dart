@@ -405,6 +405,113 @@ void main() {
           ),
         ).called(15);
       });
+
+      group('workout reminder', () {
+        WorkoutReminder workoutReminder({
+          required bool enabled,
+          Set<int> daysOfWeek = const {1, 3},
+          int hour = 18,
+        }) {
+          return WorkoutReminder(
+            enabled: enabled,
+            daysOfWeek: daysOfWeek,
+            timeOfDay: TimeOfDay(hour: hour, minute: 0),
+          );
+        }
+
+        test(
+          'schedules weekly notifications for each enabled day with correct title',
+          () async {
+            await notificationService.sync(
+              reminderStyle: ReminderStyle.notifications,
+              scheduleMode: MealCheckinScheduleMode.endOfDay,
+              mealReminders: const {},
+              endOfDayReminder: reminder(enabled: true),
+              weightCheckinFrequency: WeightCheckinFrequency.off,
+              weightTimeOfDay: WeightTimeOfDay.morning,
+              workoutReminder: workoutReminder(enabled: true, daysOfWeek: {1, 3}),
+            );
+
+            verify(
+              () => plugin.zonedSchedule(
+                id: 301,
+                scheduledDate: any(named: 'scheduledDate'),
+                notificationDetails: any(named: 'notificationDetails'),
+                androidScheduleMode: any(named: 'androidScheduleMode'),
+                title: 'Did you work out today?',
+                body: any(named: 'body'),
+                matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+              ),
+            ).called(1);
+
+            verify(
+              () => plugin.zonedSchedule(
+                id: 303,
+                scheduledDate: any(named: 'scheduledDate'),
+                notificationDetails: any(named: 'notificationDetails'),
+                androidScheduleMode: any(named: 'androidScheduleMode'),
+                title: 'Did you work out today?',
+                body: any(named: 'body'),
+                matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+              ),
+            ).called(1);
+          },
+        );
+
+        test(
+          'does not schedule workout notifications when disabled',
+          () async {
+            await notificationService.sync(
+              reminderStyle: ReminderStyle.notifications,
+              scheduleMode: MealCheckinScheduleMode.endOfDay,
+              mealReminders: const {},
+              endOfDayReminder: reminder(enabled: true),
+              weightCheckinFrequency: WeightCheckinFrequency.off,
+              weightTimeOfDay: WeightTimeOfDay.morning,
+              workoutReminder: workoutReminder(enabled: false),
+            );
+
+            verifyNever(
+              () => plugin.zonedSchedule(
+                id: any(named: 'id', that: greaterThanOrEqualTo(300)),
+                scheduledDate: any(named: 'scheduledDate'),
+                notificationDetails: any(named: 'notificationDetails'),
+                androidScheduleMode: any(named: 'androidScheduleMode'),
+                title: any(named: 'title'),
+                body: any(named: 'body'),
+                matchDateTimeComponents: any(named: 'matchDateTimeComponents'),
+              ),
+            );
+          },
+        );
+
+        test(
+          'does not schedule workout notifications when reminderStyle is none',
+          () async {
+            await notificationService.sync(
+              reminderStyle: ReminderStyle.none,
+              scheduleMode: MealCheckinScheduleMode.endOfDay,
+              mealReminders: const {},
+              endOfDayReminder: reminder(enabled: true),
+              weightCheckinFrequency: WeightCheckinFrequency.off,
+              weightTimeOfDay: WeightTimeOfDay.morning,
+              workoutReminder: workoutReminder(enabled: true),
+            );
+
+            verifyNever(
+              () => plugin.zonedSchedule(
+                id: any(named: 'id'),
+                scheduledDate: any(named: 'scheduledDate'),
+                notificationDetails: any(named: 'notificationDetails'),
+                androidScheduleMode: any(named: 'androidScheduleMode'),
+                title: any(named: 'title'),
+                body: any(named: 'body'),
+                matchDateTimeComponents: any(named: 'matchDateTimeComponents'),
+              ),
+            );
+          },
+        );
+      });
     });
   });
 }
