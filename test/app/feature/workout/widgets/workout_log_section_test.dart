@@ -51,6 +51,8 @@ void main() {
       bool expandedByDefault = false,
       List<DateTime>? logDays,
       TimeOfDay? dayStart,
+      ValueChanged<String>? onRenamed,
+      VoidCallback? onDeleteRequested,
     }) {
       tester.view.physicalSize = const Size(1200, 3000);
       tester.view.devicePixelRatio = 1.0;
@@ -68,6 +70,8 @@ void main() {
               expandedByDefault: expandedByDefault,
               logDays: logDays,
               dayStart: dayStart,
+              onRenamed: onRenamed ?? (_) {},
+              onDeleteRequested: onDeleteRequested ?? () {},
             ),
           ],
         ),
@@ -118,6 +122,31 @@ void main() {
           ),
         ),
       ).called(1);
+    });
+
+    testWidgets('editing the group name and submitting calls onRenamed', (
+      tester,
+    ) async {
+      String? captured;
+      await pumpSection(tester, onRenamed: (value) => captured = value);
+
+      await tester.enterText(find.byKey(const Key('group-name-push')), 'Chest');
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pump();
+
+      expect(captured, equals('Chest'));
+    });
+
+    testWidgets('tapping the delete icon calls onDeleteRequested', (
+      tester,
+    ) async {
+      var deleteCalled = false;
+      await pumpSection(tester, onDeleteRequested: () => deleteCalled = true);
+
+      await tester.tap(find.byIcon(Icons.delete_outline));
+      await tester.pump();
+
+      expect(deleteCalled, isTrue);
     });
 
     testWidgets('section header shows volume when entries exist', (

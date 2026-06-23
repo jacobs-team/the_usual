@@ -16,6 +16,8 @@ class WorkoutLogSection extends StatelessWidget {
     required this.quickPicks,
     required this.weightUnit,
     required this.expandedByDefault,
+    required this.onRenamed,
+    required this.onDeleteRequested,
     this.justLoggedWorkoutId,
     this.logDays,
     this.dayStart,
@@ -37,6 +39,12 @@ class WorkoutLogSection extends StatelessWidget {
 
   /// Whether each logged entry's set fields start expanded for editing.
   final bool expandedByDefault;
+
+  /// Called with the trimmed new name when the user renames the group.
+  final ValueChanged<String> onRenamed;
+
+  /// Called when the user taps the delete button.
+  final VoidCallback onDeleteRequested;
 
   /// The most-recently-logged entry's id. Its row opens regardless of
   /// [expandedByDefault] so the user can adjust the sets right after logging.
@@ -116,9 +124,10 @@ class WorkoutLogSection extends StatelessWidget {
                   child: Row(
                     children: [
                       Expanded(
-                        child: Text(
-                          workoutGroup.name,
-                          style: theme.textTheme.titleMedium,
+                        child: _EditableGroupName(
+                          key: Key('group-name-${workoutGroup.id}'),
+                          name: workoutGroup.name,
+                          onRenamed: onRenamed,
                         ),
                       ),
                       if (workoutLogEntries.isNotEmpty)
@@ -126,6 +135,10 @@ class WorkoutLogSection extends StatelessWidget {
                           '${totalVolume.trimmedDecimal} ${weightUnit.name}',
                           style: theme.textTheme.bodyMedium,
                         ),
+                      IconButton(
+                        icon: const Icon(Icons.delete_outline),
+                        onPressed: onDeleteRequested,
+                      ),
                     ],
                   ),
                 ),
@@ -208,6 +221,55 @@ class WorkoutLogSection extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _EditableGroupName extends StatefulWidget {
+  const _EditableGroupName({
+    required this.name,
+    required this.onRenamed,
+    super.key,
+  });
+
+  final String name;
+  final ValueChanged<String> onRenamed;
+
+  @override
+  State<_EditableGroupName> createState() => _EditableGroupNameState();
+}
+
+class _EditableGroupNameState extends State<_EditableGroupName> {
+  late final _controller = TextEditingController(text: widget.name);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(_EditableGroupName oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.name != oldWidget.name && _controller.text != widget.name) {
+      _controller.text = widget.name;
+    }
+  }
+
+  void _submit(String value) {
+    final trimmed = value.trim();
+    if (trimmed.isNotEmpty && trimmed != widget.name) {
+      widget.onRenamed(trimmed);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TheUsualTextField(
+      controller: _controller,
+      dense: true,
+      textCapitalization: TextCapitalization.sentences,
+      onSubmitted: _submit,
     );
   }
 }
