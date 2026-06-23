@@ -227,20 +227,15 @@ void main() {
     // ── Bodyweight checkbox disabled message ─────────────────────────────────
 
     testWidgets(
-        'tapping bodyweight checkbox when bodyWeight is null shows the snack bar',
+        'tapping bodyweight checkbox when bodyWeight is null shows inline hint',
         (tester) async {
       await showSheet(tester);
 
       await tester.tap(find.byKey(const Key('bodyweight-checkbox')));
       await tester.pump();
 
-      expect(
-        find.text(
-          'Add your body weight to estimate bodyweight sets. '
-          'Log it on the Today view or set a starting weight in Settings.',
-        ),
-        findsOneWidget,
-      );
+      expect(find.byKey(const Key('bodyweight-hint')), findsOneWidget);
+      expect(find.byType(SnackBar), findsNothing);
 
       // The checkbox must remain unchecked.
       final checkbox = tester.widget<Checkbox>(

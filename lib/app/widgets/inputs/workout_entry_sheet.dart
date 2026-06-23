@@ -66,6 +66,7 @@ class WorkoutEntrySheetState extends State<WorkoutEntrySheet> {
   var _saveAsUsual = false;
   var _bodyweightChecked = false;
   var _estimating = false;
+  var _bodyweightHintShown = false;
 
   /// Name-suggestion chips shown below the name field after a photo scan.
   var _suggestions = const <String>[];
@@ -178,105 +179,122 @@ class WorkoutEntrySheetState extends State<WorkoutEntrySheet> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: TheUsualTextField(
-                  controller: _nameController,
-                  autofocus: true,
-                  hintText: 'e.g. Bench Press',
-                  textCapitalization: TextCapitalization.sentences,
-                  onChanged: (_) => setState(() {}),
-                ),
-              ),
-              if (_aiAvailable) ...[
-                SizedBox(width: AppDesign.spacing.sm),
-                FilledButton.tonalIcon(
-                  style: aiButtonStyle,
-                  onPressed: _suggesting ? null : _pickPhotosAndSuggest,
-                  icon: const Icon(
-                    Icons.photo_camera_outlined,
-                    size: 18,
-                  ),
-                  label: const Text('Photo'),
-                ),
-              ],
-            ],
-          ),
-          if (_suggesting) ...[
-            SizedBox(height: AppDesign.spacing.sm),
-            Row(
-              children: [
-                const SizedBox(
-                  width: 16,
-                  height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-                SizedBox(width: AppDesign.spacing.sm),
-                Text('Finding exercises…', style: textTheme.bodySmall),
-              ],
-            ),
-          ],
-          if (_suggestions.isNotEmpty) ...[
-            SizedBox(height: AppDesign.spacing.sm),
-            Wrap(
-              spacing: AppDesign.spacing.sm,
-              runSpacing: AppDesign.spacing.xs,
-              children: [
-                for (final suggestion in _suggestions)
-                  ActionChip(
-                    label: Text(suggestion),
-                    onPressed: () => _applyChip(suggestion),
-                  ),
-              ],
-            ),
-          ],
-          SizedBox(height: AppDesign.spacing.md),
-          const SectionLabel('SETS'),
-          SetFields(
-            initial: _currentSets,
-            weightUnit: widget.weightUnit,
-            bodyweight: _bodyweightChecked,
-            onChanged: (sets) => setState(() => _currentSets = sets),
-          ),
-          SizedBox(height: AppDesign.spacing.sm),
-          Row(
-            children: [
-              Checkbox(
-                key: const Key('bodyweight-checkbox'),
-                value: _bodyweightChecked,
-                onChanged: (_) {
-                  if (widget.bodyWeight == null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Add your body weight to estimate bodyweight sets. '
-                          'Log it on the Today view or set a starting weight '
-                          'in Settings.',
+          Card(
+            child: Padding(
+              padding: EdgeInsets.all(AppDesign.spacing.md),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TheUsualTextField(
+                          controller: _nameController,
+                          autofocus: true,
+                          hintText: 'e.g. Bench Press',
+                          textCapitalization: TextCapitalization.sentences,
+                          onChanged: (_) => setState(() {}),
                         ),
                       ),
-                    );
-                    return;
-                  }
-                  setState(() => _bodyweightChecked = !_bodyweightChecked);
-                },
+                      if (_aiAvailable) ...[
+                        SizedBox(width: AppDesign.spacing.sm),
+                        FilledButton.tonalIcon(
+                          style: aiButtonStyle,
+                          onPressed: _suggesting ? null : _pickPhotosAndSuggest,
+                          icon: const Icon(
+                            Icons.photo_camera_outlined,
+                            size: 18,
+                          ),
+                          label: const Text('Photo'),
+                        ),
+                      ],
+                    ],
+                  ),
+                  if (_suggesting) ...[
+                    SizedBox(height: AppDesign.spacing.sm),
+                    Row(
+                      children: [
+                        const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                        SizedBox(width: AppDesign.spacing.sm),
+                        Text('Finding exercises…', style: textTheme.bodySmall),
+                      ],
+                    ),
+                  ],
+                  if (_suggestions.isNotEmpty) ...[
+                    SizedBox(height: AppDesign.spacing.sm),
+                    Wrap(
+                      spacing: AppDesign.spacing.sm,
+                      runSpacing: AppDesign.spacing.xs,
+                      children: [
+                        for (final suggestion in _suggestions)
+                          ActionChip(
+                            label: Text(suggestion),
+                            onPressed: () => _applyChip(suggestion),
+                          ),
+                      ],
+                    ),
+                  ],
+                  SizedBox(height: AppDesign.spacing.md),
+                  const SectionLabel('SETS'),
+                  SetFields(
+                    initial: _currentSets,
+                    weightUnit: widget.weightUnit,
+                    bodyweight: _bodyweightChecked,
+                    onChanged: (sets) => setState(() => _currentSets = sets),
+                  ),
+                  SizedBox(height: AppDesign.spacing.sm),
+                  Row(
+                    children: [
+                      Checkbox(
+                        key: const Key('bodyweight-checkbox'),
+                        value: _bodyweightChecked,
+                        onChanged: (_) {
+                          if (widget.bodyWeight == null) {
+                            setState(() => _bodyweightHintShown = true);
+                            return;
+                          }
+                          setState(
+                            () => _bodyweightChecked = !_bodyweightChecked,
+                          );
+                        },
+                      ),
+                      const Expanded(
+                        child: Text('Estimate set weight based on body weight'),
+                      ),
+                    ],
+                  ),
+                  if (_bodyweightHintShown && widget.bodyWeight == null)
+                    Text(
+                      'Add your body weight to estimate bodyweight sets. '
+                      'Log it on the Today view or set a starting weight '
+                      'in Settings.',
+                      key: const Key('bodyweight-hint'),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                    ),
+                  if (widget.showAddToUsuals) ...[
+                    Row(
+                      children: [
+                        Checkbox(
+                          key: const Key('save-as-usual-checkbox'),
+                          value: _saveAsUsual,
+                          onChanged: (value) =>
+                              setState(() => _saveAsUsual = value ?? false),
+                        ),
+                        const Text('Save as usual'),
+                      ],
+                    ),
+                  ],
+                ],
               ),
-              const Text('Bodyweight'),
-            ],
-          ),
-          if (widget.showAddToUsuals) ...[
-            Row(
-              children: [
-                Checkbox(
-                  key: const Key('save-as-usual-checkbox'),
-                  value: _saveAsUsual,
-                  onChanged: (value) =>
-                      setState(() => _saveAsUsual = value ?? false),
-                ),
-                const Text('Save as usual'),
-              ],
             ),
-          ],
+          ),
           SizedBox(height: AppDesign.spacing.md),
           FilledButton(
             key: const Key('confirm-button'),
