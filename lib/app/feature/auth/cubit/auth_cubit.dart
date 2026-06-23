@@ -189,7 +189,7 @@ class AuthCubit extends HydratedCubit<AuthState> implements Listenable {
   Future<void> startFresh() async {
     final uid = _pendingUid;
     if (uid == null) return;
-    _syncRepository.clearLocal();
+    await _syncRepository.clearLocal();
     await _syncRepository.uploadLocal(uid);
     _completeSignIn();
   }
@@ -258,7 +258,7 @@ class AuthCubit extends HydratedCubit<AuthState> implements Listenable {
     cancelToken = CancelToken();
     _syncRepository.stopWatching();
     await _authRepository.signOut();
-    _syncRepository.clearLocal();
+    await _syncRepository.clearLocal();
     emit(state.copyWith(status: AuthStatus.guest, user: null));
   }
 

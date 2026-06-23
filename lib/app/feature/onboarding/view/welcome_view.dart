@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
 import 'package:the_usual/design_system/design_system.dart';
@@ -7,6 +8,10 @@ import 'package:the_usual/design_system/design_system.dart';
 /// First onboarding screen: the value prop and the account choice. Signing in
 /// backs up and syncs to the cloud; staying offline keeps everything local as a
 /// guest. A returning account with cloud data skips the rest of onboarding.
+///
+/// A user who is already signed in but routed back here (e.g. after "start
+/// fresh") has already made the account choice, so they just get a continue
+/// button rather than the choice again.
 /// {@endtemplate}
 class WelcomeView extends StatelessWidget {
   /// {@macro welcome_view}
@@ -36,40 +41,57 @@ class WelcomeView extends StatelessWidget {
             'Set up your usual meals once and logging takes seconds.',
           ),
           const Spacer(),
-          GoogleSignInButton(
-            onSignedIn: () {
-              // Cancelled sign-in leaves the user on this screen to choose
-              // again. A signed-in existing account has onboarding marked
-              // complete already (the router moves to the app); a new account
-              // continues onboarding from here.
-              if (!getIt<AuthCubit>().state.signedIn) return;
-              if (getIt<OnboardingBloc>().state.step !=
-                  OnboardingStep.complete) {
-                _continueOnboarding();
+          BlocSelector<AuthCubit, AuthState, bool>(
+            bloc: getIt<AuthCubit>(),
+            selector: (state) => state.signedIn,
+            builder: (context, signedIn) {
+              if (signedIn) {
+                return FilledButton(
+                  onPressed: _continueOnboarding,
+                  child: const Text('Get started'),
+                );
               }
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  GoogleSignInButton(
+                    onSignedIn: () {
+                      // Cancelled sign-in leaves the user here to choose again.
+                      // A signed-in existing account has onboarding marked
+                      // complete already (the router moves to the app); a new
+                      // account continues onboarding from here.
+                      if (!getIt<AuthCubit>().state.signedIn) return;
+                      if (getIt<OnboardingBloc>().state.step !=
+                          OnboardingStep.complete) {
+                        _continueOnboarding();
+                      }
+                    },
+                  ),
+                  SizedBox(height: AppDesign.spacing.xs),
+                  Text(
+                    'Backs up your meals and settings and syncs them across '
+                    'your devices.',
+                    style: captionStyle,
+                    textAlign: TextAlign.center,
+                  ),
+                  SizedBox(height: AppDesign.spacing.md),
+                  OutlinedButton(
+                    onPressed: () {
+                      getIt<AuthCubit>().continueAsGuest();
+                      _continueOnboarding();
+                    },
+                    child: const Text('Keep it offline'),
+                  ),
+                  SizedBox(height: AppDesign.spacing.xs),
+                  Text(
+                    'Keeps everything on this device only. You can sign in '
+                    'later to back up.',
+                    style: captionStyle,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              );
             },
-          ),
-          SizedBox(height: AppDesign.spacing.xs),
-          Text(
-            'Backs up your meals and settings and syncs them across your '
-            'devices.',
-            style: captionStyle,
-            textAlign: TextAlign.center,
-          ),
-          SizedBox(height: AppDesign.spacing.md),
-          OutlinedButton(
-            onPressed: () {
-              getIt<AuthCubit>().continueAsGuest();
-              _continueOnboarding();
-            },
-            child: const Text('Keep it offline'),
-          ),
-          SizedBox(height: AppDesign.spacing.xs),
-          Text(
-            'Keeps everything on this device only. You can sign in later to '
-            'back up.',
-            style: captionStyle,
-            textAlign: TextAlign.center,
           ),
         ],
       ),

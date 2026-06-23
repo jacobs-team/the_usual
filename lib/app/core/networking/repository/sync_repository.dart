@@ -60,11 +60,17 @@ class SyncRepository {
         settings.hasEstablishedUsuals;
   }
 
-  Map<String, dynamic> _currentDocument() => {
+  Map<String, dynamic> _documentOf(
+    DailyLogState dailyLog,
+    UserSettingsState settings,
+  ) => {
     'schemaVersion': _schemaVersion,
-    'dailyLog': _dailyLogBloc.state.toJson(),
-    'userSettings': _userSettingsBloc.state.toJson(),
+    'dailyLog': dailyLog.toJson(),
+    'userSettings': settings.toJson(),
   };
+
+  Map<String, dynamic> _currentDocument() =>
+      _documentOf(_dailyLogBloc.state, _userSettingsBloc.state);
 
   /// Whether the user already has a cloud document. Guards the `isNewUser`
   /// flag against the case where the Auth record exists but the document does
@@ -99,13 +105,19 @@ class SyncRepository {
         ? UserSettingsState.fromJson(settingsJson)
         : const UserSettingsState();
 
-    if (dailyLog != _dailyLogBloc.state) {
+    // Compare ignoring the transient justLoggedEntryId, which the cloud doc
+    // can't carry, so an echo of our own write doesn't clear the quick-edit
+    // highlight by restoring an otherwise-identical state.
+    if (dailyLog != _dailyLogBloc.state.copyWith(justLoggedEntryId: null)) {
       _dailyLogBloc.add(DailyLogEvent.stateRestored(dailyLog));
     }
     if (settings != _userSettingsBloc.state) {
       _userSettingsBloc.add(UserSettingsEvent.stateRestored(settings));
     }
-    _lastSyncedJson = jsonEncode(document);
+    // Store the canonical encoding (from toJson) rather than the raw document,
+    // whose key order can differ, so write-through recognises it as unchanged
+    // and skips a redundant upload.
+    _lastSyncedJson = jsonEncode(_documentOf(dailyLog, settings));
     return dailyLog.hasEstablishedLog(settings.dayStartTime) ||
         settings.hasEstablishedUsuals;
   }
@@ -190,13 +202,29 @@ class SyncRepository {
   }
 
   /// Resets the synced blocs to their initial state and restarts onboarding.
-  /// Used on sign-out and when starting a fresh account.
-  void clearLocal() {
-    _dailyLogBloc.add(const DailyLogEvent.stateRestored(DailyLogState()));
-    _userSettingsBloc.add(
-      const UserSettingsEvent.stateRestored(UserSettingsState()),
-    );
+  /// Used on sign-out and when starting a fresh account. Awaits the resets so a
+  /// caller that reads bloc state next (e.g. uploading a fresh, empty document)
+  /// never sees the pre-clear data — `bloc.add` is asynchronous.
+  Future<void> clearLocal() async {
     resetOnboarding();
     _lastSyncedJson = null;
+    final waits = <Future<void>>[];
+    if (_dailyLogBloc.state != const DailyLogState()) {
+      _dailyLogBloc.add(const DailyLogEvent.stateRestored(DailyLogState()));
+      waits.add(
+        _dailyLogBloc.stream.firstWhere((s) => s == const DailyLogState()),
+      );
+    }
+    if (_userSettingsBloc.state != const UserSettingsState()) {
+      _userSettingsBloc.add(
+        const UserSettingsEvent.stateRestored(UserSettingsState()),
+      );
+      waits.add(
+        _userSettingsBloc.stream.firstWhere(
+          (s) => s == const UserSettingsState(),
+        ),
+      );
+    }
+    await Future.wait(waits);
   }
 }
