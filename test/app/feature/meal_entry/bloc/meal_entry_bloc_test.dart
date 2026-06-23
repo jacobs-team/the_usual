@@ -143,6 +143,124 @@ void main() {
       ],
     );
 
+    blocTest<FoodEntryBloc, MealEntryState>(
+      'photosCleared empties the photo list',
+      build: build,
+      seed: () => MealEntryState(
+        photos: [MealPhoto(bytes: transparentPixel)],
+      ),
+      act: (bloc) => bloc.add(const MealEntryEvent.photosCleared()),
+      expect: () => [
+        isA<MealEntryState>().having((s) => s.photos, 'photos', isEmpty),
+      ],
+    );
+
+    group('photoRemoved', () {
+      blocTest<FoodEntryBloc, MealEntryState>(
+        'drops the photo at the given index',
+        build: build,
+        seed: () => MealEntryState(
+          photos: [
+            MealPhoto(bytes: transparentPixel),
+            MealPhoto(bytes: transparentPixel),
+          ],
+        ),
+        act: (bloc) => bloc.add(const MealEntryEvent.photoRemoved(0)),
+        expect: () => [
+          isA<MealEntryState>().having((s) => s.photos, 'photos', hasLength(1)),
+        ],
+      );
+
+      blocTest<FoodEntryBloc, MealEntryState>(
+        'ignores an out-of-range index',
+        build: build,
+        seed: () => MealEntryState(
+          photos: [MealPhoto(bytes: transparentPixel)],
+        ),
+        act: (bloc) => bloc.add(const MealEntryEvent.photoRemoved(5)),
+        expect: () => <MealEntryState>[],
+      );
+    });
+
+    blocTest<FoodEntryBloc, MealEntryState>(
+      'started auto-estimates from photos when asked',
+      build: build,
+      setUp: () {
+        when(
+          () => repository.suggestFromPhoto(
+            any(),
+            mode: any(named: 'mode'),
+            description: any(named: 'description'),
+          ),
+        ).thenAnswer(
+          (_) async => const [
+            AiMealSuggestion(
+              name: 'Salad',
+              nutrition: Nutrition(calories: 120),
+            ),
+          ],
+        );
+      },
+      act: (bloc) => bloc.add(
+        MealEntryEvent.started(
+          photos: [MealPhoto(bytes: transparentPixel)],
+          autoEstimate: true,
+        ),
+      ),
+      expect: () => [
+        isA<MealEntryState>().having((s) => s.photos, 'photos', hasLength(1)),
+        isA<MealEntryState>().having(
+          (s) => s.status,
+          'status',
+          MealEntryStatus.generating,
+        ),
+        isA<MealEntryState>()
+            .having((s) => s.status, 'status', MealEntryStatus.idle)
+            .having((s) => s.foods.single.nutrition.calories, 'calories', 120),
+      ],
+      verify: (_) {
+        verify(
+          () => repository.suggestFromPhoto(
+            any(),
+            mode: any(named: 'mode'),
+            description: any(named: 'description'),
+          ),
+        ).called(1);
+      },
+    );
+
+    group('estimateRequested without an API key', () {
+      blocTest<FoodEntryBloc, MealEntryState>(
+        'a named row fails when the AI is not configured',
+        build: build,
+        setUp: () => when(() => repository.isConfigured).thenReturn(false),
+        seed: () => const MealEntryState(
+          foods: [FoodDraft(id: 'a', name: 'eggs')],
+        ),
+        act: (bloc) => bloc.add(const MealEntryEvent.estimateRequested()),
+        expect: () => [
+          isA<MealEntryState>()
+              .having((s) => s.status, 'status', MealEntryStatus.failure)
+              .having((s) => s.errorMessage, 'errorMessage', isNotNull),
+        ],
+      );
+
+      blocTest<FoodEntryBloc, MealEntryState>(
+        'a photo estimate fails when the AI is not configured',
+        build: build,
+        setUp: () => when(() => repository.isConfigured).thenReturn(false),
+        seed: () => MealEntryState(
+          photos: [MealPhoto(bytes: transparentPixel)],
+        ),
+        act: (bloc) => bloc.add(const MealEntryEvent.estimateRequested()),
+        expect: () => [
+          isA<MealEntryState>()
+              .having((s) => s.status, 'status', MealEntryStatus.failure)
+              .having((s) => s.errorMessage, 'errorMessage', isNotNull),
+        ],
+      );
+    });
+
     group('estimateRequested', () {
       blocTest<FoodEntryBloc, MealEntryState>(
         'a single named row is estimated and the rows are replaced',

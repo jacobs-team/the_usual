@@ -378,6 +378,52 @@ void main() {
       });
     });
 
+    group('hasEstablishedLog', () {
+      MealLogEntry mealEntry(String id, DateTime loggedAt) {
+        return MealLogEntry(
+          id: id,
+          loggedAt: loggedAt,
+          mealOfTheDay: MealOfTheDay.breakfast,
+          name: id,
+          nutrition: const Nutrition(calories: 100),
+        );
+      }
+
+      test('is true when there is any meal entry', () {
+        final state = DailyLogState(
+          mealEntries: [mealEntry('m1', DateTime(2026, 6, 14, 8))],
+        );
+
+        expect(state.hasEstablishedLog(dayStart), isTrue);
+      });
+
+      test('is true when weigh-ins span more than one logical day', () {
+        final state = DailyLogState(
+          weightEntries: [
+            weightEntry('a', DateTime(2026, 6, 14, 7)),
+            weightEntry('b', DateTime(2026, 6, 15, 7)),
+          ],
+        );
+
+        expect(state.hasEstablishedLog(dayStart), isTrue);
+      });
+
+      test('is false with no meals and no weigh-ins', () {
+        expect(const DailyLogState().hasEstablishedLog(dayStart), isFalse);
+      });
+
+      test('is false with no meals and weigh-ins on a single logical day', () {
+        final state = DailyLogState(
+          weightEntries: [
+            weightEntry('a', DateTime(2026, 6, 14, 7)),
+            weightEntry('b', DateTime(2026, 6, 14, 22)),
+          ],
+        );
+
+        expect(state.hasEstablishedLog(dayStart), isFalse);
+      });
+    });
+
     group('historyByMonth', () {
       test('is empty when nothing has been logged', () {
         expect(const DailyLogState().historyByMonth(dayStart), isEmpty);

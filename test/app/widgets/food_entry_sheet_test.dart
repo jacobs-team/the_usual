@@ -721,6 +721,37 @@ void main() {
       expect(find.byType(SegmentedButton<MealOfTheDay>), findsOneWidget);
     });
 
+    testWidgets('changing the slot selection updates the selector', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(1200, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: Scaffold(
+            body: FoodEntrySheet(
+              title: 'Log',
+              confirmLabel: 'Log',
+              showMealSelector: true,
+              initialMealOfTheDay: MealOfTheDay.breakfast,
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      await tester.tap(find.text(MealOfTheDay.dinner.label));
+      await tester.pump();
+
+      final selector = tester.widget<SegmentedButton<MealOfTheDay>>(
+        find.byType(SegmentedButton<MealOfTheDay>),
+      );
+      expect(selector.selected, equals({MealOfTheDay.dinner}));
+    });
+
     testWidgets('hides the slot selector by default', (tester) async {
       await tester.pumpWidget(
         const MaterialApp(

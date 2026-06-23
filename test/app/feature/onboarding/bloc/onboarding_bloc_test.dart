@@ -51,6 +51,17 @@ void main() {
       );
 
       blocTest<OnboardingBloc, OnboardingState>(
+        'markCompleted jumps to the complete step silently',
+        build: OnboardingBloc.new,
+        act: (bloc) => bloc.add(const OnboardingEvent.markCompleted()),
+        expect: () => [
+          isA<OnboardingState>()
+              .having((s) => s.step, 'step', OnboardingStep.complete)
+              .having((s) => s.completedSilently, 'completedSilently', isTrue),
+        ],
+      );
+
+      blocTest<OnboardingBloc, OnboardingState>(
         'resetPressed returns to the default state',
         build: OnboardingBloc.new,
         seed: () => const OnboardingState(step: OnboardingStep.goals),

@@ -99,6 +99,57 @@ void main() {
       expect(find.byType(DatePickerDialog), findsOneWidget);
     });
 
+    testWidgets('picking a different day selects that day as a range', (
+      tester,
+    ) async {
+      await withTestClock(() async {
+        stubDailyLog(const DailyLogState());
+        stubSettings(const UserSettingsState());
+        await pumpView(tester);
+
+        await tester.tap(find.byKey(const Key('today-date-pill')));
+        await tester.pumpAndSettle();
+
+        // The picker opens on testNow (the 18th); step back to the 17th and
+        // confirm so a non-today range is selected.
+        await tester.tap(find.text('17'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('OK'));
+        await tester.pumpAndSettle();
+
+        // No meal is highlighted as current once a past day is selected.
+        final sections = tester
+            .widgetList<MealLogSection>(find.byType(MealLogSection))
+            .toList();
+        expect(sections.where((section) => section.isCurrent), isEmpty);
+        expect(sections.first.logDays, isNotNull);
+
+        // Reopening the picker now seeds it from the selected range's start.
+        await tester.tap(find.byKey(const Key('today-date-pill')));
+        await tester.pumpAndSettle();
+        expect(find.byType(DatePickerDialog), findsOneWidget);
+      }, at: testNow);
+    });
+
+    testWidgets('reselecting today clears the selected range', (tester) async {
+      await withTestClock(() async {
+        stubDailyLog(const DailyLogState());
+        stubSettings(const UserSettingsState());
+        await pumpView(tester);
+
+        await tester.tap(find.byKey(const Key('today-date-pill')));
+        await tester.pumpAndSettle();
+        // The picker already sits on today (the 18th); confirm it.
+        await tester.tap(find.text('OK'));
+        await tester.pumpAndSettle();
+
+        final sections = tester
+            .widgetList<MealLogSection>(find.byType(MealLogSection))
+            .toList();
+        expect(sections.first.logDays, isNull);
+      }, at: testNow);
+    });
+
     testWidgets('highlights the current meal in the live today view', (
       tester,
     ) async {

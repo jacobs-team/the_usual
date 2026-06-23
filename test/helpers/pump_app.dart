@@ -62,7 +62,7 @@ extension PumpApp on WidgetTester {
 
     // Lazy so the router binds to whichever AuthCubit the test registered.
     getIt.registerLazySingleton<AppRouter>(
-      AppRouter.new,
+      () => AppRouter(getIt<AuthCubit>()),
     );
 
     if (router != null) {

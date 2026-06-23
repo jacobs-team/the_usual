@@ -157,6 +157,33 @@ void main() {
       expect(find.byType(TextButton), findsNothing);
     });
 
+    testWidgets('re-seeds from the new day when the edited day changes', (
+      tester,
+    ) async {
+      final otherDay = DateTime(2026, 6, 18);
+      final dailyLogBloc = dailyLogBlocWith([
+        weightEntryOn(day, 165),
+        weightEntryOn(otherDay, 200),
+      ]);
+      final dayNotifier = ValueNotifier<DateTime>(day);
+      addTearDown(dayNotifier.dispose);
+
+      await tester.pumpPumpPumpItUP(
+        ValueListenableBuilder<DateTime>(
+          valueListenable: dayNotifier,
+          builder: (context, value, _) => WeightEntryField(days: [value]),
+        ),
+        deps: [dailyLogBloc],
+      );
+
+      expect(fieldText(tester), equals('165'));
+
+      dayNotifier.value = otherDay;
+      await tester.pump();
+
+      expect(fieldText(tester), equals('200'));
+    });
+
     testWidgets('syncs the field to an externally-set weight', (tester) async {
       final stateController = StreamController<DailyLogState>.broadcast();
       addTearDown(stateController.close);

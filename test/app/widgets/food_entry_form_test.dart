@@ -61,6 +61,58 @@ void main() {
     expect(formKey.currentState!.hasContent, isTrue);
   });
 
+  testWidgets('changeMealOfTheDay switches the form slot', (tester) async {
+    final formKey = GlobalKey<FoodEntryFormState>();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: FoodEntryForm(key: formKey)),
+      ),
+    );
+    await tester.pump();
+
+    formKey.currentState!.changeMealOfTheDay(MealOfTheDay.dinner);
+    await tester.pump();
+
+    expect(formKey.currentState!.mealOfTheDay, equals(MealOfTheDay.dinner));
+  });
+
+  testWidgets('shows attached photos and removes one when tapped', (
+    tester,
+  ) async {
+    if (getIt.isRegistered<MealAiRepository>()) {
+      await getIt.unregister<MealAiRepository>();
+    }
+    final repository = MockMealAiRepository();
+    when(() => repository.isConfigured).thenReturn(true);
+    getIt.registerSingleton<MealAiRepository>(repository);
+
+    tester.view.physicalSize = const Size(1200, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: FoodEntryForm(
+            initialPhotos: [
+              MealPhoto(bytes: transparentPixel),
+              MealPhoto(bytes: transparentPixel),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byType(Image), findsNWidgets(2));
+
+    await tester.tap(find.byIcon(Icons.close).first);
+    await tester.pump();
+
+    expect(find.byType(Image), findsOneWidget);
+  });
+
   testWidgets('keeps the nutrition field state while editing a value', (
     tester,
   ) async {

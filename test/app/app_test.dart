@@ -50,6 +50,10 @@ void main() {
       registerFallbackValue(<MealOfTheDay, MealReminder>{});
       registerFallbackValue(MealEntryMode.wholeMeal);
       registerFallbackValue(<MealPhoto>[]);
+      registerFallbackValue(
+        const UserSettingsEvent.settingsCommitted(UserSettingsState()),
+      );
+      registerFallbackValue(const DailyLogEvent.sampleDataSeeded());
     });
 
     setUp(() async {
@@ -104,6 +108,7 @@ void main() {
       ).thenReturn(const AuthState(status: AuthStatus.guest));
       when(() => authCubit.stream).thenAnswer((_) => const Stream.empty());
       when(() => authCubit.restoreOnStartup()).thenAnswer((_) async {});
+      when(() => authCubit.ready).thenAnswer((_) async {});
 
       GetIt.instance
         ..registerSingleton<AuthCubit>(authCubit)
@@ -119,7 +124,9 @@ void main() {
             GetIt.instance<UserSettingsBloc>(),
           ),
         )
-        ..registerLazySingleton<AppRouter>(AppRouter.new);
+        ..registerLazySingleton<AppRouter>(
+          () => AppRouter(GetIt.instance<AuthCubit>()),
+        );
     });
 
     tearDown(() => GetIt.instance.reset());
@@ -244,6 +251,228 @@ void main() {
           ),
         ),
       ).called(1);
+    });
+
+    testWidgets(
+      'lands silently-completed onboarding in the app without committing',
+      (tester) async {
+        whenListen(
+          onboardingBloc,
+          Stream.value(
+            const OnboardingState(
+              step: OnboardingStep.complete,
+              completedSilently: true,
+            ),
+          ),
+          initialState: const OnboardingState(step: OnboardingStep.goals),
+        );
+
+        tester.view.physicalSize = const Size(1200, 3000);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        await tester.pumpWidget(const TheUsualsApp());
+        await tester.pumpAndSettle();
+
+        verifyNever(
+          () => userSettingsBloc.add(
+            any(that: isA<UserSettingsEvent>()),
+          ),
+        );
+      },
+    );
+
+    testWidgets(
+      'routes back through onboarding when completion is reset',
+      (tester) async {
+        whenListen(
+          onboardingBloc,
+          Stream.value(const OnboardingState(step: OnboardingStep.welcome)),
+          initialState: const OnboardingState(step: OnboardingStep.complete),
+        );
+
+        tester.view.physicalSize = const Size(1200, 3000);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        await tester.pumpWidget(const TheUsualsApp());
+        await tester.pumpAndSettle();
+
+        expect(
+          GetIt.instance<AppRouter>()
+              .router
+              .routerDelegate
+              .currentConfiguration
+              .uri
+              .toString(),
+          equals(Routes.onboarding),
+        );
+      },
+    );
+
+    group('sign-in prompts', () {
+      testWidgets(
+        'keepOrStartFresh prompt: keeping data calls keepGuestData',
+        (tester) async {
+          when(() => authCubit.keepGuestData()).thenAnswer((_) async {});
+          when(() => authCubit.startFresh()).thenAnswer((_) async {});
+          whenListen(
+            authCubit,
+            Stream.value(
+              const AuthState(
+                status: AuthStatus.guest,
+                pendingPrompt: SignInPrompt.keepOrStartFresh,
+              ),
+            ),
+            initialState: const AuthState(status: AuthStatus.guest),
+          );
+
+          tester.view.physicalSize = const Size(1200, 3000);
+          tester.view.devicePixelRatio = 1.0;
+          addTearDown(tester.view.resetPhysicalSize);
+          addTearDown(tester.view.resetDevicePixelRatio);
+
+          await tester.pumpWidget(TheUsualsApp(key: UniqueKey()));
+          await tester.pumpAndSettle();
+
+          expect(find.byType(AlertDialog), findsOneWidget);
+
+          // FilledButton is "Keep my data".
+          await tester.tap(
+            find.descendant(
+              of: find.byType(AlertDialog),
+              matching: find.byType(FilledButton),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          verify(() => authCubit.keepGuestData()).called(1);
+          verifyNever(() => authCubit.startFresh());
+        },
+      );
+
+      testWidgets(
+        'keepOrStartFresh prompt: starting fresh calls startFresh',
+        (tester) async {
+          when(() => authCubit.keepGuestData()).thenAnswer((_) async {});
+          when(() => authCubit.startFresh()).thenAnswer((_) async {});
+          whenListen(
+            authCubit,
+            Stream.value(
+              const AuthState(
+                status: AuthStatus.guest,
+                pendingPrompt: SignInPrompt.keepOrStartFresh,
+              ),
+            ),
+            initialState: const AuthState(status: AuthStatus.guest),
+          );
+
+          tester.view.physicalSize = const Size(1200, 3000);
+          tester.view.devicePixelRatio = 1.0;
+          addTearDown(tester.view.resetPhysicalSize);
+          addTearDown(tester.view.resetDevicePixelRatio);
+
+          await tester.pumpWidget(TheUsualsApp(key: UniqueKey()));
+          await tester.pumpAndSettle();
+
+          // TextButton is "Start fresh".
+          await tester.tap(
+            find.descendant(
+              of: find.byType(AlertDialog),
+              matching: find.byType(TextButton),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          verify(() => authCubit.startFresh()).called(1);
+          verifyNever(() => authCubit.keepGuestData());
+        },
+      );
+
+      testWidgets(
+        'replaceLocalWithCloud prompt: replacing calls '
+        'confirmReplaceWithCloud',
+        (tester) async {
+          when(
+            () => authCubit.confirmReplaceWithCloud(),
+          ).thenAnswer((_) async {});
+          when(() => authCubit.cancelSignIn()).thenAnswer((_) async {});
+          whenListen(
+            authCubit,
+            Stream.value(
+              const AuthState(
+                status: AuthStatus.guest,
+                pendingPrompt: SignInPrompt.replaceLocalWithCloud,
+              ),
+            ),
+            initialState: const AuthState(status: AuthStatus.guest),
+          );
+
+          tester.view.physicalSize = const Size(1200, 3000);
+          tester.view.devicePixelRatio = 1.0;
+          addTearDown(tester.view.resetPhysicalSize);
+          addTearDown(tester.view.resetDevicePixelRatio);
+
+          await tester.pumpWidget(TheUsualsApp(key: UniqueKey()));
+          await tester.pumpAndSettle();
+
+          expect(find.byType(AlertDialog), findsOneWidget);
+
+          // FilledButton is "Replace".
+          await tester.tap(
+            find.descendant(
+              of: find.byType(AlertDialog),
+              matching: find.byType(FilledButton),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          verify(() => authCubit.confirmReplaceWithCloud()).called(1);
+          verifyNever(() => authCubit.cancelSignIn());
+        },
+      );
+
+      testWidgets(
+        'replaceLocalWithCloud prompt: cancelling calls cancelSignIn',
+        (tester) async {
+          when(
+            () => authCubit.confirmReplaceWithCloud(),
+          ).thenAnswer((_) async {});
+          when(() => authCubit.cancelSignIn()).thenAnswer((_) async {});
+          whenListen(
+            authCubit,
+            Stream.value(
+              const AuthState(
+                status: AuthStatus.guest,
+                pendingPrompt: SignInPrompt.replaceLocalWithCloud,
+              ),
+            ),
+            initialState: const AuthState(status: AuthStatus.guest),
+          );
+
+          tester.view.physicalSize = const Size(1200, 3000);
+          tester.view.devicePixelRatio = 1.0;
+          addTearDown(tester.view.resetPhysicalSize);
+          addTearDown(tester.view.resetDevicePixelRatio);
+
+          await tester.pumpWidget(TheUsualsApp(key: UniqueKey()));
+          await tester.pumpAndSettle();
+
+          // TextButton is "Cancel".
+          await tester.tap(
+            find.descendant(
+              of: find.byType(AlertDialog),
+              matching: find.byType(TextButton),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          verify(() => authCubit.cancelSignIn()).called(1);
+          verifyNever(() => authCubit.confirmReplaceWithCloud());
+        },
+      );
     });
 
     group('share flow', () {

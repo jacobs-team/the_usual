@@ -210,6 +210,37 @@ void main() {
       ).called(1);
     });
 
+    testWidgets('removing a quick pick from its menu drops it from usuals', (
+      tester,
+    ) async {
+      await pumpSection(
+        tester,
+        quickPicks: const [
+          UsualMeal(
+            id: 'u',
+            name: 'Oatmeal',
+            nutrition: Nutrition(calories: 300),
+          ),
+        ],
+      );
+
+      final chip = find.descendant(
+        of: find.byType(MenuAnchor),
+        matching: find.byType(InkWell),
+      );
+      await tester.longPress(chip);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.delete_outline));
+      await tester.pumpAndSettle();
+
+      verify(
+        () => userSettingsBloc.add(
+          const UserSettingsEvent.usualMealRemoved(MealOfTheDay.breakfast, 'u'),
+        ),
+      ).called(1);
+    });
+
     testWidgets('logs something else and adds it to usuals when checked', (
       tester,
     ) async {

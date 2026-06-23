@@ -39,6 +39,53 @@ void main() {
       });
     });
 
+    group('usualMealCount', () {
+      test('is zero when there are no usuals', () {
+        expect(const UserSettingsState().usualMealCount, equals(0));
+      });
+
+      test('sums usuals across all meal timings', () {
+        const state = UserSettingsState(
+          usuals: {
+            MealOfTheDay.breakfast: [
+              UsualMeal(id: 'a', name: 'Eggs'),
+              UsualMeal(id: 'b', name: 'Oats'),
+            ],
+            MealOfTheDay.dinner: [UsualMeal(id: 'c', name: 'Tacos')],
+          },
+        );
+
+        expect(state.usualMealCount, equals(3));
+      });
+    });
+
+    group('hasEstablishedUsuals', () {
+      test('is false with no usuals', () {
+        expect(const UserSettingsState().hasEstablishedUsuals, isFalse);
+      });
+
+      test('is false with a single usual across all timings', () {
+        const state = UserSettingsState(
+          usuals: {
+            MealOfTheDay.breakfast: [UsualMeal(id: 'a', name: 'Eggs')],
+          },
+        );
+
+        expect(state.hasEstablishedUsuals, isFalse);
+      });
+
+      test('is true with more than one usual across all timings', () {
+        const state = UserSettingsState(
+          usuals: {
+            MealOfTheDay.breakfast: [UsualMeal(id: 'a', name: 'Eggs')],
+            MealOfTheDay.lunch: [UsualMeal(id: 'b', name: 'Salad')],
+          },
+        );
+
+        expect(state.hasEstablishedUsuals, isTrue);
+      });
+    });
+
     group('currentMeal', () {
       test('falls back to the meal time when there are no boundaries', () {
         const state = UserSettingsState(

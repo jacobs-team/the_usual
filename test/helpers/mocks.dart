@@ -20,6 +20,10 @@ class MockUserSettingsBloc
     extends MockBloc<UserSettingsEvent, UserSettingsState>
     implements UserSettingsBloc {}
 
+class MockAuthRepository extends Mock implements AuthRepository {}
+
+class MockSyncRepository extends Mock implements SyncRepository {}
+
 class MockNotificationService extends Mock implements NotificationService {}
 
 class MockShareIngestService extends Mock implements ShareIngestService {}
