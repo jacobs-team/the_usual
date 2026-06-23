@@ -55,7 +55,7 @@ extension UserSettingsEventPatterns on UserSettingsEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( SettingsCommitted value)?  settingsCommitted,TResult Function( SettingsStateRestored value)?  stateRestored,TResult Function( SettingsReminderStyleSelected value)?  reminderStyleSelected,TResult Function( SettingsMealCheckinScheduleModeChanged value)?  mealCheckinScheduleModeChanged,TResult Function( SettingsMealReminderToggled value)?  mealReminderToggled,TResult Function( SettingsMealReminderTimeChanged value)?  mealReminderTimeChanged,TResult Function( SettingsEndOfDayTimeChanged value)?  endOfDayTimeChanged,TResult Function( SettingsWeightCheckinFrequencySelected value)?  weightCheckinFrequencySelected,TResult Function( SettingsWeightTimeOfDaySelected value)?  weightTimeOfDaySelected,TResult Function( SettingsWeightUnitSelected value)?  weightUnitSelected,TResult Function( SettingsStartingWeightChanged value)?  startingWeightChanged,TResult Function( SettingsCalorieGoalChanged value)?  calorieGoalChanged,TResult Function( SettingsWeightGoalChanged value)?  weightGoalChanged,TResult Function( SettingsThemeModeSelected value)?  themeModeSelected,TResult Function( SettingsExpandNutritionByDefaultChanged value)?  expandNutritionByDefaultChanged,TResult Function( SettingsSkipLoggedMealRemindersChanged value)?  skipLoggedMealRemindersChanged,TResult Function( SettingsDayStartTimeChanged value)?  dayStartTimeChanged,TResult Function( SettingsMealEntryModeChanged value)?  mealEntryModeChanged,TResult Function( SettingsUsualMealAdded value)?  usualMealAdded,TResult Function( SettingsUsualMealRemoved value)?  usualMealRemoved,TResult Function( SettingsUsualMealNutritionChanged value)?  usualMealNutritionChanged,TResult Function( SettingsUsualMealNameChanged value)?  usualMealNameChanged,TResult Function( SettingsWorkoutGroupAdded value)?  workoutGroupAdded,TResult Function( SettingsWorkoutGroupRenamed value)?  workoutGroupRenamed,TResult Function( SettingsWorkoutGroupReordered value)?  workoutGroupReordered,TResult Function( SettingsWorkoutGroupRemoved value)?  workoutGroupRemoved,TResult Function( SettingsUsualWorkoutAdded value)?  usualWorkoutAdded,TResult Function( SettingsUsualWorkoutRenamed value)?  usualWorkoutRenamed,TResult Function( SettingsUsualWorkoutSetsChanged value)?  usualWorkoutSetsChanged,TResult Function( SettingsUsualWorkoutRemoved value)?  usualWorkoutRemoved,TResult Function( SettingsWorkoutWeightUnitSelected value)?  workoutWeightUnitSelected,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( SettingsCommitted value)?  settingsCommitted,TResult Function( SettingsStateRestored value)?  stateRestored,TResult Function( SettingsReminderStyleSelected value)?  reminderStyleSelected,TResult Function( SettingsMealCheckinScheduleModeChanged value)?  mealCheckinScheduleModeChanged,TResult Function( SettingsMealReminderToggled value)?  mealReminderToggled,TResult Function( SettingsMealReminderTimeChanged value)?  mealReminderTimeChanged,TResult Function( SettingsEndOfDayTimeChanged value)?  endOfDayTimeChanged,TResult Function( SettingsWeightCheckinFrequencySelected value)?  weightCheckinFrequencySelected,TResult Function( SettingsWeightTimeOfDaySelected value)?  weightTimeOfDaySelected,TResult Function( SettingsWeightUnitSelected value)?  weightUnitSelected,TResult Function( SettingsStartingWeightChanged value)?  startingWeightChanged,TResult Function( SettingsCalorieGoalChanged value)?  calorieGoalChanged,TResult Function( SettingsWeightGoalChanged value)?  weightGoalChanged,TResult Function( SettingsThemeModeSelected value)?  themeModeSelected,TResult Function( SettingsExpandNutritionByDefaultChanged value)?  expandNutritionByDefaultChanged,TResult Function( SettingsSkipLoggedMealRemindersChanged value)?  skipLoggedMealRemindersChanged,TResult Function( SettingsDayStartTimeChanged value)?  dayStartTimeChanged,TResult Function( SettingsMealEntryModeChanged value)?  mealEntryModeChanged,TResult Function( SettingsUsualMealAdded value)?  usualMealAdded,TResult Function( SettingsUsualMealRemoved value)?  usualMealRemoved,TResult Function( SettingsUsualMealNutritionChanged value)?  usualMealNutritionChanged,TResult Function( SettingsUsualMealNameChanged value)?  usualMealNameChanged,TResult Function( SettingsWorkoutGroupAdded value)?  workoutGroupAdded,TResult Function( SettingsWorkoutGroupRenamed value)?  workoutGroupRenamed,TResult Function( SettingsWorkoutGroupReordered value)?  workoutGroupReordered,TResult Function( SettingsWorkoutGroupRemoved value)?  workoutGroupRemoved,TResult Function( SettingsUsualWorkoutAdded value)?  usualWorkoutAdded,TResult Function( SettingsUsualWorkoutRenamed value)?  usualWorkoutRenamed,TResult Function( SettingsUsualWorkoutSetsChanged value)?  usualWorkoutSetsChanged,TResult Function( SettingsUsualWorkoutRemoved value)?  usualWorkoutRemoved,TResult Function( SettingsWorkoutWeightUnitSelected value)?  workoutWeightUnitSelected,TResult Function( SettingsWorkoutReminderToggled value)?  workoutReminderToggled,TResult Function( SettingsWorkoutReminderDayToggled value)?  workoutReminderDayToggled,TResult Function( SettingsWorkoutReminderTimeChanged value)?  workoutReminderTimeChanged,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case SettingsCommitted() when settingsCommitted != null:
@@ -89,7 +89,10 @@ return usualWorkoutAdded(_that);case SettingsUsualWorkoutRenamed() when usualWor
 return usualWorkoutRenamed(_that);case SettingsUsualWorkoutSetsChanged() when usualWorkoutSetsChanged != null:
 return usualWorkoutSetsChanged(_that);case SettingsUsualWorkoutRemoved() when usualWorkoutRemoved != null:
 return usualWorkoutRemoved(_that);case SettingsWorkoutWeightUnitSelected() when workoutWeightUnitSelected != null:
-return workoutWeightUnitSelected(_that);case _:
+return workoutWeightUnitSelected(_that);case SettingsWorkoutReminderToggled() when workoutReminderToggled != null:
+return workoutReminderToggled(_that);case SettingsWorkoutReminderDayToggled() when workoutReminderDayToggled != null:
+return workoutReminderDayToggled(_that);case SettingsWorkoutReminderTimeChanged() when workoutReminderTimeChanged != null:
+return workoutReminderTimeChanged(_that);case _:
   return orElse();
 
 }
@@ -107,7 +110,7 @@ return workoutWeightUnitSelected(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( SettingsCommitted value)  settingsCommitted,required TResult Function( SettingsStateRestored value)  stateRestored,required TResult Function( SettingsReminderStyleSelected value)  reminderStyleSelected,required TResult Function( SettingsMealCheckinScheduleModeChanged value)  mealCheckinScheduleModeChanged,required TResult Function( SettingsMealReminderToggled value)  mealReminderToggled,required TResult Function( SettingsMealReminderTimeChanged value)  mealReminderTimeChanged,required TResult Function( SettingsEndOfDayTimeChanged value)  endOfDayTimeChanged,required TResult Function( SettingsWeightCheckinFrequencySelected value)  weightCheckinFrequencySelected,required TResult Function( SettingsWeightTimeOfDaySelected value)  weightTimeOfDaySelected,required TResult Function( SettingsWeightUnitSelected value)  weightUnitSelected,required TResult Function( SettingsStartingWeightChanged value)  startingWeightChanged,required TResult Function( SettingsCalorieGoalChanged value)  calorieGoalChanged,required TResult Function( SettingsWeightGoalChanged value)  weightGoalChanged,required TResult Function( SettingsThemeModeSelected value)  themeModeSelected,required TResult Function( SettingsExpandNutritionByDefaultChanged value)  expandNutritionByDefaultChanged,required TResult Function( SettingsSkipLoggedMealRemindersChanged value)  skipLoggedMealRemindersChanged,required TResult Function( SettingsDayStartTimeChanged value)  dayStartTimeChanged,required TResult Function( SettingsMealEntryModeChanged value)  mealEntryModeChanged,required TResult Function( SettingsUsualMealAdded value)  usualMealAdded,required TResult Function( SettingsUsualMealRemoved value)  usualMealRemoved,required TResult Function( SettingsUsualMealNutritionChanged value)  usualMealNutritionChanged,required TResult Function( SettingsUsualMealNameChanged value)  usualMealNameChanged,required TResult Function( SettingsWorkoutGroupAdded value)  workoutGroupAdded,required TResult Function( SettingsWorkoutGroupRenamed value)  workoutGroupRenamed,required TResult Function( SettingsWorkoutGroupReordered value)  workoutGroupReordered,required TResult Function( SettingsWorkoutGroupRemoved value)  workoutGroupRemoved,required TResult Function( SettingsUsualWorkoutAdded value)  usualWorkoutAdded,required TResult Function( SettingsUsualWorkoutRenamed value)  usualWorkoutRenamed,required TResult Function( SettingsUsualWorkoutSetsChanged value)  usualWorkoutSetsChanged,required TResult Function( SettingsUsualWorkoutRemoved value)  usualWorkoutRemoved,required TResult Function( SettingsWorkoutWeightUnitSelected value)  workoutWeightUnitSelected,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( SettingsCommitted value)  settingsCommitted,required TResult Function( SettingsStateRestored value)  stateRestored,required TResult Function( SettingsReminderStyleSelected value)  reminderStyleSelected,required TResult Function( SettingsMealCheckinScheduleModeChanged value)  mealCheckinScheduleModeChanged,required TResult Function( SettingsMealReminderToggled value)  mealReminderToggled,required TResult Function( SettingsMealReminderTimeChanged value)  mealReminderTimeChanged,required TResult Function( SettingsEndOfDayTimeChanged value)  endOfDayTimeChanged,required TResult Function( SettingsWeightCheckinFrequencySelected value)  weightCheckinFrequencySelected,required TResult Function( SettingsWeightTimeOfDaySelected value)  weightTimeOfDaySelected,required TResult Function( SettingsWeightUnitSelected value)  weightUnitSelected,required TResult Function( SettingsStartingWeightChanged value)  startingWeightChanged,required TResult Function( SettingsCalorieGoalChanged value)  calorieGoalChanged,required TResult Function( SettingsWeightGoalChanged value)  weightGoalChanged,required TResult Function( SettingsThemeModeSelected value)  themeModeSelected,required TResult Function( SettingsExpandNutritionByDefaultChanged value)  expandNutritionByDefaultChanged,required TResult Function( SettingsSkipLoggedMealRemindersChanged value)  skipLoggedMealRemindersChanged,required TResult Function( SettingsDayStartTimeChanged value)  dayStartTimeChanged,required TResult Function( SettingsMealEntryModeChanged value)  mealEntryModeChanged,required TResult Function( SettingsUsualMealAdded value)  usualMealAdded,required TResult Function( SettingsUsualMealRemoved value)  usualMealRemoved,required TResult Function( SettingsUsualMealNutritionChanged value)  usualMealNutritionChanged,required TResult Function( SettingsUsualMealNameChanged value)  usualMealNameChanged,required TResult Function( SettingsWorkoutGroupAdded value)  workoutGroupAdded,required TResult Function( SettingsWorkoutGroupRenamed value)  workoutGroupRenamed,required TResult Function( SettingsWorkoutGroupReordered value)  workoutGroupReordered,required TResult Function( SettingsWorkoutGroupRemoved value)  workoutGroupRemoved,required TResult Function( SettingsUsualWorkoutAdded value)  usualWorkoutAdded,required TResult Function( SettingsUsualWorkoutRenamed value)  usualWorkoutRenamed,required TResult Function( SettingsUsualWorkoutSetsChanged value)  usualWorkoutSetsChanged,required TResult Function( SettingsUsualWorkoutRemoved value)  usualWorkoutRemoved,required TResult Function( SettingsWorkoutWeightUnitSelected value)  workoutWeightUnitSelected,required TResult Function( SettingsWorkoutReminderToggled value)  workoutReminderToggled,required TResult Function( SettingsWorkoutReminderDayToggled value)  workoutReminderDayToggled,required TResult Function( SettingsWorkoutReminderTimeChanged value)  workoutReminderTimeChanged,}){
 final _that = this;
 switch (_that) {
 case SettingsCommitted():
@@ -141,7 +144,10 @@ return usualWorkoutAdded(_that);case SettingsUsualWorkoutRenamed():
 return usualWorkoutRenamed(_that);case SettingsUsualWorkoutSetsChanged():
 return usualWorkoutSetsChanged(_that);case SettingsUsualWorkoutRemoved():
 return usualWorkoutRemoved(_that);case SettingsWorkoutWeightUnitSelected():
-return workoutWeightUnitSelected(_that);}
+return workoutWeightUnitSelected(_that);case SettingsWorkoutReminderToggled():
+return workoutReminderToggled(_that);case SettingsWorkoutReminderDayToggled():
+return workoutReminderDayToggled(_that);case SettingsWorkoutReminderTimeChanged():
+return workoutReminderTimeChanged(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -155,7 +161,7 @@ return workoutWeightUnitSelected(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( SettingsCommitted value)?  settingsCommitted,TResult? Function( SettingsStateRestored value)?  stateRestored,TResult? Function( SettingsReminderStyleSelected value)?  reminderStyleSelected,TResult? Function( SettingsMealCheckinScheduleModeChanged value)?  mealCheckinScheduleModeChanged,TResult? Function( SettingsMealReminderToggled value)?  mealReminderToggled,TResult? Function( SettingsMealReminderTimeChanged value)?  mealReminderTimeChanged,TResult? Function( SettingsEndOfDayTimeChanged value)?  endOfDayTimeChanged,TResult? Function( SettingsWeightCheckinFrequencySelected value)?  weightCheckinFrequencySelected,TResult? Function( SettingsWeightTimeOfDaySelected value)?  weightTimeOfDaySelected,TResult? Function( SettingsWeightUnitSelected value)?  weightUnitSelected,TResult? Function( SettingsStartingWeightChanged value)?  startingWeightChanged,TResult? Function( SettingsCalorieGoalChanged value)?  calorieGoalChanged,TResult? Function( SettingsWeightGoalChanged value)?  weightGoalChanged,TResult? Function( SettingsThemeModeSelected value)?  themeModeSelected,TResult? Function( SettingsExpandNutritionByDefaultChanged value)?  expandNutritionByDefaultChanged,TResult? Function( SettingsSkipLoggedMealRemindersChanged value)?  skipLoggedMealRemindersChanged,TResult? Function( SettingsDayStartTimeChanged value)?  dayStartTimeChanged,TResult? Function( SettingsMealEntryModeChanged value)?  mealEntryModeChanged,TResult? Function( SettingsUsualMealAdded value)?  usualMealAdded,TResult? Function( SettingsUsualMealRemoved value)?  usualMealRemoved,TResult? Function( SettingsUsualMealNutritionChanged value)?  usualMealNutritionChanged,TResult? Function( SettingsUsualMealNameChanged value)?  usualMealNameChanged,TResult? Function( SettingsWorkoutGroupAdded value)?  workoutGroupAdded,TResult? Function( SettingsWorkoutGroupRenamed value)?  workoutGroupRenamed,TResult? Function( SettingsWorkoutGroupReordered value)?  workoutGroupReordered,TResult? Function( SettingsWorkoutGroupRemoved value)?  workoutGroupRemoved,TResult? Function( SettingsUsualWorkoutAdded value)?  usualWorkoutAdded,TResult? Function( SettingsUsualWorkoutRenamed value)?  usualWorkoutRenamed,TResult? Function( SettingsUsualWorkoutSetsChanged value)?  usualWorkoutSetsChanged,TResult? Function( SettingsUsualWorkoutRemoved value)?  usualWorkoutRemoved,TResult? Function( SettingsWorkoutWeightUnitSelected value)?  workoutWeightUnitSelected,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( SettingsCommitted value)?  settingsCommitted,TResult? Function( SettingsStateRestored value)?  stateRestored,TResult? Function( SettingsReminderStyleSelected value)?  reminderStyleSelected,TResult? Function( SettingsMealCheckinScheduleModeChanged value)?  mealCheckinScheduleModeChanged,TResult? Function( SettingsMealReminderToggled value)?  mealReminderToggled,TResult? Function( SettingsMealReminderTimeChanged value)?  mealReminderTimeChanged,TResult? Function( SettingsEndOfDayTimeChanged value)?  endOfDayTimeChanged,TResult? Function( SettingsWeightCheckinFrequencySelected value)?  weightCheckinFrequencySelected,TResult? Function( SettingsWeightTimeOfDaySelected value)?  weightTimeOfDaySelected,TResult? Function( SettingsWeightUnitSelected value)?  weightUnitSelected,TResult? Function( SettingsStartingWeightChanged value)?  startingWeightChanged,TResult? Function( SettingsCalorieGoalChanged value)?  calorieGoalChanged,TResult? Function( SettingsWeightGoalChanged value)?  weightGoalChanged,TResult? Function( SettingsThemeModeSelected value)?  themeModeSelected,TResult? Function( SettingsExpandNutritionByDefaultChanged value)?  expandNutritionByDefaultChanged,TResult? Function( SettingsSkipLoggedMealRemindersChanged value)?  skipLoggedMealRemindersChanged,TResult? Function( SettingsDayStartTimeChanged value)?  dayStartTimeChanged,TResult? Function( SettingsMealEntryModeChanged value)?  mealEntryModeChanged,TResult? Function( SettingsUsualMealAdded value)?  usualMealAdded,TResult? Function( SettingsUsualMealRemoved value)?  usualMealRemoved,TResult? Function( SettingsUsualMealNutritionChanged value)?  usualMealNutritionChanged,TResult? Function( SettingsUsualMealNameChanged value)?  usualMealNameChanged,TResult? Function( SettingsWorkoutGroupAdded value)?  workoutGroupAdded,TResult? Function( SettingsWorkoutGroupRenamed value)?  workoutGroupRenamed,TResult? Function( SettingsWorkoutGroupReordered value)?  workoutGroupReordered,TResult? Function( SettingsWorkoutGroupRemoved value)?  workoutGroupRemoved,TResult? Function( SettingsUsualWorkoutAdded value)?  usualWorkoutAdded,TResult? Function( SettingsUsualWorkoutRenamed value)?  usualWorkoutRenamed,TResult? Function( SettingsUsualWorkoutSetsChanged value)?  usualWorkoutSetsChanged,TResult? Function( SettingsUsualWorkoutRemoved value)?  usualWorkoutRemoved,TResult? Function( SettingsWorkoutWeightUnitSelected value)?  workoutWeightUnitSelected,TResult? Function( SettingsWorkoutReminderToggled value)?  workoutReminderToggled,TResult? Function( SettingsWorkoutReminderDayToggled value)?  workoutReminderDayToggled,TResult? Function( SettingsWorkoutReminderTimeChanged value)?  workoutReminderTimeChanged,}){
 final _that = this;
 switch (_that) {
 case SettingsCommitted() when settingsCommitted != null:
@@ -189,7 +195,10 @@ return usualWorkoutAdded(_that);case SettingsUsualWorkoutRenamed() when usualWor
 return usualWorkoutRenamed(_that);case SettingsUsualWorkoutSetsChanged() when usualWorkoutSetsChanged != null:
 return usualWorkoutSetsChanged(_that);case SettingsUsualWorkoutRemoved() when usualWorkoutRemoved != null:
 return usualWorkoutRemoved(_that);case SettingsWorkoutWeightUnitSelected() when workoutWeightUnitSelected != null:
-return workoutWeightUnitSelected(_that);case _:
+return workoutWeightUnitSelected(_that);case SettingsWorkoutReminderToggled() when workoutReminderToggled != null:
+return workoutReminderToggled(_that);case SettingsWorkoutReminderDayToggled() when workoutReminderDayToggled != null:
+return workoutReminderDayToggled(_that);case SettingsWorkoutReminderTimeChanged() when workoutReminderTimeChanged != null:
+return workoutReminderTimeChanged(_that);case _:
   return null;
 
 }
@@ -206,7 +215,7 @@ return workoutWeightUnitSelected(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( UserSettingsState settings)?  settingsCommitted,TResult Function( UserSettingsState settings)?  stateRestored,TResult Function( ReminderStyle reminderStyle)?  reminderStyleSelected,TResult Function( MealCheckinScheduleMode mealCheckinScheduleMode)?  mealCheckinScheduleModeChanged,TResult Function( MealOfTheDay mealOfTheDay,  bool enabled)?  mealReminderToggled,TResult Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)?  mealReminderTimeChanged,TResult Function( TimeOfDay timeOfDay)?  endOfDayTimeChanged,TResult Function( WeightCheckinFrequency weightCheckinFrequency)?  weightCheckinFrequencySelected,TResult Function( WeightTimeOfDay weightTimeOfDay)?  weightTimeOfDaySelected,TResult Function( WeightUnit weightUnit)?  weightUnitSelected,TResult Function( double? weight)?  startingWeightChanged,TResult Function( int? calorieGoal)?  calorieGoalChanged,TResult Function( double? weightGoal)?  weightGoalChanged,TResult Function( ThemeMode themeMode)?  themeModeSelected,TResult Function( bool expandNutritionByDefault)?  expandNutritionByDefaultChanged,TResult Function( bool skipLoggedMealReminders)?  skipLoggedMealRemindersChanged,TResult Function( TimeOfDay dayStartTime)?  dayStartTimeChanged,TResult Function( MealEntryMode mealEntryMode)?  mealEntryModeChanged,TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  usualMealAdded,TResult Function( MealOfTheDay mealOfTheDay,  String id)?  usualMealRemoved,TResult Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)?  usualMealNutritionChanged,TResult Function( MealOfTheDay mealOfTheDay,  String id,  String name)?  usualMealNameChanged,TResult Function( String name)?  workoutGroupAdded,TResult Function( String id,  String name)?  workoutGroupRenamed,TResult Function( List<String> orderedIds)?  workoutGroupReordered,TResult Function( String id)?  workoutGroupRemoved,TResult Function( String workoutGroupId,  String name,  List<WorkoutSet> sets)?  usualWorkoutAdded,TResult Function( String workoutGroupId,  String id,  String name)?  usualWorkoutRenamed,TResult Function( String workoutGroupId,  String id,  List<WorkoutSet> sets)?  usualWorkoutSetsChanged,TResult Function( String workoutGroupId,  String id)?  usualWorkoutRemoved,TResult Function( WeightUnit weightUnit)?  workoutWeightUnitSelected,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( UserSettingsState settings)?  settingsCommitted,TResult Function( UserSettingsState settings)?  stateRestored,TResult Function( ReminderStyle reminderStyle)?  reminderStyleSelected,TResult Function( MealCheckinScheduleMode mealCheckinScheduleMode)?  mealCheckinScheduleModeChanged,TResult Function( MealOfTheDay mealOfTheDay,  bool enabled)?  mealReminderToggled,TResult Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)?  mealReminderTimeChanged,TResult Function( TimeOfDay timeOfDay)?  endOfDayTimeChanged,TResult Function( WeightCheckinFrequency weightCheckinFrequency)?  weightCheckinFrequencySelected,TResult Function( WeightTimeOfDay weightTimeOfDay)?  weightTimeOfDaySelected,TResult Function( WeightUnit weightUnit)?  weightUnitSelected,TResult Function( double? weight)?  startingWeightChanged,TResult Function( int? calorieGoal)?  calorieGoalChanged,TResult Function( double? weightGoal)?  weightGoalChanged,TResult Function( ThemeMode themeMode)?  themeModeSelected,TResult Function( bool expandNutritionByDefault)?  expandNutritionByDefaultChanged,TResult Function( bool skipLoggedMealReminders)?  skipLoggedMealRemindersChanged,TResult Function( TimeOfDay dayStartTime)?  dayStartTimeChanged,TResult Function( MealEntryMode mealEntryMode)?  mealEntryModeChanged,TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  usualMealAdded,TResult Function( MealOfTheDay mealOfTheDay,  String id)?  usualMealRemoved,TResult Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)?  usualMealNutritionChanged,TResult Function( MealOfTheDay mealOfTheDay,  String id,  String name)?  usualMealNameChanged,TResult Function( String name)?  workoutGroupAdded,TResult Function( String id,  String name)?  workoutGroupRenamed,TResult Function( List<String> orderedIds)?  workoutGroupReordered,TResult Function( String id)?  workoutGroupRemoved,TResult Function( String workoutGroupId,  String name,  List<WorkoutSet> sets)?  usualWorkoutAdded,TResult Function( String workoutGroupId,  String id,  String name)?  usualWorkoutRenamed,TResult Function( String workoutGroupId,  String id,  List<WorkoutSet> sets)?  usualWorkoutSetsChanged,TResult Function( String workoutGroupId,  String id)?  usualWorkoutRemoved,TResult Function( WeightUnit weightUnit)?  workoutWeightUnitSelected,TResult Function( bool enabled)?  workoutReminderToggled,TResult Function( int dayOfWeek,  bool enabled)?  workoutReminderDayToggled,TResult Function( TimeOfDay timeOfDay)?  workoutReminderTimeChanged,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case SettingsCommitted() when settingsCommitted != null:
 return settingsCommitted(_that.settings);case SettingsStateRestored() when stateRestored != null:
@@ -239,7 +248,10 @@ return usualWorkoutAdded(_that.workoutGroupId,_that.name,_that.sets);case Settin
 return usualWorkoutRenamed(_that.workoutGroupId,_that.id,_that.name);case SettingsUsualWorkoutSetsChanged() when usualWorkoutSetsChanged != null:
 return usualWorkoutSetsChanged(_that.workoutGroupId,_that.id,_that.sets);case SettingsUsualWorkoutRemoved() when usualWorkoutRemoved != null:
 return usualWorkoutRemoved(_that.workoutGroupId,_that.id);case SettingsWorkoutWeightUnitSelected() when workoutWeightUnitSelected != null:
-return workoutWeightUnitSelected(_that.weightUnit);case _:
+return workoutWeightUnitSelected(_that.weightUnit);case SettingsWorkoutReminderToggled() when workoutReminderToggled != null:
+return workoutReminderToggled(_that.enabled);case SettingsWorkoutReminderDayToggled() when workoutReminderDayToggled != null:
+return workoutReminderDayToggled(_that.dayOfWeek,_that.enabled);case SettingsWorkoutReminderTimeChanged() when workoutReminderTimeChanged != null:
+return workoutReminderTimeChanged(_that.timeOfDay);case _:
   return orElse();
 
 }
@@ -257,7 +269,7 @@ return workoutWeightUnitSelected(_that.weightUnit);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( UserSettingsState settings)  settingsCommitted,required TResult Function( UserSettingsState settings)  stateRestored,required TResult Function( ReminderStyle reminderStyle)  reminderStyleSelected,required TResult Function( MealCheckinScheduleMode mealCheckinScheduleMode)  mealCheckinScheduleModeChanged,required TResult Function( MealOfTheDay mealOfTheDay,  bool enabled)  mealReminderToggled,required TResult Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)  mealReminderTimeChanged,required TResult Function( TimeOfDay timeOfDay)  endOfDayTimeChanged,required TResult Function( WeightCheckinFrequency weightCheckinFrequency)  weightCheckinFrequencySelected,required TResult Function( WeightTimeOfDay weightTimeOfDay)  weightTimeOfDaySelected,required TResult Function( WeightUnit weightUnit)  weightUnitSelected,required TResult Function( double? weight)  startingWeightChanged,required TResult Function( int? calorieGoal)  calorieGoalChanged,required TResult Function( double? weightGoal)  weightGoalChanged,required TResult Function( ThemeMode themeMode)  themeModeSelected,required TResult Function( bool expandNutritionByDefault)  expandNutritionByDefaultChanged,required TResult Function( bool skipLoggedMealReminders)  skipLoggedMealRemindersChanged,required TResult Function( TimeOfDay dayStartTime)  dayStartTimeChanged,required TResult Function( MealEntryMode mealEntryMode)  mealEntryModeChanged,required TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)  usualMealAdded,required TResult Function( MealOfTheDay mealOfTheDay,  String id)  usualMealRemoved,required TResult Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)  usualMealNutritionChanged,required TResult Function( MealOfTheDay mealOfTheDay,  String id,  String name)  usualMealNameChanged,required TResult Function( String name)  workoutGroupAdded,required TResult Function( String id,  String name)  workoutGroupRenamed,required TResult Function( List<String> orderedIds)  workoutGroupReordered,required TResult Function( String id)  workoutGroupRemoved,required TResult Function( String workoutGroupId,  String name,  List<WorkoutSet> sets)  usualWorkoutAdded,required TResult Function( String workoutGroupId,  String id,  String name)  usualWorkoutRenamed,required TResult Function( String workoutGroupId,  String id,  List<WorkoutSet> sets)  usualWorkoutSetsChanged,required TResult Function( String workoutGroupId,  String id)  usualWorkoutRemoved,required TResult Function( WeightUnit weightUnit)  workoutWeightUnitSelected,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( UserSettingsState settings)  settingsCommitted,required TResult Function( UserSettingsState settings)  stateRestored,required TResult Function( ReminderStyle reminderStyle)  reminderStyleSelected,required TResult Function( MealCheckinScheduleMode mealCheckinScheduleMode)  mealCheckinScheduleModeChanged,required TResult Function( MealOfTheDay mealOfTheDay,  bool enabled)  mealReminderToggled,required TResult Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)  mealReminderTimeChanged,required TResult Function( TimeOfDay timeOfDay)  endOfDayTimeChanged,required TResult Function( WeightCheckinFrequency weightCheckinFrequency)  weightCheckinFrequencySelected,required TResult Function( WeightTimeOfDay weightTimeOfDay)  weightTimeOfDaySelected,required TResult Function( WeightUnit weightUnit)  weightUnitSelected,required TResult Function( double? weight)  startingWeightChanged,required TResult Function( int? calorieGoal)  calorieGoalChanged,required TResult Function( double? weightGoal)  weightGoalChanged,required TResult Function( ThemeMode themeMode)  themeModeSelected,required TResult Function( bool expandNutritionByDefault)  expandNutritionByDefaultChanged,required TResult Function( bool skipLoggedMealReminders)  skipLoggedMealRemindersChanged,required TResult Function( TimeOfDay dayStartTime)  dayStartTimeChanged,required TResult Function( MealEntryMode mealEntryMode)  mealEntryModeChanged,required TResult Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)  usualMealAdded,required TResult Function( MealOfTheDay mealOfTheDay,  String id)  usualMealRemoved,required TResult Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)  usualMealNutritionChanged,required TResult Function( MealOfTheDay mealOfTheDay,  String id,  String name)  usualMealNameChanged,required TResult Function( String name)  workoutGroupAdded,required TResult Function( String id,  String name)  workoutGroupRenamed,required TResult Function( List<String> orderedIds)  workoutGroupReordered,required TResult Function( String id)  workoutGroupRemoved,required TResult Function( String workoutGroupId,  String name,  List<WorkoutSet> sets)  usualWorkoutAdded,required TResult Function( String workoutGroupId,  String id,  String name)  usualWorkoutRenamed,required TResult Function( String workoutGroupId,  String id,  List<WorkoutSet> sets)  usualWorkoutSetsChanged,required TResult Function( String workoutGroupId,  String id)  usualWorkoutRemoved,required TResult Function( WeightUnit weightUnit)  workoutWeightUnitSelected,required TResult Function( bool enabled)  workoutReminderToggled,required TResult Function( int dayOfWeek,  bool enabled)  workoutReminderDayToggled,required TResult Function( TimeOfDay timeOfDay)  workoutReminderTimeChanged,}) {final _that = this;
 switch (_that) {
 case SettingsCommitted():
 return settingsCommitted(_that.settings);case SettingsStateRestored():
@@ -290,7 +302,10 @@ return usualWorkoutAdded(_that.workoutGroupId,_that.name,_that.sets);case Settin
 return usualWorkoutRenamed(_that.workoutGroupId,_that.id,_that.name);case SettingsUsualWorkoutSetsChanged():
 return usualWorkoutSetsChanged(_that.workoutGroupId,_that.id,_that.sets);case SettingsUsualWorkoutRemoved():
 return usualWorkoutRemoved(_that.workoutGroupId,_that.id);case SettingsWorkoutWeightUnitSelected():
-return workoutWeightUnitSelected(_that.weightUnit);}
+return workoutWeightUnitSelected(_that.weightUnit);case SettingsWorkoutReminderToggled():
+return workoutReminderToggled(_that.enabled);case SettingsWorkoutReminderDayToggled():
+return workoutReminderDayToggled(_that.dayOfWeek,_that.enabled);case SettingsWorkoutReminderTimeChanged():
+return workoutReminderTimeChanged(_that.timeOfDay);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -304,7 +319,7 @@ return workoutWeightUnitSelected(_that.weightUnit);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( UserSettingsState settings)?  settingsCommitted,TResult? Function( UserSettingsState settings)?  stateRestored,TResult? Function( ReminderStyle reminderStyle)?  reminderStyleSelected,TResult? Function( MealCheckinScheduleMode mealCheckinScheduleMode)?  mealCheckinScheduleModeChanged,TResult? Function( MealOfTheDay mealOfTheDay,  bool enabled)?  mealReminderToggled,TResult? Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)?  mealReminderTimeChanged,TResult? Function( TimeOfDay timeOfDay)?  endOfDayTimeChanged,TResult? Function( WeightCheckinFrequency weightCheckinFrequency)?  weightCheckinFrequencySelected,TResult? Function( WeightTimeOfDay weightTimeOfDay)?  weightTimeOfDaySelected,TResult? Function( WeightUnit weightUnit)?  weightUnitSelected,TResult? Function( double? weight)?  startingWeightChanged,TResult? Function( int? calorieGoal)?  calorieGoalChanged,TResult? Function( double? weightGoal)?  weightGoalChanged,TResult? Function( ThemeMode themeMode)?  themeModeSelected,TResult? Function( bool expandNutritionByDefault)?  expandNutritionByDefaultChanged,TResult? Function( bool skipLoggedMealReminders)?  skipLoggedMealRemindersChanged,TResult? Function( TimeOfDay dayStartTime)?  dayStartTimeChanged,TResult? Function( MealEntryMode mealEntryMode)?  mealEntryModeChanged,TResult? Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  usualMealAdded,TResult? Function( MealOfTheDay mealOfTheDay,  String id)?  usualMealRemoved,TResult? Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)?  usualMealNutritionChanged,TResult? Function( MealOfTheDay mealOfTheDay,  String id,  String name)?  usualMealNameChanged,TResult? Function( String name)?  workoutGroupAdded,TResult? Function( String id,  String name)?  workoutGroupRenamed,TResult? Function( List<String> orderedIds)?  workoutGroupReordered,TResult? Function( String id)?  workoutGroupRemoved,TResult? Function( String workoutGroupId,  String name,  List<WorkoutSet> sets)?  usualWorkoutAdded,TResult? Function( String workoutGroupId,  String id,  String name)?  usualWorkoutRenamed,TResult? Function( String workoutGroupId,  String id,  List<WorkoutSet> sets)?  usualWorkoutSetsChanged,TResult? Function( String workoutGroupId,  String id)?  usualWorkoutRemoved,TResult? Function( WeightUnit weightUnit)?  workoutWeightUnitSelected,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( UserSettingsState settings)?  settingsCommitted,TResult? Function( UserSettingsState settings)?  stateRestored,TResult? Function( ReminderStyle reminderStyle)?  reminderStyleSelected,TResult? Function( MealCheckinScheduleMode mealCheckinScheduleMode)?  mealCheckinScheduleModeChanged,TResult? Function( MealOfTheDay mealOfTheDay,  bool enabled)?  mealReminderToggled,TResult? Function( MealOfTheDay mealOfTheDay,  TimeOfDay timeOfDay)?  mealReminderTimeChanged,TResult? Function( TimeOfDay timeOfDay)?  endOfDayTimeChanged,TResult? Function( WeightCheckinFrequency weightCheckinFrequency)?  weightCheckinFrequencySelected,TResult? Function( WeightTimeOfDay weightTimeOfDay)?  weightTimeOfDaySelected,TResult? Function( WeightUnit weightUnit)?  weightUnitSelected,TResult? Function( double? weight)?  startingWeightChanged,TResult? Function( int? calorieGoal)?  calorieGoalChanged,TResult? Function( double? weightGoal)?  weightGoalChanged,TResult? Function( ThemeMode themeMode)?  themeModeSelected,TResult? Function( bool expandNutritionByDefault)?  expandNutritionByDefaultChanged,TResult? Function( bool skipLoggedMealReminders)?  skipLoggedMealRemindersChanged,TResult? Function( TimeOfDay dayStartTime)?  dayStartTimeChanged,TResult? Function( MealEntryMode mealEntryMode)?  mealEntryModeChanged,TResult? Function( MealOfTheDay mealOfTheDay,  String name,  Nutrition nutrition)?  usualMealAdded,TResult? Function( MealOfTheDay mealOfTheDay,  String id)?  usualMealRemoved,TResult? Function( MealOfTheDay mealOfTheDay,  String id,  Nutrition nutrition)?  usualMealNutritionChanged,TResult? Function( MealOfTheDay mealOfTheDay,  String id,  String name)?  usualMealNameChanged,TResult? Function( String name)?  workoutGroupAdded,TResult? Function( String id,  String name)?  workoutGroupRenamed,TResult? Function( List<String> orderedIds)?  workoutGroupReordered,TResult? Function( String id)?  workoutGroupRemoved,TResult? Function( String workoutGroupId,  String name,  List<WorkoutSet> sets)?  usualWorkoutAdded,TResult? Function( String workoutGroupId,  String id,  String name)?  usualWorkoutRenamed,TResult? Function( String workoutGroupId,  String id,  List<WorkoutSet> sets)?  usualWorkoutSetsChanged,TResult? Function( String workoutGroupId,  String id)?  usualWorkoutRemoved,TResult? Function( WeightUnit weightUnit)?  workoutWeightUnitSelected,TResult? Function( bool enabled)?  workoutReminderToggled,TResult? Function( int dayOfWeek,  bool enabled)?  workoutReminderDayToggled,TResult? Function( TimeOfDay timeOfDay)?  workoutReminderTimeChanged,}) {final _that = this;
 switch (_that) {
 case SettingsCommitted() when settingsCommitted != null:
 return settingsCommitted(_that.settings);case SettingsStateRestored() when stateRestored != null:
@@ -337,7 +352,10 @@ return usualWorkoutAdded(_that.workoutGroupId,_that.name,_that.sets);case Settin
 return usualWorkoutRenamed(_that.workoutGroupId,_that.id,_that.name);case SettingsUsualWorkoutSetsChanged() when usualWorkoutSetsChanged != null:
 return usualWorkoutSetsChanged(_that.workoutGroupId,_that.id,_that.sets);case SettingsUsualWorkoutRemoved() when usualWorkoutRemoved != null:
 return usualWorkoutRemoved(_that.workoutGroupId,_that.id);case SettingsWorkoutWeightUnitSelected() when workoutWeightUnitSelected != null:
-return workoutWeightUnitSelected(_that.weightUnit);case _:
+return workoutWeightUnitSelected(_that.weightUnit);case SettingsWorkoutReminderToggled() when workoutReminderToggled != null:
+return workoutReminderToggled(_that.enabled);case SettingsWorkoutReminderDayToggled() when workoutReminderDayToggled != null:
+return workoutReminderDayToggled(_that.dayOfWeek,_that.enabled);case SettingsWorkoutReminderTimeChanged() when workoutReminderTimeChanged != null:
+return workoutReminderTimeChanged(_that.timeOfDay);case _:
   return null;
 
 }
@@ -2473,6 +2491,206 @@ class _$SettingsWorkoutWeightUnitSelectedCopyWithImpl<$Res>
   return _then(SettingsWorkoutWeightUnitSelected(
 null == weightUnit ? _self.weightUnit : weightUnit // ignore: cast_nullable_to_non_nullable
 as WeightUnit,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class SettingsWorkoutReminderToggled implements UserSettingsEvent {
+  const SettingsWorkoutReminderToggled({required this.enabled});
+  
+
+ final  bool enabled;
+
+/// Create a copy of UserSettingsEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SettingsWorkoutReminderToggledCopyWith<SettingsWorkoutReminderToggled> get copyWith => _$SettingsWorkoutReminderToggledCopyWithImpl<SettingsWorkoutReminderToggled>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SettingsWorkoutReminderToggled&&(identical(other.enabled, enabled) || other.enabled == enabled));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,enabled);
+
+@override
+String toString() {
+  return 'UserSettingsEvent.workoutReminderToggled(enabled: $enabled)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $SettingsWorkoutReminderToggledCopyWith<$Res> implements $UserSettingsEventCopyWith<$Res> {
+  factory $SettingsWorkoutReminderToggledCopyWith(SettingsWorkoutReminderToggled value, $Res Function(SettingsWorkoutReminderToggled) _then) = _$SettingsWorkoutReminderToggledCopyWithImpl;
+@useResult
+$Res call({
+ bool enabled
+});
+
+
+
+
+}
+/// @nodoc
+class _$SettingsWorkoutReminderToggledCopyWithImpl<$Res>
+    implements $SettingsWorkoutReminderToggledCopyWith<$Res> {
+  _$SettingsWorkoutReminderToggledCopyWithImpl(this._self, this._then);
+
+  final SettingsWorkoutReminderToggled _self;
+  final $Res Function(SettingsWorkoutReminderToggled) _then;
+
+/// Create a copy of UserSettingsEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? enabled = null,}) {
+  return _then(SettingsWorkoutReminderToggled(
+enabled: null == enabled ? _self.enabled : enabled // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class SettingsWorkoutReminderDayToggled implements UserSettingsEvent {
+  const SettingsWorkoutReminderDayToggled(this.dayOfWeek, {required this.enabled});
+  
+
+ final  int dayOfWeek;
+ final  bool enabled;
+
+/// Create a copy of UserSettingsEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SettingsWorkoutReminderDayToggledCopyWith<SettingsWorkoutReminderDayToggled> get copyWith => _$SettingsWorkoutReminderDayToggledCopyWithImpl<SettingsWorkoutReminderDayToggled>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SettingsWorkoutReminderDayToggled&&(identical(other.dayOfWeek, dayOfWeek) || other.dayOfWeek == dayOfWeek)&&(identical(other.enabled, enabled) || other.enabled == enabled));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,dayOfWeek,enabled);
+
+@override
+String toString() {
+  return 'UserSettingsEvent.workoutReminderDayToggled(dayOfWeek: $dayOfWeek, enabled: $enabled)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $SettingsWorkoutReminderDayToggledCopyWith<$Res> implements $UserSettingsEventCopyWith<$Res> {
+  factory $SettingsWorkoutReminderDayToggledCopyWith(SettingsWorkoutReminderDayToggled value, $Res Function(SettingsWorkoutReminderDayToggled) _then) = _$SettingsWorkoutReminderDayToggledCopyWithImpl;
+@useResult
+$Res call({
+ int dayOfWeek, bool enabled
+});
+
+
+
+
+}
+/// @nodoc
+class _$SettingsWorkoutReminderDayToggledCopyWithImpl<$Res>
+    implements $SettingsWorkoutReminderDayToggledCopyWith<$Res> {
+  _$SettingsWorkoutReminderDayToggledCopyWithImpl(this._self, this._then);
+
+  final SettingsWorkoutReminderDayToggled _self;
+  final $Res Function(SettingsWorkoutReminderDayToggled) _then;
+
+/// Create a copy of UserSettingsEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? dayOfWeek = null,Object? enabled = null,}) {
+  return _then(SettingsWorkoutReminderDayToggled(
+null == dayOfWeek ? _self.dayOfWeek : dayOfWeek // ignore: cast_nullable_to_non_nullable
+as int,enabled: null == enabled ? _self.enabled : enabled // ignore: cast_nullable_to_non_nullable
+as bool,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
+class SettingsWorkoutReminderTimeChanged implements UserSettingsEvent {
+  const SettingsWorkoutReminderTimeChanged(this.timeOfDay);
+  
+
+ final  TimeOfDay timeOfDay;
+
+/// Create a copy of UserSettingsEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$SettingsWorkoutReminderTimeChangedCopyWith<SettingsWorkoutReminderTimeChanged> get copyWith => _$SettingsWorkoutReminderTimeChangedCopyWithImpl<SettingsWorkoutReminderTimeChanged>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SettingsWorkoutReminderTimeChanged&&(identical(other.timeOfDay, timeOfDay) || other.timeOfDay == timeOfDay));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,timeOfDay);
+
+@override
+String toString() {
+  return 'UserSettingsEvent.workoutReminderTimeChanged(timeOfDay: $timeOfDay)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $SettingsWorkoutReminderTimeChangedCopyWith<$Res> implements $UserSettingsEventCopyWith<$Res> {
+  factory $SettingsWorkoutReminderTimeChangedCopyWith(SettingsWorkoutReminderTimeChanged value, $Res Function(SettingsWorkoutReminderTimeChanged) _then) = _$SettingsWorkoutReminderTimeChangedCopyWithImpl;
+@useResult
+$Res call({
+ TimeOfDay timeOfDay
+});
+
+
+
+
+}
+/// @nodoc
+class _$SettingsWorkoutReminderTimeChangedCopyWithImpl<$Res>
+    implements $SettingsWorkoutReminderTimeChangedCopyWith<$Res> {
+  _$SettingsWorkoutReminderTimeChangedCopyWithImpl(this._self, this._then);
+
+  final SettingsWorkoutReminderTimeChanged _self;
+  final $Res Function(SettingsWorkoutReminderTimeChanged) _then;
+
+/// Create a copy of UserSettingsEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? timeOfDay = null,}) {
+  return _then(SettingsWorkoutReminderTimeChanged(
+null == timeOfDay ? _self.timeOfDay : timeOfDay // ignore: cast_nullable_to_non_nullable
+as TimeOfDay,
   ));
 }
 

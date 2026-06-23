@@ -663,6 +663,76 @@ void main() {
       );
     });
 
+    group('workout reminders', () {
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'workoutReminderToggled updates the enabled flag',
+        build: UserSettingsBloc.new,
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.workoutReminderToggled(enabled: true),
+        ),
+        expect: () => [
+          isA<UserSettingsState>().having(
+            (s) => s.workoutReminder.enabled,
+            'workoutReminder.enabled',
+            isTrue,
+          ),
+        ],
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'workoutReminderDayToggled adds a day when enabled is true',
+        build: UserSettingsBloc.new,
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.workoutReminderDayToggled(3, enabled: true),
+        ),
+        expect: () => [
+          isA<UserSettingsState>().having(
+            (s) => s.workoutReminder.daysOfWeek,
+            'workoutReminder.daysOfWeek',
+            contains(3),
+          ),
+        ],
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'workoutReminderDayToggled removes a day when enabled is false',
+        build: UserSettingsBloc.new,
+        seed: () => const UserSettingsState(
+          workoutReminder: WorkoutReminder(
+            daysOfWeek: {1, 3, 5},
+            timeOfDay: TimeOfDay(hour: 18, minute: 0),
+          ),
+        ),
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.workoutReminderDayToggled(3, enabled: false),
+        ),
+        expect: () => [
+          isA<UserSettingsState>().having(
+            (s) => s.workoutReminder.daysOfWeek,
+            'workoutReminder.daysOfWeek',
+            isNot(contains(3)),
+          ),
+        ],
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'workoutReminderTimeChanged updates the time',
+        build: UserSettingsBloc.new,
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.workoutReminderTimeChanged(
+            TimeOfDay(hour: 7, minute: 30),
+          ),
+        ),
+        expect: () => [
+          isA<UserSettingsState>().having(
+            (s) => s.workoutReminder.timeOfDay,
+            'workoutReminder.timeOfDay',
+            const TimeOfDay(hour: 7, minute: 30),
+          ),
+        ],
+      );
+    });
+
     blocTest<UserSettingsBloc, UserSettingsState>(
       'workoutWeightUnitSelected stores the chosen unit',
       build: UserSettingsBloc.new,

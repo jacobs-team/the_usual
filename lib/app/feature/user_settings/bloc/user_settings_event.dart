@@ -104,4 +104,15 @@ sealed class UserSettingsEvent with _$UserSettingsEvent {
   const factory UserSettingsEvent.workoutWeightUnitSelected(
     WeightUnit weightUnit,
   ) = SettingsWorkoutWeightUnitSelected;
+
+  const factory UserSettingsEvent.workoutReminderToggled({
+    required bool enabled,
+  }) = SettingsWorkoutReminderToggled;
+  const factory UserSettingsEvent.workoutReminderDayToggled(
+    int dayOfWeek, {
+    required bool enabled,
+  }) = SettingsWorkoutReminderDayToggled;
+  const factory UserSettingsEvent.workoutReminderTimeChanged(
+    TimeOfDay timeOfDay,
+  ) = SettingsWorkoutReminderTimeChanged;
 }

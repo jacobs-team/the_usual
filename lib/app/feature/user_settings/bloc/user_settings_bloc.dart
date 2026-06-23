@@ -101,6 +101,22 @@ class UserSettingsBloc
         SettingsWorkoutWeightUnitSelected() => emit(
           state.copyWith(workoutWeightUnit: event.weightUnit),
         ),
+        SettingsWorkoutReminderToggled() => emit(
+          state.copyWith(
+            workoutReminder: state.workoutReminder.copyWith(
+              enabled: event.enabled,
+            ),
+          ),
+        ),
+        SettingsWorkoutReminderDayToggled() =>
+          _onWorkoutReminderDayToggled(event, emit),
+        SettingsWorkoutReminderTimeChanged() => emit(
+          state.copyWith(
+            workoutReminder: state.workoutReminder.copyWith(
+              timeOfDay: event.timeOfDay,
+            ),
+          ),
+        ),
       },
     );
   }
@@ -383,6 +399,23 @@ class UserSettingsBloc
           ...state.usualWorkouts,
           event.workoutGroupId: remainingUsualWorkouts,
         },
+      ),
+    );
+  }
+
+  void _onWorkoutReminderDayToggled(
+    SettingsWorkoutReminderDayToggled event,
+    Emitter<UserSettingsState> emit,
+  ) {
+    final updated = Set<int>.from(state.workoutReminder.daysOfWeek);
+    if (event.enabled) {
+      updated.add(event.dayOfWeek);
+    } else {
+      updated.remove(event.dayOfWeek);
+    }
+    emit(
+      state.copyWith(
+        workoutReminder: state.workoutReminder.copyWith(daysOfWeek: updated),
       ),
     );
   }
