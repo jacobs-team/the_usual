@@ -14,4 +14,8 @@ export 'weight_checkin_frequency.dart';
 export 'weight_entry.dart';
 export 'weight_time_of_day.dart';
 export 'weight_unit.dart';
+export 'usual_workout.dart';
+export 'workout_group.dart';
+export 'workout_log_entry.dart';
+export 'workout_reminder.dart';
 export 'workout_set.dart';
