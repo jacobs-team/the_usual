@@ -43,6 +43,7 @@ void main() {
       expect(find.byType(ReminderStyleSection), findsOneWidget);
       expect(find.byType(MealScheduleSection), findsOneWidget);
       expect(find.byType(WeightSection), findsOneWidget);
+      expect(find.byType(WorkoutSection), findsOneWidget);
       expect(find.byType(UsualMealsTile), findsOneWidget);
       expect(find.byType(AppearanceSection), findsOneWidget);
     });
