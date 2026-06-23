@@ -86,6 +86,12 @@ class AppRouter {
       },
     ),
     GoRoute(
+      path: Routes.workoutHistory,
+      pageBuilder: (context, state) {
+        return const NoTransitionPage(child: WorkoutHistoryView());
+      },
+    ),
+    GoRoute(
       path: Routes.settings,
       pageBuilder: (context, state) {
         return const NoTransitionPage(child: UserSettingsView());

@@ -35,6 +35,7 @@ class _WorkoutsViewState extends State<WorkoutsView> {
     return Scaffold(
       appBar: TheUsualAppBar(
         title: 'Workouts',
+        historyRoute: Routes.workoutHistory,
         titleWidget: ActionChip(
           key: const Key('workouts-date-pill'),
           label: Text(pillLabel),

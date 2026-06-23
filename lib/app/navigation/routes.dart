@@ -13,6 +13,7 @@ abstract class Routes {
   static const String today = '/today';
   static const String workouts = '/workouts';
   static const String history = '/history';
+  static const String workoutHistory = '/workouts/history';
   static const String settings = '/settings';
   static const String usualMeals = '/settings/$usualMealsSegment';
   static const String usualMealsSegment = 'usuals';
