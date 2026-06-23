@@ -16,6 +16,7 @@ class TheUsualTextField extends StatelessWidget {
     this.suffixText,
     this.suffixIcon,
     this.suffixIconConstraints,
+    this.suffixStyle,
     this.keyboardType,
     this.inputFormatters,
     this.textAlign = TextAlign.start,
@@ -56,6 +57,9 @@ class TheUsualTextField extends StatelessWidget {
   /// pass looser constraints so a small trailing widget doesn't force the
   /// field taller than its content.
   final BoxConstraints? suffixIconConstraints;
+
+  /// Style for the suffix text. Defaults to the field's hint style when null.
+  final TextStyle? suffixStyle;
 
   /// Keyboard to show while editing.
   final TextInputType? keyboardType;
@@ -110,6 +114,7 @@ class TheUsualTextField extends StatelessWidget {
       decoration: InputDecoration(
         hintText: hintText,
         suffixText: suffixText,
+        suffixStyle: suffixStyle,
         suffixIcon: suffixIcon,
         suffixIconConstraints: suffixIconConstraints,
         isDense: dense,

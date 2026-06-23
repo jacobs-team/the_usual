@@ -133,57 +133,16 @@ class _SetFieldsState extends State<SetFields> {
       mainAxisSize: MainAxisSize.min,
       children: [
         for (var i = 0; i < _weightControllers.length; i++)
-          Padding(
-            padding: EdgeInsets.only(bottom: AppDesign.spacing.sm),
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 120,
-                  child: TheUsualTextField(
-                    key: Key('set-weight-$i'),
-                    controller: _weightControllers[i],
-                    dense: true,
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(
-                        RegExp(r'^\d{0,4}\.?\d{0,1}'),
-                      ),
-                    ],
-                    hintText: widget.bodyweight ? 'auto' : null,
-                    suffixText: ' ${widget.weightUnit.name}',
-                    onChanged: (_) => _emit(),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    horizontal: AppDesign.spacing.sm,
-                  ),
-                  child: const Text('×'),
-                ),
-                SizedBox(
-                  width: 80,
-                  child: TheUsualTextField(
-                    key: Key('set-reps-$i'),
-                    controller: _repsControllers[i],
-                    dense: true,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(3),
-                    ],
-                    suffixText: ' reps',
-                    onChanged: (_) => _emit(),
-                  ),
-                ),
-                if (_weightControllers.length > 1)
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => _removeSet(i),
-                  ),
-              ],
-            ),
+          _SetRow(
+            key: ValueKey(i),
+            weightController: _weightControllers[i],
+            repsController: _repsControllers[i],
+            index: i,
+            count: _weightControllers.length,
+            weightUnit: widget.weightUnit,
+            bodyweight: widget.bodyweight,
+            onChanged: _emit,
+            onRemove: () => _removeSet(i),
           ),
         TextButton.icon(
           onPressed: _addSet,
@@ -191,6 +150,118 @@ class _SetFieldsState extends State<SetFields> {
           label: const Text('Add set'),
         ),
       ],
+    );
+  }
+}
+
+class _SetRow extends StatefulWidget {
+  const _SetRow({
+    required this.weightController,
+    required this.repsController,
+    required this.index,
+    required this.count,
+    required this.weightUnit,
+    required this.bodyweight,
+    required this.onChanged,
+    required this.onRemove,
+    super.key,
+  });
+
+  final TextEditingController weightController;
+  final TextEditingController repsController;
+  final int index;
+  final int count;
+  final WeightUnit weightUnit;
+  final bool bodyweight;
+  final VoidCallback onChanged;
+  final VoidCallback onRemove;
+
+  @override
+  State<_SetRow> createState() => _SetRowState();
+}
+
+class _SetRowState extends State<_SetRow> {
+  late final FocusNode _weightFocus;
+  late final FocusNode _repsFocus;
+
+  @override
+  void initState() {
+    super.initState();
+    _weightFocus = FocusNode();
+    _repsFocus = FocusNode();
+    _weightFocus.addListener(() => setState(() {}));
+    _repsFocus.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _weightFocus.dispose();
+    _repsFocus.dispose();
+    super.dispose();
+  }
+
+  TextStyle _suffixStyle(BuildContext context, bool focused) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return TextStyle(
+      color: focused ? colorScheme.onSurfaceVariant : colorScheme.outline,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(bottom: AppDesign.spacing.sm),
+      child: Row(
+        children: [
+          SizedBox(
+            width: 120,
+            child: TheUsualTextField(
+              key: Key('set-weight-${widget.index}'),
+              controller: widget.weightController,
+              focusNode: _weightFocus,
+              dense: true,
+              keyboardType: const TextInputType.numberWithOptions(
+                decimal: true,
+              ),
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(
+                  RegExp(r'^\d{0,4}\.?\d{0,1}'),
+                ),
+              ],
+              hintText: widget.bodyweight ? 'auto' : null,
+              suffixText: ' ${widget.weightUnit.name}',
+              suffixStyle: _suffixStyle(context, _weightFocus.hasFocus),
+              onChanged: (_) => widget.onChanged(),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: AppDesign.spacing.sm),
+            child: const Text('×'),
+          ),
+          SizedBox(
+            width: 80,
+            child: TheUsualTextField(
+              key: Key('set-reps-${widget.index}'),
+              controller: widget.repsController,
+              focusNode: _repsFocus,
+              dense: true,
+              keyboardType: TextInputType.number,
+              inputFormatters: [
+                FilteringTextInputFormatter.digitsOnly,
+                LengthLimitingTextInputFormatter(3),
+              ],
+              suffixText: ' reps',
+              suffixStyle: _suffixStyle(context, _repsFocus.hasFocus),
+              onChanged: (_) => widget.onChanged(),
+            ),
+          ),
+          if (widget.count > 1)
+            IconButton(
+              icon: const Icon(Icons.close),
+              onPressed: widget.onRemove,
+            ),
+        ],
+      ),
     );
   }
 }
