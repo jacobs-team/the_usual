@@ -6,8 +6,8 @@ import 'package:the_usual/l10n/l10n.dart';
 
 /// {@template the_usual_app_bar}
 /// The app bar shared by the main tabs. A centered [title] with the settings
-/// shortcut, plus a dev tools shortcut in debug builds. Only the [title]
-/// differs between tabs.
+/// shortcut, plus a dev tools shortcut in debug builds. Tabs vary the [title]
+/// and whether a history shortcut ([historyRoute]) is shown.
 /// {@endtemplate}
 class TheUsualAppBar extends StatelessWidget implements PreferredSizeWidget {
   /// {@macro the_usual_app_bar}
