@@ -90,10 +90,19 @@ void main() {
         const WorkoutsView(),
       );
 
+      await tester.tap(
+        find.descendant(
+          of: find.byKey(const Key('group-name-push')),
+          matching: find.byIcon(Icons.edit_outlined),
+        ),
+      );
+      await tester.pump();
+
       await tester.enterText(
         find.byKey(const Key('group-name-push')),
         'Press Day',
       );
+      await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pump();
 
       verify(

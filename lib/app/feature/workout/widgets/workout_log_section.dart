@@ -258,36 +258,90 @@ class _EditableGroupName extends StatefulWidget {
 
 class _EditableGroupNameState extends State<_EditableGroupName> {
   late final _controller = TextEditingController(text: widget.name);
+  late final _focusNode = FocusNode();
+  var _editing = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _focusNode.addListener(_onFocusChange);
+  }
 
   @override
   void dispose() {
     _controller.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
   @override
   void didUpdateWidget(_EditableGroupName oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget.name != oldWidget.name && _controller.text != widget.name) {
+    if (!_editing &&
+        widget.name != oldWidget.name &&
+        _controller.text != widget.name) {
       _controller.text = widget.name;
     }
   }
 
-  void _submit(String value) {
+  void _onFocusChange() {
+    if (!_focusNode.hasFocus && _editing) {
+      _commit(_controller.text);
+    }
+  }
+
+  void _commit(String value) {
     final trimmed = value.trim();
     if (trimmed.isNotEmpty && trimmed != widget.name) {
       widget.onRenamed(trimmed);
+    } else {
+      _controller.text = widget.name;
     }
+    setState(() => _editing = false);
+  }
+
+  void _startEditing() {
+    setState(() => _editing = true);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _focusNode.requestFocus();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return TheUsualTextField(
-      controller: _controller,
-      dense: true,
-      textCapitalization: TextCapitalization.sentences,
-      onChanged: _submit,
-      onSubmitted: _submit,
+    final theme = Theme.of(context);
+    if (_editing) {
+      return Align(
+        alignment: Alignment.centerLeft,
+        child: TheUsualTextField(
+          controller: _controller,
+          focusNode: _focusNode,
+          dense: true,
+          autoSize: true,
+          textCapitalization: TextCapitalization.sentences,
+          onSubmitted: _commit,
+        ),
+      );
+    }
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(
+            child: Text(
+              widget.name,
+              style: theme.textTheme.titleMedium,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.edit_outlined, size: 18),
+            visualDensity: VisualDensity.compact,
+            onPressed: _startEditing,
+          ),
+        ],
+      ),
     );
   }
 }

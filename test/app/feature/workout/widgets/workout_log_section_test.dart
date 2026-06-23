@@ -134,7 +134,19 @@ void main() {
       String? captured;
       await pumpSection(tester, onRenamed: (value) => captured = value);
 
-      await tester.enterText(find.byKey(const Key('group-name-push')), 'Chest');
+      await tester.tap(
+        find.descendant(
+          of: find.byKey(const Key('group-name-push')),
+          matching: find.byIcon(Icons.edit_outlined),
+        ),
+      );
+      await tester.pump();
+
+      await tester.enterText(
+        find.byKey(const Key('group-name-push')),
+        'Chest',
+      );
+      await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pump();
 
       expect(captured, equals('Chest'));
