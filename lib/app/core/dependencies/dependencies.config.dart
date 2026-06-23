@@ -40,6 +40,8 @@ import 'package:the_usual/app/feature/onboarding/bloc/onboarding_bloc.dart'
 import 'package:the_usual/app/feature/today/bloc/daily_log_bloc.dart' as _i155;
 import 'package:the_usual/app/feature/user_settings/bloc/user_settings_bloc.dart'
     as _i807;
+import 'package:the_usual/app/feature/workout/bloc/workout_log_bloc.dart'
+    as _i894;
 import 'package:the_usual/app/navigation/app_router.dart' as _i874;
 
 extension GetItInjectableX on _i174.GetIt {
@@ -66,6 +68,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.lazySingleton<_i640.OnboardingBloc>(() => _i640.OnboardingBloc());
     gh.lazySingleton<_i155.DailyLogBloc>(() => _i155.DailyLogBloc());
     gh.lazySingleton<_i807.UserSettingsBloc>(() => _i807.UserSettingsBloc());
+    gh.lazySingleton<_i894.WorkoutLogBloc>(() => _i894.WorkoutLogBloc());
     gh.singleton<_i142.SyncRepository>(
       () => _i142.SyncRepository(
         gh<_i538.DailyLogBloc>(),
