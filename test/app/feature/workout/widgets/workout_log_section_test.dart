@@ -158,7 +158,7 @@ void main() {
       var deleteCalled = false;
       await pumpSection(tester, onDeleteRequested: () => deleteCalled = true);
 
-      await tester.tap(find.byIcon(Icons.delete_outline));
+      await tester.tap(find.byIcon(Icons.delete_forever_outlined));
       await tester.pump();
 
       expect(deleteCalled, isTrue);

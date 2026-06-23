@@ -127,7 +127,7 @@ void main() {
         );
 
         // Tap the delete button on the first (push) section.
-        await tester.tap(find.byIcon(Icons.delete_outline).first);
+        await tester.tap(find.byIcon(Icons.delete_forever_outlined).first);
         await tester.pump();
 
         verify(
@@ -165,7 +165,7 @@ void main() {
           const WorkoutsView(),
         );
 
-        await tester.tap(find.byIcon(Icons.delete_outline).first);
+        await tester.tap(find.byIcon(Icons.delete_forever_outlined).first);
         await tester.pump();
 
         expect(find.byType(SnackBar), findsOneWidget);

@@ -136,7 +136,7 @@ class WorkoutLogSection extends StatelessWidget {
                           style: theme.textTheme.bodyMedium,
                         ),
                       IconButton(
-                        icon: const Icon(Icons.delete_outline),
+                        icon: const Icon(Icons.delete_forever_outlined),
                         onPressed: onDeleteRequested,
                       ),
                     ],
@@ -187,49 +187,54 @@ class WorkoutLogSection extends StatelessWidget {
                       ),
                     ],
                     SizedBox(height: AppDesign.spacing.sm),
-                    TextButton.icon(
-                      onPressed: () async {
-                        final latestWeight =
-                            getIt<DailyLogBloc>().state.latestWeight;
-                        final userSettings =
-                            getIt<UserSettingsBloc>().state;
-                        double? bodyWeight;
-                        if (latestWeight != null) {
-                          bodyWeight = weightUnit.convertFrom(
-                            latestWeight.weight,
-                            latestWeight.weightUnit,
-                          );
-                        } else if (userSettings.startingWeight != null) {
-                          bodyWeight = weightUnit.convertFrom(
-                            userSettings.startingWeight!,
-                            userSettings.weightUnit,
-                          );
-                        }
-                        final result =
-                            await TheUsualBottomSheet.show<WorkoutEntryResult>(
-                              context,
-                              builder: (_) => WorkoutEntrySheet(
-                                title: 'New workout',
-                                confirmLabel: 'Log',
-                                weightUnit: weightUnit,
-                                showAddToUsuals: true,
-                                bodyWeight: bodyWeight,
-                              ),
-                            );
-                        if (result == null) return;
-                        if (result.addToUsuals) {
-                          getIt<UserSettingsBloc>().add(
-                            UserSettingsEvent.usualWorkoutAdded(
-                              workoutGroup.id,
-                              result.name,
-                              result.sets,
-                            ),
-                          );
-                        }
-                        _logOntoTargetDays(result.name, result.sets);
-                      },
-                      icon: const Icon(Icons.add),
-                      label: const Text('New workout'),
+                    Wrap(
+                      spacing: AppDesign.spacing.sm,
+                      children: [
+                        TextButton.icon(
+                          onPressed: () async {
+                            final latestWeight =
+                                getIt<DailyLogBloc>().state.latestWeight;
+                            final userSettings =
+                                getIt<UserSettingsBloc>().state;
+                            double? bodyWeight;
+                            if (latestWeight != null) {
+                              bodyWeight = weightUnit.convertFrom(
+                                latestWeight.weight,
+                                latestWeight.weightUnit,
+                              );
+                            } else if (userSettings.startingWeight != null) {
+                              bodyWeight = weightUnit.convertFrom(
+                                userSettings.startingWeight!,
+                                userSettings.weightUnit,
+                              );
+                            }
+                            final result = await TheUsualBottomSheet
+                                .show<WorkoutEntryResult>(
+                                  context,
+                                  builder: (_) => WorkoutEntrySheet(
+                                    title: 'New workout',
+                                    confirmLabel: 'Log',
+                                    weightUnit: weightUnit,
+                                    showAddToUsuals: true,
+                                    bodyWeight: bodyWeight,
+                                  ),
+                                );
+                            if (result == null) return;
+                            if (result.addToUsuals) {
+                              getIt<UserSettingsBloc>().add(
+                                UserSettingsEvent.usualWorkoutAdded(
+                                  workoutGroup.id,
+                                  result.name,
+                                  result.sets,
+                                ),
+                              );
+                            }
+                            _logOntoTargetDays(result.name, result.sets);
+                          },
+                          icon: const Icon(Icons.add),
+                          label: const Text('New workout'),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -336,8 +341,10 @@ class _EditableGroupNameState extends State<_EditableGroupName> {
             ),
           ),
           IconButton(
-            icon: const Icon(Icons.edit_outlined, size: 18),
+            icon: const Icon(Icons.edit_outlined, size: 16),
             visualDensity: VisualDensity.compact,
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
             onPressed: _startEditing,
           ),
         ],

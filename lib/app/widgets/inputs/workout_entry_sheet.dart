@@ -252,6 +252,7 @@ class WorkoutEntrySheetState extends State<WorkoutEntrySheet> {
                     children: [
                       Checkbox(
                         key: const Key('bodyweight-checkbox'),
+                        visualDensity: VisualDensity.compact,
                         value: _bodyweightChecked,
                         onChanged: (_) {
                           if (widget.bodyWeight == null) {
@@ -268,6 +269,16 @@ class WorkoutEntrySheetState extends State<WorkoutEntrySheet> {
                       ),
                     ],
                   ),
+                  Padding(
+                    padding: EdgeInsets.only(left: AppDesign.spacing.sm),
+                    child: Text(
+                      'e.g. push-ups, pull-ups',
+                      key: const Key('bodyweight-help'),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ),
                   if (_bodyweightHintShown && widget.bodyWeight == null)
                     Text(
                       'Add your body weight to estimate bodyweight sets. '
@@ -283,6 +294,7 @@ class WorkoutEntrySheetState extends State<WorkoutEntrySheet> {
                       children: [
                         Checkbox(
                           key: const Key('save-as-usual-checkbox'),
+                          visualDensity: VisualDensity.compact,
                           value: _saveAsUsual,
                           onChanged: (value) =>
                               setState(() => _saveAsUsual = value ?? false),
