@@ -18,12 +18,14 @@ class SyncRepository {
   /// {@macro sync_repository}
   SyncRepository(
     this._dailyLogBloc,
+    this._workoutLogBloc,
     this._userSettingsBloc,
     this._onboardingBloc, [
     @ignoreParam FirebaseFirestore? firestore,
   ]) : _firestore = firestore ?? FirebaseFirestore.instance;
 
   final DailyLogBloc _dailyLogBloc;
+  final WorkoutLogBloc _workoutLogBloc;
   final UserSettingsBloc _userSettingsBloc;
   final OnboardingBloc _onboardingBloc;
   final FirebaseFirestore _firestore;
@@ -42,6 +44,7 @@ class SyncRepository {
   StreamSubscription<DocumentSnapshot<Map<String, dynamic>>>? _remoteSub;
   StreamSubscription<DailyLogState>? _dailyLogSub;
   StreamSubscription<UserSettingsState>? _settingsSub;
+  StreamSubscription<WorkoutLogState>? _workoutLogSub;
   Timer? _debounce;
   String? _uid;
 
@@ -53,24 +56,27 @@ class SyncRepository {
       _firestore.doc('users/$uid');
 
   /// Whether the local data marks an established user: any logged meal, more
-  /// than one weigh-in day, or more than one usual meal.
+  /// than one weigh-in day, more than one usual meal, or any logged workout.
   bool get hasEstablishedData {
     final settings = _userSettingsBloc.state;
     return _dailyLogBloc.state.hasEstablishedLog(settings.dayStartTime) ||
-        settings.hasEstablishedUsuals;
+        settings.hasEstablishedUsuals ||
+        _workoutLogBloc.state.workoutEntries.isNotEmpty;
   }
 
   Map<String, dynamic> _documentOf(
     DailyLogState dailyLog,
     UserSettingsState settings,
+    WorkoutLogState workoutLog,
   ) => {
     'schemaVersion': _schemaVersion,
     'dailyLog': dailyLog.toJson(),
     'userSettings': settings.toJson(),
+    'workoutLog': workoutLog.toJson(),
   };
 
   Map<String, dynamic> _currentDocument() =>
-      _documentOf(_dailyLogBloc.state, _userSettingsBloc.state);
+      _documentOf(_dailyLogBloc.state, _userSettingsBloc.state, _workoutLogBloc.state);
 
   /// Whether the user already has a cloud document. Guards the `isNewUser`
   /// flag against the case where the Auth record exists but the document does
@@ -104,6 +110,10 @@ class SyncRepository {
     final settings = settingsJson is Map<String, dynamic>
         ? UserSettingsState.fromJson(settingsJson)
         : const UserSettingsState();
+    final workoutLogJson = document['workoutLog'];
+    final workoutLog = workoutLogJson is Map<String, dynamic>
+        ? WorkoutLogState.fromJson(workoutLogJson)
+        : const WorkoutLogState();
 
     // Compare ignoring the transient justLoggedEntryId, which the cloud doc
     // can't carry, so an echo of our own write doesn't clear the quick-edit
@@ -114,10 +124,13 @@ class SyncRepository {
     if (settings != _userSettingsBloc.state) {
       _userSettingsBloc.add(UserSettingsEvent.stateRestored(settings));
     }
+    if (workoutLog != _workoutLogBloc.state.copyWith(justLoggedWorkoutId: null)) {
+      _workoutLogBloc.add(WorkoutLogEvent.stateRestored(workoutLog));
+    }
     // Store the canonical encoding (from toJson) rather than the raw document,
     // whose key order can differ, so write-through recognises it as unchanged
     // and skips a redundant upload.
-    _lastSyncedJson = jsonEncode(_documentOf(dailyLog, settings));
+    _lastSyncedJson = jsonEncode(_documentOf(dailyLog, settings, workoutLog));
     return dailyLog.hasEstablishedLog(settings.dayStartTime) ||
         settings.hasEstablishedUsuals;
   }
@@ -139,6 +152,9 @@ class SyncRepository {
         });
     _dailyLogSub = _dailyLogBloc.stream.listen((_) => _scheduleWriteThrough());
     _settingsSub = _userSettingsBloc.stream.listen(
+      (_) => _scheduleWriteThrough(),
+    );
+    _workoutLogSub = _workoutLogBloc.stream.listen(
       (_) => _scheduleWriteThrough(),
     );
   }
@@ -175,10 +191,12 @@ class SyncRepository {
     _remoteSub?.cancel();
     _dailyLogSub?.cancel();
     _settingsSub?.cancel();
+    _workoutLogSub?.cancel();
     _debounce?.cancel();
     _remoteSub = null;
     _dailyLogSub = null;
     _settingsSub = null;
+    _workoutLogSub = null;
     _debounce = null;
     _uid = null;
     _lastSyncedJson = null;
@@ -222,6 +240,16 @@ class SyncRepository {
       waits.add(
         _userSettingsBloc.stream.firstWhere(
           (s) => s == const UserSettingsState(),
+        ),
+      );
+    }
+    if (_workoutLogBloc.state != const WorkoutLogState()) {
+      _workoutLogBloc.add(
+        const WorkoutLogEvent.stateRestored(WorkoutLogState()),
+      );
+      waits.add(
+        _workoutLogBloc.stream.firstWhere(
+          (s) => s == const WorkoutLogState(),
         ),
       );
     }

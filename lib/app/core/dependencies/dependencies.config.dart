@@ -74,6 +74,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i142.SyncRepository>(
       () => _i142.SyncRepository(
         gh<_i538.DailyLogBloc>(),
+        gh<_i538.WorkoutLogBloc>(),
         gh<_i538.UserSettingsBloc>(),
         gh<_i538.OnboardingBloc>(),
       ),

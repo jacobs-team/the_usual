@@ -32,6 +32,17 @@ void main() {
     ],
   );
 
+  final establishedWorkoutLog = WorkoutLogState(
+    workoutEntries: [
+      WorkoutLogEntry(
+        id: 'w1',
+        loggedAt: DateTime(2026, 6, 22, 9),
+        workoutGroupId: 'g1',
+        name: 'Bench Press',
+      ),
+    ],
+  );
+
   const establishedSettings = UserSettingsState(
     usuals: {
       MealOfTheDay.breakfast: [
@@ -43,22 +54,29 @@ void main() {
 
   Map<String, dynamic> documentFor(
     DailyLogState dailyLog,
-    UserSettingsState settings,
-  ) => {
+    UserSettingsState settings, [
+    WorkoutLogState workoutLog = const WorkoutLogState(),
+  ]) => {
     'schemaVersion': 1,
     'dailyLog': dailyLog.toJson(),
     'userSettings': settings.toJson(),
+    'workoutLog': workoutLog.toJson(),
   };
 
   late MockFirestore firestore;
   late MockDocumentReference docRef;
   late DailyLogBloc dailyLogBloc;
+  late WorkoutLogBloc workoutLogBloc;
   late UserSettingsBloc userSettingsBloc;
   late OnboardingBloc onboardingBloc;
   late SyncRepository repository;
 
   setUpAll(() {
     registerFallbackValue(<String, dynamic>{});
+    registerFallbackValue(const WorkoutLogState());
+    registerFallbackValue(
+      const WorkoutLogEvent.stateRestored(WorkoutLogState()),
+    );
   });
 
   setUp(() {
@@ -70,11 +88,13 @@ void main() {
     when(() => docRef.set(any())).thenAnswer((_) async {});
 
     dailyLogBloc = DailyLogBloc();
+    workoutLogBloc = WorkoutLogBloc();
     userSettingsBloc = UserSettingsBloc();
     onboardingBloc = OnboardingBloc();
 
     repository = SyncRepository(
       dailyLogBloc,
+      workoutLogBloc,
       userSettingsBloc,
       onboardingBloc,
       firestore,
@@ -84,6 +104,7 @@ void main() {
   tearDown(() async {
     repository.stopWatching();
     await dailyLogBloc.close();
+    await workoutLogBloc.close();
     await userSettingsBloc.close();
     await onboardingBloc.close();
   });
@@ -105,7 +126,12 @@ void main() {
   group(SyncRepository, () {
     test('falls back to FirebaseFirestore.instance when none is given', () {
       expect(
-        () => SyncRepository(dailyLogBloc, userSettingsBloc, onboardingBloc),
+        () => SyncRepository(
+          dailyLogBloc,
+          workoutLogBloc,
+          userSettingsBloc,
+          onboardingBloc,
+        ),
         throwsA(isA<FirebaseException>()),
       );
     });
@@ -125,6 +151,12 @@ void main() {
         userSettingsBloc.add(
           const UserSettingsEvent.stateRestored(establishedSettings),
         );
+        await pumpEventQueue();
+        expect(repository.hasEstablishedData, isTrue);
+      });
+
+      test('is true when there are logged workouts', () async {
+        workoutLogBloc.add(WorkoutLogEvent.stateRestored(establishedWorkoutLog));
         await pumpEventQueue();
         expect(repository.hasEstablishedData, isTrue);
       });
@@ -156,6 +188,15 @@ void main() {
         expect(captured['schemaVersion'], equals(1));
         expect(captured['dailyLog'], isNotNull);
         expect(captured['userSettings'], isNotNull);
+      });
+
+      test('includes workoutLog in the uploaded document', () async {
+        await repository.uploadLocal(uid);
+
+        final captured =
+            verify(() => docRef.set(captureAny())).captured.single
+                as Map<String, dynamic>;
+        expect(captured['workoutLog'], isNotNull);
       });
     });
 
@@ -234,6 +275,55 @@ void main() {
 
           await dailyLogSub.cancel();
           await settingsSub.cancel();
+        },
+      );
+
+      test('applies a document that contains workoutLog', () async {
+        final document = documentFor(
+          const DailyLogState(),
+          const UserSettingsState(),
+          establishedWorkoutLog,
+        );
+        when(() => docRef.get()).thenAnswer((_) async => snapshotWith(document));
+
+        await repository.downloadAndApply(uid);
+        await pumpEventQueue();
+
+        expect(workoutLogBloc.state.workoutEntries, isNotEmpty);
+      });
+
+      test(
+        'does not re-dispatch when the doc matches state ignoring '
+        'justLoggedWorkoutId',
+        () async {
+          workoutLogBloc.add(
+            WorkoutLogEvent.stateRestored(
+              establishedWorkoutLog.copyWith(justLoggedWorkoutId: 'w1'),
+            ),
+          );
+          await pumpEventQueue();
+
+          final document = documentFor(
+            const DailyLogState(),
+            const UserSettingsState(),
+            establishedWorkoutLog,
+          );
+          when(
+            () => docRef.get(),
+          ).thenAnswer((_) async => snapshotWith(document));
+
+          final workoutEmissions = <WorkoutLogState>[];
+          final workoutSub = workoutLogBloc.stream.listen(
+            workoutEmissions.add,
+          );
+
+          await repository.downloadAndApply(uid);
+          await pumpEventQueue();
+
+          expect(workoutEmissions, isEmpty);
+          expect(workoutLogBloc.state.justLoggedWorkoutId, equals('w1'));
+
+          await workoutSub.cancel();
         },
       );
     });
@@ -324,10 +414,12 @@ void main() {
       test('uploads once after the debounce when local state changes', () {
         fakeAsync((async) {
           final localDailyLog = DailyLogBloc();
+          final localWorkoutLog = WorkoutLogBloc();
           final localSettings = UserSettingsBloc();
           final localOnboarding = OnboardingBloc();
           final localRepository = SyncRepository(
             localDailyLog,
+            localWorkoutLog,
             localSettings,
             localOnboarding,
             firestore,
@@ -352,6 +444,7 @@ void main() {
           localRepository.stopWatching();
           controller.close();
           localDailyLog.close();
+          localWorkoutLog.close();
           localSettings.close();
           localOnboarding.close();
         });
@@ -360,10 +453,12 @@ void main() {
       test('skips the upload when state is unchanged from last synced', () {
         fakeAsync((async) {
           final localDailyLog = DailyLogBloc();
+          final localWorkoutLog = WorkoutLogBloc();
           final localSettings = UserSettingsBloc();
           final localOnboarding = OnboardingBloc();
           final localRepository = SyncRepository(
             localDailyLog,
+            localWorkoutLog,
             localSettings,
             localOnboarding,
             firestore,
@@ -402,6 +497,7 @@ void main() {
           localRepository.stopWatching();
           controller.close();
           localDailyLog.close();
+          localWorkoutLog.close();
           localSettings.close();
           localOnboarding.close();
         });
@@ -410,10 +506,12 @@ void main() {
       test('does nothing when fired after the uid is cleared', () {
         fakeAsync((async) {
           final localDailyLog = DailyLogBloc();
+          final localWorkoutLog = WorkoutLogBloc();
           final localSettings = UserSettingsBloc();
           final localOnboarding = OnboardingBloc();
           final localRepository = SyncRepository(
             localDailyLog,
+            localWorkoutLog,
             localSettings,
             localOnboarding,
             firestore,
@@ -437,6 +535,46 @@ void main() {
 
           controller.close();
           localDailyLog.close();
+          localWorkoutLog.close();
+          localSettings.close();
+          localOnboarding.close();
+        });
+      });
+
+      test('uploads once after debounce when workout state changes', () {
+        fakeAsync((async) {
+          final localDailyLog = DailyLogBloc();
+          final localWorkoutLog = WorkoutLogBloc();
+          final localSettings = UserSettingsBloc();
+          final localOnboarding = OnboardingBloc();
+          final localRepository = SyncRepository(
+            localDailyLog,
+            localWorkoutLog,
+            localSettings,
+            localOnboarding,
+            firestore,
+          );
+          final controller =
+              StreamController<DocumentSnapshot<Map<String, dynamic>>>();
+          when(() => docRef.snapshots()).thenAnswer((_) => controller.stream);
+
+          localRepository.startWatching(uid);
+
+          localWorkoutLog.add(
+            WorkoutLogEvent.stateRestored(establishedWorkoutLog),
+          );
+          async.elapse(Duration.zero);
+
+          verifyNever(() => docRef.set(any()));
+
+          async.elapse(const Duration(seconds: 3));
+
+          verify(() => docRef.set(any())).called(1);
+
+          localRepository.stopWatching();
+          controller.close();
+          localDailyLog.close();
+          localWorkoutLog.close();
           localSettings.close();
           localOnboarding.close();
         });
@@ -535,6 +673,15 @@ void main() {
 
         expect(dailyLogBloc.state, equals(const DailyLogState()));
         expect(userSettingsBloc.state, equals(const UserSettingsState()));
+      });
+
+      test('resets workoutLogBloc when state differs', () async {
+        workoutLogBloc.add(WorkoutLogEvent.stateRestored(establishedWorkoutLog));
+        await pumpEventQueue();
+
+        await repository.clearLocal();
+
+        expect(workoutLogBloc.state, equals(const WorkoutLogState()));
       });
     });
   });
