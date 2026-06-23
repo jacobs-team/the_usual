@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:the_usual/app/core/extensions/extensions.dart';
 import 'package:the_usual/app/model/model.dart';
 
@@ -33,4 +34,19 @@ extension WorkoutLogEntryListFormatting on List<WorkoutLogEntry> {
     0,
     (total, workoutLogEntry) => total + workoutLogEntry.volume,
   );
+
+  /// The entries whose [WorkoutLogEntry.loggedAt] falls on the logical [day]
+  /// (rolling over at [dayStart]).
+  List<WorkoutLogEntry> entriesOn(DateTime day, TimeOfDay dayStart) => [
+    for (final workoutLogEntry in this)
+      if (DateUtils.isSameDay(
+        workoutLogEntry.loggedAt.logicalDay(dayStart),
+        day,
+      ))
+        workoutLogEntry,
+  ];
+
+  /// Total volume across the entries on the logical [day].
+  double volumeOn(DateTime day, TimeOfDay dayStart) =>
+      entriesOn(day, dayStart).totalVolume;
 }

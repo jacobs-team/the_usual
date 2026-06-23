@@ -170,7 +170,7 @@ void main() {
         ],
       );
 
-      final entries = state.entriesOn(DateTime(2026, 6, 14), dayStart);
+      final entries = state.workoutEntries.entriesOn(DateTime(2026, 6, 14), dayStart);
 
       expect(entries.single.id, equals('a'));
     });
@@ -184,7 +184,10 @@ void main() {
         ],
       );
 
-      expect(state.volumeOn(DateTime(2026, 6, 14), dayStart), equals(2000.0));
+      expect(
+        state.workoutEntries.volumeOn(DateTime(2026, 6, 14), dayStart),
+        equals(2000.0),
+      );
     });
 
     test('fromJson reads a newer, unknown version with the current schema', () {

@@ -123,15 +123,16 @@ void main() {
     testWidgets('section header shows volume when entries exist', (
       tester,
     ) async {
-      await pumpSection(
-        tester,
-        workoutLogEntries: [logged('a', 'Bench Press')],
-      );
+      final seededEntries = [logged('a', 'Bench Press')];
+      await pumpSection(tester, workoutLogEntries: seededEntries);
 
-      // The volume Text widget should be present. The entry has 135×8 = 1080 lb
-      // volume. We locate it by type within the section header area.
-      // Simply confirm at least two Text widgets (name + volume) are rendered.
-      expect(find.byType(Text), findsWidgets);
+      // 135 × 8 = 1080 lb. The section header renders it as "1080 lb".
+      final expectedVolume =
+          '${seededEntries.totalVolume.trimmedDecimal} ${WeightUnit.lb.name}';
+      final hasVolumeText = tester
+          .widgetList<Text>(find.byType(Text))
+          .any((t) => t.data == expectedVolume);
+      expect(hasVolumeText, isTrue);
     });
   });
 }

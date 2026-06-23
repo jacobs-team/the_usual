@@ -46,18 +46,4 @@ abstract class WorkoutLogState with _$WorkoutLogState {
         return _$WorkoutLogStateFromJson(json);
     }
   }
-
-  /// The workouts logged on the logical [day] (rolling over at [dayStart]).
-  List<WorkoutLogEntry> entriesOn(DateTime day, TimeOfDay dayStart) => [
-    for (final workoutLogEntry in workoutEntries)
-      if (DateUtils.isSameDay(
-        workoutLogEntry.loggedAt.logicalDay(dayStart),
-        day,
-      ))
-        workoutLogEntry,
-  ];
-
-  /// Total volume across the workouts logged on the logical [day].
-  double volumeOn(DateTime day, TimeOfDay dayStart) => entriesOn(day, dayStart)
-      .fold<double>(0, (total, workoutLogEntry) => total + workoutLogEntry.volume);
 }

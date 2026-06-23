@@ -102,9 +102,8 @@ class _WorkoutsViewState extends State<WorkoutsView> {
               ),
               builder: (context, logSelected) {
                 final (workoutEntries, justLoggedWorkoutId) = logSelected;
-                final dayEntries = WorkoutLogState(
-                  workoutEntries: workoutEntries,
-                ).entriesOn(displayDay, dayStartTime);
+                final dayEntries =
+                    workoutEntries.entriesOn(displayDay, dayStartTime);
                 final entriesByGroup = <String, List<WorkoutLogEntry>>{};
                 for (final workoutLogEntry in dayEntries) {
                   (entriesByGroup[workoutLogEntry.workoutGroupId] ??= [])
@@ -137,13 +136,25 @@ class _WorkoutsViewState extends State<WorkoutsView> {
                         workoutLogEntries:
                             entriesByGroup[workoutGroup.id] ??
                             const <WorkoutLogEntry>[],
-                        quickPicks: _quickPicks(
-                          workoutGroup: workoutGroup,
-                          usualWorkouts: usualWorkouts,
-                          groupEntries:
+                        quickPicks: () {
+                          final groupEntries =
                               entriesByGroup[workoutGroup.id] ??
-                              const <WorkoutLogEntry>[],
-                        ),
+                              const <WorkoutLogEntry>[];
+                          final usuals =
+                              usualWorkouts[workoutGroup.id] ??
+                              const <UsualWorkout>[];
+                          final loggedNames = {
+                            for (final workoutLogEntry in groupEntries)
+                              workoutLogEntry.name.toLowerCase(),
+                          };
+                          return [
+                            for (final usualWorkout in usuals)
+                              if (!loggedNames.contains(
+                                usualWorkout.name.toLowerCase(),
+                              ))
+                                usualWorkout,
+                          ];
+                        }(),
                         weightUnit: workoutWeightUnit,
                         expandedByDefault: expandNutritionByDefault,
                         justLoggedWorkoutId: justLoggedWorkoutId,
@@ -179,21 +190,5 @@ class _WorkoutsViewState extends State<WorkoutsView> {
     return '$startLabel – ${formatDate(selectedRange.end)}'; // coverage:ignore-line
   }
 
-  /// The usuals for [workoutGroup] whose name hasn't been logged today.
-  List<UsualWorkout> _quickPicks({
-    required WorkoutGroup workoutGroup,
-    required Map<String, List<UsualWorkout>> usualWorkouts,
-    required List<WorkoutLogEntry> groupEntries,
-  }) {
-    final usuals = usualWorkouts[workoutGroup.id] ?? const <UsualWorkout>[];
-    final loggedNames = {
-      for (final workoutLogEntry in groupEntries)
-        workoutLogEntry.name.toLowerCase(),
-    };
-    return [
-      for (final usualWorkout in usuals)
-        if (!loggedNames.contains(usualWorkout.name.toLowerCase()))
-          usualWorkout,
-    ];
-  }
+
 }
