@@ -104,8 +104,8 @@ void main() {
         NavigationWrapper(navigationShell: navigationShell),
       );
 
-      // History is the unselected destination, so it shows its outlined icon.
-      await tester.tap(find.byIcon(Icons.history_outlined));
+      // Workouts is the unselected destination, so it shows its outlined icon.
+      await tester.tap(find.byIcon(Icons.fitness_center_outlined));
 
       verify(
         () => navigationShell.goBranch(

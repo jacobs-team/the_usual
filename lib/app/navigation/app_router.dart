@@ -68,9 +68,9 @@ class AppRouter {
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: Routes.history,
+              path: Routes.workouts,
               pageBuilder: (context, state) {
-                return const NoTransitionPage(child: HistoryView());
+                return const NoTransitionPage(child: WorkoutsView());
               },
             ),
           ],
@@ -78,6 +78,12 @@ class AppRouter {
       ],
       builder: (context, state, navigationShell) =>
           NavigationWrapper(navigationShell: navigationShell),
+    ),
+    GoRoute(
+      path: Routes.history,
+      pageBuilder: (context, state) {
+        return const NoTransitionPage(child: HistoryView());
+      },
     ),
     GoRoute(
       path: Routes.settings,
@@ -102,17 +108,17 @@ class AppRouter {
       ),
   ];
 
-  /// Destinations for the Today and History bottom navigation bar.
+  /// Destinations for the Meals and Workouts bottom navigation bar.
   static const List<NavigationDestination> destinations = [
     NavigationDestination(
-      icon: Icon(Icons.today_outlined),
-      selectedIcon: Icon(Icons.today),
-      label: 'Today',
+      icon: Icon(Icons.restaurant_outlined),
+      selectedIcon: Icon(Icons.restaurant),
+      label: 'Meals',
     ),
     NavigationDestination(
-      icon: Icon(Icons.history_outlined),
-      selectedIcon: Icon(Icons.history),
-      label: 'History',
+      icon: Icon(Icons.fitness_center_outlined),
+      selectedIcon: Icon(Icons.fitness_center),
+      label: 'Workouts',
     ),
   ];
 }

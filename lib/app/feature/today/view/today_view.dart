@@ -79,6 +79,7 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
     return Scaffold(
       appBar: TheUsualAppBar(
         title: 'Today',
+        historyRoute: Routes.history,
         titleWidget: ActionChip(
           key: const Key('today-date-pill'),
           label: Text(pillLabel),
