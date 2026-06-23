@@ -50,7 +50,9 @@ abstract class WorkoutLogState with _$WorkoutLogState {
     final entriesByDay = <DateTime, List<WorkoutLogEntry>>{};
     for (final workoutLogEntry in workoutEntries) {
       final day = workoutLogEntry.loggedAt.logicalDay(dayStart);
-      entriesByDay.putIfAbsent(day, () => <WorkoutLogEntry>[]).add(workoutLogEntry);
+      entriesByDay
+          .putIfAbsent(day, () => <WorkoutLogEntry>[])
+          .add(workoutLogEntry);
     }
 
     final allDays = entriesByDay.keys.toList()..sort((a, b) => b.compareTo(a));

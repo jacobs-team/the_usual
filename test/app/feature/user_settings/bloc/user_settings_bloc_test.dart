@@ -507,7 +507,11 @@ void main() {
         'workoutGroupReordered reorders and reassigns order indices',
         build: UserSettingsBloc.new,
         act: (bloc) => bloc.add(
-          const UserSettingsEvent.workoutGroupReordered(['legs', 'push', 'pull']),
+          const UserSettingsEvent.workoutGroupReordered([
+            'legs',
+            'push',
+            'pull',
+          ]),
         ),
         expect: () => [
           isA<UserSettingsState>()

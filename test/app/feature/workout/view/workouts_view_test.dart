@@ -139,7 +139,8 @@ void main() {
     );
 
     testWidgets(
-      'tapping delete on a non-empty group shows a snackbar and does not dispatch workoutGroupRemoved',
+      'tapping delete on a non-empty group shows a snackbar and does not '
+      'dispatch workoutGroupRemoved',
       (tester) async {
         tester.view.physicalSize = const Size(1200, 3000);
         tester.view.devicePixelRatio = 1.0;
@@ -178,7 +179,8 @@ void main() {
     );
 
     testWidgets(
-      'Add group button opens dialog and submitting a name dispatches workoutGroupAdded',
+      'Add group button opens dialog and submitting a name dispatches '
+      'workoutGroupAdded',
       (tester) async {
         tester.view.physicalSize = const Size(1200, 3000);
         tester.view.devicePixelRatio = 1.0;

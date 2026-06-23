@@ -75,8 +75,11 @@ class SyncRepository {
     'workoutLog': workoutLog.toJson(),
   };
 
-  Map<String, dynamic> _currentDocument() =>
-      _documentOf(_dailyLogBloc.state, _userSettingsBloc.state, _workoutLogBloc.state);
+  Map<String, dynamic> _currentDocument() => _documentOf(
+    _dailyLogBloc.state,
+    _userSettingsBloc.state,
+    _workoutLogBloc.state,
+  );
 
   /// Whether the user already has a cloud document. Guards the `isNewUser`
   /// flag against the case where the Auth record exists but the document does
@@ -124,7 +127,10 @@ class SyncRepository {
     if (settings != _userSettingsBloc.state) {
       _userSettingsBloc.add(UserSettingsEvent.stateRestored(settings));
     }
-    if (workoutLog != _workoutLogBloc.state.copyWith(justLoggedWorkoutId: null)) {
+    final workoutLogEcho = _workoutLogBloc.state.copyWith(
+      justLoggedWorkoutId: null,
+    );
+    if (workoutLog != workoutLogEcho) {
       _workoutLogBloc.add(WorkoutLogEvent.stateRestored(workoutLog));
     }
     // Store the canonical encoding (from toJson) rather than the raw document,
@@ -188,10 +194,10 @@ class SyncRepository {
 
   /// Stops two-way sync and forgets the synced user.
   void stopWatching() {
-    _remoteSub?.cancel();
-    _dailyLogSub?.cancel();
-    _settingsSub?.cancel();
-    _workoutLogSub?.cancel();
+    unawaited(_remoteSub?.cancel());
+    unawaited(_dailyLogSub?.cancel());
+    unawaited(_settingsSub?.cancel());
+    unawaited(_workoutLogSub?.cancel());
     _debounce?.cancel();
     _remoteSub = null;
     _dailyLogSub = null;

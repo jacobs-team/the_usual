@@ -239,7 +239,8 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
     }
     // The day picker only ever selects a single day (start == end), so the
     // span label is unreachable today; kept for when range selection lands.
-    return '$startLabel – ${formatDate(selectedRange.end)}'; // coverage:ignore-line
+    final rangeLabel = '$startLabel – ${formatDate(selectedRange.end)}';
+    return rangeLabel; // coverage:ignore-line
   }
 }
 

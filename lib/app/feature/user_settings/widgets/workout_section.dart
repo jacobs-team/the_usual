@@ -44,13 +44,13 @@ class WorkoutSection extends StatelessWidget {
               onToggled: (enabled) => getIt<UserSettingsBloc>().add(
                 UserSettingsEvent.workoutReminderToggled(enabled: enabled),
               ),
-              onDayToggled: (dayOfWeek, enabled) =>
+              onDayToggled: (dayOfWeek, {required enabled}) =>
                   getIt<UserSettingsBloc>().add(
-                UserSettingsEvent.workoutReminderDayToggled(
-                  dayOfWeek,
-                  enabled: enabled,
-                ),
-              ),
+                    UserSettingsEvent.workoutReminderDayToggled(
+                      dayOfWeek,
+                      enabled: enabled,
+                    ),
+                  ),
               onTimeChanged: (timeOfDay) => getIt<UserSettingsBloc>().add(
                 UserSettingsEvent.workoutReminderTimeChanged(timeOfDay),
               ),

@@ -121,7 +121,8 @@ void main() {
         'the save-as-usual checkbox is absent when showAddToUsuals is false',
         (tester) async {
       await showSheet(tester);
-      // The bodyweight checkbox is always present; the save-as-usual one is not.
+      // The bodyweight checkbox is always present; the save-as-usual one is
+      // not.
       expect(
         find.byKey(const Key('bodyweight-checkbox')),
         findsOneWidget,
@@ -179,8 +180,8 @@ void main() {
 
     testWidgets('camera button is absent when AI is not configured',
         (tester) async {
-      // pumpPumpPumpItUP registers a WorkoutAiRepository with isConfigured=false
-      // by default — no override needed.
+      // pumpPumpPumpItUP registers a WorkoutAiRepository with
+      // isConfigured=false by default — no override needed.
       await showSheet(tester);
 
       expect(find.byIcon(Icons.photo_camera_outlined), findsNothing);
@@ -206,10 +207,8 @@ void main() {
       await showSheet(tester, aiRepository: repository);
 
       // Seed suggestions via the @visibleForTesting entry point.
-      final sheetState = tester.state<WorkoutEntrySheetState>(
-        find.byType(WorkoutEntrySheet),
-      );
-      sheetState.applySuggestionsForTest(['Lat Pulldown', 'Cable Row']);
+      tester.state<WorkoutEntrySheetState>(find.byType(WorkoutEntrySheet))
+          .applySuggestionsForTest(['Lat Pulldown', 'Cable Row']);
       await tester.pump();
 
       expect(find.byType(ActionChip), findsNWidgets(2));

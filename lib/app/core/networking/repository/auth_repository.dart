@@ -4,9 +4,9 @@ import 'package:injectable/injectable.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/environment.dart';
 
-/// The outcome of an interactive Google sign-in: the signed-in [user] and
+/// The outcome of an interactive Google sign-in: the signed-in `user` and
 /// whether this is the first time the Google identity has authenticated into
-/// this Firebase project ([isNewUser]).
+/// this Firebase project (`isNewUser`).
 typedef SignInResult = ({AuthUser user, bool isNewUser});
 
 /// {@template auth_repository}

@@ -170,7 +170,10 @@ void main() {
         ],
       );
 
-      final entries = state.workoutEntries.entriesOn(DateTime(2026, 6, 14), dayStart);
+      final entries = state.workoutEntries.entriesOn(
+        DateTime(2026, 6, 14),
+        dayStart,
+      );
 
       expect(entries.single.id, equals('a'));
     });
@@ -201,7 +204,12 @@ void main() {
     });
 
     group('historyByMonth', () {
-      WorkoutLogEntry entry(String id, DateTime loggedAt, {double weight = 100, int reps = 10}) {
+      WorkoutLogEntry entry(
+        String id,
+        DateTime loggedAt, {
+        double weight = 100,
+        int reps = 10,
+      }) {
         return WorkoutLogEntry(
           id: id,
           loggedAt: loggedAt,
@@ -216,7 +224,8 @@ void main() {
         expect(state.historyByMonth(dayStart), isEmpty);
       });
 
-      test('buckets entries into months with per-day volume and month average', () {
+      test('buckets entries into months with per-day volume and month '
+          'average', () {
         // Two entries on May 14 (volume 1000 each = 2000 total for the day),
         // one entry on June 3 (volume 1000).
         final state = WorkoutLogState(

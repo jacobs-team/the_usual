@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$WorkoutReminder {
 
- bool get enabled; Set<int> get daysOfWeek;@TimeOfDayConverter() TimeOfDay get timeOfDay;
+@TimeOfDayConverter() TimeOfDay get timeOfDay; bool get enabled; Set<int> get daysOfWeek;
 /// Create a copy of WorkoutReminder
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $WorkoutReminderCopyWith<WorkoutReminder> get copyWith => _$WorkoutReminderCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WorkoutReminder&&(identical(other.enabled, enabled) || other.enabled == enabled)&&const DeepCollectionEquality().equals(other.daysOfWeek, daysOfWeek)&&(identical(other.timeOfDay, timeOfDay) || other.timeOfDay == timeOfDay));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WorkoutReminder&&(identical(other.timeOfDay, timeOfDay) || other.timeOfDay == timeOfDay)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&const DeepCollectionEquality().equals(other.daysOfWeek, daysOfWeek));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,enabled,const DeepCollectionEquality().hash(daysOfWeek),timeOfDay);
+int get hashCode => Object.hash(runtimeType,timeOfDay,enabled,const DeepCollectionEquality().hash(daysOfWeek));
 
 @override
 String toString() {
-  return 'WorkoutReminder(enabled: $enabled, daysOfWeek: $daysOfWeek, timeOfDay: $timeOfDay)';
+  return 'WorkoutReminder(timeOfDay: $timeOfDay, enabled: $enabled, daysOfWeek: $daysOfWeek)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $WorkoutReminderCopyWith<$Res>  {
   factory $WorkoutReminderCopyWith(WorkoutReminder value, $Res Function(WorkoutReminder) _then) = _$WorkoutReminderCopyWithImpl;
 @useResult
 $Res call({
- bool enabled, Set<int> daysOfWeek,@TimeOfDayConverter() TimeOfDay timeOfDay
+@TimeOfDayConverter() TimeOfDay timeOfDay, bool enabled, Set<int> daysOfWeek
 });
 
 
@@ -65,12 +65,12 @@ class _$WorkoutReminderCopyWithImpl<$Res>
 
 /// Create a copy of WorkoutReminder
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? enabled = null,Object? daysOfWeek = null,Object? timeOfDay = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? timeOfDay = null,Object? enabled = null,Object? daysOfWeek = null,}) {
   return _then(_self.copyWith(
-enabled: null == enabled ? _self.enabled : enabled // ignore: cast_nullable_to_non_nullable
+timeOfDay: null == timeOfDay ? _self.timeOfDay : timeOfDay // ignore: cast_nullable_to_non_nullable
+as TimeOfDay,enabled: null == enabled ? _self.enabled : enabled // ignore: cast_nullable_to_non_nullable
 as bool,daysOfWeek: null == daysOfWeek ? _self.daysOfWeek : daysOfWeek // ignore: cast_nullable_to_non_nullable
-as Set<int>,timeOfDay: null == timeOfDay ? _self.timeOfDay : timeOfDay // ignore: cast_nullable_to_non_nullable
-as TimeOfDay,
+as Set<int>,
   ));
 }
 
@@ -155,10 +155,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool enabled,  Set<int> daysOfWeek, @TimeOfDayConverter()  TimeOfDay timeOfDay)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@TimeOfDayConverter()  TimeOfDay timeOfDay,  bool enabled,  Set<int> daysOfWeek)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _WorkoutReminder() when $default != null:
-return $default(_that.enabled,_that.daysOfWeek,_that.timeOfDay);case _:
+return $default(_that.timeOfDay,_that.enabled,_that.daysOfWeek);case _:
   return orElse();
 
 }
@@ -176,10 +176,10 @@ return $default(_that.enabled,_that.daysOfWeek,_that.timeOfDay);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool enabled,  Set<int> daysOfWeek, @TimeOfDayConverter()  TimeOfDay timeOfDay)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@TimeOfDayConverter()  TimeOfDay timeOfDay,  bool enabled,  Set<int> daysOfWeek)  $default,) {final _that = this;
 switch (_that) {
 case _WorkoutReminder():
-return $default(_that.enabled,_that.daysOfWeek,_that.timeOfDay);case _:
+return $default(_that.timeOfDay,_that.enabled,_that.daysOfWeek);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +196,10 @@ return $default(_that.enabled,_that.daysOfWeek,_that.timeOfDay);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool enabled,  Set<int> daysOfWeek, @TimeOfDayConverter()  TimeOfDay timeOfDay)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@TimeOfDayConverter()  TimeOfDay timeOfDay,  bool enabled,  Set<int> daysOfWeek)?  $default,) {final _that = this;
 switch (_that) {
 case _WorkoutReminder() when $default != null:
-return $default(_that.enabled,_that.daysOfWeek,_that.timeOfDay);case _:
+return $default(_that.timeOfDay,_that.enabled,_that.daysOfWeek);case _:
   return null;
 
 }
@@ -211,9 +211,10 @@ return $default(_that.enabled,_that.daysOfWeek,_that.timeOfDay);case _:
 @JsonSerializable()
 
 class _WorkoutReminder implements WorkoutReminder {
-  const _WorkoutReminder({this.enabled = false, final  Set<int> daysOfWeek = const <int>{}, @TimeOfDayConverter() required this.timeOfDay}): _daysOfWeek = daysOfWeek;
+  const _WorkoutReminder({@TimeOfDayConverter() required this.timeOfDay, this.enabled = false, final  Set<int> daysOfWeek = const <int>{}}): _daysOfWeek = daysOfWeek;
   factory _WorkoutReminder.fromJson(Map<String, dynamic> json) => _$WorkoutReminderFromJson(json);
 
+@override@TimeOfDayConverter() final  TimeOfDay timeOfDay;
 @override@JsonKey() final  bool enabled;
  final  Set<int> _daysOfWeek;
 @override@JsonKey() Set<int> get daysOfWeek {
@@ -222,7 +223,6 @@ class _WorkoutReminder implements WorkoutReminder {
   return EqualUnmodifiableSetView(_daysOfWeek);
 }
 
-@override@TimeOfDayConverter() final  TimeOfDay timeOfDay;
 
 /// Create a copy of WorkoutReminder
 /// with the given fields replaced by the non-null parameter values.
@@ -237,16 +237,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WorkoutReminder&&(identical(other.enabled, enabled) || other.enabled == enabled)&&const DeepCollectionEquality().equals(other._daysOfWeek, _daysOfWeek)&&(identical(other.timeOfDay, timeOfDay) || other.timeOfDay == timeOfDay));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WorkoutReminder&&(identical(other.timeOfDay, timeOfDay) || other.timeOfDay == timeOfDay)&&(identical(other.enabled, enabled) || other.enabled == enabled)&&const DeepCollectionEquality().equals(other._daysOfWeek, _daysOfWeek));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,enabled,const DeepCollectionEquality().hash(_daysOfWeek),timeOfDay);
+int get hashCode => Object.hash(runtimeType,timeOfDay,enabled,const DeepCollectionEquality().hash(_daysOfWeek));
 
 @override
 String toString() {
-  return 'WorkoutReminder(enabled: $enabled, daysOfWeek: $daysOfWeek, timeOfDay: $timeOfDay)';
+  return 'WorkoutReminder(timeOfDay: $timeOfDay, enabled: $enabled, daysOfWeek: $daysOfWeek)';
 }
 
 
@@ -257,7 +257,7 @@ abstract mixin class _$WorkoutReminderCopyWith<$Res> implements $WorkoutReminder
   factory _$WorkoutReminderCopyWith(_WorkoutReminder value, $Res Function(_WorkoutReminder) _then) = __$WorkoutReminderCopyWithImpl;
 @override @useResult
 $Res call({
- bool enabled, Set<int> daysOfWeek,@TimeOfDayConverter() TimeOfDay timeOfDay
+@TimeOfDayConverter() TimeOfDay timeOfDay, bool enabled, Set<int> daysOfWeek
 });
 
 
@@ -274,12 +274,12 @@ class __$WorkoutReminderCopyWithImpl<$Res>
 
 /// Create a copy of WorkoutReminder
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? enabled = null,Object? daysOfWeek = null,Object? timeOfDay = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? timeOfDay = null,Object? enabled = null,Object? daysOfWeek = null,}) {
   return _then(_WorkoutReminder(
-enabled: null == enabled ? _self.enabled : enabled // ignore: cast_nullable_to_non_nullable
+timeOfDay: null == timeOfDay ? _self.timeOfDay : timeOfDay // ignore: cast_nullable_to_non_nullable
+as TimeOfDay,enabled: null == enabled ? _self.enabled : enabled // ignore: cast_nullable_to_non_nullable
 as bool,daysOfWeek: null == daysOfWeek ? _self._daysOfWeek : daysOfWeek // ignore: cast_nullable_to_non_nullable
-as Set<int>,timeOfDay: null == timeOfDay ? _self.timeOfDay : timeOfDay // ignore: cast_nullable_to_non_nullable
-as TimeOfDay,
+as Set<int>,
   ));
 }
 

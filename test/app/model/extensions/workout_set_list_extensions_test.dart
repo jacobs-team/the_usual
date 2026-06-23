@@ -7,7 +7,8 @@ void main() {
       expect(const WorkoutSet(weight: 135, reps: 8).label, equals('135×8'));
     });
 
-    test('label trims a whole-number weight and shows — for missing values', () {
+    test('label trims a whole-number weight and shows — for missing '
+        'values', () {
       expect(const WorkoutSet(weight: 142.5, reps: 6).label, equals('142.5×6'));
       expect(const WorkoutSet(reps: 8).label, equals('—×8'));
       expect(const WorkoutSet(weight: 100).label, equals('100×—'));
@@ -16,17 +17,26 @@ void main() {
 
   group('WorkoutSetListFormatting', () {
     test('totalVolume sums set volumes', () {
-      const sets = [WorkoutSet(weight: 135, reps: 8), WorkoutSet(weight: 145, reps: 6)];
+      const sets = [
+        WorkoutSet(weight: 135, reps: 8),
+        WorkoutSet(weight: 145, reps: 6),
+      ];
       expect(sets.totalVolume, equals(1950.0));
     });
 
     test('summary lists count and each set', () {
-      const sets = [WorkoutSet(weight: 135, reps: 8), WorkoutSet(weight: 145, reps: 6)];
+      const sets = [
+        WorkoutSet(weight: 135, reps: 8),
+        WorkoutSet(weight: 145, reps: 6),
+      ];
       expect(sets.summary, equals('2 sets · 135×8, 145×6'));
     });
 
     test('summary uses singular for one set and a fallback when empty', () {
-      expect(const [WorkoutSet(weight: 100, reps: 5)].summary, equals('1 set · 100×5'));
+      expect(
+        const [WorkoutSet(weight: 100, reps: 5)].summary,
+        equals('1 set · 100×5'),
+      );
       expect(const <WorkoutSet>[].summary, equals('No sets'));
     });
   });

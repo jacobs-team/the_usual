@@ -27,7 +27,7 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
           state.copyWith(
             foods: [
               ...state.foods,
-              FoodDraft(id: _uuid.v4()),
+              FoodDraft(id: _uuid.v4(), addToUsualMeals: event.addToUsualMeals),
             ],
           ),
         ),

@@ -6,7 +6,8 @@ import 'package:the_usual/design_system/design_system.dart';
 /// {@template workout_log_section}
 /// One workout group's slice of the Workouts view: what's been logged for it
 /// so far, quick-pick chips for the user's usuals not yet logged, and an entry
-/// point for logging a new workout. Builds as a sliver for a [CustomScrollView].
+/// point for logging a new workout. Builds as a sliver for a
+/// [CustomScrollView].
 /// {@endtemplate}
 class WorkoutLogSection extends StatelessWidget {
   /// {@macro workout_log_section}

@@ -108,10 +108,7 @@ _UserSettingsState _$UserSettingsStateFromJson(
       ) ??
       const <String, List<UsualWorkout>>{},
   workoutReminder: json['workoutReminder'] == null
-      ? const WorkoutReminder(
-          enabled: false,
-          timeOfDay: TimeOfDay(hour: 18, minute: 0),
-        )
+      ? const WorkoutReminder(timeOfDay: TimeOfDay(hour: 18, minute: 0))
       : WorkoutReminder.fromJson(
           json['workoutReminder'] as Map<String, dynamic>,
         ),

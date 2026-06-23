@@ -45,7 +45,8 @@ void main() {
     }
 
     testWidgets(
-      'renders a CustomPaint and GestureDetector for a month with 2+ volume days',
+      'renders a CustomPaint and GestureDetector for a month with 2+ volume '
+      'days',
       (tester) async {
         await pumpChart(
           tester,

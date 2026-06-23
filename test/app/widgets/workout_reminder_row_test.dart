@@ -15,7 +15,7 @@ void main() {
             timeOfDay: TimeOfDay(hour: 18, minute: 0),
           ),
           onToggled: (value) => toggled = value,
-          onDayToggled: (_, _) {},
+          onDayToggled: (_, {required enabled}) {},
           onTimeChanged: (_) {},
         ),
       );
@@ -37,7 +37,7 @@ void main() {
               timeOfDay: TimeOfDay(hour: 18, minute: 0),
             ),
             onToggled: (_) {},
-            onDayToggled: (day, enabled) {
+            onDayToggled: (day, {required enabled}) {
               reportedDay = day;
               reportedEnabled = enabled;
             },
@@ -59,7 +59,7 @@ void main() {
             timeOfDay: TimeOfDay(hour: 18, minute: 0),
           ),
           onToggled: (_) {},
-          onDayToggled: (_, _) {},
+          onDayToggled: (_, {required enabled}) {},
           onTimeChanged: (_) {},
         ),
       );

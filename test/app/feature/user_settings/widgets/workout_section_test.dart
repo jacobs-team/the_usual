@@ -39,7 +39,8 @@ void main() {
     });
 
     testWidgets(
-        'toggling the reminder switch dispatches workoutReminderToggled(enabled: true)',
+        'toggling the reminder switch dispatches '
+        'workoutReminderToggled(enabled: true)',
         (tester) async {
       stub(
         const UserSettingsState(
@@ -61,7 +62,8 @@ void main() {
     });
 
     testWidgets(
-        'tapping day chip 3 dispatches workoutReminderDayToggled(3, enabled: true)',
+        'tapping day chip 3 dispatches '
+        'workoutReminderDayToggled(3, enabled: true)',
         (tester) async {
       stub(
         const UserSettingsState(

@@ -67,7 +67,8 @@ void main() {
     });
 
     testWidgets(
-      'with entries, WorkoutVolumeChart is present and LoggedWorkoutRow is initially absent',
+      'with entries, WorkoutVolumeChart is present and LoggedWorkoutRow is '
+      'initially absent',
       (tester) async {
         useTallWindow(tester);
         stub(twoMonthState());
@@ -83,7 +84,8 @@ void main() {
     );
 
     testWidgets(
-      'tapping the chart scrolls to and expands a day so LoggedWorkoutRow appears',
+      'tapping the chart scrolls to and expands a day so LoggedWorkoutRow '
+      'appears',
       (tester) async {
         useTallWindow(tester);
         stub(twoMonthState());

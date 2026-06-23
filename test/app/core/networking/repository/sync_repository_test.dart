@@ -156,7 +156,9 @@ void main() {
       });
 
       test('is true when there are logged workouts', () async {
-        workoutLogBloc.add(WorkoutLogEvent.stateRestored(establishedWorkoutLog));
+        workoutLogBloc.add(
+          WorkoutLogEvent.stateRestored(establishedWorkoutLog),
+        );
         await pumpEventQueue();
         expect(repository.hasEstablishedData, isTrue);
       });
@@ -284,7 +286,9 @@ void main() {
           const UserSettingsState(),
           establishedWorkoutLog,
         );
-        when(() => docRef.get()).thenAnswer((_) async => snapshotWith(document));
+        when(
+          () => docRef.get(),
+        ).thenAnswer((_) async => snapshotWith(document));
 
         await repository.downloadAndApply(uid);
         await pumpEventQueue();
@@ -442,11 +446,11 @@ void main() {
           verify(() => docRef.set(any())).called(1);
 
           localRepository.stopWatching();
-          controller.close();
-          localDailyLog.close();
-          localWorkoutLog.close();
-          localSettings.close();
-          localOnboarding.close();
+          unawaited(controller.close());
+          unawaited(localDailyLog.close());
+          unawaited(localWorkoutLog.close());
+          unawaited(localSettings.close());
+          unawaited(localOnboarding.close());
         });
       });
 
@@ -495,11 +499,11 @@ void main() {
           verifyNever(() => docRef.set(any()));
 
           localRepository.stopWatching();
-          controller.close();
-          localDailyLog.close();
-          localWorkoutLog.close();
-          localSettings.close();
-          localOnboarding.close();
+          unawaited(controller.close());
+          unawaited(localDailyLog.close());
+          unawaited(localWorkoutLog.close());
+          unawaited(localSettings.close());
+          unawaited(localOnboarding.close());
         });
       });
 
@@ -533,11 +537,11 @@ void main() {
 
           verifyNever(() => docRef.set(any()));
 
-          controller.close();
-          localDailyLog.close();
-          localWorkoutLog.close();
-          localSettings.close();
-          localOnboarding.close();
+          unawaited(controller.close());
+          unawaited(localDailyLog.close());
+          unawaited(localWorkoutLog.close());
+          unawaited(localSettings.close());
+          unawaited(localOnboarding.close());
         });
       });
 
@@ -572,11 +576,11 @@ void main() {
           verify(() => docRef.set(any())).called(1);
 
           localRepository.stopWatching();
-          controller.close();
-          localDailyLog.close();
-          localWorkoutLog.close();
-          localSettings.close();
-          localOnboarding.close();
+          unawaited(controller.close());
+          unawaited(localDailyLog.close());
+          unawaited(localWorkoutLog.close());
+          unawaited(localSettings.close());
+          unawaited(localOnboarding.close());
         });
       });
     });
@@ -676,7 +680,9 @@ void main() {
       });
 
       test('resets workoutLogBloc when state differs', () async {
-        workoutLogBloc.add(WorkoutLogEvent.stateRestored(establishedWorkoutLog));
+        workoutLogBloc.add(
+          WorkoutLogEvent.stateRestored(establishedWorkoutLog),
+        );
         await pumpEventQueue();
 
         await repository.clearLocal();

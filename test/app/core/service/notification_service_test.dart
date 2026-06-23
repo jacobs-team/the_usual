@@ -420,7 +420,8 @@ void main() {
         }
 
         test(
-          'schedules weekly notifications for each enabled day with correct title',
+          'schedules weekly notifications for each enabled day with correct '
+          'title',
           () async {
             await notificationService.sync(
               reminderStyle: ReminderStyle.notifications,
@@ -429,7 +430,10 @@ void main() {
               endOfDayReminder: reminder(enabled: true),
               weightCheckinFrequency: WeightCheckinFrequency.off,
               weightTimeOfDay: WeightTimeOfDay.morning,
-              workoutReminder: workoutReminder(enabled: true, daysOfWeek: {1, 3}),
+              workoutReminder: workoutReminder(
+                enabled: true,
+                daysOfWeek: {1, 3},
+              ),
             );
 
             verify(

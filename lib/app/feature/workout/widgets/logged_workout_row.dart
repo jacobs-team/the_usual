@@ -3,8 +3,8 @@ import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
 
 /// {@template logged_workout_row}
-/// A single logged workout entry: exercise name, sets summary, and inline-editable
-/// set fields.
+/// A single logged workout entry: exercise name, sets summary, and
+/// inline-editable set fields.
 /// {@endtemplate}
 class LoggedWorkoutRow extends StatelessWidget {
   /// {@macro logged_workout_row}

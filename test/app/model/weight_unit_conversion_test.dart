@@ -9,8 +9,14 @@ void main() {
     });
 
     test('converts lb to kg and back within tolerance', () {
-      expect(WeightUnit.kg.convertFrom(220.462, WeightUnit.lb), closeTo(100, 0.01));
-      expect(WeightUnit.lb.convertFrom(100, WeightUnit.kg), closeTo(220.462, 0.01));
+      expect(
+        WeightUnit.kg.convertFrom(220.462, WeightUnit.lb),
+        closeTo(100, 0.01),
+      );
+      expect(
+        WeightUnit.lb.convertFrom(100, WeightUnit.kg),
+        closeTo(220.462, 0.01),
+      );
     });
   });
 }

@@ -24,7 +24,7 @@ class WorkoutReminderRow extends StatelessWidget {
 
   /// Called with the day of week (1–7) and new selected state when a day chip
   /// is tapped.
-  final void Function(int dayOfWeek, bool enabled) onDayToggled;
+  final void Function(int dayOfWeek, {required bool enabled}) onDayToggled;
 
   /// Called with the picked time when a new time is chosen.
   final ValueChanged<TimeOfDay> onTimeChanged;
@@ -85,7 +85,8 @@ class WorkoutReminderRow extends StatelessWidget {
                       key: Key('workout-day-${i + 1}'),
                       label: Text(_dayLabels[i]),
                       selected: workoutReminder.daysOfWeek.contains(i + 1),
-                      onSelected: (selected) => onDayToggled(i + 1, selected),
+                      onSelected: (selected) =>
+                          onDayToggled(i + 1, enabled: selected),
                     ),
                 ],
               ),

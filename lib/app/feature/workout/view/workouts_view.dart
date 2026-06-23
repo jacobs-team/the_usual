@@ -58,208 +58,169 @@ class _WorkoutsViewState extends State<WorkoutsView> {
       ),
       body: SafeArea(
         bottom: false,
-        child: BlocSelector<
-          UserSettingsBloc,
-          UserSettingsState,
-          (
-            List<WorkoutGroup>,
-            Map<String, List<UsualWorkout>>,
-            WeightUnit,
-            bool,
-            TimeOfDay,
-          )
-        >(
-          bloc: getIt<UserSettingsBloc>(),
-          selector: (state) => (
-            state.workoutGroups,
-            state.usualWorkouts,
-            state.workoutWeightUnit,
-            state.expandNutritionByDefault,
-            state.dayStartTime,
-          ),
-          builder: (context, settingsSelected) {
-            final (
-              workoutGroups,
-              usualWorkouts,
-              workoutWeightUnit,
-              expandNutritionByDefault,
-              dayStartTime,
-            ) = settingsSelected;
-            final displayDay = selectedRange == null
-                ? now.logicalDay(dayStartTime)
-                : DateUtils.dateOnly(selectedRange.start);
-            final logDays = selectedRange?.logicalDays;
-            final logDayStart = selectedRange == null ? null : dayStartTime;
-
-            return BlocSelector<
-              WorkoutLogBloc,
-              WorkoutLogState,
-              (List<WorkoutLogEntry>, String?)
+        child:
+            BlocSelector<
+              UserSettingsBloc,
+              UserSettingsState,
+              (
+                List<WorkoutGroup>,
+                Map<String, List<UsualWorkout>>,
+                WeightUnit,
+                bool,
+                TimeOfDay,
+              )
             >(
-              bloc: getIt<WorkoutLogBloc>(),
+              bloc: getIt<UserSettingsBloc>(),
               selector: (state) => (
-                state.workoutEntries,
-                state.justLoggedWorkoutId,
+                state.workoutGroups,
+                state.usualWorkouts,
+                state.workoutWeightUnit,
+                state.expandNutritionByDefault,
+                state.dayStartTime,
               ),
-              builder: (context, logSelected) {
-                final (workoutEntries, justLoggedWorkoutId) = logSelected;
-                final dayEntries =
-                    workoutEntries.entriesOn(displayDay, dayStartTime);
-                final entriesByGroup = <String, List<WorkoutLogEntry>>{};
-                for (final workoutLogEntry in dayEntries) {
-                  (entriesByGroup[workoutLogEntry.workoutGroupId] ??= [])
-                      .add(workoutLogEntry);
-                }
-                final sortedGroups = [...workoutGroups]
-                  ..sort(
-                    (a, b) => a.order.compareTo(b.order),
-                  );
+              builder: (context, settingsSelected) {
+                final (
+                  workoutGroups,
+                  usualWorkouts,
+                  workoutWeightUnit,
+                  expandNutritionByDefault,
+                  dayStartTime,
+                ) = settingsSelected;
+                final displayDay = selectedRange == null
+                    ? now.logicalDay(dayStartTime)
+                    : DateUtils.dateOnly(selectedRange.start);
+                final logDays = selectedRange?.logicalDays;
+                final logDayStart = selectedRange == null ? null : dayStartTime;
 
-                return CustomScrollView(
-                  slivers: [
-                    SliverPadding(
-                      padding: EdgeInsets.fromLTRB(
-                        AppDesign.spacing.lg,
-                        AppDesign.spacing.lg,
-                        AppDesign.spacing.lg,
-                        AppDesign.spacing.md,
-                      ),
-                      sliver: SliverToBoxAdapter(
-                        child: VolumeBar(
-                          volume: dayEntries.totalVolume,
-                          weightUnit: workoutWeightUnit,
-                        ),
-                      ),
-                    ),
-                    for (final workoutGroup in sortedGroups)
-                      WorkoutLogSection(
-                        workoutGroup: workoutGroup,
-                        onRenamed: (name) => getIt<UserSettingsBloc>().add(
-                          UserSettingsEvent.workoutGroupRenamed(
-                            workoutGroup.id,
-                            name,
+                return BlocSelector<
+                  WorkoutLogBloc,
+                  WorkoutLogState,
+                  (List<WorkoutLogEntry>, String?)
+                >(
+                  bloc: getIt<WorkoutLogBloc>(),
+                  selector: (state) => (
+                    state.workoutEntries,
+                    state.justLoggedWorkoutId,
+                  ),
+                  builder: (context, logSelected) {
+                    final (workoutEntries, justLoggedWorkoutId) = logSelected;
+                    final dayEntries = workoutEntries.entriesOn(
+                      displayDay,
+                      dayStartTime,
+                    );
+                    final entriesByGroup = <String, List<WorkoutLogEntry>>{};
+                    for (final workoutLogEntry in dayEntries) {
+                      (entriesByGroup[workoutLogEntry.workoutGroupId] ??= [])
+                          .add(workoutLogEntry);
+                    }
+                    final sortedGroups = [...workoutGroups]
+                      ..sort(
+                        (a, b) => a.order.compareTo(b.order),
+                      );
+
+                    return CustomScrollView(
+                      slivers: [
+                        SliverPadding(
+                          padding: EdgeInsets.fromLTRB(
+                            AppDesign.spacing.lg,
+                            AppDesign.spacing.lg,
+                            AppDesign.spacing.lg,
+                            AppDesign.spacing.md,
+                          ),
+                          sliver: SliverToBoxAdapter(
+                            child: VolumeBar(
+                              volume: dayEntries.totalVolume,
+                              weightUnit: workoutWeightUnit,
+                            ),
                           ),
                         ),
-                        onDeleteRequested: () {
-                          final hasUsuals =
-                              (usualWorkouts[workoutGroup.id] ?? const [])
-                                  .isNotEmpty;
-                          final hasLogged = getIt<WorkoutLogBloc>()
-                              .state
-                              .workoutEntries
-                              .any(
-                                (workoutLogEntry) =>
-                                    workoutLogEntry.workoutGroupId ==
-                                    workoutGroup.id,
-                              );
-                          if (hasUsuals || hasLogged) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Empty this group before deleting it.',
-                                ),
+                        for (final workoutGroup in sortedGroups)
+                          WorkoutLogSection(
+                            workoutGroup: workoutGroup,
+                            onRenamed: (name) => getIt<UserSettingsBloc>().add(
+                              UserSettingsEvent.workoutGroupRenamed(
+                                workoutGroup.id,
+                                name,
                               ),
-                            );
-                            return;
-                          }
-                          getIt<UserSettingsBloc>().add(
-                            UserSettingsEvent.workoutGroupRemoved(
-                              workoutGroup.id,
                             ),
-                          );
-                        },
-                        workoutLogEntries:
-                            entriesByGroup[workoutGroup.id] ??
-                            const <WorkoutLogEntry>[],
-                        quickPicks: () {
-                          final groupEntries =
-                              entriesByGroup[workoutGroup.id] ??
-                              const <WorkoutLogEntry>[];
-                          final usuals =
-                              usualWorkouts[workoutGroup.id] ??
-                              const <UsualWorkout>[];
-                          final loggedNames = {
-                            for (final workoutLogEntry in groupEntries)
-                              workoutLogEntry.name.toLowerCase(),
-                          };
-                          return [
-                            for (final usualWorkout in usuals)
-                              if (!loggedNames.contains(
-                                usualWorkout.name.toLowerCase(),
-                              ))
-                                usualWorkout,
-                          ];
-                        }(),
-                        weightUnit: workoutWeightUnit,
-                        expandedByDefault: expandNutritionByDefault,
-                        justLoggedWorkoutId: justLoggedWorkoutId,
-                        logDays: logDays,
-                        dayStart: logDayStart,
-                      ),
-                    SliverPadding(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: AppDesign.spacing.md,
-                      ),
-                      sliver: SliverToBoxAdapter(
-                        child: Align(
-                          alignment: Alignment.centerLeft,
-                          child: TextButton.icon(
-                            key: const Key('add-workout-group'),
-                            onPressed: () {
-                              final nameController = TextEditingController();
-                              showDialog<void>(
-                                context: context,
-                                builder: (dialogContext) => AlertDialog(
-                                  title: const Text('Add group'),
-                                  content: TheUsualTextField(
-                                    controller: nameController,
-                                    hintText: 'Group name',
-                                    autofocus: true,
-                                    textCapitalization:
-                                        TextCapitalization.sentences,
+                            onDeleteRequested: () {
+                              final hasUsuals =
+                                  (usualWorkouts[workoutGroup.id] ?? const [])
+                                      .isNotEmpty;
+                              final hasLogged = getIt<WorkoutLogBloc>()
+                                  .state
+                                  .workoutEntries
+                                  .any(
+                                    (workoutLogEntry) =>
+                                        workoutLogEntry.workoutGroupId ==
+                                        workoutGroup.id,
+                                  );
+                              if (hasUsuals || hasLogged) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Empty this group before deleting it.',
+                                    ),
                                   ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () =>
-                                          Navigator.of(dialogContext).pop(),
-                                      child: const Text('Cancel'),
-                                    ),
-                                    FilledButton(
-                                      key: const Key('add-group-submit'),
-                                      onPressed: () {
-                                        final name =
-                                            nameController.text.trim();
-                                        if (name.isEmpty) return;
-                                        Navigator.of(dialogContext).pop();
-                                        getIt<UserSettingsBloc>().add(
-                                          UserSettingsEvent.workoutGroupAdded(
-                                            name,
-                                          ),
-                                        );
-                                      },
-                                      child: const Text('Add'),
-                                    ),
-                                  ],
+                                );
+                                return;
+                              }
+                              getIt<UserSettingsBloc>().add(
+                                UserSettingsEvent.workoutGroupRemoved(
+                                  workoutGroup.id,
                                 ),
                               );
                             },
-                            icon: const Icon(Icons.add),
-                            label: const Text('Add group'),
+                            workoutLogEntries:
+                                entriesByGroup[workoutGroup.id] ??
+                                const <WorkoutLogEntry>[],
+                            quickPicks: () {
+                              final groupEntries =
+                                  entriesByGroup[workoutGroup.id] ??
+                                  const <WorkoutLogEntry>[];
+                              final usuals =
+                                  usualWorkouts[workoutGroup.id] ??
+                                  const <UsualWorkout>[];
+                              final loggedNames = {
+                                for (final workoutLogEntry in groupEntries)
+                                  workoutLogEntry.name.toLowerCase(),
+                              };
+                              return [
+                                for (final usualWorkout in usuals)
+                                  if (!loggedNames.contains(
+                                    usualWorkout.name.toLowerCase(),
+                                  ))
+                                    usualWorkout,
+                              ];
+                            }(),
+                            weightUnit: workoutWeightUnit,
+                            expandedByDefault: expandNutritionByDefault,
+                            justLoggedWorkoutId: justLoggedWorkoutId,
+                            logDays: logDays,
+                            dayStart: logDayStart,
+                          ),
+                        SliverPadding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: AppDesign.spacing.md,
+                          ),
+                          sliver: const SliverToBoxAdapter(
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: _AddGroupButton(),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    SliverToBoxAdapter(
-                      child: SizedBox(
-                        height: MediaQuery.paddingOf(context).bottom,
-                      ),
-                    ),
-                  ],
+                        SliverToBoxAdapter(
+                          child: SizedBox(
+                            height: MediaQuery.paddingOf(context).bottom,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
                 );
               },
-            );
-          },
-        ),
+            ),
       ),
     );
   }
@@ -275,8 +236,54 @@ class _WorkoutsViewState extends State<WorkoutsView> {
     if (DateUtils.isSameDay(selectedRange.start, selectedRange.end)) {
       return startLabel;
     }
-    return '$startLabel – ${formatDate(selectedRange.end)}'; // coverage:ignore-line
+    final rangeLabel = '$startLabel – ${formatDate(selectedRange.end)}';
+    return rangeLabel; // coverage:ignore-line
   }
+}
 
+/// Button that prompts for a name and adds a new workout group.
+class _AddGroupButton extends StatelessWidget {
+  const _AddGroupButton();
 
+  @override
+  Widget build(BuildContext context) {
+    return TextButton.icon(
+      key: const Key('add-workout-group'),
+      onPressed: () async {
+        final nameController = TextEditingController();
+        await showDialog<void>(
+          context: context,
+          builder: (dialogContext) => AlertDialog(
+            title: const Text('Add group'),
+            content: TheUsualTextField(
+              controller: nameController,
+              hintText: 'Group name',
+              autofocus: true,
+              textCapitalization: TextCapitalization.sentences,
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(dialogContext).pop(),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                key: const Key('add-group-submit'),
+                onPressed: () {
+                  final name = nameController.text.trim();
+                  if (name.isEmpty) return;
+                  Navigator.of(dialogContext).pop();
+                  getIt<UserSettingsBloc>().add(
+                    UserSettingsEvent.workoutGroupAdded(name),
+                  );
+                },
+                child: const Text('Add'),
+              ),
+            ],
+          ),
+        );
+      },
+      icon: const Icon(Icons.add),
+      label: const Text('Add group'),
+    );
+  }
 }

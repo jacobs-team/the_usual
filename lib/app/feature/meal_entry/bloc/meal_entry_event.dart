@@ -13,7 +13,9 @@ sealed class MealEntryEvent with _$MealEntryEvent {
     @Default(false) bool autoEstimate,
   }) = MealEntryStarted;
 
-  const factory MealEntryEvent.foodAdded() = MealEntryFoodAdded;
+  const factory MealEntryEvent.foodAdded({
+    @Default(false) bool addToUsualMeals,
+  }) = MealEntryFoodAdded;
   const factory MealEntryEvent.foodRemoved(String id) = MealEntryFoodRemoved;
   const factory MealEntryEvent.foodNameChanged(String id, String name) =
       MealEntryFoodNameChanged;

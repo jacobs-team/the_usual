@@ -79,13 +79,6 @@ class FoodEntryForm extends StatefulWidget {
 class FoodEntryFormState extends State<FoodEntryForm> {
   late final FoodEntryBloc _bloc;
 
-  /// Ids of food drafts that have already had their `addToUsualMeals` flag
-  /// synced to the form's [FoodEntryForm.showAddToUsualMeals] default. The
-  /// bloc always creates new rows with `addToUsualMeals: false`; the listener
-  /// fires a toggle event once per new id so each row starts checked when the
-  /// form-level default is true.
-  final Set<String> _initializedFoodIds = {};
-
   static const _uuid = Uuid();
 
   @override
@@ -95,26 +88,20 @@ class FoodEntryFormState extends State<FoodEntryForm> {
     final initialFoods = widget.initialFoods;
     final List<FoodDraft> initialDrafts;
     if (initialFoods == null || initialFoods.isEmpty) {
-      final draft = FoodDraft(
-        id: _uuid.v4(),
-        addToUsualMeals: widget.showAddToUsualMeals,
-      );
-      _initializedFoodIds.add(draft.id);
-      initialDrafts = [draft];
+      initialDrafts = [
+        FoodDraft(id: _uuid.v4(), addToUsualMeals: widget.showAddToUsualMeals),
+      ];
     } else {
-      final drafts = <FoodDraft>[];
-      for (final food in initialFoods) {
-        final draft = FoodDraft(
-          id: _uuid.v4(),
-          name: food.name,
-          quantity: food.quantity,
-          nutrition: food.nutrition,
-          addToUsualMeals: food.addToUsualMeals,
-        );
-        _initializedFoodIds.add(draft.id);
-        drafts.add(draft);
-      }
-      initialDrafts = drafts;
+      initialDrafts = [
+        for (final food in initialFoods)
+          FoodDraft(
+            id: _uuid.v4(),
+            name: food.name,
+            quantity: food.quantity,
+            nutrition: food.nutrition,
+            addToUsualMeals: food.addToUsualMeals,
+          ),
+      ];
     }
     _bloc.add(
       MealEntryEvent.started(
@@ -180,27 +167,6 @@ class FoodEntryFormState extends State<FoodEntryForm> {
             ScaffoldMessenger.of(
               context,
             ).showSnackBar(SnackBar(content: Text(message)));
-          }
-          // When showAddToUsualMeals is true, any food the bloc creates via an
-          // estimate uses addToUsualMeals: false (the bloc doesn't know about
-          // the form setting). Sync new ids to the correct default here so the
-          // user sees each row checked by default, matching the old behavior.
-          final currentIds = state.foods.map((f) => f.id).toSet();
-          _initializedFoodIds.retainWhere(currentIds.contains);
-          if (widget.showAddToUsualMeals) {
-            for (final foodDraft in state.foods) {
-              if (!_initializedFoodIds.contains(foodDraft.id)) {
-                _initializedFoodIds.add(foodDraft.id);
-                _bloc.add(
-                  MealEntryEvent.foodAddToUsualMealsToggled(
-                    foodDraft.id,
-                    addToUsualMeals: true,
-                  ),
-                );
-              }
-            }
-          } else {
-            _initializedFoodIds.addAll(currentIds);
           }
         },
         builder: (context, state) {
@@ -349,7 +315,11 @@ class FoodEntryFormState extends State<FoodEntryForm> {
               Align(
                 alignment: Alignment.centerLeft,
                 child: TextButton.icon(
-                  onPressed: () => _bloc.add(const MealEntryEvent.foodAdded()),
+                  onPressed: () => _bloc.add(
+                    MealEntryEvent.foodAdded(
+                      addToUsualMeals: widget.showAddToUsualMeals,
+                    ),
+                  ),
                   icon: const Icon(Icons.add),
                   label: const Text('Add item'),
                 ),

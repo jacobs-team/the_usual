@@ -29,7 +29,8 @@ void main() {
       expect(texts, isNotEmpty);
     });
 
-    testWidgets('shows a Text whose data contains the trimmed volume for decimal',
+    testWidgets(
+        'shows a Text whose data contains the trimmed volume for decimal',
         (tester) async {
       const volume = 1500.5;
       await tester.pumpPumpPumpItUP(
