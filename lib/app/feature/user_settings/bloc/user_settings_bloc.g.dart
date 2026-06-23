@@ -9,7 +9,7 @@ part of 'user_settings_bloc.dart';
 _UserSettingsState _$UserSettingsStateFromJson(
   Map<String, dynamic> json,
 ) => _UserSettingsState(
-  version: (json['version'] as num?)?.toInt() ?? 1,
+  version: (json['version'] as num?)?.toInt() ?? 2,
   reminderStyle:
       $enumDecodeNullable(_$ReminderStyleEnumMap, json['reminderStyle']) ??
       ReminderStyle.notifications,
@@ -88,6 +88,36 @@ _UserSettingsState _$UserSettingsStateFromJson(
         ),
       ) ??
       const <MealOfTheDay, List<UsualMeal>>{},
+  workoutGroups:
+      (json['workoutGroups'] as List<dynamic>?)
+          ?.map((e) => WorkoutGroup.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const <WorkoutGroup>[
+        WorkoutGroup(id: 'push', name: 'Push', order: 0),
+        WorkoutGroup(id: 'pull', name: 'Pull', order: 1),
+        WorkoutGroup(id: 'legs', name: 'Legs', order: 2),
+      ],
+  usualWorkouts:
+      (json['usualWorkouts'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(
+          k,
+          (e as List<dynamic>)
+              .map((e) => UsualWorkout.fromJson(e as Map<String, dynamic>))
+              .toList(),
+        ),
+      ) ??
+      const <String, List<UsualWorkout>>{},
+  workoutReminder: json['workoutReminder'] == null
+      ? const WorkoutReminder(
+          enabled: false,
+          timeOfDay: TimeOfDay(hour: 18, minute: 0),
+        )
+      : WorkoutReminder.fromJson(
+          json['workoutReminder'] as Map<String, dynamic>,
+        ),
+  workoutWeightUnit:
+      $enumDecodeNullable(_$WeightUnitEnumMap, json['workoutWeightUnit']) ??
+      WeightUnit.lb,
 );
 
 Map<String, dynamic> _$UserSettingsStateToJson(
@@ -117,6 +147,12 @@ Map<String, dynamic> _$UserSettingsStateToJson(
     (k, e) =>
         MapEntry(_$MealOfTheDayEnumMap[k]!, e.map((e) => e.toJson()).toList()),
   ),
+  'workoutGroups': instance.workoutGroups.map((e) => e.toJson()).toList(),
+  'usualWorkouts': instance.usualWorkouts.map(
+    (k, e) => MapEntry(k, e.map((e) => e.toJson()).toList()),
+  ),
+  'workoutReminder': instance.workoutReminder.toJson(),
+  'workoutWeightUnit': _$WeightUnitEnumMap[instance.workoutWeightUnit]!,
 };
 
 const _$ReminderStyleEnumMap = {

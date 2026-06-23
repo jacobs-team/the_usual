@@ -150,5 +150,49 @@ void main() {
         );
       });
     });
+
+    group('workout defaults', () {
+      test('seeds Push, Pull, Legs as the default workout groups', () {
+        const state = UserSettingsState();
+
+        expect(
+          state.workoutGroups.map((workoutGroup) => workoutGroup.id).toList(),
+          equals(['push', 'pull', 'legs']),
+        );
+        expect(
+          state.workoutGroups.map((workoutGroup) => workoutGroup.name).toList(),
+          equals(['Push', 'Pull', 'Legs']),
+        );
+      });
+
+      test('usualWorkouts and the workout reminder start empty/disabled', () {
+        const state = UserSettingsState();
+
+        expect(state.usualWorkouts, isEmpty);
+        expect(state.workoutReminder.enabled, isFalse);
+      });
+    });
+
+    group('workout weight unit migration', () {
+      test('v1 data inherits the body-weight unit and bumps to v2', () {
+        final state = UserSettingsState.fromJson(<String, dynamic>{
+          'version': 1,
+          'weightUnit': 'kg',
+        });
+
+        expect(state.workoutWeightUnit, equals(WeightUnit.kg));
+        expect(state.version, equals(2));
+      });
+
+      test('current-version data reads workoutWeightUnit as stored', () {
+        final state = UserSettingsState.fromJson(<String, dynamic>{
+          'version': 2,
+          'weightUnit': 'kg',
+          'workoutWeightUnit': 'lb',
+        });
+
+        expect(state.workoutWeightUnit, equals(WeightUnit.lb));
+      });
+    });
   });
 }

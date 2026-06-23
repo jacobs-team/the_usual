@@ -458,6 +458,226 @@ void main() {
       );
     });
 
+    group('workout groups', () {
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'workoutGroupAdded appends a new group after the defaults',
+        build: UserSettingsBloc.new,
+        act: (bloc) =>
+            bloc.add(const UserSettingsEvent.workoutGroupAdded('Arms')),
+        expect: () => [
+          isA<UserSettingsState>()
+              .having((s) => s.workoutGroups, 'workoutGroups', hasLength(4))
+              .having(
+                (s) => s.workoutGroups.last.name,
+                'new group name',
+                'Arms',
+              )
+              .having(
+                (s) => s.workoutGroups.last.order,
+                'new group order',
+                3,
+              ),
+        ],
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'workoutGroupAdded ignores a duplicate name (case-insensitive)',
+        build: UserSettingsBloc.new,
+        act: (bloc) =>
+            bloc.add(const UserSettingsEvent.workoutGroupAdded('push')),
+        expect: () => <UserSettingsState>[],
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'workoutGroupRenamed renames the matching group',
+        build: UserSettingsBloc.new,
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.workoutGroupRenamed('push', 'Press Day'),
+        ),
+        expect: () => [
+          isA<UserSettingsState>().having(
+            (s) => s.workoutGroups.first.name,
+            'renamed group',
+            'Press Day',
+          ),
+        ],
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'workoutGroupReordered reorders and reassigns order indices',
+        build: UserSettingsBloc.new,
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.workoutGroupReordered(['legs', 'push', 'pull']),
+        ),
+        expect: () => [
+          isA<UserSettingsState>()
+              .having(
+                (s) => s.workoutGroups.map((g) => g.id).toList(),
+                'order of ids',
+                ['legs', 'push', 'pull'],
+              )
+              .having(
+                (s) => s.workoutGroups.map((g) => g.order).toList(),
+                'reassigned orders',
+                [0, 1, 2],
+              ),
+        ],
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'workoutGroupRemoved removes an empty group',
+        build: UserSettingsBloc.new,
+        act: (bloc) =>
+            bloc.add(const UserSettingsEvent.workoutGroupRemoved('legs')),
+        expect: () => [
+          isA<UserSettingsState>().having(
+            (s) => s.workoutGroups.map((g) => g.id).toList(),
+            'remaining ids',
+            ['push', 'pull'],
+          ),
+        ],
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'workoutGroupRemoved is a no-op when the group still has usuals',
+        build: UserSettingsBloc.new,
+        seed: () => const UserSettingsState(
+          usualWorkouts: {
+            'legs': [UsualWorkout(id: 'u1', name: 'Squat')],
+          },
+        ),
+        act: (bloc) =>
+            bloc.add(const UserSettingsEvent.workoutGroupRemoved('legs')),
+        expect: () => <UserSettingsState>[],
+      );
+    });
+
+    group('usual workouts', () {
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'usualWorkoutAdded adds a usual under its group',
+        build: UserSettingsBloc.new,
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.usualWorkoutAdded('push', 'Bench Press', [
+            WorkoutSet(weight: 135, reps: 8),
+          ]),
+        ),
+        expect: () => [
+          isA<UserSettingsState>()
+              .having(
+                (s) => s.usualWorkouts['push'], 'push usuals', hasLength(1),
+              )
+              .having(
+                (s) => s.usualWorkouts['push']!.single.name,
+                'usual name',
+                'Bench Press',
+              ),
+        ],
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'usualWorkoutAdded ignores a duplicate name within the group',
+        build: UserSettingsBloc.new,
+        seed: () => const UserSettingsState(
+          usualWorkouts: {
+            'push': [UsualWorkout(id: 'u1', name: 'Bench Press')],
+          },
+        ),
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.usualWorkoutAdded('push', 'bench press', []),
+        ),
+        expect: () => <UserSettingsState>[],
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'usualWorkoutRenamed renames the matching usual',
+        build: UserSettingsBloc.new,
+        seed: () => const UserSettingsState(
+          usualWorkouts: {
+            'push': [UsualWorkout(id: 'u1', name: 'Bench Press')],
+          },
+        ),
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.usualWorkoutRenamed(
+            'push',
+            'u1',
+            'Incline Press',
+          ),
+        ),
+        expect: () => [
+          isA<UserSettingsState>().having(
+            (s) => s.usualWorkouts['push']!.single.name,
+            'renamed usual',
+            'Incline Press',
+          ),
+        ],
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'usualWorkoutSetsChanged replaces the usual\'s sets',
+        build: UserSettingsBloc.new,
+        seed: () => const UserSettingsState(
+          usualWorkouts: {
+            'push': [
+              UsualWorkout(
+                id: 'u1',
+                name: 'Bench Press',
+                sets: [WorkoutSet(weight: 135, reps: 8)],
+              ),
+            ],
+          },
+        ),
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.usualWorkoutSetsChanged('push', 'u1', [
+            WorkoutSet(weight: 155, reps: 5),
+          ]),
+        ),
+        expect: () => [
+          isA<UserSettingsState>().having(
+            (s) => s.usualWorkouts['push']!.single.sets.single.weight,
+            'updated set weight',
+            155,
+          ),
+        ],
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'usualWorkoutRemoved drops the matching usual',
+        build: UserSettingsBloc.new,
+        seed: () => const UserSettingsState(
+          usualWorkouts: {
+            'push': [
+              UsualWorkout(id: 'u1', name: 'Bench Press'),
+              UsualWorkout(id: 'u2', name: 'Overhead Press'),
+            ],
+          },
+        ),
+        act: (bloc) =>
+            bloc.add(const UserSettingsEvent.usualWorkoutRemoved('push', 'u1')),
+        expect: () => [
+          isA<UserSettingsState>().having(
+            (s) => s.usualWorkouts['push']!.single.id,
+            'remaining usual id',
+            'u2',
+          ),
+        ],
+      );
+    });
+
+    blocTest<UserSettingsBloc, UserSettingsState>(
+      'workoutWeightUnitSelected stores the chosen unit',
+      build: UserSettingsBloc.new,
+      act: (bloc) => bloc.add(
+        const UserSettingsEvent.workoutWeightUnitSelected(WeightUnit.kg),
+      ),
+      expect: () => [
+        isA<UserSettingsState>().having(
+          (s) => s.workoutWeightUnit,
+          'workoutWeightUnit',
+          WeightUnit.kg,
+        ),
+      ],
+    );
+
     test('toJson then fromJson round-trips the state', () {
       final bloc = UserSettingsBloc();
       const state = UserSettingsState(weightUnit: WeightUnit.kg);
@@ -470,6 +690,7 @@ void main() {
     test('toJson then fromJson round-trips a populated usuals map', () {
       final bloc = UserSettingsBloc();
       const state = UserSettingsState(
+        version: 2,
         usuals: {
           MealOfTheDay.breakfast: [
             UsualMeal(

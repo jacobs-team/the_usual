@@ -71,4 +71,37 @@ sealed class UserSettingsEvent with _$UserSettingsEvent {
     String id,
     String name,
   ) = SettingsUsualMealNameChanged;
+
+  const factory UserSettingsEvent.workoutGroupAdded(String name) =
+      SettingsWorkoutGroupAdded;
+  const factory UserSettingsEvent.workoutGroupRenamed(String id, String name) =
+      SettingsWorkoutGroupRenamed;
+  const factory UserSettingsEvent.workoutGroupReordered(
+    List<String> orderedIds,
+  ) = SettingsWorkoutGroupReordered;
+  const factory UserSettingsEvent.workoutGroupRemoved(String id) =
+      SettingsWorkoutGroupRemoved;
+
+  const factory UserSettingsEvent.usualWorkoutAdded(
+    String workoutGroupId,
+    String name,
+    List<WorkoutSet> sets,
+  ) = SettingsUsualWorkoutAdded;
+  const factory UserSettingsEvent.usualWorkoutRenamed(
+    String workoutGroupId,
+    String id,
+    String name,
+  ) = SettingsUsualWorkoutRenamed;
+  const factory UserSettingsEvent.usualWorkoutSetsChanged(
+    String workoutGroupId,
+    String id,
+    List<WorkoutSet> sets,
+  ) = SettingsUsualWorkoutSetsChanged;
+  const factory UserSettingsEvent.usualWorkoutRemoved(
+    String workoutGroupId,
+    String id,
+  ) = SettingsUsualWorkoutRemoved;
+  const factory UserSettingsEvent.workoutWeightUnitSelected(
+    WeightUnit weightUnit,
+  ) = SettingsWorkoutWeightUnitSelected;
 }

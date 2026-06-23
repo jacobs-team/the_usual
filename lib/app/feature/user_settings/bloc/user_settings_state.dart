@@ -12,7 +12,7 @@ abstract class UserSettingsState with _$UserSettingsState {
     /// Schema version of the persisted state. Bump it and add a `fromJson`
     /// case whenever the persisted shape changes in a way old stored data
     /// can't be read as-is, so existing users are migrated instead of reset.
-    @Default(1) int version,
+    @Default(2) int version,
 
     /// How the app checks in about meals.
     @Default(ReminderStyle.notifications) ReminderStyle reminderStyle,
@@ -99,12 +99,40 @@ abstract class UserSettingsState with _$UserSettingsState {
     /// The user's usuals library, keyed by meal timing.
     @Default(<MealOfTheDay, List<UsualMeal>>{})
     Map<MealOfTheDay, List<UsualMeal>> usuals,
+
+    /// The user's workout groups, for example Push / Pull / Legs. Ordered by
+    /// [WorkoutGroup.order]. Seeded with three defaults that use stable const
+    /// ids so they can be a const default and stay linked to logged workouts
+    /// across renames.
+    @Default(<WorkoutGroup>[
+      WorkoutGroup(id: 'push', name: 'Push', order: 0),
+      WorkoutGroup(id: 'pull', name: 'Pull', order: 1),
+      WorkoutGroup(id: 'legs', name: 'Legs', order: 2),
+    ])
+    List<WorkoutGroup> workoutGroups,
+
+    /// The user's usual workouts, keyed by [WorkoutGroup.id].
+    @Default(<String, List<UsualWorkout>>{})
+    Map<String, List<UsualWorkout>> usualWorkouts,
+
+    /// The workout check-in reminder.
+    @Default(
+      WorkoutReminder(
+        enabled: false,
+        timeOfDay: TimeOfDay(hour: 18, minute: 0),
+      ),
+    )
+    WorkoutReminder workoutReminder,
+
+    /// The unit workout weights are entered and shown in. Defaults to the
+    /// body-weight [weightUnit] for returning users via migration.
+    @Default(WeightUnit.lb) WeightUnit workoutWeightUnit,
   }) = _UserSettingsState;
 
   const UserSettingsState._();
 
   /// The version written by the current app.
-  static const _currentVersion = 1;
+  static const _currentVersion = 2;
 
   /// The total number of saved usual meals across all meal timings.
   int get usualMealCount =>
@@ -120,24 +148,30 @@ abstract class UserSettingsState with _$UserSettingsState {
   factory UserSettingsState._fromVersionedJson(Map<String, dynamic> json) {
     // The `onAppOpen` reminder style was removed; map data still carrying it to
     // no reminders so the dropped value decodes instead of resetting settings.
-    final migrated = json['reminderStyle'] == 'onAppOpen'
+    final reminderMigrated = json['reminderStyle'] == 'onAppOpen'
         ? {...json, 'reminderStyle': 'none'}
         : json;
-    final version = migrated['version'] as int? ?? 0;
+    final version = reminderMigrated['version'] as int? ?? 0;
     switch (version) {
-      // No migrations yet. v0 is unversioned data written before this field
-      // existed; it has the current shape and reads straight through. When the
-      // shape changes, bump [_currentVersion] and add a case that migrates
-      // older versions up to the current one before this case.
       case 0:
+      case 1:
+        // v1 and earlier predate workout settings. Inherit the workout weight
+        // unit from the existing body-weight unit instead of the bare lb
+        // default, then read with the current schema (other new keys fall back
+        // to their defaults).
+        return _$UserSettingsStateFromJson({
+          ...reminderMigrated,
+          'version': _currentVersion,
+          if (!reminderMigrated.containsKey('workoutWeightUnit'))
+            'workoutWeightUnit': reminderMigrated['weightUnit'] ?? 'lb',
+        });
       case _currentVersion:
-        return _$UserSettingsStateFromJson(migrated);
+        return _$UserSettingsStateFromJson(reminderMigrated);
       default:
         // A newer, unknown version, e.g. after the user downgrades the app.
         // Read it with the current schema as a best effort rather than
-        // discarding the user's settings: unknown keys are ignored and missing
-        // ones fall back to defaults.
-        return _$UserSettingsStateFromJson(migrated);
+        // discarding the user's settings.
+        return _$UserSettingsStateFromJson(reminderMigrated);
     }
   }
 
