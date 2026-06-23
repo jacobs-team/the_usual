@@ -1,10 +1,12 @@
 export 'display/expandable_nutrition.dart';
+export 'display/expandable_workout.dart';
 export 'display/nutrition_summary.dart';
 export 'display/section_label.dart';
 export 'display/the_usual_app_bar.dart';
 export 'display/usual_meal_section.dart';
 export 'inputs/food_entry_form.dart';
 export 'inputs/food_entry_sheet.dart';
+export 'inputs/workout_entry_sheet.dart';
 export 'inputs/macro_field.dart';
 export 'inputs/meal_photo_picker.dart';
 export 'inputs/nutrition_fields.dart';
