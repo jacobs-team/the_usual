@@ -133,6 +133,40 @@ class _WorkoutsViewState extends State<WorkoutsView> {
                     for (final workoutGroup in sortedGroups)
                       WorkoutLogSection(
                         workoutGroup: workoutGroup,
+                        onRenamed: (name) => getIt<UserSettingsBloc>().add(
+                          UserSettingsEvent.workoutGroupRenamed(
+                            workoutGroup.id,
+                            name,
+                          ),
+                        ),
+                        onDeleteRequested: () {
+                          final hasUsuals =
+                              (usualWorkouts[workoutGroup.id] ?? const [])
+                                  .isNotEmpty;
+                          final hasLogged = getIt<WorkoutLogBloc>()
+                              .state
+                              .workoutEntries
+                              .any(
+                                (workoutLogEntry) =>
+                                    workoutLogEntry.workoutGroupId ==
+                                    workoutGroup.id,
+                              );
+                          if (hasUsuals || hasLogged) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Empty this group before deleting it.',
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+                          getIt<UserSettingsBloc>().add(
+                            UserSettingsEvent.workoutGroupRemoved(
+                              workoutGroup.id,
+                            ),
+                          );
+                        },
                         workoutLogEntries:
                             entriesByGroup[workoutGroup.id] ??
                             const <WorkoutLogEntry>[],
@@ -161,6 +195,49 @@ class _WorkoutsViewState extends State<WorkoutsView> {
                         logDays: logDays,
                         dayStart: logDayStart,
                       ),
+                    SliverToBoxAdapter(
+                      child: TextButton.icon(
+                        key: const Key('add-workout-group'),
+                        onPressed: () {
+                          final nameController = TextEditingController();
+                          showDialog<void>(
+                            context: context,
+                            builder: (dialogContext) => AlertDialog(
+                              title: const Text('Add group'),
+                              content: TheUsualTextField(
+                                controller: nameController,
+                                hintText: 'Group name',
+                                autofocus: true,
+                                textCapitalization:
+                                    TextCapitalization.sentences,
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.of(dialogContext).pop(),
+                                  child: const Text('Cancel'),
+                                ),
+                                FilledButton(
+                                  onPressed: () {
+                                    final name = nameController.text.trim();
+                                    if (name.isEmpty) return;
+                                    Navigator.of(dialogContext).pop();
+                                    getIt<UserSettingsBloc>().add(
+                                      UserSettingsEvent.workoutGroupAdded(
+                                        name,
+                                      ),
+                                    );
+                                  },
+                                  child: const Text('Add'),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.add),
+                        label: const Text('Add group'),
+                      ),
+                    ),
                     SliverToBoxAdapter(
                       child: SizedBox(
                         height: MediaQuery.paddingOf(context).bottom,
