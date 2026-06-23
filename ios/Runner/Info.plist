@@ -105,7 +105,7 @@
 					<!-- Google Sign-In reversed client id (prod bundle
 					     com.jblankenship.theusual). Add the dev client's
 					     reversed id as a second string here when needed. -->
-					<string>com.googleusercontent.apps.926455129035-u1p1pcursgle34pmn9191bpdesgphbsa</string>
+					<string>com.googleusercontent.apps.926455129035-ebaam0k75eolib3jedh3mnbmsdi6rog3</string>
 				</array>
 			</dict>
 		</array>
