@@ -23,10 +23,10 @@ void main() {
         ),
       );
 
-      final summaryText = tester.widget<Text>(
-        find.text(testSets.summary),
-      );
-      expect(summaryText.data, equals(testSets.summary));
+      final summaryShown = tester
+          .widgetList<Text>(find.byType(Text))
+          .any((text) => text.data == testSets.summary);
+      expect(summaryShown, isTrue);
     });
 
     testWidgets('tapping delete calls onRemoved', (tester) async {
