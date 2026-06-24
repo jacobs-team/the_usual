@@ -14,6 +14,7 @@ export 'inputs/quantity_stepper.dart';
 export 'inputs/radio_option_card.dart';
 export 'inputs/set_fields.dart';
 export 'inputs/the_usual_text_field.dart';
+export 'inputs/time_field.dart';
 export 'inputs/usual_meal_composer.dart';
 export 'inputs/weight_checkin_frequency_chips.dart';
 export 'inputs/weight_entry_field.dart';

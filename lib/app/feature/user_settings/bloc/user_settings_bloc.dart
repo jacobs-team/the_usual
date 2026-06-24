@@ -117,6 +117,12 @@ class UserSettingsBloc
             ),
           ),
         ),
+        SettingsSaveMealAsUsualChanged() => emit(
+          state.copyWith(saveMealAsUsual: event.value),
+        ),
+        SettingsSaveWorkoutAsUsualChanged() => emit(
+          state.copyWith(saveWorkoutAsUsual: event.value),
+        ),
       },
     );
   }
@@ -329,7 +335,13 @@ class UserSettingsBloc
           ...state.usualWorkouts,
           event.workoutGroupId: [
             ...usualWorkouts,
-            UsualWorkout(id: _uuid.v4(), name: name, sets: event.sets),
+            UsualWorkout(
+              id: _uuid.v4(),
+              name: name,
+              type: event.type,
+              sets: event.sets,
+              duration: event.duration,
+            ),
           ],
         },
       ),

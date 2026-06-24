@@ -28,11 +28,16 @@ class LoggedWorkoutRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return ExpandableWorkout(
       name: workoutLogEntry.name,
+      type: workoutLogEntry.type,
       sets: workoutLogEntry.sets,
+      duration: workoutLogEntry.duration ?? Duration.zero,
       weightUnit: weightUnit,
       expandedByDefault: expandedByDefault,
       onChanged: (sets) => getIt<WorkoutLogBloc>().add(
         WorkoutLogEvent.workoutSetsChanged(workoutLogEntry.id, sets),
+      ),
+      onDurationChanged: (duration) => getIt<WorkoutLogBloc>().add(
+        WorkoutLogEvent.workoutDurationChanged(workoutLogEntry.id, duration),
       ),
       onRemoved: () => getIt<WorkoutLogBloc>().add(
         WorkoutLogEvent.workoutRemoved(workoutLogEntry.id),

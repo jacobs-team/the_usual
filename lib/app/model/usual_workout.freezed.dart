@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UsualWorkout {
 
- String get id; String get name; List<WorkoutSet> get sets;
+ String get id; String get name; WorkoutType get type; List<WorkoutSet> get sets; Duration? get duration;
 /// Create a copy of UsualWorkout
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $UsualWorkoutCopyWith<UsualWorkout> get copyWith => _$UsualWorkoutCopyWithImpl<U
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UsualWorkout&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other.sets, sets));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UsualWorkout&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&const DeepCollectionEquality().equals(other.sets, sets)&&(identical(other.duration, duration) || other.duration == duration));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,const DeepCollectionEquality().hash(sets));
+int get hashCode => Object.hash(runtimeType,id,name,type,const DeepCollectionEquality().hash(sets),duration);
 
 @override
 String toString() {
-  return 'UsualWorkout(id: $id, name: $name, sets: $sets)';
+  return 'UsualWorkout(id: $id, name: $name, type: $type, sets: $sets, duration: $duration)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $UsualWorkoutCopyWith<$Res>  {
   factory $UsualWorkoutCopyWith(UsualWorkout value, $Res Function(UsualWorkout) _then) = _$UsualWorkoutCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, List<WorkoutSet> sets
+ String id, String name, WorkoutType type, List<WorkoutSet> sets, Duration? duration
 });
 
 
@@ -65,12 +65,14 @@ class _$UsualWorkoutCopyWithImpl<$Res>
 
 /// Create a copy of UsualWorkout
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? sets = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? type = null,Object? sets = null,Object? duration = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,sets: null == sets ? _self.sets : sets // ignore: cast_nullable_to_non_nullable
-as List<WorkoutSet>,
+as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as WorkoutType,sets: null == sets ? _self.sets : sets // ignore: cast_nullable_to_non_nullable
+as List<WorkoutSet>,duration: freezed == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
+as Duration?,
   ));
 }
 
@@ -155,10 +157,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  List<WorkoutSet> sets)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  WorkoutType type,  List<WorkoutSet> sets,  Duration? duration)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UsualWorkout() when $default != null:
-return $default(_that.id,_that.name,_that.sets);case _:
+return $default(_that.id,_that.name,_that.type,_that.sets,_that.duration);case _:
   return orElse();
 
 }
@@ -176,10 +178,10 @@ return $default(_that.id,_that.name,_that.sets);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  List<WorkoutSet> sets)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  WorkoutType type,  List<WorkoutSet> sets,  Duration? duration)  $default,) {final _that = this;
 switch (_that) {
 case _UsualWorkout():
-return $default(_that.id,_that.name,_that.sets);case _:
+return $default(_that.id,_that.name,_that.type,_that.sets,_that.duration);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +198,10 @@ return $default(_that.id,_that.name,_that.sets);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  List<WorkoutSet> sets)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  WorkoutType type,  List<WorkoutSet> sets,  Duration? duration)?  $default,) {final _that = this;
 switch (_that) {
 case _UsualWorkout() when $default != null:
-return $default(_that.id,_that.name,_that.sets);case _:
+return $default(_that.id,_that.name,_that.type,_that.sets,_that.duration);case _:
   return null;
 
 }
@@ -211,11 +213,12 @@ return $default(_that.id,_that.name,_that.sets);case _:
 
 @JsonSerializable(explicitToJson: true)
 class _UsualWorkout implements UsualWorkout {
-  const _UsualWorkout({required this.id, required this.name, final  List<WorkoutSet> sets = const <WorkoutSet>[]}): _sets = sets;
+  const _UsualWorkout({required this.id, required this.name, this.type = WorkoutType.strength, final  List<WorkoutSet> sets = const <WorkoutSet>[], this.duration}): _sets = sets;
   factory _UsualWorkout.fromJson(Map<String, dynamic> json) => _$UsualWorkoutFromJson(json);
 
 @override final  String id;
 @override final  String name;
+@override@JsonKey() final  WorkoutType type;
  final  List<WorkoutSet> _sets;
 @override@JsonKey() List<WorkoutSet> get sets {
   if (_sets is EqualUnmodifiableListView) return _sets;
@@ -223,6 +226,7 @@ class _UsualWorkout implements UsualWorkout {
   return EqualUnmodifiableListView(_sets);
 }
 
+@override final  Duration? duration;
 
 /// Create a copy of UsualWorkout
 /// with the given fields replaced by the non-null parameter values.
@@ -237,16 +241,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UsualWorkout&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other._sets, _sets));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UsualWorkout&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&const DeepCollectionEquality().equals(other._sets, _sets)&&(identical(other.duration, duration) || other.duration == duration));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,name,const DeepCollectionEquality().hash(_sets));
+int get hashCode => Object.hash(runtimeType,id,name,type,const DeepCollectionEquality().hash(_sets),duration);
 
 @override
 String toString() {
-  return 'UsualWorkout(id: $id, name: $name, sets: $sets)';
+  return 'UsualWorkout(id: $id, name: $name, type: $type, sets: $sets, duration: $duration)';
 }
 
 
@@ -257,7 +261,7 @@ abstract mixin class _$UsualWorkoutCopyWith<$Res> implements $UsualWorkoutCopyWi
   factory _$UsualWorkoutCopyWith(_UsualWorkout value, $Res Function(_UsualWorkout) _then) = __$UsualWorkoutCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, List<WorkoutSet> sets
+ String id, String name, WorkoutType type, List<WorkoutSet> sets, Duration? duration
 });
 
 
@@ -274,12 +278,14 @@ class __$UsualWorkoutCopyWithImpl<$Res>
 
 /// Create a copy of UsualWorkout
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? sets = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? type = null,Object? sets = null,Object? duration = freezed,}) {
   return _then(_UsualWorkout(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,sets: null == sets ? _self._sets : sets // ignore: cast_nullable_to_non_nullable
-as List<WorkoutSet>,
+as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as WorkoutType,sets: null == sets ? _self._sets : sets // ignore: cast_nullable_to_non_nullable
+as List<WorkoutSet>,duration: freezed == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
+as Duration?,
   ));
 }
 

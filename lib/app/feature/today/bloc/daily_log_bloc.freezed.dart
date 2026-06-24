@@ -835,9 +835,9 @@ mixin _$DailyLogState {
 /// Schema version of the persisted state. Bump it and add a `fromJson`
 /// case whenever the persisted shape changes in a way old stored data
 /// can't be read as-is, so existing users are migrated instead of reset.
- int get version; List<MealLogEntry> get mealEntries; List<WeightEntry> get weightEntries;/// The id of the entry logged most recently this session, so the Today
-/// view can open it for a quick quantity adjustment. Ephemeral: it is not
-/// persisted, so a relaunch opens nothing.
+ int get version; List<MealLogEntry> get mealEntries; List<WeightEntry> get weightEntries;/// The id of the entry logged most recently this session. Ephemeral: it is
+/// not persisted, so a relaunch clears it, and it is ignored when comparing
+/// state for cloud sync.
 @JsonKey(includeFromJson: false, includeToJson: false) String? get justLoggedEntryId;
 /// Create a copy of DailyLogState
 /// with the given fields replaced by the non-null parameter values.
@@ -1056,9 +1056,9 @@ class _DailyLogState extends DailyLogState {
   return EqualUnmodifiableListView(_weightEntries);
 }
 
-/// The id of the entry logged most recently this session, so the Today
-/// view can open it for a quick quantity adjustment. Ephemeral: it is not
-/// persisted, so a relaunch opens nothing.
+/// The id of the entry logged most recently this session. Ephemeral: it is
+/// not persisted, so a relaunch clears it, and it is ignored when comparing
+/// state for cloud sync.
 @override@JsonKey(includeFromJson: false, includeToJson: false) final  String? justLoggedEntryId;
 
 /// Create a copy of DailyLogState

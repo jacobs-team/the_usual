@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$WorkoutLogEntry {
 
- String get id; DateTime get loggedAt; String get workoutGroupId; String get name; List<WorkoutSet> get sets; String? get usualWorkoutId;
+ String get id; DateTime get loggedAt; String get workoutGroupId; String get name; WorkoutType get type; List<WorkoutSet> get sets; Duration? get duration; String? get usualWorkoutId;
 /// Create a copy of WorkoutLogEntry
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $WorkoutLogEntryCopyWith<WorkoutLogEntry> get copyWith => _$WorkoutLogEntryCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WorkoutLogEntry&&(identical(other.id, id) || other.id == id)&&(identical(other.loggedAt, loggedAt) || other.loggedAt == loggedAt)&&(identical(other.workoutGroupId, workoutGroupId) || other.workoutGroupId == workoutGroupId)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other.sets, sets)&&(identical(other.usualWorkoutId, usualWorkoutId) || other.usualWorkoutId == usualWorkoutId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WorkoutLogEntry&&(identical(other.id, id) || other.id == id)&&(identical(other.loggedAt, loggedAt) || other.loggedAt == loggedAt)&&(identical(other.workoutGroupId, workoutGroupId) || other.workoutGroupId == workoutGroupId)&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&const DeepCollectionEquality().equals(other.sets, sets)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.usualWorkoutId, usualWorkoutId) || other.usualWorkoutId == usualWorkoutId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,loggedAt,workoutGroupId,name,const DeepCollectionEquality().hash(sets),usualWorkoutId);
+int get hashCode => Object.hash(runtimeType,id,loggedAt,workoutGroupId,name,type,const DeepCollectionEquality().hash(sets),duration,usualWorkoutId);
 
 @override
 String toString() {
-  return 'WorkoutLogEntry(id: $id, loggedAt: $loggedAt, workoutGroupId: $workoutGroupId, name: $name, sets: $sets, usualWorkoutId: $usualWorkoutId)';
+  return 'WorkoutLogEntry(id: $id, loggedAt: $loggedAt, workoutGroupId: $workoutGroupId, name: $name, type: $type, sets: $sets, duration: $duration, usualWorkoutId: $usualWorkoutId)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $WorkoutLogEntryCopyWith<$Res>  {
   factory $WorkoutLogEntryCopyWith(WorkoutLogEntry value, $Res Function(WorkoutLogEntry) _then) = _$WorkoutLogEntryCopyWithImpl;
 @useResult
 $Res call({
- String id, DateTime loggedAt, String workoutGroupId, String name, List<WorkoutSet> sets, String? usualWorkoutId
+ String id, DateTime loggedAt, String workoutGroupId, String name, WorkoutType type, List<WorkoutSet> sets, Duration? duration, String? usualWorkoutId
 });
 
 
@@ -65,14 +65,16 @@ class _$WorkoutLogEntryCopyWithImpl<$Res>
 
 /// Create a copy of WorkoutLogEntry
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? loggedAt = null,Object? workoutGroupId = null,Object? name = null,Object? sets = null,Object? usualWorkoutId = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? loggedAt = null,Object? workoutGroupId = null,Object? name = null,Object? type = null,Object? sets = null,Object? duration = freezed,Object? usualWorkoutId = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,loggedAt: null == loggedAt ? _self.loggedAt : loggedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,workoutGroupId: null == workoutGroupId ? _self.workoutGroupId : workoutGroupId // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,sets: null == sets ? _self.sets : sets // ignore: cast_nullable_to_non_nullable
-as List<WorkoutSet>,usualWorkoutId: freezed == usualWorkoutId ? _self.usualWorkoutId : usualWorkoutId // ignore: cast_nullable_to_non_nullable
+as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as WorkoutType,sets: null == sets ? _self.sets : sets // ignore: cast_nullable_to_non_nullable
+as List<WorkoutSet>,duration: freezed == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
+as Duration?,usualWorkoutId: freezed == usualWorkoutId ? _self.usualWorkoutId : usualWorkoutId // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -158,10 +160,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  DateTime loggedAt,  String workoutGroupId,  String name,  List<WorkoutSet> sets,  String? usualWorkoutId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  DateTime loggedAt,  String workoutGroupId,  String name,  WorkoutType type,  List<WorkoutSet> sets,  Duration? duration,  String? usualWorkoutId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _WorkoutLogEntry() when $default != null:
-return $default(_that.id,_that.loggedAt,_that.workoutGroupId,_that.name,_that.sets,_that.usualWorkoutId);case _:
+return $default(_that.id,_that.loggedAt,_that.workoutGroupId,_that.name,_that.type,_that.sets,_that.duration,_that.usualWorkoutId);case _:
   return orElse();
 
 }
@@ -179,10 +181,10 @@ return $default(_that.id,_that.loggedAt,_that.workoutGroupId,_that.name,_that.se
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  DateTime loggedAt,  String workoutGroupId,  String name,  List<WorkoutSet> sets,  String? usualWorkoutId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  DateTime loggedAt,  String workoutGroupId,  String name,  WorkoutType type,  List<WorkoutSet> sets,  Duration? duration,  String? usualWorkoutId)  $default,) {final _that = this;
 switch (_that) {
 case _WorkoutLogEntry():
-return $default(_that.id,_that.loggedAt,_that.workoutGroupId,_that.name,_that.sets,_that.usualWorkoutId);case _:
+return $default(_that.id,_that.loggedAt,_that.workoutGroupId,_that.name,_that.type,_that.sets,_that.duration,_that.usualWorkoutId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +201,10 @@ return $default(_that.id,_that.loggedAt,_that.workoutGroupId,_that.name,_that.se
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  DateTime loggedAt,  String workoutGroupId,  String name,  List<WorkoutSet> sets,  String? usualWorkoutId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  DateTime loggedAt,  String workoutGroupId,  String name,  WorkoutType type,  List<WorkoutSet> sets,  Duration? duration,  String? usualWorkoutId)?  $default,) {final _that = this;
 switch (_that) {
 case _WorkoutLogEntry() when $default != null:
-return $default(_that.id,_that.loggedAt,_that.workoutGroupId,_that.name,_that.sets,_that.usualWorkoutId);case _:
+return $default(_that.id,_that.loggedAt,_that.workoutGroupId,_that.name,_that.type,_that.sets,_that.duration,_that.usualWorkoutId);case _:
   return null;
 
 }
@@ -214,13 +216,14 @@ return $default(_that.id,_that.loggedAt,_that.workoutGroupId,_that.name,_that.se
 
 @JsonSerializable(explicitToJson: true)
 class _WorkoutLogEntry extends WorkoutLogEntry {
-  const _WorkoutLogEntry({required this.id, required this.loggedAt, required this.workoutGroupId, required this.name, final  List<WorkoutSet> sets = const <WorkoutSet>[], this.usualWorkoutId}): _sets = sets,super._();
+  const _WorkoutLogEntry({required this.id, required this.loggedAt, required this.workoutGroupId, required this.name, this.type = WorkoutType.strength, final  List<WorkoutSet> sets = const <WorkoutSet>[], this.duration, this.usualWorkoutId}): _sets = sets,super._();
   factory _WorkoutLogEntry.fromJson(Map<String, dynamic> json) => _$WorkoutLogEntryFromJson(json);
 
 @override final  String id;
 @override final  DateTime loggedAt;
 @override final  String workoutGroupId;
 @override final  String name;
+@override@JsonKey() final  WorkoutType type;
  final  List<WorkoutSet> _sets;
 @override@JsonKey() List<WorkoutSet> get sets {
   if (_sets is EqualUnmodifiableListView) return _sets;
@@ -228,6 +231,7 @@ class _WorkoutLogEntry extends WorkoutLogEntry {
   return EqualUnmodifiableListView(_sets);
 }
 
+@override final  Duration? duration;
 @override final  String? usualWorkoutId;
 
 /// Create a copy of WorkoutLogEntry
@@ -243,16 +247,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WorkoutLogEntry&&(identical(other.id, id) || other.id == id)&&(identical(other.loggedAt, loggedAt) || other.loggedAt == loggedAt)&&(identical(other.workoutGroupId, workoutGroupId) || other.workoutGroupId == workoutGroupId)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other._sets, _sets)&&(identical(other.usualWorkoutId, usualWorkoutId) || other.usualWorkoutId == usualWorkoutId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _WorkoutLogEntry&&(identical(other.id, id) || other.id == id)&&(identical(other.loggedAt, loggedAt) || other.loggedAt == loggedAt)&&(identical(other.workoutGroupId, workoutGroupId) || other.workoutGroupId == workoutGroupId)&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&const DeepCollectionEquality().equals(other._sets, _sets)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.usualWorkoutId, usualWorkoutId) || other.usualWorkoutId == usualWorkoutId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,loggedAt,workoutGroupId,name,const DeepCollectionEquality().hash(_sets),usualWorkoutId);
+int get hashCode => Object.hash(runtimeType,id,loggedAt,workoutGroupId,name,type,const DeepCollectionEquality().hash(_sets),duration,usualWorkoutId);
 
 @override
 String toString() {
-  return 'WorkoutLogEntry(id: $id, loggedAt: $loggedAt, workoutGroupId: $workoutGroupId, name: $name, sets: $sets, usualWorkoutId: $usualWorkoutId)';
+  return 'WorkoutLogEntry(id: $id, loggedAt: $loggedAt, workoutGroupId: $workoutGroupId, name: $name, type: $type, sets: $sets, duration: $duration, usualWorkoutId: $usualWorkoutId)';
 }
 
 
@@ -263,7 +267,7 @@ abstract mixin class _$WorkoutLogEntryCopyWith<$Res> implements $WorkoutLogEntry
   factory _$WorkoutLogEntryCopyWith(_WorkoutLogEntry value, $Res Function(_WorkoutLogEntry) _then) = __$WorkoutLogEntryCopyWithImpl;
 @override @useResult
 $Res call({
- String id, DateTime loggedAt, String workoutGroupId, String name, List<WorkoutSet> sets, String? usualWorkoutId
+ String id, DateTime loggedAt, String workoutGroupId, String name, WorkoutType type, List<WorkoutSet> sets, Duration? duration, String? usualWorkoutId
 });
 
 
@@ -280,14 +284,16 @@ class __$WorkoutLogEntryCopyWithImpl<$Res>
 
 /// Create a copy of WorkoutLogEntry
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? loggedAt = null,Object? workoutGroupId = null,Object? name = null,Object? sets = null,Object? usualWorkoutId = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? loggedAt = null,Object? workoutGroupId = null,Object? name = null,Object? type = null,Object? sets = null,Object? duration = freezed,Object? usualWorkoutId = freezed,}) {
   return _then(_WorkoutLogEntry(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,loggedAt: null == loggedAt ? _self.loggedAt : loggedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,workoutGroupId: null == workoutGroupId ? _self.workoutGroupId : workoutGroupId // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,sets: null == sets ? _self._sets : sets // ignore: cast_nullable_to_non_nullable
-as List<WorkoutSet>,usualWorkoutId: freezed == usualWorkoutId ? _self.usualWorkoutId : usualWorkoutId // ignore: cast_nullable_to_non_nullable
+as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as WorkoutType,sets: null == sets ? _self._sets : sets // ignore: cast_nullable_to_non_nullable
+as List<WorkoutSet>,duration: freezed == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
+as Duration?,usualWorkoutId: freezed == usualWorkoutId ? _self.usualWorkoutId : usualWorkoutId // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

@@ -79,6 +79,12 @@ class FoodEntryForm extends StatefulWidget {
 class FoodEntryFormState extends State<FoodEntryForm> {
   late final FoodEntryBloc _bloc;
 
+  /// New rows default the "Save as usual" toggle to the user's last choice,
+  /// only when the option is shown at all.
+  late final bool _addToUsualMealsDefault =
+      widget.showAddToUsualMeals &&
+      getIt<UserSettingsBloc>().state.saveMealAsUsual;
+
   static const _uuid = Uuid();
 
   @override
@@ -89,7 +95,7 @@ class FoodEntryFormState extends State<FoodEntryForm> {
     final List<FoodDraft> initialDrafts;
     if (initialFoods == null || initialFoods.isEmpty) {
       initialDrafts = [
-        FoodDraft(id: _uuid.v4(), addToUsualMeals: widget.showAddToUsualMeals),
+        FoodDraft(id: _uuid.v4(), addToUsualMeals: _addToUsualMealsDefault),
       ];
     } else {
       initialDrafts = [
@@ -301,12 +307,19 @@ class FoodEntryFormState extends State<FoodEntryForm> {
                       quantity,
                     ),
                   ),
-                  onAddToUsualMealsToggled: (addToUsualMeals) => _bloc.add(
-                    MealEntryEvent.foodAddToUsualMealsToggled(
-                      state.foods[index].id,
-                      addToUsualMeals: addToUsualMeals,
-                    ),
-                  ),
+                  onAddToUsualMealsToggled: (addToUsualMeals) {
+                    _bloc.add(
+                      MealEntryEvent.foodAddToUsualMealsToggled(
+                        state.foods[index].id,
+                        addToUsualMeals: addToUsualMeals,
+                      ),
+                    );
+                    getIt<UserSettingsBloc>().add(
+                      UserSettingsEvent.saveMealAsUsualChanged(
+                        value: addToUsualMeals,
+                      ),
+                    );
+                  },
                   onRemove: () => _bloc.add(
                     MealEntryEvent.foodRemoved(state.foods[index].id),
                   ),
@@ -317,7 +330,7 @@ class FoodEntryFormState extends State<FoodEntryForm> {
                 child: TextButton.icon(
                   onPressed: () => _bloc.add(
                     MealEntryEvent.foodAdded(
-                      addToUsualMeals: widget.showAddToUsualMeals,
+                      addToUsualMeals: _addToUsualMealsDefault,
                     ),
                   ),
                   icon: const Icon(Icons.add),

@@ -80,9 +80,9 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
       appBar: TheUsualAppBar(
         title: 'Today',
         historyRoute: Routes.history,
-        titleWidget: ActionChip(
+        titleWidget: FilledButton(
           key: const Key('today-date-pill'),
-          label: Text(pillLabel),
+          style: pillButtonStyle(context),
           onPressed: () async {
             final picked = await showDatePicker(
               context: context,
@@ -98,6 +98,7 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
                   : DateTimeRange(start: pickedDay, end: pickedDay);
             });
           },
+          child: Text(pillLabel),
         ),
       ),
       body: SafeArea(

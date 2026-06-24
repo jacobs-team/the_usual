@@ -190,8 +190,10 @@ class MealLogSection extends StatelessWidget {
                     SizedBox(height: AppDesign.spacing.sm),
                     Wrap(
                       spacing: AppDesign.spacing.sm,
+                      runSpacing: AppDesign.spacing.sm,
                       children: [
-                        TextButton.icon(
+                        FilledButton.icon(
+                          style: pillButtonStyle(context),
                           onPressed: () async {
                             final result =
                                 await TheUsualBottomSheet.show<
@@ -227,7 +229,8 @@ class MealLogSection extends StatelessWidget {
                           label: const Text('Something else'),
                         ),
                         if (otherMealUsuals.isNotEmpty)
-                          TextButton.icon(
+                          FilledButton.tonalIcon(
+                            style: pillButtonStyle(context),
                             onPressed: () => TheUsualBottomSheet.show<void>(
                               context,
                               builder: (_) => OtherMealUsualsSheet(

@@ -18,6 +18,9 @@ class ExpandableWorkout extends StatefulWidget {
     required this.expandedByDefault,
     required this.onChanged,
     required this.onRemoved,
+    this.type = WorkoutType.strength,
+    this.duration = Duration.zero,
+    this.onDurationChanged,
     this.onNameChanged,
     this.expandedFooter,
     super.key,
@@ -26,8 +29,16 @@ class ExpandableWorkout extends StatefulWidget {
   /// The exercise name.
   final String name;
 
-  /// The sets to summarize when collapsed and seed the fields when open.
+  /// The kind of exercise: strength shows its sets, cardio shows its duration.
+  final WorkoutType type;
+
+  /// The sets to summarize when collapsed and seed the fields when open, for a
+  /// strength exercise.
   final List<WorkoutSet> sets;
+
+  /// The duration to summarize when collapsed and seed the field when open, for
+  /// a cardio exercise.
+  final Duration duration;
 
   /// The weight unit shown in set fields.
   final WeightUnit weightUnit;
@@ -35,8 +46,11 @@ class ExpandableWorkout extends StatefulWidget {
   /// Whether the fields start expanded for editing.
   final bool expandedByDefault;
 
-  /// Called with the updated sets whenever a field changes.
+  /// Called with the updated sets whenever a set field changes.
   final ValueChanged<List<WorkoutSet>> onChanged;
+
+  /// Called with the updated duration whenever the time field changes.
+  final ValueChanged<Duration>? onDurationChanged;
 
   /// Called when the remove button is pressed.
   final VoidCallback onRemoved;
@@ -88,6 +102,12 @@ class _ExpandableWorkoutState extends State<ExpandableWorkout> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final summary = switch (widget.type) {
+      WorkoutType.strength => widget.sets.summary,
+      WorkoutType.cardio => widget.duration == Duration.zero
+          ? 'No time'
+          : widget.duration.clockLabel,
+    };
     return ExpansionTile(
       dense: true,
       controller: _controller,
@@ -122,7 +142,7 @@ class _ExpandableWorkoutState extends State<ExpandableWorkout> {
                     ),
                     if (!_expanded)
                       Text(
-                        widget.sets.summary,
+                        summary,
                         style: theme.textTheme.bodyMedium,
                       ),
                   ],
@@ -150,7 +170,7 @@ class _ExpandableWorkoutState extends State<ExpandableWorkout> {
                     ),
                     if (!_expanded)
                       Text(
-                        widget.sets.summary,
+                        summary,
                         style: theme.textTheme.bodyMedium,
                       ),
                   ],
@@ -162,13 +182,22 @@ class _ExpandableWorkoutState extends State<ExpandableWorkout> {
         onPressed: widget.onRemoved,
       ),
       children: [
-        const SectionLabel('SETS'),
-        SetFields(
-          dense: true,
-          initial: widget.sets,
-          weightUnit: widget.weightUnit,
-          onChanged: widget.onChanged,
-        ),
+        if (widget.type == WorkoutType.cardio) ...[
+          const SectionLabel('TIME'),
+          SizedBox(height: AppDesign.spacing.sm),
+          TimeField(
+            initial: widget.duration,
+            onChanged: widget.onDurationChanged ?? (_) {},
+          ),
+        ] else ...[
+          const SectionLabel('SETS'),
+          SetFields(
+            dense: true,
+            initial: widget.sets,
+            weightUnit: widget.weightUnit,
+            onChanged: widget.onChanged,
+          ),
+        ],
         if (widget.expandedFooter != null) widget.expandedFooter!,
       ],
     );

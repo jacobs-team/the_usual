@@ -5,7 +5,9 @@ sealed class WorkoutLogEvent with _$WorkoutLogEvent {
   const factory WorkoutLogEvent.workoutLogged(
     String workoutGroupId,
     String name, {
+    @Default(WorkoutType.strength) WorkoutType type,
     @Default(<WorkoutSet>[]) List<WorkoutSet> sets,
+    Duration? duration,
     String? usualWorkoutId,
     DateTime? day,
     TimeOfDay? dayStart,
@@ -15,6 +17,10 @@ sealed class WorkoutLogEvent with _$WorkoutLogEvent {
     String id,
     List<WorkoutSet> sets,
   ) = WorkoutSetsChanged;
+  const factory WorkoutLogEvent.workoutDurationChanged(
+    String id,
+    Duration duration,
+  ) = WorkoutDurationChanged;
 
   /// Replaces the entire log with state downloaded from the cloud on sign-in.
   const factory WorkoutLogEvent.stateRestored(WorkoutLogState state) =

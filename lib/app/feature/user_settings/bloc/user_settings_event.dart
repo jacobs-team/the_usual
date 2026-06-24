@@ -85,8 +85,10 @@ sealed class UserSettingsEvent with _$UserSettingsEvent {
   const factory UserSettingsEvent.usualWorkoutAdded(
     String workoutGroupId,
     String name,
-    List<WorkoutSet> sets,
-  ) = SettingsUsualWorkoutAdded;
+    List<WorkoutSet> sets, {
+    @Default(WorkoutType.strength) WorkoutType type,
+    Duration? duration,
+  }) = SettingsUsualWorkoutAdded;
   const factory UserSettingsEvent.usualWorkoutRenamed(
     String workoutGroupId,
     String id,
@@ -115,4 +117,11 @@ sealed class UserSettingsEvent with _$UserSettingsEvent {
   const factory UserSettingsEvent.workoutReminderTimeChanged(
     TimeOfDay timeOfDay,
   ) = SettingsWorkoutReminderTimeChanged;
+
+  const factory UserSettingsEvent.saveMealAsUsualChanged({
+    required bool value,
+  }) = SettingsSaveMealAsUsualChanged;
+  const factory UserSettingsEvent.saveWorkoutAsUsualChanged({
+    required bool value,
+  }) = SettingsSaveWorkoutAsUsualChanged;
 }

@@ -36,9 +36,9 @@ class _WorkoutsViewState extends State<WorkoutsView> {
       appBar: TheUsualAppBar(
         title: 'Workouts',
         historyRoute: Routes.workoutHistory,
-        titleWidget: ActionChip(
+        titleWidget: FilledButton(
           key: const Key('workouts-date-pill'),
-          label: Text(pillLabel),
+          style: pillButtonStyle(context),
           onPressed: () async {
             final picked = await showDatePicker(
               context: context,
@@ -54,6 +54,7 @@ class _WorkoutsViewState extends State<WorkoutsView> {
                   : DateTimeRange(start: pickedDay, end: pickedDay);
             });
           },
+          child: Text(pillLabel),
         ),
       ),
       body: SafeArea(

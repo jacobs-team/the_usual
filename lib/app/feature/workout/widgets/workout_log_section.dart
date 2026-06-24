@@ -56,6 +56,8 @@ class WorkoutLogSection extends StatelessWidget {
   void _logOntoTargetDays(
     String name,
     List<WorkoutSet> sets, {
+    WorkoutType type = WorkoutType.strength,
+    Duration? duration,
     String? usualWorkoutId,
   }) {
     final targetDays = logDays;
@@ -65,7 +67,9 @@ class WorkoutLogSection extends StatelessWidget {
         WorkoutLogEvent.workoutLogged(
           workoutGroup.id,
           name,
+          type: type,
           sets: sets,
+          duration: duration,
           usualWorkoutId: usualWorkoutId,
         ),
       );
@@ -76,7 +80,9 @@ class WorkoutLogSection extends StatelessWidget {
         WorkoutLogEvent.workoutLogged(
           workoutGroup.id,
           name,
+          type: type,
           sets: sets,
+          duration: duration,
           usualWorkoutId: usualWorkoutId,
           day: day,
           dayStart: dayStart,
@@ -126,7 +132,7 @@ class WorkoutLogSection extends StatelessWidget {
                           onRenamed: onRenamed,
                         ),
                       ),
-                      if (workoutLogEntries.isNotEmpty)
+                      if (workoutLogEntries.isNotEmpty && totalVolume > 0)
                         Text(
                           '${totalVolume.trimmedDecimal} ${weightUnit.name}',
                           style: theme.textTheme.bodyMedium,
@@ -165,6 +171,8 @@ class WorkoutLogSection extends StatelessWidget {
                               onPressed: () => _logOntoTargetDays(
                                 usualWorkout.name,
                                 usualWorkout.sets,
+                                type: usualWorkout.type,
+                                duration: usualWorkout.duration,
                                 usualWorkoutId: usualWorkout.id,
                               ),
                               onRemove: () =>
@@ -181,8 +189,10 @@ class WorkoutLogSection extends StatelessWidget {
                     SizedBox(height: AppDesign.spacing.sm),
                     Wrap(
                       spacing: AppDesign.spacing.sm,
+                      runSpacing: AppDesign.spacing.sm,
                       children: [
-                        TextButton.icon(
+                        FilledButton.icon(
+                          style: pillButtonStyle(context),
                           onPressed: () async {
                             final latestWeight =
                                 getIt<DailyLogBloc>().state.latestWeight;
@@ -200,6 +210,10 @@ class WorkoutLogSection extends StatelessWidget {
                                 userSettings.weightUnit,
                               );
                             }
+                            final defaultType =
+                                WorkoutType.defaultForGroupName(
+                                  workoutGroup.name,
+                                );
                             final result = await TheUsualBottomSheet
                                 .show<WorkoutEntryResult>(
                                   context,
@@ -209,6 +223,7 @@ class WorkoutLogSection extends StatelessWidget {
                                     weightUnit: weightUnit,
                                     showAddToUsuals: true,
                                     bodyWeight: bodyWeight,
+                                    initialType: defaultType,
                                   ),
                                 );
                             if (result == null) return;
@@ -218,10 +233,17 @@ class WorkoutLogSection extends StatelessWidget {
                                   workoutGroup.id,
                                   result.name,
                                   result.sets,
+                                  type: result.type,
+                                  duration: result.duration,
                                 ),
                               );
                             }
-                            _logOntoTargetDays(result.name, result.sets);
+                            _logOntoTargetDays(
+                              result.name,
+                              result.sets,
+                              type: result.type,
+                              duration: result.duration,
+                            );
                           },
                           icon: const Icon(Icons.add),
                           label: const Text('New workout'),

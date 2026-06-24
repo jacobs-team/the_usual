@@ -126,6 +126,14 @@ abstract class UserSettingsState with _$UserSettingsState {
     /// The unit workout weights are entered and shown in. Defaults to the
     /// body-weight [weightUnit] for returning users via migration.
     @Default(WeightUnit.lb) WeightUnit workoutWeightUnit,
+
+    /// The last "Save as usual" choice in the food entry sheet, restored as the
+    /// checkbox's default the next time it opens.
+    @Default(true) bool saveMealAsUsual,
+
+    /// The last "Save as usual" choice in the workout entry sheet, restored as
+    /// the checkbox's default the next time it opens.
+    @Default(false) bool saveWorkoutAsUsual,
   }) = _UserSettingsState;
 
   const UserSettingsState._();

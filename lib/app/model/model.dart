@@ -19,3 +19,4 @@ export 'workout_group.dart';
 export 'workout_log_entry.dart';
 export 'workout_reminder.dart';
 export 'workout_set.dart';
+export 'workout_type.dart';

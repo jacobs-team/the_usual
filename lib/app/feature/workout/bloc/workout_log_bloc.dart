@@ -30,6 +30,7 @@ class WorkoutLogBloc extends HydratedBloc<WorkoutLogEvent, WorkoutLogState> {
           ),
         ),
         WorkoutSetsChanged() => _onWorkoutSetsChanged(event, emit),
+        WorkoutDurationChanged() => _onWorkoutDurationChanged(event, emit),
         WorkoutLogStateRestored() => emit(event.state),
       },
     );
@@ -52,7 +53,9 @@ class WorkoutLogBloc extends HydratedBloc<WorkoutLogEvent, WorkoutLogState> {
       loggedAt: loggedAt,
       workoutGroupId: event.workoutGroupId,
       name: name,
+      type: event.type,
       sets: event.sets,
+      duration: event.duration,
       usualWorkoutId: event.usualWorkoutId,
     );
     emit(
@@ -71,6 +74,20 @@ class WorkoutLogBloc extends HydratedBloc<WorkoutLogEvent, WorkoutLogState> {
       for (final workoutLogEntry in state.workoutEntries)
         if (workoutLogEntry.id == event.id)
           workoutLogEntry.copyWith(sets: event.sets)
+        else
+          workoutLogEntry,
+    ];
+    emit(state.copyWith(workoutEntries: updatedEntries));
+  }
+
+  void _onWorkoutDurationChanged(
+    WorkoutDurationChanged event,
+    Emitter<WorkoutLogState> emit,
+  ) {
+    final updatedEntries = [
+      for (final workoutLogEntry in state.workoutEntries)
+        if (workoutLogEntry.id == event.id)
+          workoutLogEntry.copyWith(duration: event.duration)
         else
           workoutLogEntry,
     ];

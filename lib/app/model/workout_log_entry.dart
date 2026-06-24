@@ -5,7 +5,9 @@ part 'workout_log_entry.freezed.dart';
 part 'workout_log_entry.g.dart';
 
 /// {@template workout_log_entry}
-/// A single exercise the user logged, at a point in time, with its sets.
+/// A single exercise the user logged, at a point in time. Strength entries
+/// carry their sets; cardio entries carry their [duration] and leave [sets]
+/// empty.
 /// {@endtemplate}
 @freezed
 abstract class WorkoutLogEntry with _$WorkoutLogEntry {
@@ -16,7 +18,9 @@ abstract class WorkoutLogEntry with _$WorkoutLogEntry {
     required DateTime loggedAt,
     required String workoutGroupId,
     required String name,
+    @Default(WorkoutType.strength) WorkoutType type,
     @Default(<WorkoutSet>[]) List<WorkoutSet> sets,
+    Duration? duration,
     String? usualWorkoutId,
   }) = _WorkoutLogEntry;
 

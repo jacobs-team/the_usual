@@ -239,3 +239,25 @@ class AppTheme {
   /// Dark theme configuration.
   static final ThemeData dark = _buildTheme(AppPalette.darkScheme);
 }
+
+/// A stadium-shaped, tonal button style for the app's prominent inline actions
+/// (e.g. "Something else", "From another meal", "New workout"). Sized to match
+/// the app bar's date pill: the secondary-container fill, compact label, and
+/// tight padding of the [ChipThemeData] above.
+ButtonStyle pillButtonStyle(BuildContext context) {
+  final theme = Theme.of(context);
+  final colorScheme = theme.colorScheme;
+  return FilledButton.styleFrom(
+    backgroundColor: colorScheme.secondaryContainer,
+    foregroundColor: colorScheme.onSecondaryContainer,
+    shape: const StadiumBorder(),
+    textStyle: theme.textTheme.labelMedium,
+    iconSize: 16,
+    padding: EdgeInsets.symmetric(
+      horizontal: AppDesign.spacing.md,
+      vertical: AppDesign.spacing.xs,
+    ),
+    minimumSize: Size.zero,
+    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+  );
+}

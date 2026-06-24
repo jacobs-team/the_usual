@@ -176,6 +176,8 @@ void main() {
       expect(results.single, isNull);
     });
 
+    // Photo name-suggestion flow disabled — tests kept commented for restore.
+    /*
     // ── AI: camera button gating ─────────────────────────────────────────────
 
     testWidgets('camera button is absent when AI is not configured',
@@ -222,6 +224,7 @@ void main() {
       expect(nameField.controller?.text, equals('Lat Pulldown'));
       expect(find.byType(ActionChip), findsNothing);
     });
+    */
 
     // ── Bodyweight checkbox disabled message ─────────────────────────────────
 

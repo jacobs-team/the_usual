@@ -55,13 +55,14 @@ extension WorkoutLogEventPatterns on WorkoutLogEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( WorkoutLogged value)?  workoutLogged,TResult Function( WorkoutRemoved value)?  workoutRemoved,TResult Function( WorkoutSetsChanged value)?  workoutSetsChanged,TResult Function( WorkoutLogStateRestored value)?  stateRestored,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( WorkoutLogged value)?  workoutLogged,TResult Function( WorkoutRemoved value)?  workoutRemoved,TResult Function( WorkoutSetsChanged value)?  workoutSetsChanged,TResult Function( WorkoutDurationChanged value)?  workoutDurationChanged,TResult Function( WorkoutLogStateRestored value)?  stateRestored,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case WorkoutLogged() when workoutLogged != null:
 return workoutLogged(_that);case WorkoutRemoved() when workoutRemoved != null:
 return workoutRemoved(_that);case WorkoutSetsChanged() when workoutSetsChanged != null:
-return workoutSetsChanged(_that);case WorkoutLogStateRestored() when stateRestored != null:
+return workoutSetsChanged(_that);case WorkoutDurationChanged() when workoutDurationChanged != null:
+return workoutDurationChanged(_that);case WorkoutLogStateRestored() when stateRestored != null:
 return stateRestored(_that);case _:
   return orElse();
 
@@ -80,13 +81,14 @@ return stateRestored(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( WorkoutLogged value)  workoutLogged,required TResult Function( WorkoutRemoved value)  workoutRemoved,required TResult Function( WorkoutSetsChanged value)  workoutSetsChanged,required TResult Function( WorkoutLogStateRestored value)  stateRestored,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( WorkoutLogged value)  workoutLogged,required TResult Function( WorkoutRemoved value)  workoutRemoved,required TResult Function( WorkoutSetsChanged value)  workoutSetsChanged,required TResult Function( WorkoutDurationChanged value)  workoutDurationChanged,required TResult Function( WorkoutLogStateRestored value)  stateRestored,}){
 final _that = this;
 switch (_that) {
 case WorkoutLogged():
 return workoutLogged(_that);case WorkoutRemoved():
 return workoutRemoved(_that);case WorkoutSetsChanged():
-return workoutSetsChanged(_that);case WorkoutLogStateRestored():
+return workoutSetsChanged(_that);case WorkoutDurationChanged():
+return workoutDurationChanged(_that);case WorkoutLogStateRestored():
 return stateRestored(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
@@ -101,13 +103,14 @@ return stateRestored(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( WorkoutLogged value)?  workoutLogged,TResult? Function( WorkoutRemoved value)?  workoutRemoved,TResult? Function( WorkoutSetsChanged value)?  workoutSetsChanged,TResult? Function( WorkoutLogStateRestored value)?  stateRestored,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( WorkoutLogged value)?  workoutLogged,TResult? Function( WorkoutRemoved value)?  workoutRemoved,TResult? Function( WorkoutSetsChanged value)?  workoutSetsChanged,TResult? Function( WorkoutDurationChanged value)?  workoutDurationChanged,TResult? Function( WorkoutLogStateRestored value)?  stateRestored,}){
 final _that = this;
 switch (_that) {
 case WorkoutLogged() when workoutLogged != null:
 return workoutLogged(_that);case WorkoutRemoved() when workoutRemoved != null:
 return workoutRemoved(_that);case WorkoutSetsChanged() when workoutSetsChanged != null:
-return workoutSetsChanged(_that);case WorkoutLogStateRestored() when stateRestored != null:
+return workoutSetsChanged(_that);case WorkoutDurationChanged() when workoutDurationChanged != null:
+return workoutDurationChanged(_that);case WorkoutLogStateRestored() when stateRestored != null:
 return stateRestored(_that);case _:
   return null;
 
@@ -125,12 +128,13 @@ return stateRestored(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String workoutGroupId,  String name,  List<WorkoutSet> sets,  String? usualWorkoutId,  DateTime? day,  TimeOfDay? dayStart)?  workoutLogged,TResult Function( String id)?  workoutRemoved,TResult Function( String id,  List<WorkoutSet> sets)?  workoutSetsChanged,TResult Function( WorkoutLogState state)?  stateRestored,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String workoutGroupId,  String name,  WorkoutType type,  List<WorkoutSet> sets,  Duration? duration,  String? usualWorkoutId,  DateTime? day,  TimeOfDay? dayStart)?  workoutLogged,TResult Function( String id)?  workoutRemoved,TResult Function( String id,  List<WorkoutSet> sets)?  workoutSetsChanged,TResult Function( String id,  Duration duration)?  workoutDurationChanged,TResult Function( WorkoutLogState state)?  stateRestored,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case WorkoutLogged() when workoutLogged != null:
-return workoutLogged(_that.workoutGroupId,_that.name,_that.sets,_that.usualWorkoutId,_that.day,_that.dayStart);case WorkoutRemoved() when workoutRemoved != null:
+return workoutLogged(_that.workoutGroupId,_that.name,_that.type,_that.sets,_that.duration,_that.usualWorkoutId,_that.day,_that.dayStart);case WorkoutRemoved() when workoutRemoved != null:
 return workoutRemoved(_that.id);case WorkoutSetsChanged() when workoutSetsChanged != null:
-return workoutSetsChanged(_that.id,_that.sets);case WorkoutLogStateRestored() when stateRestored != null:
+return workoutSetsChanged(_that.id,_that.sets);case WorkoutDurationChanged() when workoutDurationChanged != null:
+return workoutDurationChanged(_that.id,_that.duration);case WorkoutLogStateRestored() when stateRestored != null:
 return stateRestored(_that.state);case _:
   return orElse();
 
@@ -149,12 +153,13 @@ return stateRestored(_that.state);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String workoutGroupId,  String name,  List<WorkoutSet> sets,  String? usualWorkoutId,  DateTime? day,  TimeOfDay? dayStart)  workoutLogged,required TResult Function( String id)  workoutRemoved,required TResult Function( String id,  List<WorkoutSet> sets)  workoutSetsChanged,required TResult Function( WorkoutLogState state)  stateRestored,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String workoutGroupId,  String name,  WorkoutType type,  List<WorkoutSet> sets,  Duration? duration,  String? usualWorkoutId,  DateTime? day,  TimeOfDay? dayStart)  workoutLogged,required TResult Function( String id)  workoutRemoved,required TResult Function( String id,  List<WorkoutSet> sets)  workoutSetsChanged,required TResult Function( String id,  Duration duration)  workoutDurationChanged,required TResult Function( WorkoutLogState state)  stateRestored,}) {final _that = this;
 switch (_that) {
 case WorkoutLogged():
-return workoutLogged(_that.workoutGroupId,_that.name,_that.sets,_that.usualWorkoutId,_that.day,_that.dayStart);case WorkoutRemoved():
+return workoutLogged(_that.workoutGroupId,_that.name,_that.type,_that.sets,_that.duration,_that.usualWorkoutId,_that.day,_that.dayStart);case WorkoutRemoved():
 return workoutRemoved(_that.id);case WorkoutSetsChanged():
-return workoutSetsChanged(_that.id,_that.sets);case WorkoutLogStateRestored():
+return workoutSetsChanged(_that.id,_that.sets);case WorkoutDurationChanged():
+return workoutDurationChanged(_that.id,_that.duration);case WorkoutLogStateRestored():
 return stateRestored(_that.state);}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -169,12 +174,13 @@ return stateRestored(_that.state);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String workoutGroupId,  String name,  List<WorkoutSet> sets,  String? usualWorkoutId,  DateTime? day,  TimeOfDay? dayStart)?  workoutLogged,TResult? Function( String id)?  workoutRemoved,TResult? Function( String id,  List<WorkoutSet> sets)?  workoutSetsChanged,TResult? Function( WorkoutLogState state)?  stateRestored,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String workoutGroupId,  String name,  WorkoutType type,  List<WorkoutSet> sets,  Duration? duration,  String? usualWorkoutId,  DateTime? day,  TimeOfDay? dayStart)?  workoutLogged,TResult? Function( String id)?  workoutRemoved,TResult? Function( String id,  List<WorkoutSet> sets)?  workoutSetsChanged,TResult? Function( String id,  Duration duration)?  workoutDurationChanged,TResult? Function( WorkoutLogState state)?  stateRestored,}) {final _that = this;
 switch (_that) {
 case WorkoutLogged() when workoutLogged != null:
-return workoutLogged(_that.workoutGroupId,_that.name,_that.sets,_that.usualWorkoutId,_that.day,_that.dayStart);case WorkoutRemoved() when workoutRemoved != null:
+return workoutLogged(_that.workoutGroupId,_that.name,_that.type,_that.sets,_that.duration,_that.usualWorkoutId,_that.day,_that.dayStart);case WorkoutRemoved() when workoutRemoved != null:
 return workoutRemoved(_that.id);case WorkoutSetsChanged() when workoutSetsChanged != null:
-return workoutSetsChanged(_that.id,_that.sets);case WorkoutLogStateRestored() when stateRestored != null:
+return workoutSetsChanged(_that.id,_that.sets);case WorkoutDurationChanged() when workoutDurationChanged != null:
+return workoutDurationChanged(_that.id,_that.duration);case WorkoutLogStateRestored() when stateRestored != null:
 return stateRestored(_that.state);case _:
   return null;
 
@@ -187,11 +193,12 @@ return stateRestored(_that.state);case _:
 
 
 class WorkoutLogged implements WorkoutLogEvent {
-  const WorkoutLogged(this.workoutGroupId, this.name, {final  List<WorkoutSet> sets = const <WorkoutSet>[], this.usualWorkoutId, this.day, this.dayStart}): _sets = sets;
+  const WorkoutLogged(this.workoutGroupId, this.name, {this.type = WorkoutType.strength, final  List<WorkoutSet> sets = const <WorkoutSet>[], this.duration, this.usualWorkoutId, this.day, this.dayStart}): _sets = sets;
   
 
  final  String workoutGroupId;
  final  String name;
+@JsonKey() final  WorkoutType type;
  final  List<WorkoutSet> _sets;
 @JsonKey() List<WorkoutSet> get sets {
   if (_sets is EqualUnmodifiableListView) return _sets;
@@ -199,6 +206,7 @@ class WorkoutLogged implements WorkoutLogEvent {
   return EqualUnmodifiableListView(_sets);
 }
 
+ final  Duration? duration;
  final  String? usualWorkoutId;
  final  DateTime? day;
  final  TimeOfDay? dayStart;
@@ -213,16 +221,16 @@ $WorkoutLoggedCopyWith<WorkoutLogged> get copyWith => _$WorkoutLoggedCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is WorkoutLogged&&(identical(other.workoutGroupId, workoutGroupId) || other.workoutGroupId == workoutGroupId)&&(identical(other.name, name) || other.name == name)&&const DeepCollectionEquality().equals(other._sets, _sets)&&(identical(other.usualWorkoutId, usualWorkoutId) || other.usualWorkoutId == usualWorkoutId)&&(identical(other.day, day) || other.day == day)&&(identical(other.dayStart, dayStart) || other.dayStart == dayStart));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WorkoutLogged&&(identical(other.workoutGroupId, workoutGroupId) || other.workoutGroupId == workoutGroupId)&&(identical(other.name, name) || other.name == name)&&(identical(other.type, type) || other.type == type)&&const DeepCollectionEquality().equals(other._sets, _sets)&&(identical(other.duration, duration) || other.duration == duration)&&(identical(other.usualWorkoutId, usualWorkoutId) || other.usualWorkoutId == usualWorkoutId)&&(identical(other.day, day) || other.day == day)&&(identical(other.dayStart, dayStart) || other.dayStart == dayStart));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,workoutGroupId,name,const DeepCollectionEquality().hash(_sets),usualWorkoutId,day,dayStart);
+int get hashCode => Object.hash(runtimeType,workoutGroupId,name,type,const DeepCollectionEquality().hash(_sets),duration,usualWorkoutId,day,dayStart);
 
 @override
 String toString() {
-  return 'WorkoutLogEvent.workoutLogged(workoutGroupId: $workoutGroupId, name: $name, sets: $sets, usualWorkoutId: $usualWorkoutId, day: $day, dayStart: $dayStart)';
+  return 'WorkoutLogEvent.workoutLogged(workoutGroupId: $workoutGroupId, name: $name, type: $type, sets: $sets, duration: $duration, usualWorkoutId: $usualWorkoutId, day: $day, dayStart: $dayStart)';
 }
 
 
@@ -233,7 +241,7 @@ abstract mixin class $WorkoutLoggedCopyWith<$Res> implements $WorkoutLogEventCop
   factory $WorkoutLoggedCopyWith(WorkoutLogged value, $Res Function(WorkoutLogged) _then) = _$WorkoutLoggedCopyWithImpl;
 @useResult
 $Res call({
- String workoutGroupId, String name, List<WorkoutSet> sets, String? usualWorkoutId, DateTime? day, TimeOfDay? dayStart
+ String workoutGroupId, String name, WorkoutType type, List<WorkoutSet> sets, Duration? duration, String? usualWorkoutId, DateTime? day, TimeOfDay? dayStart
 });
 
 
@@ -250,12 +258,14 @@ class _$WorkoutLoggedCopyWithImpl<$Res>
 
 /// Create a copy of WorkoutLogEvent
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? workoutGroupId = null,Object? name = null,Object? sets = null,Object? usualWorkoutId = freezed,Object? day = freezed,Object? dayStart = freezed,}) {
+@pragma('vm:prefer-inline') $Res call({Object? workoutGroupId = null,Object? name = null,Object? type = null,Object? sets = null,Object? duration = freezed,Object? usualWorkoutId = freezed,Object? day = freezed,Object? dayStart = freezed,}) {
   return _then(WorkoutLogged(
 null == workoutGroupId ? _self.workoutGroupId : workoutGroupId // ignore: cast_nullable_to_non_nullable
 as String,null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
-as String,sets: null == sets ? _self._sets : sets // ignore: cast_nullable_to_non_nullable
-as List<WorkoutSet>,usualWorkoutId: freezed == usualWorkoutId ? _self.usualWorkoutId : usualWorkoutId // ignore: cast_nullable_to_non_nullable
+as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
+as WorkoutType,sets: null == sets ? _self._sets : sets // ignore: cast_nullable_to_non_nullable
+as List<WorkoutSet>,duration: freezed == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
+as Duration?,usualWorkoutId: freezed == usualWorkoutId ? _self.usualWorkoutId : usualWorkoutId // ignore: cast_nullable_to_non_nullable
 as String?,day: freezed == day ? _self.day : day // ignore: cast_nullable_to_non_nullable
 as DateTime?,dayStart: freezed == dayStart ? _self.dayStart : dayStart // ignore: cast_nullable_to_non_nullable
 as TimeOfDay?,
@@ -408,6 +418,74 @@ as List<WorkoutSet>,
 /// @nodoc
 
 
+class WorkoutDurationChanged implements WorkoutLogEvent {
+  const WorkoutDurationChanged(this.id, this.duration);
+  
+
+ final  String id;
+ final  Duration duration;
+
+/// Create a copy of WorkoutLogEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$WorkoutDurationChangedCopyWith<WorkoutDurationChanged> get copyWith => _$WorkoutDurationChangedCopyWithImpl<WorkoutDurationChanged>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WorkoutDurationChanged&&(identical(other.id, id) || other.id == id)&&(identical(other.duration, duration) || other.duration == duration));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,id,duration);
+
+@override
+String toString() {
+  return 'WorkoutLogEvent.workoutDurationChanged(id: $id, duration: $duration)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $WorkoutDurationChangedCopyWith<$Res> implements $WorkoutLogEventCopyWith<$Res> {
+  factory $WorkoutDurationChangedCopyWith(WorkoutDurationChanged value, $Res Function(WorkoutDurationChanged) _then) = _$WorkoutDurationChangedCopyWithImpl;
+@useResult
+$Res call({
+ String id, Duration duration
+});
+
+
+
+
+}
+/// @nodoc
+class _$WorkoutDurationChangedCopyWithImpl<$Res>
+    implements $WorkoutDurationChangedCopyWith<$Res> {
+  _$WorkoutDurationChangedCopyWithImpl(this._self, this._then);
+
+  final WorkoutDurationChanged _self;
+  final $Res Function(WorkoutDurationChanged) _then;
+
+/// Create a copy of WorkoutLogEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? id = null,Object? duration = null,}) {
+  return _then(WorkoutDurationChanged(
+null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,null == duration ? _self.duration : duration // ignore: cast_nullable_to_non_nullable
+as Duration,
+  ));
+}
+
+
+}
+
+/// @nodoc
+
+
 class WorkoutLogStateRestored implements WorkoutLogEvent {
   const WorkoutLogStateRestored(this.state);
   
@@ -487,9 +565,9 @@ mixin _$WorkoutLogState {
 /// Schema version of the persisted state. Bump it and add a `fromJson`
 /// case whenever the persisted shape changes in a way old stored data
 /// can't be read as-is, so existing users are migrated instead of reset.
- int get version; List<WorkoutLogEntry> get workoutEntries;/// The id of the workout logged most recently this session, so the
-/// Workouts view can open it for a quick adjustment. Ephemeral: not
-/// persisted, so a relaunch opens nothing.
+ int get version; List<WorkoutLogEntry> get workoutEntries;/// The id of the workout logged most recently this session. Ephemeral: not
+/// persisted, so a relaunch clears it, and it is ignored when comparing
+/// state for cloud sync.
 @JsonKey(includeFromJson: false, includeToJson: false) String? get justLoggedWorkoutId;
 /// Create a copy of WorkoutLogState
 /// with the given fields replaced by the non-null parameter values.
@@ -700,9 +778,9 @@ class _WorkoutLogState extends WorkoutLogState {
   return EqualUnmodifiableListView(_workoutEntries);
 }
 
-/// The id of the workout logged most recently this session, so the
-/// Workouts view can open it for a quick adjustment. Ephemeral: not
-/// persisted, so a relaunch opens nothing.
+/// The id of the workout logged most recently this session. Ephemeral: not
+/// persisted, so a relaunch clears it, and it is ignored when comparing
+/// state for cloud sync.
 @override@JsonKey(includeFromJson: false, includeToJson: false) final  String? justLoggedWorkoutId;
 
 /// Create a copy of WorkoutLogState

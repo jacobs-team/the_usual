@@ -115,6 +115,8 @@ _UserSettingsState _$UserSettingsStateFromJson(
   workoutWeightUnit:
       $enumDecodeNullable(_$WeightUnitEnumMap, json['workoutWeightUnit']) ??
       WeightUnit.lb,
+  saveMealAsUsual: json['saveMealAsUsual'] as bool? ?? true,
+  saveWorkoutAsUsual: json['saveWorkoutAsUsual'] as bool? ?? false,
 );
 
 Map<String, dynamic> _$UserSettingsStateToJson(
@@ -150,6 +152,8 @@ Map<String, dynamic> _$UserSettingsStateToJson(
   ),
   'workoutReminder': instance.workoutReminder.toJson(),
   'workoutWeightUnit': _$WeightUnitEnumMap[instance.workoutWeightUnit]!,
+  'saveMealAsUsual': instance.saveMealAsUsual,
+  'saveWorkoutAsUsual': instance.saveWorkoutAsUsual,
 };
 
 const _$ReminderStyleEnumMap = {
