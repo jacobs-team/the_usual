@@ -61,6 +61,11 @@ abstract final class AppPalette {
   // so a goal reference line reads against both the navy card and blue bars).
   static const goalLine = Color(0xFFF5A623);
 
+  // On the dark scheme the trends card sits on a light primary, where the
+  // bright amber-orange washes out; this deeper burnt orange keeps the goal
+  // line and its label readable there.
+  static const darkGoalLine = Color(0xFFC2410C);
+
   // ── Outline ──
   static const outline = Color(0xFF76777D);
   static const outlineVariant = Color(0xFFC6C6CD);

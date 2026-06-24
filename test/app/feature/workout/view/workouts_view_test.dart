@@ -49,20 +49,6 @@ void main() {
       expect(find.byType(WorkoutLogSection), findsNWidgets(3));
     });
 
-    testWidgets('renders the VolumeBar', (tester) async {
-      tester.view.physicalSize = const Size(1200, 3000);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
-
-      await tester.pumpPumpPumpItUP(
-        deps: [workoutLogBloc, userSettingsBloc],
-        const WorkoutsView(),
-      );
-
-      expect(find.byType(VolumeBar), findsOneWidget);
-    });
-
     testWidgets('renders the date pill', (tester) async {
       tester.view.physicalSize = const Size(1200, 3000);
       tester.view.devicePixelRatio = 1.0;

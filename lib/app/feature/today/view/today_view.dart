@@ -133,15 +133,11 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
                 return BlocSelector<
                   DailyLogBloc,
                   DailyLogState,
-                  (List<MealLogEntry>, String?)
+                  List<MealLogEntry>
                 >(
                   bloc: getIt<DailyLogBloc>(),
-                  selector: (state) => (
-                    state.mealEntries,
-                    state.justLoggedEntryId,
-                  ),
-                  builder: (context, selected) {
-                    final (mealEntries, justLoggedEntryId) = selected;
+                  selector: (state) => state.mealEntries,
+                  builder: (context, mealEntries) {
                     final breakdown = mealEntries.breakdownOn(
                       displayDay,
                       dayStartTime,
@@ -204,7 +200,6 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
                             isCurrent: isToday && mealOfTheDay == currentMeal,
                             nutritionExpandedByDefault:
                                 expandNutritionByDefault,
-                            justLoggedEntryId: justLoggedEntryId,
                             logDays: logDays,
                             dayStart: logDayStart,
                           ),

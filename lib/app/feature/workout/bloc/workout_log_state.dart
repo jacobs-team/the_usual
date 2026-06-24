@@ -30,9 +30,9 @@ abstract class WorkoutLogState with _$WorkoutLogState {
     @Default(1) int version,
     @Default(<WorkoutLogEntry>[]) List<WorkoutLogEntry> workoutEntries,
 
-    /// The id of the workout logged most recently this session, so the
-    /// Workouts view can open it for a quick adjustment. Ephemeral: not
-    /// persisted, so a relaunch opens nothing.
+    /// The id of the workout logged most recently this session. Ephemeral: not
+    /// persisted, so a relaunch clears it, and it is ignored when comparing
+    /// state for cloud sync.
     @JsonKey(includeFromJson: false, includeToJson: false)
     String? justLoggedWorkoutId,
   }) = _WorkoutLogState;

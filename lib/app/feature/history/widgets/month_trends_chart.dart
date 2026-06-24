@@ -152,7 +152,9 @@ class _WeightTrend extends StatelessWidget {
     final goalLabel = goalWeight == null
         ? null
         : 'Goal ${goalWeight.trimmedDecimal} ${weightGoalUnit.name}';
-    const goalColor = AppPalette.goalLine;
+    final goalColor = theme.brightness == Brightness.dark
+        ? AppPalette.darkGoalLine
+        : AppPalette.goalLine;
     final goalLabelStyle = theme.textTheme.labelMedium?.copyWith(
       color: goalColor,
       fontWeight: FontWeight.w600,
@@ -260,7 +262,9 @@ class _CalorieBars extends StatelessWidget {
 
     // The goal is the warm accent against the blue bars; the average is the
     // plain onPrimary so the two reference lines never read as the same line.
-    const goalLineColor = AppPalette.goalLine;
+    final goalLineColor = theme.brightness == Brightness.dark
+        ? AppPalette.darkGoalLine
+        : AppPalette.goalLine;
     final averageLineColor = colorScheme.onPrimary;
     final goalCalories = this.goalCalories;
 

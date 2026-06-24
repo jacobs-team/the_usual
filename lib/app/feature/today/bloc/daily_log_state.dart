@@ -33,9 +33,9 @@ abstract class DailyLogState with _$DailyLogState {
     @Default(<MealLogEntry>[]) List<MealLogEntry> mealEntries,
     @Default(<WeightEntry>[]) List<WeightEntry> weightEntries,
 
-    /// The id of the entry logged most recently this session, so the Today
-    /// view can open it for a quick quantity adjustment. Ephemeral: it is not
-    /// persisted, so a relaunch opens nothing.
+    /// The id of the entry logged most recently this session. Ephemeral: it is
+    /// not persisted, so a relaunch clears it, and it is ignored when comparing
+    /// state for cloud sync.
     @JsonKey(includeFromJson: false, includeToJson: false)
     String? justLoggedEntryId,
   }) = _DailyLogState;

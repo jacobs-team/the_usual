@@ -10,9 +10,11 @@ import '../../../../helpers/helpers.dart';
 
 class MockFirestore extends Mock implements FirebaseFirestore {}
 
+// ignore: subtype_of_sealed_class, mocking the sealed Firestore type for tests
 class MockDocumentReference extends Mock
     implements DocumentReference<Map<String, dynamic>> {}
 
+// ignore: subtype_of_sealed_class, mocking the sealed Firestore type for tests
 class MockDocumentSnapshot extends Mock
     implements DocumentSnapshot<Map<String, dynamic>> {}
 

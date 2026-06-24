@@ -19,7 +19,6 @@ class WorkoutLogSection extends StatelessWidget {
     required this.expandedByDefault,
     required this.onRenamed,
     required this.onDeleteRequested,
-    this.justLoggedWorkoutId,
     this.logDays,
     this.dayStart,
     super.key,
@@ -46,10 +45,6 @@ class WorkoutLogSection extends StatelessWidget {
 
   /// Called when the user taps the delete button.
   final VoidCallback onDeleteRequested;
-
-  /// The most-recently-logged entry's id. Its row opens regardless of
-  /// [expandedByDefault] so the user can adjust the sets right after logging.
-  final String? justLoggedWorkoutId;
 
   /// The days workouts logged from this section are recorded onto. Null logs
   /// to today (stamped at the current time); a list logs onto each day.
@@ -148,13 +143,11 @@ class WorkoutLogSection extends StatelessWidget {
                 itemCount: workoutLogEntries.length,
                 itemBuilder: (context, index) {
                   final workoutLogEntry = workoutLogEntries[index];
-                  final justLogged =
-                      workoutLogEntry.id == justLoggedWorkoutId;
                   return LoggedWorkoutRow(
                     key: ValueKey(workoutLogEntry.id),
                     workoutLogEntry: workoutLogEntry,
                     weightUnit: weightUnit,
-                    expandedByDefault: expandedByDefault || justLogged,
+                    expandedByDefault: expandedByDefault,
                   );
                 },
               ),
@@ -164,12 +157,10 @@ class WorkoutLogSection extends StatelessWidget {
                   children: [
                     if (quickPicks.isNotEmpty) ...[
                       SizedBox(height: AppDesign.spacing.md),
-                      Wrap(
-                        spacing: AppDesign.spacing.sm,
-                        runSpacing: AppDesign.spacing.sm,
-                        children: [
+                      ExpandableChipWrap(
+                        chips: [
                           for (final usualWorkout in quickPicks)
-                            _QuickPickChip(
+                            QuickPickChipData(
                               label: '+ ${usualWorkout.name}',
                               onPressed: () => _logOntoTargetDays(
                                 usualWorkout.name,
@@ -350,56 +341,6 @@ class _EditableGroupNameState extends State<_EditableGroupName> {
           ),
         ],
       ),
-    );
-  }
-}
-
-/// A quick pick for a usual workout not yet logged today.
-class _QuickPickChip extends StatelessWidget {
-  const _QuickPickChip({
-    required this.label,
-    required this.onPressed,
-    required this.onRemove,
-  });
-
-  final String label;
-  final VoidCallback onPressed;
-  final VoidCallback onRemove;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final borderRadius = BorderRadius.circular(AppDesign.radius.lg);
-
-    return MenuAnchor(
-      menuChildren: [
-        MenuItemButton(
-          leadingIcon: const Icon(Icons.delete_outline),
-          onPressed: onRemove,
-          child: const Text('Remove from usuals'),
-        ),
-      ],
-      builder: (context, controller, child) {
-        return DashedBorder(
-          color: theme.colorScheme.outlineVariant,
-          radius: AppDesign.radius.lg,
-          child: Material(
-            borderRadius: borderRadius,
-            clipBehavior: Clip.antiAlias,
-            child: InkWell(
-              onTap: onPressed,
-              onLongPress: controller.open,
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: AppDesign.spacing.md,
-                  vertical: AppDesign.spacing.sm,
-                ),
-                child: Text(label, style: theme.textTheme.labelLarge),
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 }

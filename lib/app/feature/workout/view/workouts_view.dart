@@ -95,15 +95,11 @@ class _WorkoutsViewState extends State<WorkoutsView> {
                 return BlocSelector<
                   WorkoutLogBloc,
                   WorkoutLogState,
-                  (List<WorkoutLogEntry>, String?)
+                  List<WorkoutLogEntry>
                 >(
                   bloc: getIt<WorkoutLogBloc>(),
-                  selector: (state) => (
-                    state.workoutEntries,
-                    state.justLoggedWorkoutId,
-                  ),
-                  builder: (context, logSelected) {
-                    final (workoutEntries, justLoggedWorkoutId) = logSelected;
+                  selector: (state) => state.workoutEntries,
+                  builder: (context, workoutEntries) {
                     final dayEntries = workoutEntries.entriesOn(
                       displayDay,
                       dayStartTime,
@@ -120,19 +116,8 @@ class _WorkoutsViewState extends State<WorkoutsView> {
 
                     return CustomScrollView(
                       slivers: [
-                        SliverPadding(
-                          padding: EdgeInsets.fromLTRB(
-                            AppDesign.spacing.lg,
-                            AppDesign.spacing.lg,
-                            AppDesign.spacing.lg,
-                            AppDesign.spacing.md,
-                          ),
-                          sliver: SliverToBoxAdapter(
-                            child: VolumeBar(
-                              volume: dayEntries.totalVolume,
-                              weightUnit: workoutWeightUnit,
-                            ),
-                          ),
+                        SliverToBoxAdapter(
+                          child: SizedBox(height: AppDesign.spacing.lg),
                         ),
                         for (final workoutGroup in sortedGroups)
                           WorkoutLogSection(
@@ -174,28 +159,16 @@ class _WorkoutsViewState extends State<WorkoutsView> {
                             workoutLogEntries:
                                 entriesByGroup[workoutGroup.id] ??
                                 const <WorkoutLogEntry>[],
-                            quickPicks: () {
-                              final groupEntries =
-                                  entriesByGroup[workoutGroup.id] ??
-                                  const <WorkoutLogEntry>[];
-                              final usuals =
+                            quickPicks: workoutEntries.orderedQuickPicks(
+                              workoutGroupId: workoutGroup.id,
+                              usuals:
                                   usualWorkouts[workoutGroup.id] ??
-                                  const <UsualWorkout>[];
-                              final loggedNames = {
-                                for (final workoutLogEntry in groupEntries)
-                                  workoutLogEntry.name.toLowerCase(),
-                              };
-                              return [
-                                for (final usualWorkout in usuals)
-                                  if (!loggedNames.contains(
-                                    usualWorkout.name.toLowerCase(),
-                                  ))
-                                    usualWorkout,
-                              ];
-                            }(),
+                                  const <UsualWorkout>[],
+                              day: displayDay,
+                              dayStart: dayStartTime,
+                            ),
                             weightUnit: workoutWeightUnit,
                             expandedByDefault: expandNutritionByDefault,
-                            justLoggedWorkoutId: justLoggedWorkoutId,
                             logDays: logDays,
                             dayStart: logDayStart,
                           ),

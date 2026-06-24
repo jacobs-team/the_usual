@@ -49,4 +49,109 @@ extension WorkoutLogEntryListFormatting on List<WorkoutLogEntry> {
   /// Total volume across the entries on the logical [day].
   double volumeOn(DateTime day, TimeOfDay dayStart) =>
       entriesOn(day, dayStart).totalVolume;
+
+  /// The user's usuals for [workoutGroupId]'s quick-pick chips: the most
+  /// recently logged usual for this group first, then this group's usuals by
+  /// how often they've been logged here. Usuals already logged on [day] for
+  /// this group are dropped, matched by name or linked id so a renamed usual
+  /// stays hidden.
+  List<UsualWorkout> orderedQuickPicks({
+    required String workoutGroupId,
+    required List<UsualWorkout> usuals,
+    required DateTime day,
+    required TimeOfDay dayStart,
+  }) {
+    final loggedToday = _loggedTodayKeys(workoutGroupId, day, dayStart);
+    final countInGroup = <String, int>{};
+    final lastLoggedInGroup = <String, DateTime>{};
+
+    for (final workoutLogEntry in this) {
+      final usualWorkoutId = workoutLogEntry.usualWorkoutId;
+      if (usualWorkoutId == null) continue;
+      if (workoutLogEntry.workoutGroupId != workoutGroupId) continue;
+      countInGroup.update(
+        usualWorkoutId,
+        (count) => count + 1,
+        ifAbsent: () => 1,
+      );
+      final lastInGroup = lastLoggedInGroup[usualWorkoutId];
+      if (lastInGroup == null ||
+          workoutLogEntry.loggedAt.isAfter(lastInGroup)) {
+        lastLoggedInGroup[usualWorkoutId] = workoutLogEntry.loggedAt;
+      }
+    }
+
+    bool isVisible(UsualWorkout usualWorkout) =>
+        !loggedToday.names.contains(usualWorkout.name.toLowerCase()) &&
+        !loggedToday.ids.contains(usualWorkout.id);
+
+    final groupUsuals = usuals.where(isVisible).toList();
+
+    UsualWorkout? mostRecent;
+    for (final usualWorkout in groupUsuals) {
+      final loggedAt = lastLoggedInGroup[usualWorkout.id];
+      if (loggedAt == null) continue;
+      final currentBest = mostRecent == null
+          ? null
+          : lastLoggedInGroup[mostRecent.id];
+      if (currentBest == null || loggedAt.isAfter(currentBest)) {
+        mostRecent = usualWorkout;
+      }
+    }
+
+    final remaining = groupUsuals
+        .where((usualWorkout) => usualWorkout.id != mostRecent?.id)
+        .toList();
+    _sortByLogActivity(remaining, countInGroup, lastLoggedInGroup);
+
+    return [?mostRecent, ...remaining];
+  }
+
+  /// The lowercased names and linked ids of entries logged on the logical
+  /// [day] (rolling over at [dayStart]) for [workoutGroupId], used to hide
+  /// usuals already logged in that group today.
+  ({Set<String> names, Set<String> ids}) _loggedTodayKeys(
+    String workoutGroupId,
+    DateTime day,
+    TimeOfDay dayStart,
+  ) {
+    final names = <String>{};
+    final ids = <String>{};
+    for (final workoutLogEntry in this) {
+      if (workoutLogEntry.workoutGroupId != workoutGroupId) continue;
+      final loggedDay = workoutLogEntry.loggedAt.logicalDay(dayStart);
+      if (!DateUtils.isSameDay(loggedDay, day)) continue;
+      names.add(workoutLogEntry.name.toLowerCase());
+      final usualWorkoutId = workoutLogEntry.usualWorkoutId;
+      if (usualWorkoutId != null) ids.add(usualWorkoutId);
+    }
+    return (names: names, ids: ids);
+  }
+}
+
+/// Sorts [usualWorkouts] in place by log [counts] descending, breaking ties by
+/// most recent in [lastLogged], then by their original order in the list.
+void _sortByLogActivity(
+  List<UsualWorkout> usualWorkouts,
+  Map<String, int> counts,
+  Map<String, DateTime> lastLogged,
+) {
+  final originalIndex = {
+    for (final (index, usualWorkout) in usualWorkouts.indexed)
+      usualWorkout.id: index,
+  };
+  usualWorkouts.sort((a, b) {
+    final countComparison = (counts[b.id] ?? 0).compareTo(counts[a.id] ?? 0);
+    if (countComparison != 0) return countComparison;
+
+    final lastA = lastLogged[a.id];
+    final lastB = lastLogged[b.id];
+    if (lastA != null && lastB != null && lastA != lastB) {
+      return lastB.compareTo(lastA);
+    }
+    if (lastA == null && lastB != null) return 1;
+    if (lastA != null && lastB == null) return -1;
+
+    return originalIndex[a.id]!.compareTo(originalIndex[b.id]!);
+  });
 }
