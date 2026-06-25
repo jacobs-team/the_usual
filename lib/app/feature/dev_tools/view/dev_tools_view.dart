@@ -280,6 +280,39 @@ class DevToolsView extends StatelessWidget {
           const Divider(),
           ListTile(
             title: Text(
+              'Reset goal history baseline',
+              style: theme.textTheme.bodyLarge,
+            ),
+            subtitle: const Text(
+              'Sets all historical calorie goals to 3500 and weight goals to '
+              '220, as a single baseline; later edits stack dated changes on '
+              'top',
+            ),
+            trailing: const Icon(Icons.flag_outlined),
+            onTap: () {
+              final userSettingsBloc = getIt<UserSettingsBloc>();
+              final epoch = DateTime.fromMillisecondsSinceEpoch(0);
+              userSettingsBloc.add(
+                UserSettingsEvent.settingsCommitted(
+                  userSettingsBloc.state.copyWith(
+                    calorieGoalHistory: [
+                      CalorieGoalEntry(effectiveFrom: epoch, calories: 3500),
+                    ],
+                    weightGoalHistory: [
+                      WeightGoalEntry(
+                        effectiveFrom: epoch,
+                        weightUnit: userSettingsBloc.state.weightUnit,
+                        weight: 220,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+          const Divider(),
+          ListTile(
+            title: Text(
               'Reset app state',
               style: theme.textTheme.bodyLarge,
             ),

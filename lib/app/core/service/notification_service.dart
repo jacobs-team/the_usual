@@ -33,6 +33,14 @@ class NotificationService {
   // upcoming occurrences is scheduled and topped up on each [sync].
   static const _weightRollingCount = 14;
 
+  // Skip-capable daily reminders (per-meal, daily weigh-in) reserve a block of
+  // this many consecutive ids. A native daily repeat uses only the block's
+  // base id; when today must be skipped the whole block is used for dated
+  // occurrences, since iOS ignores the date of a time-matching repeat and would
+  // otherwise still fire today. Blocks are spaced by this size so they don't
+  // overlap, and the total stays under the iOS 64-pending-notification cap.
+  static const _dailyBlockSize = 7;
+
   /// Initializes timezones and the plugin, and creates the Android channel.
   Future<void> init() async {
     tz_data.initializeTimeZones();
@@ -103,14 +111,14 @@ class NotificationService {
         for (final MapEntry(key: mealOfTheDay, value: mealReminder)
             in mealReminders.entries) {
           if (!mealReminder.enabled) continue;
-          // When the meal is already logged today, start the daily repeat
-          // tomorrow so today's reminder is skipped while later days fire as
-          // usual.
+          // When the meal is already logged today, skip today's reminder while
+          // later days fire as usual.
           final skipToday =
               skipLoggedMealReminders &&
               mealsLoggedToday.contains(mealOfTheDay);
-          await _scheduleDaily(
-            id: mealOfTheDay.index,
+          await _scheduleDailyReminder(
+            baseId: mealOfTheDay.index * _dailyBlockSize,
+            blockSize: _dailyBlockSize,
             title: 'Did you eat ${mealOfTheDay.label.toLowerCase()}?',
             body: 'Tap to log it in The Usual.',
             time: mealReminder.timeOfDay,
@@ -160,8 +168,9 @@ class NotificationService {
     const body = "Log today's weight in The Usual.";
 
     if (frequency == WeightCheckinFrequency.daily) {
-      await _scheduleDaily(
-        id: _weightBaseId,
+      await _scheduleDailyReminder(
+        baseId: _weightBaseId,
+        blockSize: _weightRollingCount,
         title: title,
         body: body,
         time: time,
@@ -186,18 +195,50 @@ class NotificationService {
     }
   }
 
+  /// Schedules a daily reminder at [time]. Normally a single native daily
+  /// repeat at [baseId]. When [skipToday] is set the native repeat can't be
+  /// used — iOS ignores the scheduled date of a time-matching repeat and would
+  /// fire today regardless — so [blockSize] individually-dated daily
+  /// occurrences (ids [baseId]..[baseId] + [blockSize] - 1) are scheduled
+  /// starting tomorrow instead. The next [sync] (a log or app launch) tops
+  /// these up and reverts to the native repeat once the entry is no longer
+  /// logged for the day.
+  Future<void> _scheduleDailyReminder({
+    required int baseId,
+    required int blockSize,
+    required String title,
+    required String body,
+    required TimeOfDay time,
+    required bool skipToday,
+  }) async {
+    if (!skipToday) {
+      await _scheduleDaily(id: baseId, title: title, body: body, time: time);
+      return;
+    }
+    final first = _nextInstanceOf(time, skipToday: true);
+    for (var occurrence = 0; occurrence < blockSize; occurrence++) {
+      await _plugin.zonedSchedule(
+        id: baseId + occurrence,
+        title: title,
+        body: body,
+        scheduledDate: first.add(Duration(days: occurrence)),
+        notificationDetails: _details,
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      );
+    }
+  }
+
   Future<void> _scheduleDaily({
     required int id,
     required String title,
     required String body,
     required TimeOfDay time,
-    bool skipToday = false,
   }) {
     return _plugin.zonedSchedule(
       id: id,
       title: title,
       body: body,
-      scheduledDate: _nextInstanceOf(time, skipToday: skipToday),
+      scheduledDate: _nextInstanceOf(time),
       notificationDetails: _details,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       matchDateTimeComponents: DateTimeComponents.time,

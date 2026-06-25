@@ -1,3 +1,4 @@
+import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
@@ -142,7 +143,7 @@ class UserSettingsBloc
     SettingsCalorieGoalChanged event,
     Emitter<UserSettingsState> emit,
   ) {
-    final today = DateUtils.dateOnly(DateTime.now());
+    final today = clock.now().logicalDay(state.dayStartTime);
     final history = [
       for (final calorieGoalEntry in state.calorieGoalHistory)
         if (!DateUtils.isSameDay(calorieGoalEntry.effectiveFrom, today))
@@ -156,7 +157,7 @@ class UserSettingsBloc
     SettingsWeightGoalChanged event,
     Emitter<UserSettingsState> emit,
   ) {
-    final today = DateUtils.dateOnly(DateTime.now());
+    final today = clock.now().logicalDay(state.dayStartTime);
     final history = [
       for (final weightGoalEntry in state.weightGoalHistory)
         if (!DateUtils.isSameDay(weightGoalEntry.effectiveFrom, today))
