@@ -77,8 +77,7 @@ class WorkoutEntrySheetState extends State<WorkoutEntrySheet> {
   late List<WorkoutSet> _currentSets =
       widget.initialSets ?? const [WorkoutSet()];
   late Duration _duration = widget.initialDuration ?? Duration.zero;
-  late bool _saveAsUsual =
-      getIt<UserSettingsBloc>().state.saveWorkoutAsUsual;
+  late bool _saveAsUsual = getIt<UserSettingsBloc>().state.saveWorkoutAsUsual;
   var _bodyweightChecked = false;
   var _estimating = false;
   var _bodyweightHintShown = false;
@@ -100,6 +99,13 @@ class WorkoutEntrySheetState extends State<WorkoutEntrySheet> {
 
   bool get _canConfirm =>
       _nameController.text.trim().isNotEmpty && !_estimating;
+
+  void _setSaveAsUsual(bool saveAsUsual) {
+    setState(() => _saveAsUsual = saveAsUsual);
+    getIt<UserSettingsBloc>().add(
+      UserSettingsEvent.saveWorkoutAsUsualChanged(value: saveAsUsual),
+    );
+  }
 
   // Photo name-suggestion flow disabled — kept commented for easy restore.
   // /// Injects suggestions directly — used in widget tests to avoid the
@@ -127,7 +133,8 @@ class WorkoutEntrySheetState extends State<WorkoutEntrySheet> {
   //     if (!mounted) return;
   //     setState(() => _suggesting = false);
   //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(content: Text('Could not read the photo. Try again.')),
+  //       const SnackBar(content: Text('Could not read the photo. Try again.')
+  // ),
   //     );
   //   }
   // }
@@ -222,7 +229,9 @@ class WorkoutEntrySheetState extends State<WorkoutEntrySheet> {
                         child: TheUsualTextField(
                           controller: _nameController,
                           autofocus: true,
-                          hintText: 'e.g. Bench Press',
+                          hintText: _type == WorkoutType.cardio
+                              ? 'e.g. Running'
+                              : 'e.g. Bench Press',
                           textCapitalization: TextCapitalization.sentences,
                           onChanged: (_) => setState(() {}),
                         ),
@@ -255,7 +264,8 @@ class WorkoutEntrySheetState extends State<WorkoutEntrySheet> {
                   //         child: CircularProgressIndicator(strokeWidth: 2),
                   //       ),
                   //       SizedBox(width: AppDesign.spacing.sm),
-                  //       Text('Finding exercises…', style: textTheme.bodySmall),
+                  //       Text('Finding exercises…', style: textTheme.bodySmall
+                  // ),
                   //     ],
                   //   ),
                   // ],
@@ -352,17 +362,13 @@ class WorkoutEntrySheetState extends State<WorkoutEntrySheet> {
                           key: const Key('save-as-usual-checkbox'),
                           visualDensity: VisualDensity.compact,
                           value: _saveAsUsual,
-                          onChanged: (value) {
-                            final saveAsUsual = value ?? false;
-                            setState(() => _saveAsUsual = saveAsUsual);
-                            getIt<UserSettingsBloc>().add(
-                              UserSettingsEvent.saveWorkoutAsUsualChanged(
-                                value: saveAsUsual,
-                              ),
-                            );
-                          },
+                          onChanged: (value) => _setSaveAsUsual(value ?? false),
                         ),
-                        const Text('Save as usual'),
+                        GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () => _setSaveAsUsual(!_saveAsUsual),
+                          child: const Text('Save as usual'),
+                        ),
                       ],
                     ),
                   ],

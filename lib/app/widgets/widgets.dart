@@ -4,6 +4,7 @@ export 'display/nutrition_summary.dart';
 export 'display/quick_pick_chips.dart';
 export 'display/section_label.dart';
 export 'display/the_usual_app_bar.dart';
+export 'display/update_usual_button.dart';
 export 'display/usual_meal_section.dart';
 export 'inputs/food_entry_form.dart';
 export 'inputs/food_entry_sheet.dart';

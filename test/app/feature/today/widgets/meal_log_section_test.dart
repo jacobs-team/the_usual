@@ -250,7 +250,14 @@ void main() {
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextFormField).first, 'Burrito');
       await tester.pump();
-      await tester.tap(find.byType(FilledButton));
+      // The section's own "Something else" button is still mounted behind the
+      // sheet, so scope to the sheet's confirm button.
+      await tester.tap(
+        find.descendant(
+          of: find.byType(FoodEntrySheet),
+          matching: find.byType(FilledButton),
+        ),
+      );
       await tester.pumpAndSettle();
 
       verify(
@@ -280,7 +287,14 @@ void main() {
       await tester.pump();
       await tester.tap(find.byType(Checkbox));
       await tester.pump();
-      await tester.tap(find.byType(FilledButton));
+      // The section's own "Something else" button is still mounted behind the
+      // sheet, so scope to the sheet's confirm button.
+      await tester.tap(
+        find.descendant(
+          of: find.byType(FoodEntrySheet),
+          matching: find.byType(FilledButton),
+        ),
+      );
       await tester.pumpAndSettle();
 
       verifyNever(

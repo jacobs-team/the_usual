@@ -81,9 +81,23 @@ void main() {
           height: 600,
           child: MonthTrendsChart(
             monthHistory: monthHistory,
-            weightGoal: weightGoal,
-            weightGoalUnit: weightGoalUnit,
-            calorieGoal: calorieGoal,
+            weightGoalHistory: weightGoal == null
+                ? const []
+                : [
+                    WeightGoalEntry(
+                      effectiveFrom: DateTime.fromMillisecondsSinceEpoch(0),
+                      weightUnit: weightGoalUnit,
+                      weight: weightGoal,
+                    ),
+                  ],
+            calorieGoalHistory: calorieGoal == null
+                ? const []
+                : [
+                    CalorieGoalEntry(
+                      effectiveFrom: DateTime.fromMillisecondsSinceEpoch(0),
+                      calories: calorieGoal,
+                    ),
+                  ],
             onDayTapped: onDayTapped ?? (_) {},
           ),
         ),
@@ -265,9 +279,19 @@ void main() {
                   child: MonthTrendsChart(
                     key: chartKey,
                     monthHistory: monthFor(second: second),
-                    weightGoal: 160,
-                    weightGoalUnit: WeightUnit.lb,
-                    calorieGoal: 1800,
+                    weightGoalHistory: [
+                      WeightGoalEntry(
+                        effectiveFrom: DateTime.fromMillisecondsSinceEpoch(0),
+                        weightUnit: WeightUnit.lb,
+                        weight: 160,
+                      ),
+                    ],
+                    calorieGoalHistory: [
+                      CalorieGoalEntry(
+                        effectiveFrom: DateTime.fromMillisecondsSinceEpoch(0),
+                        calories: 1800,
+                      ),
+                    ],
                     onDayTapped: (_) {},
                   ),
                 );

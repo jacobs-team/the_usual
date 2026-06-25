@@ -56,12 +56,8 @@ class UserSettingsBloc
         SettingsStartingWeightChanged() => emit(
           state.copyWith(startingWeight: event.weight),
         ),
-        SettingsCalorieGoalChanged() => emit(
-          state.copyWith(calorieGoal: event.calorieGoal),
-        ),
-        SettingsWeightGoalChanged() => emit(
-          state.copyWith(weightGoal: event.weightGoal),
-        ),
+        SettingsCalorieGoalChanged() => _onCalorieGoalChanged(event, emit),
+        SettingsWeightGoalChanged() => _onWeightGoalChanged(event, emit),
         SettingsThemeModeSelected() => emit(
           state.copyWith(themeMode: event.themeMode),
         ),
@@ -90,13 +86,21 @@ class UserSettingsBloc
         SettingsUsualMealNameChanged() => _onUsualMealNameChanged(event, emit),
         SettingsWorkoutGroupAdded() => _onWorkoutGroupAdded(event, emit),
         SettingsWorkoutGroupRenamed() => _onWorkoutGroupRenamed(event, emit),
-        SettingsWorkoutGroupReordered() =>
-          _onWorkoutGroupReordered(event, emit),
+        SettingsWorkoutGroupReordered() => _onWorkoutGroupReordered(
+          event,
+          emit,
+        ),
         SettingsWorkoutGroupRemoved() => _onWorkoutGroupRemoved(event, emit),
         SettingsUsualWorkoutAdded() => _onUsualWorkoutAdded(event, emit),
         SettingsUsualWorkoutRenamed() => _onUsualWorkoutRenamed(event, emit),
-        SettingsUsualWorkoutSetsChanged() =>
-          _onUsualWorkoutSetsChanged(event, emit),
+        SettingsUsualWorkoutSetsChanged() => _onUsualWorkoutSetsChanged(
+          event,
+          emit,
+        ),
+        SettingsUsualWorkoutDurationChanged() => _onUsualWorkoutDurationChanged(
+          event,
+          emit,
+        ),
         SettingsUsualWorkoutRemoved() => _onUsualWorkoutRemoved(event, emit),
         SettingsWorkoutWeightUnitSelected() => emit(
           state.copyWith(workoutWeightUnit: event.weightUnit),
@@ -108,8 +112,10 @@ class UserSettingsBloc
             ),
           ),
         ),
-        SettingsWorkoutReminderDayToggled() =>
-          _onWorkoutReminderDayToggled(event, emit),
+        SettingsWorkoutReminderDayToggled() => _onWorkoutReminderDayToggled(
+          event,
+          emit,
+        ),
         SettingsWorkoutReminderTimeChanged() => emit(
           state.copyWith(
             workoutReminder: state.workoutReminder.copyWith(
@@ -128,6 +134,41 @@ class UserSettingsBloc
   }
 
   static const _uuid = Uuid();
+
+  /// Records a goal edit against today: if a goal already took effect today it
+  /// is overwritten, otherwise a new dated entry is appended. Charts then read
+  /// the goal that was active on each past day rather than the latest one.
+  void _onCalorieGoalChanged(
+    SettingsCalorieGoalChanged event,
+    Emitter<UserSettingsState> emit,
+  ) {
+    final today = DateUtils.dateOnly(DateTime.now());
+    final history = [
+      for (final calorieGoalEntry in state.calorieGoalHistory)
+        if (!DateUtils.isSameDay(calorieGoalEntry.effectiveFrom, today))
+          calorieGoalEntry,
+      CalorieGoalEntry(effectiveFrom: today, calories: event.calorieGoal),
+    ]..sort((a, b) => a.effectiveFrom.compareTo(b.effectiveFrom));
+    emit(state.copyWith(calorieGoalHistory: history));
+  }
+
+  void _onWeightGoalChanged(
+    SettingsWeightGoalChanged event,
+    Emitter<UserSettingsState> emit,
+  ) {
+    final today = DateUtils.dateOnly(DateTime.now());
+    final history = [
+      for (final weightGoalEntry in state.weightGoalHistory)
+        if (!DateUtils.isSameDay(weightGoalEntry.effectiveFrom, today))
+          weightGoalEntry,
+      WeightGoalEntry(
+        effectiveFrom: today,
+        weightUnit: state.weightUnit,
+        weight: event.weightGoal,
+      ),
+    ]..sort((a, b) => a.effectiveFrom.compareTo(b.effectiveFrom));
+    emit(state.copyWith(weightGoalHistory: history));
+  }
 
   void _onMealReminderToggled(
     SettingsMealReminderToggled event,
@@ -383,6 +424,29 @@ class UserSettingsBloc
       for (final usualWorkout in usualWorkouts)
         if (usualWorkout.id == event.id)
           usualWorkout.copyWith(sets: event.sets)
+        else
+          usualWorkout,
+    ];
+    emit(
+      state.copyWith(
+        usualWorkouts: {
+          ...state.usualWorkouts,
+          event.workoutGroupId: updatedUsualWorkouts,
+        },
+      ),
+    );
+  }
+
+  void _onUsualWorkoutDurationChanged(
+    SettingsUsualWorkoutDurationChanged event,
+    Emitter<UserSettingsState> emit,
+  ) {
+    final usualWorkouts =
+        state.usualWorkouts[event.workoutGroupId] ?? <UsualWorkout>[];
+    final updatedUsualWorkouts = [
+      for (final usualWorkout in usualWorkouts)
+        if (usualWorkout.id == event.id)
+          usualWorkout.copyWith(duration: event.duration)
         else
           usualWorkout,
     ];

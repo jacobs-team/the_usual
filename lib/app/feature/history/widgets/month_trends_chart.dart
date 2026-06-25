@@ -9,6 +9,10 @@ import 'package:the_usual/design_system/design_system.dart';
 /// change and the goal weight marked, and a bar per logged day of calories with
 /// the month's average.
 ///
+/// Goals are dated: each weigh-in and each day is marked against the goal that
+/// was active on its date, so a goal changed mid-history shows as staggered
+/// reference lines rather than one line redrawn at the latest value.
+///
 /// Each section appears only when it has enough data — the weight line needs at
 /// least two weigh-ins, the calorie bars at least two days with calories — and
 /// the whole card is hidden when neither does.
@@ -17,9 +21,8 @@ class MonthTrendsChart extends StatelessWidget {
   /// {@macro month_trends_chart}
   const MonthTrendsChart({
     required this.monthHistory,
-    required this.weightGoal,
-    required this.weightGoalUnit,
-    required this.calorieGoal,
+    required this.weightGoalHistory,
+    required this.calorieGoalHistory,
     required this.onDayTapped,
     super.key,
   });
@@ -27,15 +30,11 @@ class MonthTrendsChart extends StatelessWidget {
   /// The month whose trends are drawn.
   final HistoryMonth monthHistory;
 
-  /// The user's target weight in [weightGoalUnit], or null when unset.
-  final double? weightGoal;
+  /// The dated history of the user's target weight, oldest first.
+  final List<WeightGoalEntry> weightGoalHistory;
 
-  /// The unit [weightGoal] is expressed in. The goal line is only drawn when it
-  /// matches the month's weigh-in unit.
-  final WeightUnit weightGoalUnit;
-
-  /// The user's daily calorie target, or null when unset.
-  final int? calorieGoal;
+  /// The dated history of the user's daily calorie target, oldest first.
+  final List<CalorieGoalEntry> calorieGoalHistory;
 
   /// Called with a day when its calorie bar is tapped, so the caller can open
   /// that day's detail sheet.
@@ -71,8 +70,7 @@ class MonthTrendsChart extends StatelessWidget {
             if (showWeight)
               _WeightTrend(
                 weightEntries: weightEntries,
-                weightGoal: weightGoal,
-                weightGoalUnit: weightGoalUnit,
+                weightGoalHistory: weightGoalHistory,
               ),
             if (showWeight && showCalories)
               Padding(
@@ -87,7 +85,7 @@ class MonthTrendsChart extends StatelessWidget {
               _CalorieBars(
                 days: orderedDays,
                 averageCalories: monthHistory.averageNutrition.calories ?? 0,
-                goalCalories: calorieGoal,
+                calorieGoalHistory: calorieGoalHistory,
                 onDayTapped: onDayTapped,
               ),
           ],
@@ -120,18 +118,14 @@ TextStyle? _sectionLabelStyle(BuildContext context) {
 class _WeightTrend extends StatelessWidget {
   const _WeightTrend({
     required this.weightEntries,
-    required this.weightGoal,
-    required this.weightGoalUnit,
+    required this.weightGoalHistory,
   });
 
   /// The month's weigh-ins, oldest first.
   final List<WeightEntry> weightEntries;
 
-  /// The user's target weight in [weightGoalUnit], or null when unset.
-  final double? weightGoal;
-
-  /// The unit [weightGoal] is expressed in.
-  final WeightUnit weightGoalUnit;
+  /// The dated history of the user's target weight, oldest first.
+  final List<WeightGoalEntry> weightGoalHistory;
 
   @override
   Widget build(BuildContext context) {
@@ -141,24 +135,27 @@ class _WeightTrend extends StatelessWidget {
     final firstWeightEntry = weightEntries.first;
     final lastWeightEntry = weightEntries.last;
 
-    // The goal is plotted raw against the weigh-ins, so only draw it when both
-    // share a unit — a goal logged in a different unit would land at the wrong
-    // height.
-    final weightGoal = this.weightGoal;
-    final goalWeight =
-        weightGoal != null && weightGoalUnit == lastWeightEntry.weightUnit
-        ? weightGoal
-        : null;
-    final goalLabel = goalWeight == null
-        ? null
-        : 'Goal ${goalWeight.trimmedDecimal} ${weightGoalUnit.name}';
-    final goalColor = theme.brightness == Brightness.dark
-        ? AppPalette.darkGoalLine
-        : AppPalette.goalLine;
-    final goalLabelStyle = theme.textTheme.labelMedium?.copyWith(
-      color: goalColor,
-      fontWeight: FontWeight.w600,
+    // Mark each weigh-in against the goal active on its date, in that
+    // weigh-in's unit. A goal in a different unit is dropped for that point,
+    // since it would plot at the wrong height against the trend.
+    final goalWeights = <double?>[];
+    for (final weightEntry in weightEntries) {
+      final activeGoal = weightGoalHistory.goalOn(weightEntry.loggedAt);
+      final matchesUnit = activeGoal?.weightUnit == weightEntry.weightUnit;
+      goalWeights.add(matchesUnit ? activeGoal!.weight : null);
+    }
+
+    // The legend names the goal active at the latest weigh-in, the value the
+    // user is currently working toward.
+    final latestGoal = goalWeights.lastWhere(
+      (goal) => goal != null,
+      orElse: () => null,
     );
+    final goalLabel = latestGoal == null
+        ? null
+        : 'Goal ${latestGoal.trimmedDecimal} '
+              '${lastWeightEntry.weightUnit.name}';
+    const goalColor = AppPalette.goalLine;
 
     // Weigh-ins are entered to a single decimal, so round the difference to
     // match and drop the floating-point error subtraction introduces.
@@ -183,6 +180,10 @@ class _WeightTrend extends StatelessWidget {
     );
     final endLabelStyle = theme.textTheme.bodySmall?.copyWith(
       color: colorScheme.onPrimary,
+      fontWeight: FontWeight.w600,
+    );
+    final goalLabelStyle = theme.textTheme.labelMedium?.copyWith(
+      color: goalColor,
       fontWeight: FontWeight.w600,
     );
 
@@ -211,11 +212,11 @@ class _WeightTrend extends StatelessWidget {
               weights: [
                 for (final weightEntry in weightEntries) weightEntry.weight,
               ],
+              goalWeights: goalWeights,
               startLabel: startLabel,
               endLabel: endLabel,
               startLabelStyle: startLabelStyle,
               endLabelStyle: endLabelStyle,
-              goalWeight: goalWeight,
               goalLabel: goalLabel,
               goalLabelStyle: goalLabelStyle,
               lineColor: colorScheme.inversePrimary,
@@ -231,13 +232,14 @@ class _WeightTrend extends StatelessWidget {
 
 /// A bar per logged day: its height the day's calories, its fill split into
 /// protein, carbs, and fat segments sized by gram share in the same macro
-/// colors as the today view. The goal and the average are each drawn as a
-/// labelled reference line in its own color. Tapping a bar reports its day.
+/// colors as the today view. The goal active on each day and the month's
+/// average are each drawn as a reference line in its own color. Tapping a bar
+/// reports its day.
 class _CalorieBars extends StatelessWidget {
   const _CalorieBars({
     required this.days,
     required this.averageCalories,
-    required this.goalCalories,
+    required this.calorieGoalHistory,
     required this.onDayTapped,
   });
 
@@ -248,9 +250,8 @@ class _CalorieBars extends StatelessWidget {
   /// The month's average daily calories, drawn as the average reference line.
   final int averageCalories;
 
-  /// The user's daily calorie target, drawn as the goal reference line, or null
-  /// when unset.
-  final int? goalCalories;
+  /// The dated history of the user's daily calorie target, oldest first.
+  final List<CalorieGoalEntry> calorieGoalHistory;
 
   /// Called with the day whose bar (or column) was tapped.
   final ValueChanged<HistoryDay> onDayTapped;
@@ -262,11 +263,18 @@ class _CalorieBars extends StatelessWidget {
 
     // The goal is the warm accent against the blue bars; the average is the
     // plain onPrimary so the two reference lines never read as the same line.
-    final goalLineColor = theme.brightness == Brightness.dark
-        ? AppPalette.darkGoalLine
-        : AppPalette.goalLine;
+    const goalLineColor = AppPalette.goalLine;
     final averageLineColor = colorScheme.onPrimary;
-    final goalCalories = this.goalCalories;
+
+    // The goal active on each day, so a goal changed mid-month staggers across
+    // the bars rather than redrawing at the latest value.
+    final goalCalories = [
+      for (final historyDay in days) calorieGoalHistory.goalOn(historyDay.day),
+    ];
+    final latestGoal = goalCalories.lastWhere(
+      (goal) => goal != null,
+      orElse: () => null,
+    );
 
     const proteinColor = AppPalette.proteinMacro;
     const carbsColor = AppPalette.carbsMacro;
@@ -312,9 +320,9 @@ class _CalorieBars extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                if (goalCalories != null) ...[
+                if (latestGoal != null) ...[
                   Text(
-                    'Goal $goalCalories',
+                    'Goal $latestGoal',
                     style: legendStyle?.copyWith(color: goalLineColor),
                   ),
                   SizedBox(width: AppDesign.spacing.md),
@@ -367,20 +375,86 @@ class _CalorieBars extends StatelessWidget {
   }
 }
 
+/// Draws a dashed horizontal line across [xStart]..[xEnd] at [y].
+void _drawDashedHorizontal(
+  Canvas canvas,
+  Paint paint,
+  double xStart,
+  double xEnd,
+  double y,
+) {
+  const dashWidth = 4.0;
+  const dashGap = 3.0;
+  var x = xStart;
+  while (x < xEnd) {
+    canvas.drawLine(Offset(x, y), Offset(min(x + dashWidth, xEnd), y), paint);
+    x += dashWidth + dashGap;
+  }
+}
+
+/// Draws the dated goal as a stepped dashed line over a chart whose points sit
+/// at [slotCenters]: a horizontal run for each stretch of days sharing a goal,
+/// joined by a vertical connector wherever the goal changes. [goalYs] holds the
+/// y of each point's goal, null where no goal applies. Runs span from the
+/// midpoint before their first point to the midpoint after their last, with the
+/// outermost runs reaching the chart edges.
+void _paintSteppedGoal(
+  Canvas canvas,
+  Paint paint,
+  List<double?> goalYs,
+  List<double> slotCenters,
+  double width,
+) {
+  double runLeft(int index) =>
+      index == 0 ? 0 : (slotCenters[index - 1] + slotCenters[index]) / 2;
+  double runRight(int index) => index == slotCenters.length - 1
+      ? width
+      : (slotCenters[index] + slotCenters[index + 1]) / 2;
+
+  var index = 0;
+  double? previousY;
+  double? previousRight;
+  while (index < goalYs.length) {
+    final y = goalYs[index];
+    if (y == null) {
+      previousY = null;
+      previousRight = null;
+      index++;
+      continue;
+    }
+    var end = index;
+    while (end + 1 < goalYs.length && goalYs[end + 1] == y) {
+      end++;
+    }
+    final left = runLeft(index);
+    _drawDashedHorizontal(canvas, paint, left, runRight(end), y);
+    // Connect to the previous run when they're adjacent (no gap of missing
+    // goal between them), so a goal change reads as a single stepped line.
+    if (previousY != null &&
+        previousRight != null &&
+        (left - previousRight).abs() < 0.5) {
+      canvas.drawLine(Offset(left, previousY), Offset(left, y), paint);
+    }
+    previousY = y;
+    previousRight = runRight(end);
+    index = end + 1;
+  }
+}
+
 /// Paints a month's weigh-ins as a single line, evenly spaced across the width
 /// and scaled to the range of weights, with a dot on the latest point. The
-/// start and current weights are labelled at the line's endpoints. When a goal
-/// weight is given the axis grows to include it and it is marked with a
-/// labelled dashed line, the label placed on the side of the line away from the
-/// trend so the two don't overlap.
+/// start and current weights are labelled at the line's endpoints. The dated
+/// goal is drawn as a stepped dashed line — one horizontal run per stretch of
+/// weigh-ins sharing a goal — with the latest goal labelled, the label placed
+/// on the side of its line away from the trend so the two don't overlap.
 class _WeightLinePainter extends CustomPainter {
   const _WeightLinePainter({
     required this.weights,
+    required this.goalWeights,
     required this.startLabel,
     required this.endLabel,
     required this.startLabelStyle,
     required this.endLabelStyle,
-    required this.goalWeight,
     required this.goalLabel,
     required this.goalLabelStyle,
     required this.lineColor,
@@ -391,6 +465,10 @@ class _WeightLinePainter extends CustomPainter {
   /// The weigh-in values, oldest first.
   final List<double> weights;
 
+  /// The goal active at each weigh-in, aligned to [weights], in that weigh-in's
+  /// unit. Null where no goal applies or it was set in a different unit.
+  final List<double?> goalWeights;
+
   /// Label drawn at the first weigh-in, e.g. '166.7'.
   final String startLabel;
 
@@ -399,11 +477,8 @@ class _WeightLinePainter extends CustomPainter {
   final TextStyle? startLabelStyle;
   final TextStyle? endLabelStyle;
 
-  /// The target weight to mark, or null when unset or in a different unit than
-  /// the weigh-ins.
-  final double? goalWeight;
-
-  /// The text drawn at the goal line, e.g. 'Goal 165 lb'.
+  /// The text drawn at the latest goal line, e.g. 'Goal 165 lb', or null when
+  /// no goal applies to any weigh-in.
   final String? goalLabel;
   final TextStyle? goalLabelStyle;
   final Color lineColor;
@@ -418,11 +493,12 @@ class _WeightLinePainter extends CustomPainter {
 
     final dataMin = weights.reduce(min);
     final dataMax = weights.reduce(max);
-    final goalWeight = this.goalWeight;
+    final goalValues = [for (final goalWeight in goalWeights) ?goalWeight];
+    final hasGoal = goalValues.isNotEmpty;
 
     // Lay the labels out first so their heights can reserve room in the plot.
     final goalLabel = this.goalLabel;
-    final labelPainter = goalWeight != null && goalLabel != null
+    final labelPainter = hasGoal && goalLabel != null
         ? (TextPainter(
             text: TextSpan(text: goalLabel, style: goalLabelStyle),
             textDirection: TextDirection.ltr,
@@ -437,10 +513,10 @@ class _WeightLinePainter extends CustomPainter {
       textDirection: TextDirection.ltr,
     )..layout();
 
-    // The axis spans both the weigh-ins and the goal so the goal line sits at
-    // its true height relative to the trend.
-    final axisMin = goalWeight == null ? dataMin : min(dataMin, goalWeight);
-    final axisMax = goalWeight == null ? dataMax : max(dataMax, goalWeight);
+    // The axis spans both the weigh-ins and every goal so each goal line sits
+    // at its true height relative to the trend.
+    final axisMin = hasGoal ? min(dataMin, goalValues.reduce(min)) : dataMin;
+    final axisMax = hasGoal ? max(dataMax, goalValues.reduce(max)) : dataMax;
     final axisRange = axisMax - axisMin;
 
     // Reserve a band at the top for the endpoint labels, which sit above their
@@ -448,7 +524,8 @@ class _WeightLinePainter extends CustomPainter {
     // below when the goal is under the trend, above when over it — so nothing
     // overlaps or clips the edge.
     final meanWeight = weights.reduce((a, b) => a + b) / weights.length;
-    final labelBelowLine = goalWeight == null || goalWeight < meanWeight;
+    final latestGoal = goalValues.isEmpty ? null : goalValues.last;
+    final labelBelowLine = latestGoal == null || latestGoal < meanWeight;
     final goalBand = labelPainter == null ? 0.0 : labelPainter.height + 2;
     final endpointBand =
         max(startLabelPainter.height, endLabelPainter.height) + 2;
@@ -465,23 +542,29 @@ class _WeightLinePainter extends CustomPainter {
       return plotTop + (1 - normalized) * plotHeight;
     }
 
-    if (goalWeight != null) {
-      final goalY = yFor(goalWeight);
+    final horizontalStep = size.width / (weights.length - 1);
+    final points = [
+      for (var index = 0; index < weights.length; index++)
+        Offset(index * horizontalStep, yFor(weights[index])),
+    ];
+
+    if (hasGoal) {
       final goalPaint = Paint()
         ..color = goalColor
         ..strokeWidth = 1;
-      const dashWidth = 4.0;
-      const dashGap = 3.0;
-      var x = 0.0;
-      while (x < size.width) {
-        canvas.drawLine(
-          Offset(x, goalY),
-          Offset(min(x + dashWidth, size.width), goalY),
-          goalPaint,
-        );
-        x += dashWidth + dashGap;
-      }
-      if (labelPainter != null) {
+      final goalYs = [
+        for (final goalWeight in goalWeights)
+          goalWeight == null ? null : yFor(goalWeight),
+      ];
+      _paintSteppedGoal(
+        canvas,
+        goalPaint,
+        goalYs,
+        [for (final point in points) point.dx],
+        size.width,
+      );
+      if (labelPainter != null && latestGoal != null) {
+        final goalY = yFor(latestGoal);
         // ignore: prefer_int_literals
         final labelX = max(0.0, size.width - labelPainter.width);
         final labelY = labelBelowLine
@@ -490,12 +573,6 @@ class _WeightLinePainter extends CustomPainter {
         labelPainter.paint(canvas, Offset(labelX, labelY));
       }
     }
-
-    final horizontalStep = size.width / (weights.length - 1);
-    final points = [
-      for (var index = 0; index < weights.length; index++)
-        Offset(index * horizontalStep, yFor(weights[index])),
-    ];
 
     final linePath = Path()..moveTo(points.first.dx, points.first.dy);
     for (final point in points.skip(1)) {
@@ -528,19 +605,19 @@ class _WeightLinePainter extends CustomPainter {
     );
   }
 
-  // The widget rebuilds this painter with a freshly built [weights] list every
-  // time, so the leading identity comparison is always true and the rest of the
-  // chain can't be reached from a test (the painter is private, so it can't be
-  // driven directly either).
+  // The widget rebuilds this painter with freshly built lists every time, so
+  // the leading identity comparison is always true and the rest of the chain
+  // can't be reached from a test (the painter is private, so it can't be driven
+  // directly either).
   // coverage:ignore-start
   @override
   bool shouldRepaint(_WeightLinePainter oldDelegate) =>
       oldDelegate.weights != weights ||
+      oldDelegate.goalWeights != goalWeights ||
       oldDelegate.startLabel != startLabel ||
       oldDelegate.endLabel != endLabel ||
       oldDelegate.startLabelStyle != startLabelStyle ||
       oldDelegate.endLabelStyle != endLabelStyle ||
-      oldDelegate.goalWeight != goalWeight ||
       oldDelegate.goalLabel != goalLabel ||
       oldDelegate.goalLabelStyle != goalLabelStyle ||
       oldDelegate.lineColor != lineColor ||
@@ -552,10 +629,11 @@ class _WeightLinePainter extends CustomPainter {
 /// Paints one bar per day: its height the day's calories, its fill split into
 /// protein, carbs, and fat segments sized by each macro's gram share. A day
 /// with calories but no logged macros fills as one solid bar in
-/// [fallbackBarColor]. The goal and the average are each drawn as a horizontal
-/// line in its own color over the bars, named in the header legend rather than
-/// on the lines so the bars stay clear. The axis tops out at the tallest of the
-/// bars and the two lines so neither is clipped.
+/// [fallbackBarColor]. The dated goal is drawn as a stepped dashed line — one
+/// horizontal run per stretch of days sharing a goal — and the average as a
+/// solid line, each named in the header legend rather than on the lines so the
+/// bars stay clear. The axis tops out at the tallest of the bars and the lines
+/// so none is clipped.
 class _CalorieBarsPainter extends CustomPainter {
   const _CalorieBarsPainter({
     required this.nutritions,
@@ -573,8 +651,9 @@ class _CalorieBarsPainter extends CustomPainter {
   final List<Nutrition> nutritions;
   final int averageCalories;
 
-  /// The user's daily calorie target, or null when unset.
-  final int? goalCalories;
+  /// The goal active on each day, aligned to [nutritions]. Null where no goal
+  /// applies that day.
+  final List<int?> goalCalories;
   final Color proteinColor;
   final Color carbsColor;
   final Color fatColor;
@@ -596,13 +675,13 @@ class _CalorieBarsPainter extends CustomPainter {
     final maxCalories = dailyCalories.reduce(max);
     if (maxCalories == 0) return;
 
-    final goalCalories = this.goalCalories;
+    final goalValues = [for (final goal in goalCalories) ?goal];
 
-    // The axis tops out at the tallest of the bars and the two reference lines
-    // so neither line is clipped when the goal or average exceeds every day.
+    // The axis tops out at the tallest of the bars and the reference lines so
+    // no line is clipped when the goal or average exceeds every day.
     var axisMax = max(maxCalories, averageCalories).toDouble();
-    if (goalCalories != null) {
-      axisMax = max(axisMax, goalCalories.toDouble());
+    for (final goal in goalValues) {
+      axisMax = max(axisMax, goal.toDouble());
     }
 
     final plotBottom = size.height;
@@ -612,6 +691,10 @@ class _CalorieBarsPainter extends CustomPainter {
 
     final totalGap = _barGap * (nutritions.length - 1);
     final barWidth = (size.width - totalGap) / nutritions.length;
+    final barCenters = [
+      for (var index = 0; index < nutritions.length; index++)
+        index * (barWidth + _barGap) + barWidth / 2,
+    ];
     for (var index = 0; index < nutritions.length; index++) {
       final nutrition = nutritions[index];
       final calories = nutrition.calories ?? 0;
@@ -661,41 +744,30 @@ class _CalorieBarsPainter extends CustomPainter {
       canvas.restore();
     }
 
-    void drawReferenceLine(double value, Color color, {required bool dashed}) {
-      final y = yFor(value);
-      final linePaint = Paint()..color = color;
-      if (dashed) {
-        linePaint.strokeWidth = 1;
-        const dashWidth = 4.0;
-        const dashGap = 3.0;
-        var x = 0.0;
-        while (x < size.width) {
-          canvas.drawLine(
-            Offset(x, y),
-            Offset(min(x + dashWidth, size.width), y),
-            linePaint,
-          );
-          x += dashWidth + dashGap;
-        }
-      } else {
-        linePaint.strokeWidth = 1.5;
-        canvas.drawLine(Offset(0, y), Offset(size.width, y), linePaint);
-      }
+    if (goalValues.isNotEmpty) {
+      final goalPaint = Paint()
+        ..color = goalLineColor
+        ..strokeWidth = 1;
+      final goalYs = [
+        for (final goal in goalCalories)
+          goal == null ? null : yFor(goal.toDouble()),
+      ];
+      _paintSteppedGoal(canvas, goalPaint, goalYs, barCenters, size.width);
     }
 
-    if (goalCalories != null) {
-      drawReferenceLine(goalCalories.toDouble(), goalLineColor, dashed: true);
-    }
-    drawReferenceLine(
-      averageCalories.toDouble(),
-      averageLineColor,
-      dashed: false,
+    final averageY = yFor(averageCalories.toDouble());
+    canvas.drawLine(
+      Offset(0, averageY),
+      Offset(size.width, averageY),
+      Paint()
+        ..color = averageLineColor
+        ..strokeWidth = 1.5,
     );
   }
 
-  // As with the weight painter, the freshly built [calories] list makes the
-  // leading comparison always true, so the rest of the chain is unreachable
-  // from a test and the painter is private.
+  // As with the weight painter, the freshly built lists make the leading
+  // comparison always true, so the rest of the chain is unreachable from a test
+  // and the painter is private.
   // coverage:ignore-start
   @override
   bool shouldRepaint(_CalorieBarsPainter oldDelegate) =>

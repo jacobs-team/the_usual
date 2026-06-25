@@ -25,6 +25,20 @@ extension WorkoutSetListFormatting on List<WorkoutSet> {
     final labels = map((workoutSet) => workoutSet.label).join(', ');
     return '$length $unit · $labels';
   }
+
+  /// Whether these sets differ from [other] in count, weight, or reps. The
+  /// bodyweight auto-estimate flag is ignored, so resolving an estimate doesn't
+  /// count as a change.
+  bool differsInWeightOrReps(List<WorkoutSet> other) {
+    if (length != other.length) return true;
+    for (var index = 0; index < length; index++) {
+      if (this[index].weight != other[index].weight ||
+          this[index].reps != other[index].reps) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
 
 /// Aggregation across a list of logged workouts.

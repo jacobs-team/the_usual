@@ -12,17 +12,25 @@ void main() {
     });
 
     group('fromJson', () {
+      UserSettingsState withCalorieGoal(int calories) => UserSettingsState(
+        calorieGoalHistory: [
+          CalorieGoalEntry(
+            effectiveFrom: DateTime.fromMillisecondsSinceEpoch(0),
+            calories: calories,
+          ),
+        ],
+      );
+
       test('reads current-version data straight through', () {
         final restored = UserSettingsState.fromJson(
-          const UserSettingsState(calorieGoal: 2000).toJson(),
+          withCalorieGoal(2000).toJson(),
         );
 
         expect(restored.calorieGoal, equals(2000));
       });
 
       test('reads a newer unknown version as a best effort', () {
-        final json = const UserSettingsState(calorieGoal: 1800).toJson()
-          ..['version'] = 99;
+        final json = withCalorieGoal(1800).toJson()..['version'] = 99;
 
         final restored = UserSettingsState.fromJson(json);
 
@@ -174,14 +182,14 @@ void main() {
     });
 
     group('workout weight unit migration', () {
-      test('v1 data inherits the body-weight unit and bumps to v2', () {
+      test('v1 data inherits the body-weight unit and bumps to current', () {
         final state = UserSettingsState.fromJson(<String, dynamic>{
           'version': 1,
           'weightUnit': 'kg',
         });
 
         expect(state.workoutWeightUnit, equals(WeightUnit.kg));
-        expect(state.version, equals(2));
+        expect(state.version, equals(3));
       });
 
       test('current-version data reads workoutWeightUnit as stored', () {

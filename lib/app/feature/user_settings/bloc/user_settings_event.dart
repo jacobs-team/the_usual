@@ -99,6 +99,11 @@ sealed class UserSettingsEvent with _$UserSettingsEvent {
     String id,
     List<WorkoutSet> sets,
   ) = SettingsUsualWorkoutSetsChanged;
+  const factory UserSettingsEvent.usualWorkoutDurationChanged(
+    String workoutGroupId,
+    String id,
+    Duration duration,
+  ) = SettingsUsualWorkoutDurationChanged;
   const factory UserSettingsEvent.usualWorkoutRemoved(
     String workoutGroupId,
     String id,

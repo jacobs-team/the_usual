@@ -521,7 +521,13 @@ class _FoodEntryRowState extends State<_FoodEntryRow> {
                           onChanged: (value) =>
                               widget.onAddToUsualMealsToggled(value ?? false),
                         ),
-                        const Text('Save as usual'),
+                        GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () => widget.onAddToUsualMealsToggled(
+                            !widget.foodDraft.addToUsualMeals,
+                          ),
+                          child: const Text('Save as usual'),
+                        ),
                       ],
                     ),
                 ],

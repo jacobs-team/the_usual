@@ -9,7 +9,7 @@ part of 'user_settings_bloc.dart';
 _UserSettingsState _$UserSettingsStateFromJson(
   Map<String, dynamic> json,
 ) => _UserSettingsState(
-  version: (json['version'] as num?)?.toInt() ?? 2,
+  version: (json['version'] as num?)?.toInt() ?? 3,
   reminderStyle:
       $enumDecodeNullable(_$ReminderStyleEnumMap, json['reminderStyle']) ??
       ReminderStyle.notifications,
@@ -63,8 +63,16 @@ _UserSettingsState _$UserSettingsStateFromJson(
       $enumDecodeNullable(_$WeightUnitEnumMap, json['weightUnit']) ??
       WeightUnit.lb,
   startingWeight: (json['startingWeight'] as num?)?.toDouble(),
-  calorieGoal: (json['calorieGoal'] as num?)?.toInt(),
-  weightGoal: (json['weightGoal'] as num?)?.toDouble(),
+  calorieGoalHistory:
+      (json['calorieGoalHistory'] as List<dynamic>?)
+          ?.map((e) => CalorieGoalEntry.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const <CalorieGoalEntry>[],
+  weightGoalHistory:
+      (json['weightGoalHistory'] as List<dynamic>?)
+          ?.map((e) => WeightGoalEntry.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const <WeightGoalEntry>[],
   themeMode:
       $enumDecodeNullable(_$ThemeModeEnumMap, json['themeMode']) ??
       ThemeMode.system,
@@ -135,8 +143,12 @@ Map<String, dynamic> _$UserSettingsStateToJson(
   'weightTimeOfDay': _$WeightTimeOfDayEnumMap[instance.weightTimeOfDay]!,
   'weightUnit': _$WeightUnitEnumMap[instance.weightUnit]!,
   'startingWeight': instance.startingWeight,
-  'calorieGoal': instance.calorieGoal,
-  'weightGoal': instance.weightGoal,
+  'calorieGoalHistory': instance.calorieGoalHistory
+      .map((e) => e.toJson())
+      .toList(),
+  'weightGoalHistory': instance.weightGoalHistory
+      .map((e) => e.toJson())
+      .toList(),
   'themeMode': _$ThemeModeEnumMap[instance.themeMode]!,
   'expandNutritionByDefault': instance.expandNutritionByDefault,
   'skipLoggedMealReminders': instance.skipLoggedMealReminders,

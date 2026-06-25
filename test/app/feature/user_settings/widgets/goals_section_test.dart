@@ -21,7 +21,23 @@ void main() {
     });
 
     testWidgets('seeds the fields from the stored goals', (tester) async {
-      stub(const UserSettingsState(calorieGoal: 2000, weightGoal: 70));
+      stub(
+        UserSettingsState(
+          calorieGoalHistory: [
+            CalorieGoalEntry(
+              effectiveFrom: DateTime.fromMillisecondsSinceEpoch(0),
+              calories: 2000,
+            ),
+          ],
+          weightGoalHistory: [
+            WeightGoalEntry(
+              effectiveFrom: DateTime.fromMillisecondsSinceEpoch(0),
+              weightUnit: WeightUnit.lb,
+              weight: 70,
+            ),
+          ],
+        ),
+      );
       await tester.pumpPumpPumpItUP(
         deps: [userSettingsBloc],
         const GoalsSection(),

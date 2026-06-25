@@ -99,12 +99,29 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
         ),
         CalorieGoalChanged() => emit(
           state.copyWith(
-            settings: state.settings.copyWith(calorieGoal: event.calorieGoal),
+            settings: state.settings.copyWith(
+              calorieGoalHistory: [
+                if (event.calorieGoal != null)
+                  CalorieGoalEntry(
+                    effectiveFrom: _goalBaseline,
+                    calories: event.calorieGoal,
+                  ),
+              ],
+            ),
           ),
         ),
         WeightGoalChanged() => emit(
           state.copyWith(
-            settings: state.settings.copyWith(weightGoal: event.weightGoal),
+            settings: state.settings.copyWith(
+              weightGoalHistory: [
+                if (event.weightGoal != null)
+                  WeightGoalEntry(
+                    effectiveFrom: _goalBaseline,
+                    weightUnit: state.settings.weightUnit,
+                    weight: event.weightGoal,
+                  ),
+              ],
+            ),
           ),
         ),
         FirstLogItemToggled() => _onFirstLogItemToggled(event, emit),
@@ -118,6 +135,11 @@ class OnboardingBloc extends HydratedBloc<OnboardingEvent, OnboardingState> {
   }
 
   static const _uuid = Uuid();
+
+  /// The effective-from date stamped on goals chosen during onboarding. The
+  /// epoch keeps the baseline goal applying to every past day, before any dated
+  /// edit the user makes later from Settings.
+  static final _goalBaseline = DateTime.fromMillisecondsSinceEpoch(0);
 
   /// The step [offset] positions from the current one within the active steps,
   /// clamped to the valid range.

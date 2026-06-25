@@ -12,7 +12,7 @@ abstract class UserSettingsState with _$UserSettingsState {
     /// Schema version of the persisted state. Bump it and add a `fromJson`
     /// case whenever the persisted shape changes in a way old stored data
     /// can't be read as-is, so existing users are migrated instead of reset.
-    @Default(2) int version,
+    @Default(3) int version,
 
     /// How the app checks in about meals.
     @Default(ReminderStyle.notifications) ReminderStyle reminderStyle,
@@ -62,14 +62,15 @@ abstract class UserSettingsState with _$UserSettingsState {
     /// Baseline weight in [weightUnit], null when never provided.
     double? startingWeight,
 
-    /// The user's daily calorie target, null when they haven't set one. Drives
-    /// the length of the Today nutrition bar; when null the bar's macros fill
-    /// its full width instead of a portion of the goal.
-    int? calorieGoal,
+    /// The history of the user's daily calorie target, each entry the goal from
+    /// the day it took effect, oldest first. Lets historical charts show the
+    /// goal active at each point rather than retroactively applying the latest.
+    /// Empty when no goal has ever been set.
+    @Default(<CalorieGoalEntry>[]) List<CalorieGoalEntry> calorieGoalHistory,
 
-    /// The user's target weight in [weightUnit], null when they haven't set
-    /// one.
-    double? weightGoal,
+    /// The history of the user's target weight, each entry the goal from the
+    /// day it took effect, oldest first. Empty when no goal has ever been set.
+    @Default(<WeightGoalEntry>[]) List<WeightGoalEntry> weightGoalHistory,
 
     /// Whether the app follows the system theme or is forced light or dark.
     @Default(ThemeMode.system) ThemeMode themeMode,
@@ -139,7 +140,7 @@ abstract class UserSettingsState with _$UserSettingsState {
   const UserSettingsState._();
 
   /// The version written by the current app.
-  static const _currentVersion = 2;
+  static const _currentVersion = 3;
 
   /// The total number of saved usual meals across all meal timings.
   int get usualMealCount =>
@@ -149,37 +150,84 @@ abstract class UserSettingsState with _$UserSettingsState {
   /// saved usual meal.
   bool get hasEstablishedUsuals => usualMealCount > 1;
 
+  /// The current daily calorie target, or null when unset. Drives the length of
+  /// the Today nutrition bar; when null the bar's macros fill its full width
+  /// instead of a portion of the goal.
+  int? get calorieGoal =>
+      calorieGoalHistory.isEmpty ? null : calorieGoalHistory.last.calories;
+
+  /// The current target weight in [weightUnit], or null when unset.
+  double? get weightGoal =>
+      weightGoalHistory.isEmpty ? null : weightGoalHistory.last.weight;
+
   factory UserSettingsState.fromJson(Map<String, dynamic> json) =>
       UserSettingsState._fromVersionedJson(json);
 
   factory UserSettingsState._fromVersionedJson(Map<String, dynamic> json) {
+    final version = json['version'] as int? ?? 0;
+    var migrated = json;
+
     // The `onAppOpen` reminder style was removed; map data still carrying it to
     // no reminders so the dropped value decodes instead of resetting settings.
-    final reminderMigrated = json['reminderStyle'] == 'onAppOpen'
-        ? {...json, 'reminderStyle': 'none'}
-        : json;
-    final version = reminderMigrated['version'] as int? ?? 0;
-    switch (version) {
-      case 0:
-      case 1:
-        // v1 and earlier predate workout settings. Inherit the workout weight
-        // unit from the existing body-weight unit instead of the bare lb
-        // default, then read with the current schema (other new keys fall back
-        // to their defaults).
-        return _$UserSettingsStateFromJson({
-          ...reminderMigrated,
-          'version': _currentVersion,
-          if (!reminderMigrated.containsKey('workoutWeightUnit'))
-            'workoutWeightUnit': reminderMigrated['weightUnit'] ?? 'lb',
-        });
-      case _currentVersion:
-        return _$UserSettingsStateFromJson(reminderMigrated);
-      default:
-        // A newer, unknown version, e.g. after the user downgrades the app.
-        // Read it with the current schema as a best effort rather than
-        // discarding the user's settings.
-        return _$UserSettingsStateFromJson(reminderMigrated);
+    if (migrated['reminderStyle'] == 'onAppOpen') {
+      migrated = {...migrated, 'reminderStyle': 'none'};
     }
+
+    // v1 and earlier predate workout settings. Inherit the workout weight unit
+    // from the existing body-weight unit instead of the bare lb default; other
+    // new keys fall back to their defaults.
+    if (version <= 1 && !migrated.containsKey('workoutWeightUnit')) {
+      migrated = {
+        ...migrated,
+        'workoutWeightUnit': migrated['weightUnit'] ?? 'lb',
+      };
+    }
+
+    // v2 and earlier stored a single calorie/weight goal that applied to all
+    // history. Seed each as one entry effective from the epoch so it still
+    // covers every past day, after which dated edits stack on top.
+    if (version <= 2) {
+      migrated = _migrateGoalsToHistory(migrated);
+    }
+
+    // A version newer than this build (e.g. after a downgrade) skips every
+    // migration above and is read with the current schema as a best effort
+    // rather than discarding the user's settings.
+    return _$UserSettingsStateFromJson({
+      ...migrated,
+      'version': _currentVersion,
+    });
+  }
+
+  /// Converts the pre-v3 scalar `calorieGoal`/`weightGoal` into single-entry
+  /// goal histories effective from the epoch, so the goal still applies to all
+  /// of the user's existing history.
+  static Map<String, dynamic> _migrateGoalsToHistory(
+    Map<String, dynamic> json,
+  ) {
+    const epoch = '1970-01-01T00:00:00.000';
+    final migrated = {...json};
+
+    final calorieGoal = json['calorieGoal'] as int?;
+    migrated['calorieGoalHistory'] = [
+      if (calorieGoal != null)
+        {'effectiveFrom': epoch, 'calories': calorieGoal},
+    ];
+
+    final weightGoal = (json['weightGoal'] as num?)?.toDouble();
+    final weightUnit = json['weightUnit'] as String? ?? 'lb';
+    migrated['weightGoalHistory'] = [
+      if (weightGoal != null)
+        {
+          'effectiveFrom': epoch,
+          'weight': weightGoal,
+          'weightUnit': weightUnit,
+        },
+    ];
+
+    return migrated
+      ..remove('calorieGoal')
+      ..remove('weightGoal');
   }
 
   /// The meal section to highlight as current at [now].

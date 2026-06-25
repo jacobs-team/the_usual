@@ -1,4 +1,5 @@
 export 'ai_meal_suggestion.dart';
+export 'calorie_goal_entry.dart';
 export 'extensions/extensions.dart';
 export 'food_draft.dart';
 export 'meal_checkin_schedule_mode.dart';
@@ -13,6 +14,7 @@ export 'usual_meal.dart';
 export 'usual_workout.dart';
 export 'weight_checkin_frequency.dart';
 export 'weight_entry.dart';
+export 'weight_goal_entry.dart';
 export 'weight_time_of_day.dart';
 export 'weight_unit.dart';
 export 'workout_group.dart';

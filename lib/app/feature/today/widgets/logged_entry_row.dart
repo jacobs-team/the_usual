@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
-import 'package:the_usual/design_system/design_system.dart';
 
 /// {@template logged_entry_row}
 /// A single logged meal entry: name, a remove button, and inline-editable
@@ -80,30 +79,15 @@ class LoggedEntryRow extends StatelessWidget {
             DailyLogEvent.mealEntryRemoved(mealLogEntry.id),
           ),
           expandedFooter: differsFromUsualMeal
-              ? Padding(
-                  padding: EdgeInsets.only(
-                    left: AppDesign.spacing.sm,
-                    top: AppDesign.spacing.sm,
-                  ),
-                  child: TextButton.icon(
-                    style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      minimumSize: Size.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      visualDensity: VisualDensity.compact,
-                    ),
-                    icon: const Icon(Icons.sync, size: 16),
-                    label: Text(
-                      nutrition.isEmpty
-                          ? "Clear this usual meal's nutrition"
-                          : 'Update usual meal to match',
-                    ),
-                    onPressed: () => getIt<UserSettingsBloc>().add(
-                      UserSettingsEvent.usualMealNutritionChanged(
-                        mealLogEntry.mealOfTheDay,
-                        usualMeal.id,
-                        nutrition,
-                      ),
+              ? UpdateUsualButton(
+                  label: nutrition.isEmpty
+                      ? "Clear this usual meal's nutrition"
+                      : 'Update usual meal to match',
+                  onPressed: () => getIt<UserSettingsBloc>().add(
+                    UserSettingsEvent.usualMealNutritionChanged(
+                      mealLogEntry.mealOfTheDay,
+                      usualMeal.id,
+                      nutrition,
                     ),
                   ),
                 )
