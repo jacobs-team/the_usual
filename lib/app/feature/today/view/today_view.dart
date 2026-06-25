@@ -107,20 +107,25 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
             BlocSelector<
               UserSettingsBloc,
               UserSettingsState,
-              (Map<MealOfTheDay, List<UsualMeal>>, bool, int?, TimeOfDay)
+              (
+                Map<MealOfTheDay, List<UsualMeal>>,
+                bool,
+                List<CalorieGoalEntry>,
+                TimeOfDay,
+              )
             >(
               bloc: getIt<UserSettingsBloc>(),
               selector: (state) => (
                 state.usuals,
                 state.expandNutritionByDefault,
-                state.calorieGoal,
+                state.calorieGoalHistory,
                 state.dayStartTime,
               ),
               builder: (context, selected) {
                 final (
                   usualMeals,
                   expandNutritionByDefault,
-                  calorieGoal,
+                  calorieGoalHistory,
                   dayStartTime,
                 ) = selected;
                 final today = now.logicalDay(dayStartTime);
@@ -129,6 +134,9 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
                 final displayDay = selectedRange == null
                     ? today
                     : DateUtils.dateOnly(selectedRange.start);
+                // The bar shows the goal active on the day being viewed, not
+                // today's, so a past day keeps the goal it had then.
+                final calorieGoal = calorieGoalHistory.goalOn(displayDay);
                 final logDays = selectedRange?.logicalDays;
                 final logDayStart = selectedRange == null ? null : dayStartTime;
                 return BlocSelector<
