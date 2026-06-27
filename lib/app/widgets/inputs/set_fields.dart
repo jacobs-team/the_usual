@@ -16,6 +16,7 @@ class SetFields extends StatefulWidget {
     required this.weightUnit,
     this.dense = false,
     this.bodyweight = false,
+    this.trailing,
     super.key,
   });
 
@@ -34,6 +35,9 @@ class SetFields extends StatefulWidget {
   /// When true the weight field shows an 'auto' hint and an empty weight emits
   /// [WorkoutSet] with [WorkoutSet.weightAutoEstimated] set to true.
   final bool bodyweight;
+
+  /// Content shown to the right of the "Add set" button, e.g. a sync action.
+  final Widget? trailing;
 
   @override
   State<SetFields> createState() => _SetFieldsState();
@@ -142,10 +146,15 @@ class _SetFieldsState extends State<SetFields> {
             onChanged: _emit,
             onRemove: () => _removeSet(i),
           ),
-        TextButton.icon(
-          onPressed: _addSet,
-          icon: const Icon(Icons.add),
-          label: const Text('Add set'),
+        Row(
+          children: [
+            TextButton.icon(
+              onPressed: _addSet,
+              icon: const Icon(Icons.add),
+              label: const Text('Add set'),
+            ),
+            if (widget.trailing != null) Expanded(child: widget.trailing!),
+          ],
         ),
       ],
     );

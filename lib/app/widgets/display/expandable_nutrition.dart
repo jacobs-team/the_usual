@@ -107,6 +107,8 @@ class _ExpandableNutritionState extends State<ExpandableNutrition> {
     final displayName = quantity != null && quantity != 1
         ? '×${quantity.trimmedDecimal} ${widget.name}'
         : widget.name;
+    final showsQuantityStepper =
+        quantity != null && widget.onQuantityChanged != null;
     return ExpansionTile(
       dense: true,
       controller: _controller,
@@ -184,16 +186,19 @@ class _ExpandableNutritionState extends State<ExpandableNutrition> {
         onPressed: widget.onRemoved,
       ),
       children: [
-        if (quantity != null && widget.onQuantityChanged != null) ...[
+        if (showsQuantityStepper) ...[
           const SectionLabel('QUANTITY'),
           SizedBox(height: AppDesign.spacing.xs),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: QuantityStepper(
-              dense: true,
-              quantity: quantity,
-              onChanged: widget.onQuantityChanged!,
-            ),
+          Row(
+            children: [
+              QuantityStepper(
+                dense: true,
+                quantity: quantity,
+                onChanged: widget.onQuantityChanged!,
+              ),
+              if (widget.expandedFooter != null)
+                Expanded(child: widget.expandedFooter!),
+            ],
           ),
           if (quantity != 1 && !widget.nutrition.isEmpty) ...[
             SizedBox(height: AppDesign.spacing.xs),
@@ -217,7 +222,8 @@ class _ExpandableNutritionState extends State<ExpandableNutrition> {
           initial: widget.nutrition,
           onChanged: widget.onChanged,
         ),
-        if (widget.expandedFooter != null) widget.expandedFooter!,
+        if (widget.expandedFooter != null && !showsQuantityStepper)
+          widget.expandedFooter!,
       ],
     );
   }

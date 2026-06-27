@@ -80,7 +80,20 @@ class LoggedWorkoutRow extends StatelessWidget {
           onRemoved: () => getIt<WorkoutLogBloc>().add(
             WorkoutLogEvent.workoutRemoved(workoutLogEntry.id),
           ),
-          expandedFooter: differsFromUsual
+          expandedFooter: usualWorkout == null
+              ? UpdateUsualButton(
+                  label: 'Save as usual',
+                  onPressed: () => getIt<UserSettingsBloc>().add(
+                    UserSettingsEvent.usualWorkoutAdded(
+                      workoutLogEntry.workoutGroupId,
+                      workoutLogEntry.name,
+                      workoutLogEntry.sets,
+                      type: workoutLogEntry.type,
+                      duration: loggedDuration,
+                    ),
+                  ),
+                )
+              : differsFromUsual
               ? UpdateUsualButton(
                   label: 'Update usual to match',
                   onPressed: () => getIt<UserSettingsBloc>().add(

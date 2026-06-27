@@ -106,6 +106,12 @@ class NutritionBar extends StatelessWidget {
       color: colorScheme.onSurfaceVariant,
     );
 
+    final tooltipLines = [
+      for (final macroSegment in macroSegments)
+        '${macroSegment.grams}g ${macroSegment.name}',
+      if (emptyFlex > 0) '$remainingCalories cal left',
+    ];
+
     final borderRadius = BorderRadius.circular(AppDesign.radius.sm);
     final bar = Container(
       height: height,
@@ -137,44 +143,35 @@ class NutritionBar extends StatelessWidget {
             if (segmentFlex.flex > 0)
               Expanded(
                 flex: segmentFlex.flex,
-                child: Tooltip(
-                  message:
-                      '${segmentFlex.macroSegment.grams}g '
-                      '${segmentFlex.macroSegment.name}',
-                  triggerMode: TooltipTriggerMode.tap,
-                  child: ColoredBox(
-                    color: segmentFlex.macroSegment.color,
-                    child: Center(
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: AppDesign.spacing.xs,
-                        ),
-                        child: LayoutBuilder(
-                          builder: (context, constraints) {
-                            final macroSegment = segmentFlex.macroSegment;
-                            final fullLabel =
-                                '${macroSegment.grams}g ${macroSegment.name}';
-                            final shortLabel =
-                                '${macroSegment.grams}g '
-                                '${macroSegment.abbreviation}';
-                            final fullLabelPainter = TextPainter(
-                              text: TextSpan(
-                                text: fullLabel,
-                                style: labelStyle,
-                              ),
-                              maxLines: 1,
-                              textDirection: Directionality.of(context),
-                            )..layout();
-                            final fits =
-                                fullLabelPainter.width <= constraints.maxWidth;
-                            return Text(
-                              fits ? fullLabel : shortLabel,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: labelStyle,
-                            );
-                          },
-                        ),
+                child: ColoredBox(
+                  color: segmentFlex.macroSegment.color,
+                  child: Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(
+                        horizontal: AppDesign.spacing.xs,
+                      ),
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          final macroSegment = segmentFlex.macroSegment;
+                          final fullLabel =
+                              '${macroSegment.grams}g ${macroSegment.name}';
+                          final shortLabel =
+                              '${macroSegment.grams}g '
+                              '${macroSegment.abbreviation}';
+                          final fullLabelPainter = TextPainter(
+                            text: TextSpan(text: fullLabel, style: labelStyle),
+                            maxLines: 1,
+                            textDirection: Directionality.of(context),
+                          )..layout();
+                          final fits =
+                              fullLabelPainter.width <= constraints.maxWidth;
+                          return Text(
+                            fits ? fullLabel : shortLabel,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: labelStyle,
+                          );
+                        },
                       ),
                     ),
                   ),
@@ -183,20 +180,16 @@ class NutritionBar extends StatelessWidget {
           if (emptyFlex > 0)
             Expanded(
               flex: emptyFlex,
-              child: Tooltip(
-                message: '$remainingCalories cal left',
-                triggerMode: TooltipTriggerMode.tap,
-                child: Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: AppDesign.spacing.xs,
-                    ),
-                    child: Text(
-                      '$remainingCalories cal left',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: remainingStyle,
-                    ),
+              child: Center(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    horizontal: AppDesign.spacing.xs,
+                  ),
+                  child: Text(
+                    '$remainingCalories cal left',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: remainingStyle,
                   ),
                 ),
               ),
@@ -237,7 +230,14 @@ class NutritionBar extends StatelessWidget {
             ],
           ),
         SizedBox(height: AppDesign.spacing.xs),
-        bar,
+        if (tooltipLines.isNotEmpty)
+          Tooltip(
+            message: tooltipLines.join('\n'),
+            triggerMode: TooltipTriggerMode.tap,
+            child: bar,
+          )
+        else
+          bar,
       ],
     );
   }

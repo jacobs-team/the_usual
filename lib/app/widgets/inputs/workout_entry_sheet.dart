@@ -171,9 +171,14 @@ class WorkoutEntrySheetState extends State<WorkoutEntrySheet> {
             );
         if (!mounted) return;
         if (estimate != null) {
+          // The bodyweight checkbox is the source of truth: every set the user
+          // left without a manual weight gets the estimate. The per-set
+          // weightAutoEstimated flag only reflects the checkbox state at the
+          // last field edit, so relying on it misses sets entered before the
+          // box was ticked.
           sets = [
             for (final workoutSet in sets)
-              if (workoutSet.weightAutoEstimated && workoutSet.weight == null)
+              if (workoutSet.weight == null)
                 workoutSet.copyWith(
                   weight: estimate,
                   weightAutoEstimated: true,

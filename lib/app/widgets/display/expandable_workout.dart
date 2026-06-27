@@ -190,6 +190,7 @@ class _ExpandableWorkoutState extends State<ExpandableWorkout> {
             initial: widget.duration,
             onChanged: widget.onDurationChanged ?? (_) {},
           ),
+          if (widget.expandedFooter != null) widget.expandedFooter!,
         ] else ...[
           const SectionLabel('SETS'),
           SetFields(
@@ -197,9 +198,9 @@ class _ExpandableWorkoutState extends State<ExpandableWorkout> {
             initial: widget.sets,
             weightUnit: widget.weightUnit,
             onChanged: widget.onChanged,
+            trailing: widget.expandedFooter,
           ),
         ],
-        if (widget.expandedFooter != null) widget.expandedFooter!,
       ],
     );
   }

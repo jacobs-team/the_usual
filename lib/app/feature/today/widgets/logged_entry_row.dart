@@ -78,7 +78,18 @@ class LoggedEntryRow extends StatelessWidget {
           onRemoved: () => getIt<DailyLogBloc>().add(
             DailyLogEvent.mealEntryRemoved(mealLogEntry.id),
           ),
-          expandedFooter: differsFromUsualMeal
+          expandedFooter: usualMeal == null
+              ? UpdateUsualButton(
+                  label: 'Save as usual',
+                  onPressed: () => getIt<UserSettingsBloc>().add(
+                    UserSettingsEvent.usualMealAdded(
+                      mealLogEntry.mealOfTheDay,
+                      mealLogEntry.name,
+                      nutrition,
+                    ),
+                  ),
+                )
+              : differsFromUsualMeal
               ? UpdateUsualButton(
                   label: nutrition.isEmpty
                       ? "Clear this usual meal's nutrition"
