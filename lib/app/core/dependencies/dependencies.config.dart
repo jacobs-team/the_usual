@@ -32,6 +32,7 @@ import 'package:the_usual/app/core/networking/repository/workout_ai_repository.d
 import 'package:the_usual/app/core/service/file_cache_service.dart' as _i115;
 import 'package:the_usual/app/core/service/service.dart' as _i988;
 import 'package:the_usual/app/core/service/share_ingest_service.dart' as _i907;
+import 'package:the_usual/app/core/service/widget_service.dart' as _i577;
 import 'package:the_usual/app/feature/auth/cubit/auth_cubit.dart' as _i608;
 import 'package:the_usual/app/feature/dev_tools/cubit/dev_tools_cubit.dart'
     as _i818;
@@ -66,6 +67,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.singleton<_i473.ConnectivityCubit>(() => _i473.ConnectivityCubit());
     gh.singleton<_i115.FileCacheService>(() => _i115.FileCacheService());
     gh.singleton<_i907.ShareIngestService>(() => _i907.ShareIngestService());
+    gh.singleton<_i577.WidgetService>(() => _i577.WidgetService());
     gh.singleton<_i818.DevToolsCubit>(() => _i818.DevToolsCubit());
     gh.lazySingleton<_i640.OnboardingBloc>(() => _i640.OnboardingBloc());
     gh.lazySingleton<_i155.DailyLogBloc>(() => _i155.DailyLogBloc());

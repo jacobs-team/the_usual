@@ -52,6 +52,7 @@ class _TheUsualsAppState extends State<TheUsualsApp>
           .whenComplete(FlutterNativeSplash.remove),
     );
     _syncNotifications();
+    _syncWidget();
     // Tapping a reminder takes the user to Today, where they log meals.
     getIt<NotificationService>().onReminderTapped = () =>
         getIt<AppRouter>().router.go(Routes.today);
@@ -165,6 +166,29 @@ class _TheUsualsAppState extends State<TheUsualsApp>
     );
   }
 
+  /// Pushes today's calorie goal and consumed total into the lock-screen widget
+  /// so it can show calories remaining. Reads both blocs so it can run on a
+  /// settings change or a log change.
+  void _syncWidget() {
+    final settings = getIt<UserSettingsBloc>().state;
+    final dayStart = settings.dayStartTime;
+    final today = clock.now().logicalDay(dayStart);
+    final nutrition = getIt<DailyLogBloc>().state.mealEntries
+        .breakdownOn(today, dayStart)
+        .nutrition;
+    final dayRollover = DateUtils.addDaysToDate(today, 1).atDayStart(dayStart);
+    unawaited(
+      getIt<WidgetService>().updateCalories(
+        goal: settings.calorieGoalHistory.goalOn(today),
+        consumed: nutrition.calories ?? 0,
+        protein: nutrition.protein ?? 0,
+        carbs: nutrition.carbs ?? 0,
+        fat: nutrition.fat ?? 0,
+        dayRollover: dayRollover,
+      ),
+    );
+  }
+
   /// Turns a sign-in [prompt] into a dialog, then routes the user's choice back
   /// to the cubit. Shown over the root navigator so it covers the sign-in
   /// screen or Settings, wherever the sign-in was triggered.
@@ -233,12 +257,19 @@ class _TheUsualsAppState extends State<TheUsualsApp>
       listeners: [
         BlocListener<UserSettingsBloc, UserSettingsState>(
           bloc: getIt<UserSettingsBloc>(),
-          listener: (context, state) => _syncNotifications(),
+          listener: (context, state) {
+            _syncNotifications();
+            _syncWidget();
+          },
         ),
-        // Logging a meal can suppress today's reminder for that meal timing.
+        // Logging a meal can suppress today's reminder for that meal timing,
+        // and changes the calories remaining shown in the widget.
         BlocListener<DailyLogBloc, DailyLogState>(
           bloc: getIt<DailyLogBloc>(),
-          listener: (context, state) => _syncNotifications(),
+          listener: (context, state) {
+            _syncNotifications();
+            _syncWidget();
+          },
         ),
         // A sign-in that needs a guest-data decision raises a prompt; turn it
         // into a dialog over whichever screen triggered the sign-in.
