@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -57,8 +59,29 @@ void main() {
       expect(find.byType(GoalsSection), findsOneWidget);
     });
 
-    testWidgets('the back button returns to today', (tester) async {
-      await pumpView(tester);
+    testWidgets('the back button pops to the previous route', (tester) async {
+      final router = GoRouter(
+        initialLocation: Routes.today,
+        routes: [
+          GoRoute(
+            path: Routes.today,
+            builder: (_, _) => const SizedBox.shrink(key: Key('today-page')),
+          ),
+          GoRoute(
+            path: Routes.settings,
+            builder: (_, _) => const UserSettingsView(),
+          ),
+        ],
+      );
+      tester.view.physicalSize = const Size(1200, 4000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpPumpPumpItUP(const SizedBox.shrink(), router: router);
+
+      unawaited(router.push(Routes.settings));
+      await tester.pumpAndSettle();
+      expect(find.byType(UserSettingsView), findsOneWidget);
 
       await tester.tap(find.byType(BackButton));
       await tester.pumpAndSettle();

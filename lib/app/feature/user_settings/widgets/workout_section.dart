@@ -13,8 +13,11 @@ class WorkoutSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<UserSettingsBloc, UserSettingsState,
-        (WorkoutReminder, WeightUnit)>(
+    return BlocSelector<
+      UserSettingsBloc,
+      UserSettingsState,
+      (WorkoutReminder, WeightUnit)
+    >(
       bloc: getIt<UserSettingsBloc>(),
       selector: (state) => (state.workoutReminder, state.workoutWeightUnit),
       builder: (context, selected) {

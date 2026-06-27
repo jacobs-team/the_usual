@@ -21,31 +21,29 @@ void main() {
       registerFallbackValue(const TimeOfDay(hour: 0, minute: 0));
     });
 
-    testWidgets('tapping the kg chip dispatches workoutWeightUnitSelected(kg)',
-        (tester) async {
-      stub(const UserSettingsState());
-      await tester.pumpPumpPumpItUP(
-        deps: [userSettingsBloc],
-        const WorkoutSection(),
-      );
-
-      await tester.tap(find.byKey(const Key('workout-unit-kg')));
-
-      verify(
-        () => userSettingsBloc.add(
-          const UserSettingsEvent.workoutWeightUnitSelected(WeightUnit.kg),
-        ),
-      ).called(1);
-    });
-
     testWidgets(
-        'toggling the reminder switch dispatches '
-        'workoutReminderToggled(enabled: true)',
-        (tester) async {
+      'tapping the kg chip dispatches workoutWeightUnitSelected(kg)',
+      (tester) async {
+        stub(const UserSettingsState());
+        await tester.pumpPumpPumpItUP(
+          deps: [userSettingsBloc],
+          const WorkoutSection(),
+        );
+
+        await tester.tap(find.byKey(const Key('workout-unit-kg')));
+
+        verify(
+          () => userSettingsBloc.add(
+            const UserSettingsEvent.workoutWeightUnitSelected(WeightUnit.kg),
+          ),
+        ).called(1);
+      },
+    );
+
+    testWidgets('toggling the reminder switch dispatches '
+        'workoutReminderToggled(enabled: true)', (tester) async {
       stub(
-        const UserSettingsState(
-          
-        ),
+        const UserSettingsState(),
       );
       await tester.pumpPumpPumpItUP(
         deps: [userSettingsBloc],
@@ -61,10 +59,8 @@ void main() {
       ).called(1);
     });
 
-    testWidgets(
-        'tapping day chip 3 dispatches '
-        'workoutReminderDayToggled(3, enabled: true)',
-        (tester) async {
+    testWidgets('tapping day chip 3 dispatches '
+        'workoutReminderDayToggled(3, enabled: true)', (tester) async {
       stub(
         const UserSettingsState(
           workoutReminder: WorkoutReminder(

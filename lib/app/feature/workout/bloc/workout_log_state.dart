@@ -16,6 +16,22 @@ typedef WorkoutHistoryMonth = ({
   List<WorkoutHistoryDay> days,
 });
 
+/// One session's strength data point for an exercise: the logical day trained,
+/// the best estimated one-rep max across that day's sets, and the set that
+/// achieved it.
+typedef ExerciseStrengthPoint = ({
+  DateTime sessionDay,
+  double estimatedOneRepMax,
+  WorkoutSet topSet,
+});
+
+/// One strength exercise's progress over time: its display name and its session
+/// points, oldest first.
+typedef ExerciseStrengthSeries = ({
+  String name,
+  List<ExerciseStrengthPoint> points,
+});
+
 /// {@template workout_log_state}
 /// Every workout logged across all days.
 /// {@endtemplate}
@@ -83,6 +99,87 @@ abstract class WorkoutLogState with _$WorkoutLogState {
       ));
     }
     return history;
+  }
+
+  /// Every strength exercise's estimated-1RM progress, one [ExerciseStrength
+  /// Series] per exercise that has at least two logged sessions, most recently
+  /// trained first. Exercises are grouped by name (case-insensitive), with
+  /// entries sharing a [WorkoutLogEntry.usualWorkoutId] treated as one exercise
+  /// even if renamed. Each session is a logical day; its point is the strongest
+  /// set across that day's entries for the exercise.
+  List<ExerciseStrengthSeries> strengthProgress(TimeOfDay dayStart) {
+    final strengthEntries = workoutEntries
+        .where(
+          (workoutLogEntry) => workoutLogEntry.type == WorkoutType.strength,
+        )
+        .toList();
+
+    // The lowercased name of each usual's most-recently-logged entry, used to
+    // keep renamed usuals in one group.
+    final canonicalNameByUsualId = <String, String>{};
+    final canonicalLoggedAtByUsualId = <String, DateTime>{};
+    for (final workoutLogEntry in strengthEntries) {
+      final usualWorkoutId = workoutLogEntry.usualWorkoutId;
+      if (usualWorkoutId == null) continue;
+      final seenAt = canonicalLoggedAtByUsualId[usualWorkoutId];
+      if (seenAt == null || workoutLogEntry.loggedAt.isAfter(seenAt)) {
+        canonicalLoggedAtByUsualId[usualWorkoutId] = workoutLogEntry.loggedAt;
+        canonicalNameByUsualId[usualWorkoutId] = workoutLogEntry.name
+            .toLowerCase();
+      }
+    }
+
+    String keyFor(WorkoutLogEntry workoutLogEntry) {
+      final usualWorkoutId = workoutLogEntry.usualWorkoutId;
+      if (usualWorkoutId != null) {
+        return canonicalNameByUsualId[usualWorkoutId] ??
+            workoutLogEntry.name.toLowerCase();
+      }
+      return workoutLogEntry.name.toLowerCase();
+    }
+
+    final entriesByKey = <String, List<WorkoutLogEntry>>{};
+    for (final workoutLogEntry in strengthEntries) {
+      entriesByKey
+          .putIfAbsent(keyFor(workoutLogEntry), () => <WorkoutLogEntry>[])
+          .add(workoutLogEntry);
+    }
+
+    final series = <ExerciseStrengthSeries>[];
+    for (final groupEntries in entriesByKey.values) {
+      // Display name and group recency from the most recent entry.
+      final mostRecentEntry = groupEntries.reduce(
+        (a, b) => a.loggedAt.isAfter(b.loggedAt) ? a : b,
+      );
+
+      final setsByDay = <DateTime, List<WorkoutSet>>{};
+      for (final workoutLogEntry in groupEntries) {
+        final day = workoutLogEntry.loggedAt.logicalDay(dayStart);
+        setsByDay
+            .putIfAbsent(day, () => <WorkoutSet>[])
+            .addAll(workoutLogEntry.sets);
+      }
+
+      final points = <ExerciseStrengthPoint>[];
+      for (final day
+          in setsByDay.keys.toList()..sort((a, b) => a.compareTo(b))) {
+        final topSet = setsByDay[day]!.topEstimatedOneRepMaxSet;
+        if (topSet == null) continue;
+        points.add((
+          sessionDay: day,
+          estimatedOneRepMax: topSet.estimatedOneRepMax,
+          topSet: topSet,
+        ));
+      }
+
+      if (points.length < 2) continue;
+      series.add((name: mostRecentEntry.name, points: points));
+    }
+
+    series.sort(
+      (a, b) => b.points.last.sessionDay.compareTo(a.points.last.sessionDay),
+    );
+    return series;
   }
 
   factory WorkoutLogState.fromJson(Map<String, dynamic> json) =>

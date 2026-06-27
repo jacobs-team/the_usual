@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -18,8 +20,7 @@ void main() {
           ),
           GoRoute(
             path: Routes.settings,
-            builder: (_, _) =>
-                const SizedBox.shrink(key: Key('settings-page')),
+            builder: (_, _) => const SizedBox.shrink(key: Key('settings-page')),
           ),
         ],
       );
@@ -43,8 +44,29 @@ void main() {
       expect(find.byType(UsualMealList), findsWidgets);
     });
 
-    testWidgets('the back button returns to settings', (tester) async {
-      await pumpView(tester);
+    testWidgets('the back button pops to the previous route', (tester) async {
+      final router = GoRouter(
+        initialLocation: Routes.settings,
+        routes: [
+          GoRoute(
+            path: Routes.settings,
+            builder: (_, _) => const SizedBox.shrink(key: Key('settings-page')),
+          ),
+          GoRoute(
+            path: Routes.usualMeals,
+            builder: (_, _) => const UsualMealsView(),
+          ),
+        ],
+      );
+      tester.view.physicalSize = const Size(1200, 3000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      await tester.pumpPumpPumpItUP(const SizedBox.shrink(), router: router);
+
+      unawaited(router.push(Routes.usualMeals));
+      await tester.pumpAndSettle();
+      expect(find.byType(UsualMealsView), findsOneWidget);
 
       await tester.tap(find.byType(BackButton));
       await tester.pumpAndSettle();

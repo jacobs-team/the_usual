@@ -180,6 +180,14 @@ class SyncRepository {
     _lastSyncedJson = json;
   }
 
+  /// Fires any pending debounced write immediately, used when the app is
+  /// backgrounded.
+  void flushPending() {
+    _debounce?.cancel();
+    _debounce = null;
+    unawaited(_writeThroughNow());
+  }
+
   /// Pushes the latest local state and awaits server confirmation before
   /// sign-out clears local data. Callers must confirm connectivity first; the
   /// timeout guards against a drop between that check and the write.

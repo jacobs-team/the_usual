@@ -25,4 +25,7 @@ sealed class WorkoutLogEvent with _$WorkoutLogEvent {
   /// Replaces the entire log with state downloaded from the cloud on sign-in.
   const factory WorkoutLogEvent.stateRestored(WorkoutLogState state) =
       WorkoutLogStateRestored;
+
+  /// Replaces the log with seeded months of training, for dev tooling.
+  const factory WorkoutLogEvent.sampleDataSeeded() = WorkoutSampleDataSeeded;
 }

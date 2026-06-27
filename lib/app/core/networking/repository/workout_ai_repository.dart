@@ -53,41 +53,39 @@ class WorkoutAiRepository {
   }
 
   /// Maps Claude's `{names: [...]}` output into a [List<String>].
-  static final SchemanticType<List<String>> _namesSchema =
-      SchemanticType.from(
-        jsonSchema: <String, Object?>{
-          'type': 'object',
-          'properties': <String, Object?>{
-            'names': <String, Object?>{
-              'type': 'array',
-              'items': <String, Object?>{'type': 'string'},
-            },
-          },
-          'required': <String>['names'],
+  static final SchemanticType<List<String>> _namesSchema = SchemanticType.from(
+    jsonSchema: <String, Object?>{
+      'type': 'object',
+      'properties': <String, Object?>{
+        'names': <String, Object?>{
+          'type': 'array',
+          'items': <String, Object?>{'type': 'string'},
         },
-        parse: (json) {
-          final map = (json! as Map).cast<String, dynamic>();
-          return (map['names'] as List).cast<String>();
-        },
-      );
+      },
+      'required': <String>['names'],
+    },
+    parse: (json) {
+      final map = (json! as Map).cast<String, dynamic>();
+      return (map['names'] as List).cast<String>();
+    },
+  );
 
   /// Maps Claude's `{weight: <number|null>}` output into a [double?].
-  static final SchemanticType<double?> _weightSchema =
-      SchemanticType.from(
-        jsonSchema: <String, Object?>{
-          'type': 'object',
-          'properties': <String, Object?>{
-            'weight': <String, Object?>{
-              'type': <String>['number', 'null'],
-            },
-          },
-          'required': <String>['weight'],
+  static final SchemanticType<double?> _weightSchema = SchemanticType.from(
+    jsonSchema: <String, Object?>{
+      'type': 'object',
+      'properties': <String, Object?>{
+        'weight': <String, Object?>{
+          'type': <String>['number', 'null'],
         },
-        parse: (json) {
-          final map = (json! as Map).cast<String, dynamic>();
-          final weight = map['weight'];
-          if (weight == null) return null;
-          return (weight as num).toDouble();
-        },
-      );
+      },
+      'required': <String>['weight'],
+    },
+    parse: (json) {
+      final map = (json! as Map).cast<String, dynamic>();
+      final weight = map['weight'];
+      if (weight == null) return null;
+      return (weight as num).toDouble();
+    },
+  );
 }

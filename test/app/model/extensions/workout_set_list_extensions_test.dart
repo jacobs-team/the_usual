@@ -41,6 +41,36 @@ void main() {
     });
   });
 
+  group('WorkoutSetListFormatting e1RM', () {
+    test('topEstimatedOneRepMaxSet picks the highest-estimate set', () {
+      // 100x8 -> 126.7 ; 110x5 -> 128.3 (winner) ; 120x1 -> 120
+      const sets = [
+        WorkoutSet(weight: 100, reps: 8),
+        WorkoutSet(weight: 110, reps: 5),
+        WorkoutSet(weight: 120, reps: 1),
+      ];
+      expect(
+        sets.topEstimatedOneRepMaxSet,
+        equals(const WorkoutSet(weight: 110, reps: 5)),
+      );
+      expect(sets.bestEstimatedOneRepMax, closeTo(128.333, 0.01));
+    });
+
+    test('ignores sets with no computable estimate', () {
+      const sets = [WorkoutSet(reps: 8), WorkoutSet(weight: 80, reps: 6)];
+      expect(
+        sets.topEstimatedOneRepMaxSet,
+        equals(const WorkoutSet(weight: 80, reps: 6)),
+      );
+    });
+
+    test('returns null/0 when no set has weight and reps', () {
+      const sets = [WorkoutSet(weight: 80), WorkoutSet(reps: 5)];
+      expect(sets.topEstimatedOneRepMaxSet, isNull);
+      expect(sets.bestEstimatedOneRepMax, equals(0));
+    });
+  });
+
   group('WorkoutLogEntryListFormatting', () {
     test('totalVolume sums entry volumes', () {
       final entries = [

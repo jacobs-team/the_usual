@@ -13,12 +13,14 @@ void main() {
         )
         .at(index);
 
-    String fieldText(WidgetTester tester, int index) =>
-        tester.widget<TextField>(
+    String fieldText(WidgetTester tester, int index) => tester
+        .widget<TextField>(
           find
               .descendant(of: fieldAt(index), matching: find.byType(TextField))
               .first,
-        ).controller!.text;
+        )
+        .controller!
+        .text;
 
     testWidgets('seeds the fields from the initial nutrition', (tester) async {
       await tester.pumpPumpPumpItUP(

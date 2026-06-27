@@ -6,7 +6,7 @@ import 'package:the_usual/app/app.dart';
 import '../../../../helpers/helpers.dart';
 
 void main() {
-  group(WorkoutHistoryView, () {
+  group(WorkoutDaysLens, () {
     late WorkoutLogBloc workoutLogBloc;
     late UserSettingsBloc userSettingsBloc;
 
@@ -60,54 +60,45 @@ void main() {
       stub(const WorkoutLogState());
       await tester.pumpPumpPumpItUP(
         deps: [workoutLogBloc, userSettingsBloc],
-        const WorkoutHistoryView(),
+        const WorkoutDaysLens(),
       );
 
       expect(find.byType(PageView), findsNothing);
     });
 
     testWidgets(
-      'with entries, WorkoutVolumeChart is present and LoggedWorkoutRow is '
-      'initially absent',
-      (tester) async {
+      'with entries, day cards render and rows are initially hidden',
+      (
+        tester,
+      ) async {
         useTallWindow(tester);
         stub(twoMonthState());
         await tester.pumpPumpPumpItUP(
           deps: [workoutLogBloc, userSettingsBloc],
-          const WorkoutHistoryView(),
+          const WorkoutDaysLens(),
         );
         await tester.pumpAndSettle();
 
-        expect(find.byType(WorkoutVolumeChart), findsOneWidget);
+        expect(find.byType(ExpansionTile), findsWidgets);
         expect(find.byType(LoggedWorkoutRow), findsNothing);
       },
     );
 
-    testWidgets(
-      'tapping the chart scrolls to and expands a day so LoggedWorkoutRow '
-      'appears',
-      (tester) async {
-        useTallWindow(tester);
-        stub(twoMonthState());
-        await tester.pumpPumpPumpItUP(
-          deps: [workoutLogBloc, userSettingsBloc],
-          const WorkoutHistoryView(),
-        );
-        await tester.pumpAndSettle();
+    testWidgets('expanding a day card reveals its LoggedWorkoutRow', (
+      tester,
+    ) async {
+      useTallWindow(tester);
+      stub(twoMonthState());
+      await tester.pumpPumpPumpItUP(
+        deps: [workoutLogBloc, userSettingsBloc],
+        const WorkoutDaysLens(),
+      );
+      await tester.pumpAndSettle();
 
-        expect(find.byType(WorkoutVolumeChart), findsOneWidget);
-        expect(find.byType(LoggedWorkoutRow), findsNothing);
+      await tester.tap(find.byType(ExpansionTile).first);
+      await tester.pumpAndSettle();
 
-        await tester.tap(
-          find.descendant(
-            of: find.byType(WorkoutVolumeChart),
-            matching: find.byType(GestureDetector),
-          ),
-        );
-        await tester.pumpAndSettle();
-
-        expect(find.byType(LoggedWorkoutRow), findsWidgets);
-      },
-    );
+      expect(find.byType(LoggedWorkoutRow), findsWidgets);
+    });
   });
 }

@@ -77,8 +77,9 @@ void main() {
       expect(confirmAfter.onPressed, isNotNull);
     });
 
-    testWidgets('confirming pops with a WorkoutEntryResult carrying the name',
-        (tester) async {
+    testWidgets('confirming pops with a WorkoutEntryResult carrying the name', (
+      tester,
+    ) async {
       WorkoutEntryResult? popped;
       tester.view.physicalSize = const Size(1200, 2400);
       tester.view.devicePixelRatio = 1.0;
@@ -118,29 +119,33 @@ void main() {
     });
 
     testWidgets(
-        'the save-as-usual checkbox is absent when showAddToUsuals is false',
-        (tester) async {
-      await showSheet(tester);
-      // The bodyweight checkbox is always present; the save-as-usual one is
-      // not.
-      expect(
-        find.byKey(const Key('bodyweight-checkbox')),
-        findsOneWidget,
-      );
-      expect(find.byKey(const Key('save-as-usual-checkbox')), findsNothing);
-    });
+      'the save-as-usual checkbox is absent when showAddToUsuals is false',
+      (tester) async {
+        await showSheet(tester);
+        // The bodyweight checkbox is always present; the save-as-usual one is
+        // not.
+        expect(
+          find.byKey(const Key('bodyweight-checkbox')),
+          findsOneWidget,
+        );
+        expect(find.byKey(const Key('save-as-usual-checkbox')), findsNothing);
+      },
+    );
 
-    testWidgets('the save-as-usual checkbox is shown when showAddToUsuals true',
-        (tester) async {
-      await showSheet(tester, showAddToUsuals: true);
-      expect(
-        find.byKey(const Key('save-as-usual-checkbox')),
-        findsOneWidget,
-      );
-    });
+    testWidgets(
+      'the save-as-usual checkbox is shown when showAddToUsuals true',
+      (tester) async {
+        await showSheet(tester, showAddToUsuals: true);
+        expect(
+          find.byKey(const Key('save-as-usual-checkbox')),
+          findsOneWidget,
+        );
+      },
+    );
 
-    testWidgets('addToUsuals is false by default in the popped result',
-        (tester) async {
+    testWidgets('addToUsuals is false by default in the popped result', (
+      tester,
+    ) async {
       final results = await showSheet(tester, showAddToUsuals: true);
 
       await tester.enterText(find.byType(TextFormField).first, 'Deadlift');
@@ -152,8 +157,9 @@ void main() {
       expect(results.single!.addToUsuals, isFalse);
     });
 
-    testWidgets('toggling the save-as-usual checkbox flips addToUsuals',
-        (tester) async {
+    testWidgets('toggling the save-as-usual checkbox flips addToUsuals', (
+      tester,
+    ) async {
       final results = await showSheet(tester, showAddToUsuals: true);
 
       await tester.enterText(find.byType(TextFormField).first, 'Deadlift');
@@ -229,27 +235,27 @@ void main() {
     // ── Bodyweight checkbox disabled message ─────────────────────────────────
 
     testWidgets(
-        'tapping bodyweight checkbox when bodyWeight is null shows inline hint',
-        (tester) async {
-      await showSheet(tester);
+      'tapping bodyweight checkbox when bodyWeight is null shows inline hint',
+      (tester) async {
+        await showSheet(tester);
 
-      await tester.tap(find.byKey(const Key('bodyweight-checkbox')));
-      await tester.pump();
+        await tester.tap(find.byKey(const Key('bodyweight-checkbox')));
+        await tester.pump();
 
-      expect(find.byKey(const Key('bodyweight-hint')), findsOneWidget);
-      expect(find.byType(SnackBar), findsNothing);
+        expect(find.byKey(const Key('bodyweight-hint')), findsOneWidget);
+        expect(find.byType(SnackBar), findsNothing);
 
-      // The checkbox must remain unchecked.
-      final checkbox = tester.widget<Checkbox>(
-        find.byKey(const Key('bodyweight-checkbox')),
-      );
-      expect(checkbox.value, isFalse);
-    });
+        // The checkbox must remain unchecked.
+        final checkbox = tester.widget<Checkbox>(
+          find.byKey(const Key('bodyweight-checkbox')),
+        );
+        expect(checkbox.value, isFalse);
+      },
+    );
 
     // ── Bodyweight estimation on confirm ─────────────────────────────────────
 
-    testWidgets(
-        'with bodyWeight:200 and estimateBodyweightLoad=>140, '
+    testWidgets('with bodyWeight:200 and estimateBodyweightLoad=>140, '
         'confirming sets weight on auto sets', (tester) async {
       final repository = configuredAiRepository();
 

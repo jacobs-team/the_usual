@@ -20,7 +20,7 @@ class UsualMealsView extends StatelessWidget {
         appBar: AppBar(
           centerTitle: true,
           title: const Text('Your usual meals'),
-          leading: BackButton(onPressed: () => context.go(Routes.settings)),
+          leading: BackButton(onPressed: () => context.pop()),
           bottom: TabBar(
             isScrollable: true,
             tabAlignment: TabAlignment.start,

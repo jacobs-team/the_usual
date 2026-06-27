@@ -34,7 +34,7 @@ class UsualMealsTile extends StatelessWidget {
         return SettingsNavRow(
           title: 'Your usual meals',
           subtitle: summary,
-          onTap: () => context.go(Routes.usualMeals),
+          onTap: () => context.push(Routes.usualMeals),
         );
       },
     );

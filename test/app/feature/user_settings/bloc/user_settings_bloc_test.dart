@@ -568,7 +568,9 @@ void main() {
         expect: () => [
           isA<UserSettingsState>()
               .having(
-                (s) => s.usualWorkouts['push'], 'push usuals', hasLength(1),
+                (s) => s.usualWorkouts['push'],
+                'push usuals',
+                hasLength(1),
               )
               .having(
                 (s) => s.usualWorkouts['push']!.single.name,

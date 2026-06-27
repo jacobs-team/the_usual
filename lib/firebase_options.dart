@@ -70,8 +70,10 @@ class DefaultFirebaseOptions {
     messagingSenderId: '926455129035',
     projectId: 'the-usual-500220',
     storageBucket: 'the-usual-500220.firebasestorage.app',
-    androidClientId: '926455129035-g895g7orcvhotdmu2gvu1n5p47t3sle4.apps.googleusercontent.com',
-    iosClientId: '926455129035-u1p1pcursgle34pmn9191bpdesgphbsa.apps.googleusercontent.com',
+    androidClientId:
+        '926455129035-g895g7orcvhotdmu2gvu1n5p47t3sle4.apps.googleusercontent.com',
+    iosClientId:
+        '926455129035-u1p1pcursgle34pmn9191bpdesgphbsa.apps.googleusercontent.com',
     iosBundleId: 'com.jblankenship.theusual',
   );
 }

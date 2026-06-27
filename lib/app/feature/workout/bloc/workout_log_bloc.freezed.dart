@@ -55,7 +55,7 @@ extension WorkoutLogEventPatterns on WorkoutLogEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( WorkoutLogged value)?  workoutLogged,TResult Function( WorkoutRemoved value)?  workoutRemoved,TResult Function( WorkoutSetsChanged value)?  workoutSetsChanged,TResult Function( WorkoutDurationChanged value)?  workoutDurationChanged,TResult Function( WorkoutLogStateRestored value)?  stateRestored,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( WorkoutLogged value)?  workoutLogged,TResult Function( WorkoutRemoved value)?  workoutRemoved,TResult Function( WorkoutSetsChanged value)?  workoutSetsChanged,TResult Function( WorkoutDurationChanged value)?  workoutDurationChanged,TResult Function( WorkoutLogStateRestored value)?  stateRestored,TResult Function( WorkoutSampleDataSeeded value)?  sampleDataSeeded,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case WorkoutLogged() when workoutLogged != null:
@@ -63,7 +63,8 @@ return workoutLogged(_that);case WorkoutRemoved() when workoutRemoved != null:
 return workoutRemoved(_that);case WorkoutSetsChanged() when workoutSetsChanged != null:
 return workoutSetsChanged(_that);case WorkoutDurationChanged() when workoutDurationChanged != null:
 return workoutDurationChanged(_that);case WorkoutLogStateRestored() when stateRestored != null:
-return stateRestored(_that);case _:
+return stateRestored(_that);case WorkoutSampleDataSeeded() when sampleDataSeeded != null:
+return sampleDataSeeded(_that);case _:
   return orElse();
 
 }
@@ -81,7 +82,7 @@ return stateRestored(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( WorkoutLogged value)  workoutLogged,required TResult Function( WorkoutRemoved value)  workoutRemoved,required TResult Function( WorkoutSetsChanged value)  workoutSetsChanged,required TResult Function( WorkoutDurationChanged value)  workoutDurationChanged,required TResult Function( WorkoutLogStateRestored value)  stateRestored,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( WorkoutLogged value)  workoutLogged,required TResult Function( WorkoutRemoved value)  workoutRemoved,required TResult Function( WorkoutSetsChanged value)  workoutSetsChanged,required TResult Function( WorkoutDurationChanged value)  workoutDurationChanged,required TResult Function( WorkoutLogStateRestored value)  stateRestored,required TResult Function( WorkoutSampleDataSeeded value)  sampleDataSeeded,}){
 final _that = this;
 switch (_that) {
 case WorkoutLogged():
@@ -89,7 +90,8 @@ return workoutLogged(_that);case WorkoutRemoved():
 return workoutRemoved(_that);case WorkoutSetsChanged():
 return workoutSetsChanged(_that);case WorkoutDurationChanged():
 return workoutDurationChanged(_that);case WorkoutLogStateRestored():
-return stateRestored(_that);}
+return stateRestored(_that);case WorkoutSampleDataSeeded():
+return sampleDataSeeded(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
 ///
@@ -103,7 +105,7 @@ return stateRestored(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( WorkoutLogged value)?  workoutLogged,TResult? Function( WorkoutRemoved value)?  workoutRemoved,TResult? Function( WorkoutSetsChanged value)?  workoutSetsChanged,TResult? Function( WorkoutDurationChanged value)?  workoutDurationChanged,TResult? Function( WorkoutLogStateRestored value)?  stateRestored,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( WorkoutLogged value)?  workoutLogged,TResult? Function( WorkoutRemoved value)?  workoutRemoved,TResult? Function( WorkoutSetsChanged value)?  workoutSetsChanged,TResult? Function( WorkoutDurationChanged value)?  workoutDurationChanged,TResult? Function( WorkoutLogStateRestored value)?  stateRestored,TResult? Function( WorkoutSampleDataSeeded value)?  sampleDataSeeded,}){
 final _that = this;
 switch (_that) {
 case WorkoutLogged() when workoutLogged != null:
@@ -111,7 +113,8 @@ return workoutLogged(_that);case WorkoutRemoved() when workoutRemoved != null:
 return workoutRemoved(_that);case WorkoutSetsChanged() when workoutSetsChanged != null:
 return workoutSetsChanged(_that);case WorkoutDurationChanged() when workoutDurationChanged != null:
 return workoutDurationChanged(_that);case WorkoutLogStateRestored() when stateRestored != null:
-return stateRestored(_that);case _:
+return stateRestored(_that);case WorkoutSampleDataSeeded() when sampleDataSeeded != null:
+return sampleDataSeeded(_that);case _:
   return null;
 
 }
@@ -128,14 +131,15 @@ return stateRestored(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String workoutGroupId,  String name,  WorkoutType type,  List<WorkoutSet> sets,  Duration? duration,  String? usualWorkoutId,  DateTime? day,  TimeOfDay? dayStart)?  workoutLogged,TResult Function( String id)?  workoutRemoved,TResult Function( String id,  List<WorkoutSet> sets)?  workoutSetsChanged,TResult Function( String id,  Duration duration)?  workoutDurationChanged,TResult Function( WorkoutLogState state)?  stateRestored,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( String workoutGroupId,  String name,  WorkoutType type,  List<WorkoutSet> sets,  Duration? duration,  String? usualWorkoutId,  DateTime? day,  TimeOfDay? dayStart)?  workoutLogged,TResult Function( String id)?  workoutRemoved,TResult Function( String id,  List<WorkoutSet> sets)?  workoutSetsChanged,TResult Function( String id,  Duration duration)?  workoutDurationChanged,TResult Function( WorkoutLogState state)?  stateRestored,TResult Function()?  sampleDataSeeded,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case WorkoutLogged() when workoutLogged != null:
 return workoutLogged(_that.workoutGroupId,_that.name,_that.type,_that.sets,_that.duration,_that.usualWorkoutId,_that.day,_that.dayStart);case WorkoutRemoved() when workoutRemoved != null:
 return workoutRemoved(_that.id);case WorkoutSetsChanged() when workoutSetsChanged != null:
 return workoutSetsChanged(_that.id,_that.sets);case WorkoutDurationChanged() when workoutDurationChanged != null:
 return workoutDurationChanged(_that.id,_that.duration);case WorkoutLogStateRestored() when stateRestored != null:
-return stateRestored(_that.state);case _:
+return stateRestored(_that.state);case WorkoutSampleDataSeeded() when sampleDataSeeded != null:
+return sampleDataSeeded();case _:
   return orElse();
 
 }
@@ -153,14 +157,15 @@ return stateRestored(_that.state);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String workoutGroupId,  String name,  WorkoutType type,  List<WorkoutSet> sets,  Duration? duration,  String? usualWorkoutId,  DateTime? day,  TimeOfDay? dayStart)  workoutLogged,required TResult Function( String id)  workoutRemoved,required TResult Function( String id,  List<WorkoutSet> sets)  workoutSetsChanged,required TResult Function( String id,  Duration duration)  workoutDurationChanged,required TResult Function( WorkoutLogState state)  stateRestored,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( String workoutGroupId,  String name,  WorkoutType type,  List<WorkoutSet> sets,  Duration? duration,  String? usualWorkoutId,  DateTime? day,  TimeOfDay? dayStart)  workoutLogged,required TResult Function( String id)  workoutRemoved,required TResult Function( String id,  List<WorkoutSet> sets)  workoutSetsChanged,required TResult Function( String id,  Duration duration)  workoutDurationChanged,required TResult Function( WorkoutLogState state)  stateRestored,required TResult Function()  sampleDataSeeded,}) {final _that = this;
 switch (_that) {
 case WorkoutLogged():
 return workoutLogged(_that.workoutGroupId,_that.name,_that.type,_that.sets,_that.duration,_that.usualWorkoutId,_that.day,_that.dayStart);case WorkoutRemoved():
 return workoutRemoved(_that.id);case WorkoutSetsChanged():
 return workoutSetsChanged(_that.id,_that.sets);case WorkoutDurationChanged():
 return workoutDurationChanged(_that.id,_that.duration);case WorkoutLogStateRestored():
-return stateRestored(_that.state);}
+return stateRestored(_that.state);case WorkoutSampleDataSeeded():
+return sampleDataSeeded();}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -174,14 +179,15 @@ return stateRestored(_that.state);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String workoutGroupId,  String name,  WorkoutType type,  List<WorkoutSet> sets,  Duration? duration,  String? usualWorkoutId,  DateTime? day,  TimeOfDay? dayStart)?  workoutLogged,TResult? Function( String id)?  workoutRemoved,TResult? Function( String id,  List<WorkoutSet> sets)?  workoutSetsChanged,TResult? Function( String id,  Duration duration)?  workoutDurationChanged,TResult? Function( WorkoutLogState state)?  stateRestored,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( String workoutGroupId,  String name,  WorkoutType type,  List<WorkoutSet> sets,  Duration? duration,  String? usualWorkoutId,  DateTime? day,  TimeOfDay? dayStart)?  workoutLogged,TResult? Function( String id)?  workoutRemoved,TResult? Function( String id,  List<WorkoutSet> sets)?  workoutSetsChanged,TResult? Function( String id,  Duration duration)?  workoutDurationChanged,TResult? Function( WorkoutLogState state)?  stateRestored,TResult? Function()?  sampleDataSeeded,}) {final _that = this;
 switch (_that) {
 case WorkoutLogged() when workoutLogged != null:
 return workoutLogged(_that.workoutGroupId,_that.name,_that.type,_that.sets,_that.duration,_that.usualWorkoutId,_that.day,_that.dayStart);case WorkoutRemoved() when workoutRemoved != null:
 return workoutRemoved(_that.id);case WorkoutSetsChanged() when workoutSetsChanged != null:
 return workoutSetsChanged(_that.id,_that.sets);case WorkoutDurationChanged() when workoutDurationChanged != null:
 return workoutDurationChanged(_that.id,_that.duration);case WorkoutLogStateRestored() when stateRestored != null:
-return stateRestored(_that.state);case _:
+return stateRestored(_that.state);case WorkoutSampleDataSeeded() when sampleDataSeeded != null:
+return sampleDataSeeded();case _:
   return null;
 
 }
@@ -557,6 +563,38 @@ $WorkoutLogStateCopyWith<$Res> get state {
   });
 }
 }
+
+/// @nodoc
+
+
+class WorkoutSampleDataSeeded implements WorkoutLogEvent {
+  const WorkoutSampleDataSeeded();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is WorkoutSampleDataSeeded);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'WorkoutLogEvent.sampleDataSeeded()';
+}
+
+
+}
+
+
+
 
 
 /// @nodoc

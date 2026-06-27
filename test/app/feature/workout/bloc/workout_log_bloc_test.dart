@@ -30,6 +30,34 @@ void main() {
       expect(WorkoutLogBloc().state, equals(const WorkoutLogState()));
     });
 
+    blocTest<WorkoutLogBloc, WorkoutLogState>(
+      'sampleDataSeeded fills the log with seeded strength sessions',
+      build: WorkoutLogBloc.new,
+      act: (bloc) => bloc.add(const WorkoutLogEvent.sampleDataSeeded()),
+      expect: () => [
+        isA<WorkoutLogState>().having(
+          (s) => s.workoutEntries,
+          'workoutEntries',
+          isNotEmpty,
+        ),
+      ],
+      verify: (bloc) {
+        // The seeded sessions span multiple exercises across months, so the
+        // strength rollup yields several trending series.
+        final progress = bloc.state.strengthProgress(
+          const TimeOfDay(hour: 0, minute: 0),
+        );
+        expect(progress.length, greaterThan(1));
+        expect(progress.first.points.length, greaterThan(1));
+      },
+    );
+
+    test('sampleUsualWorkouts seeds usuals under the default groups', () {
+      final sampleUsualWorkouts = WorkoutLogBloc.sampleUsualWorkouts;
+      expect(sampleUsualWorkouts.keys, containsAll(['push', 'pull', 'legs']));
+      expect(sampleUsualWorkouts['push'], isNotEmpty);
+    });
+
     group('workoutLogged', () {
       blocTest<WorkoutLogBloc, WorkoutLogState>(
         'appends a workout entry and records it as just logged',
@@ -148,6 +176,230 @@ void main() {
       );
 
       expect(bloc.fromJson(bloc.toJson(state)), equals(state));
+    });
+
+    group('strengthProgress', () {
+      WorkoutLogEntry strengthEntry({
+        required String id,
+        required DateTime loggedAt,
+        required String name,
+        String? usualWorkoutId,
+        List<WorkoutSet> sets = const [WorkoutSet(weight: 100, reps: 8)],
+      }) {
+        return WorkoutLogEntry(
+          id: id,
+          loggedAt: loggedAt,
+          workoutGroupId: 'push',
+          name: name,
+          sets: sets,
+          usualWorkoutId: usualWorkoutId,
+        );
+      }
+
+      test('one series per exercise with >=2 sessions, oldest point first', () {
+        final state = WorkoutLogState(
+          workoutEntries: [
+            strengthEntry(
+              id: '1',
+              loggedAt: DateTime(2026, 6, 1, 9),
+              name: 'Bench Press',
+            ),
+            strengthEntry(
+              id: '2',
+              loggedAt: DateTime(2026, 6, 8, 9),
+              name: 'Bench Press',
+              sets: const [WorkoutSet(weight: 105, reps: 8)],
+            ),
+          ],
+        );
+
+        final progress = state.strengthProgress(
+          const TimeOfDay(hour: 0, minute: 0),
+        );
+
+        expect(progress, hasLength(1));
+        expect(progress.single.name, equals('Bench Press'));
+        expect(progress.single.points, hasLength(2));
+        expect(
+          progress.single.points.first.sessionDay,
+          equals(DateTime(2026, 6)),
+        );
+        expect(
+          progress.single.points.last.estimatedOneRepMax,
+          closeTo(133.0, 0.5),
+        );
+      });
+
+      test('drops exercises with fewer than two sessions', () {
+        final state = WorkoutLogState(
+          workoutEntries: [
+            strengthEntry(
+              id: '1',
+              loggedAt: DateTime(2026, 6),
+              name: 'Squat',
+            ),
+          ],
+        );
+        expect(
+          state.strengthProgress(const TimeOfDay(hour: 0, minute: 0)),
+          isEmpty,
+        );
+      });
+
+      test('groups renamed usuals by usualWorkoutId into one series', () {
+        final state = WorkoutLogState(
+          workoutEntries: [
+            strengthEntry(
+              id: '1',
+              loggedAt: DateTime(2026, 6),
+              name: 'Bench',
+              usualWorkoutId: 'u1',
+            ),
+            strengthEntry(
+              id: '2',
+              loggedAt: DateTime(2026, 6, 8),
+              name: 'Bench Press',
+              usualWorkoutId: 'u1',
+            ),
+          ],
+        );
+
+        final progress = state.strengthProgress(
+          const TimeOfDay(hour: 0, minute: 0),
+        );
+        expect(progress, hasLength(1));
+        // Display name comes from the most recent entry.
+        expect(progress.single.name, equals('Bench Press'));
+        expect(progress.single.points, hasLength(2));
+      });
+
+      test('excludes cardio entries', () {
+        final state = WorkoutLogState(
+          workoutEntries: [
+            WorkoutLogEntry(
+              id: '1',
+              loggedAt: DateTime(2026, 6),
+              workoutGroupId: 'cardio',
+              name: 'Run',
+              type: WorkoutType.cardio,
+              duration: const Duration(minutes: 30),
+            ),
+            WorkoutLogEntry(
+              id: '2',
+              loggedAt: DateTime(2026, 6, 8),
+              workoutGroupId: 'cardio',
+              name: 'Run',
+              type: WorkoutType.cardio,
+              duration: const Duration(minutes: 35),
+            ),
+          ],
+        );
+        expect(
+          state.strengthProgress(const TimeOfDay(hour: 0, minute: 0)),
+          isEmpty,
+        );
+      });
+
+      test('uses the strongest set across same-day entries for its point', () {
+        const strongerSet = WorkoutSet(weight: 120, reps: 8);
+        final state = WorkoutLogState(
+          workoutEntries: [
+            strengthEntry(
+              id: '1',
+              loggedAt: DateTime(2026, 6, 1, 9),
+              name: 'Bench Press',
+            ),
+            strengthEntry(
+              id: '2',
+              loggedAt: DateTime(2026, 6, 1, 18),
+              name: 'Bench Press',
+              sets: const [strongerSet],
+            ),
+            strengthEntry(
+              id: '3',
+              loggedAt: DateTime(2026, 6, 8, 9),
+              name: 'Bench Press',
+              sets: const [WorkoutSet(weight: 110, reps: 8)],
+            ),
+          ],
+        );
+
+        final progress = state.strengthProgress(
+          const TimeOfDay(hour: 0, minute: 0),
+        );
+
+        expect(progress, hasLength(1));
+        expect(progress.single.points, hasLength(2));
+
+        final jun1Point = progress.single.points.first;
+        expect(jun1Point.sessionDay, equals(DateTime(2026, 6)));
+        expect(jun1Point.topSet, equals(strongerSet));
+        expect(
+          jun1Point.estimatedOneRepMax,
+          closeTo(strongerSet.estimatedOneRepMax, 0.001),
+        );
+      });
+
+      test('canonical name is the most-recent entry regardless of list '
+          'order', () {
+        final state = WorkoutLogState(
+          workoutEntries: [
+            strengthEntry(
+              id: '2',
+              loggedAt: DateTime(2026, 6, 8),
+              name: 'Bench Press',
+              usualWorkoutId: 'u1',
+            ),
+            strengthEntry(
+              id: '1',
+              loggedAt: DateTime(2026, 6),
+              name: 'Bench',
+              usualWorkoutId: 'u1',
+            ),
+          ],
+        );
+
+        final progress = state.strengthProgress(
+          const TimeOfDay(hour: 0, minute: 0),
+        );
+
+        expect(progress, hasLength(1));
+        expect(progress.single.name, equals('Bench Press'));
+      });
+
+      test('sorts the most-recently-trained exercise first', () {
+        final state = WorkoutLogState(
+          workoutEntries: [
+            strengthEntry(
+              id: 'y1',
+              loggedAt: DateTime(2026, 6),
+              name: 'Squat',
+            ),
+            strengthEntry(
+              id: 'y2',
+              loggedAt: DateTime(2026, 6, 8),
+              name: 'Squat',
+            ),
+            strengthEntry(
+              id: 'x1',
+              loggedAt: DateTime(2026, 6, 5),
+              name: 'Bench Press',
+            ),
+            strengthEntry(
+              id: 'x2',
+              loggedAt: DateTime(2026, 6, 15),
+              name: 'Bench Press',
+            ),
+          ],
+        );
+
+        final progress = state.strengthProgress(
+          const TimeOfDay(hour: 0, minute: 0),
+        );
+
+        expect(progress, hasLength(2));
+        expect(progress.first.name, equals('Bench Press'));
+      });
     });
   });
 

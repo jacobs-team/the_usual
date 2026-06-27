@@ -104,9 +104,10 @@ class _ExpandableWorkoutState extends State<ExpandableWorkout> {
     final theme = Theme.of(context);
     final summary = switch (widget.type) {
       WorkoutType.strength => widget.sets.summary,
-      WorkoutType.cardio => widget.duration == Duration.zero
-          ? 'No time'
-          : widget.duration.clockLabel,
+      WorkoutType.cardio =>
+        widget.duration == Duration.zero
+            ? 'No time'
+            : widget.duration.clockLabel,
     };
     return ExpansionTile(
       dense: true,

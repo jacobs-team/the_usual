@@ -88,6 +88,22 @@ abstract class DailyLogState with _$DailyLogState {
     return weighInDays.length > 1;
   }
 
+  /// The net weight change across the [window] ending on [day] (rolling over at
+  /// [dayStart]): the latest weigh-in in the window minus the earliest. Null
+  /// when the window holds fewer than two weigh-ins, since a change needs two
+  /// points. Rounded to one decimal to match how weigh-ins are entered.
+  double? weightChangeOver(Duration window, DateTime day, TimeOfDay dayStart) {
+    final windowStart = day.subtract(window);
+    final inWindow = [
+      for (final weightEntry in weightEntries)
+        if (!weightEntry.loggedAt.logicalDay(dayStart).isBefore(windowStart) &&
+            !weightEntry.loggedAt.logicalDay(dayStart).isAfter(day))
+          weightEntry,
+    ]..sort((a, b) => a.loggedAt.compareTo(b.loggedAt));
+    if (inWindow.length < 2) return null;
+    return ((inWindow.last.weight - inWindow.first.weight) * 10).round() / 10;
+  }
+
   /// The most recent weigh-in, or null when none have been recorded.
   WeightEntry? get latestWeight {
     if (weightEntries.isEmpty) return null;

@@ -46,7 +46,7 @@ class TheUsualAppBar extends StatelessWidget implements PreferredSizeWidget {
             icon: const Icon(Icons.history_outlined),
           ),
         IconButton(
-          onPressed: () => context.go(Routes.settings),
+          onPressed: () => context.push(Routes.settings),
           tooltip: context.l10n.settingsTooltip,
           icon: const Icon(Icons.settings_outlined),
         ),

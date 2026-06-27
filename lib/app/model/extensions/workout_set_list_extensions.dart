@@ -26,6 +26,26 @@ extension WorkoutSetListFormatting on List<WorkoutSet> {
     return '$length $unit · $labels';
   }
 
+  /// The set with the highest [WorkoutSet.estimatedOneRepMax], or null when no
+  /// set has both a weight and reps to estimate from.
+  WorkoutSet? get topEstimatedOneRepMaxSet {
+    WorkoutSet? best;
+    var bestEstimate = 0.0;
+    for (final workoutSet in this) {
+      final estimate = workoutSet.estimatedOneRepMax;
+      if (estimate > bestEstimate) {
+        bestEstimate = estimate;
+        best = workoutSet;
+      }
+    }
+    return best;
+  }
+
+  /// The highest estimated one-rep max across these sets, or 0 when none can be
+  /// estimated.
+  double get bestEstimatedOneRepMax =>
+      topEstimatedOneRepMaxSet?.estimatedOneRepMax ?? 0;
+
   /// Whether these sets differ from [other] in count, weight, or reps. The
   /// bodyweight auto-estimate flag is ignored, so resolving an estimate doesn't
   /// count as a change.

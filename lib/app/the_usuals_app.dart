@@ -26,7 +26,8 @@ class TheUsualsApp extends StatefulWidget {
   State<TheUsualsApp> createState() => _TheUsualsAppState();
 }
 
-class _TheUsualsAppState extends State<TheUsualsApp> {
+class _TheUsualsAppState extends State<TheUsualsApp>
+    with WidgetsBindingObserver {
   /// App-level messenger so the post-onboarding snackbar shows while the user
   /// is routed to Today.
   final _scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
@@ -39,6 +40,7 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     // Restore a previous Google session silently before first paint.
     unawaited(getIt<AuthCubit>().restoreOnStartup());
     // Hold the native splash until the session is resolved and synced, so the
@@ -68,8 +70,17 @@ class _TheUsualsAppState extends State<TheUsualsApp> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     unawaited(_shareSubscription?.cancel());
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    // Sync all pending tasks before backgrounding.
+    if (state == AppLifecycleState.paused) {
+      getIt<SyncRepository>().flushPending();
+    }
   }
 
   void _handleSharedPhotos(List<MealPhoto> photos) {

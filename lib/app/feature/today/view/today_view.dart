@@ -101,130 +101,150 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
           child: Text(pillLabel),
         ),
       ),
-      body: SafeArea(
-        bottom: false,
-        child:
-            BlocSelector<
-              UserSettingsBloc,
-              UserSettingsState,
-              (
-                Map<MealOfTheDay, List<UsualMeal>>,
-                bool,
-                List<CalorieGoalEntry>,
-                TimeOfDay,
-              )
-            >(
-              bloc: getIt<UserSettingsBloc>(),
-              selector: (state) => (
-                state.usuals,
-                state.expandNutritionByDefault,
-                state.calorieGoalHistory,
-                state.dayStartTime,
-              ),
-              builder: (context, selected) {
-                final (
-                  usualMeals,
-                  expandNutritionByDefault,
-                  calorieGoalHistory,
-                  dayStartTime,
-                ) = selected;
-                final today = now.logicalDay(dayStartTime);
-                final selectedRange = _selectedRange;
-                final isToday = selectedRange == null;
-                final displayDay = selectedRange == null
-                    ? today
-                    : DateUtils.dateOnly(selectedRange.start);
-                // The bar shows the goal active on the day being viewed, not
-                // today's, so a past day keeps the goal it had then.
-                final calorieGoal = calorieGoalHistory.goalOn(displayDay);
-                final logDays = selectedRange?.logicalDays;
-                final logDayStart = selectedRange == null ? null : dayStartTime;
-                return BlocSelector<
-                  DailyLogBloc,
-                  DailyLogState,
-                  List<MealLogEntry>
-                >(
-                  bloc: getIt<DailyLogBloc>(),
-                  selector: (state) => state.mealEntries,
-                  builder: (context, mealEntries) {
-                    final breakdown = mealEntries.breakdownOn(
-                      displayDay,
-                      dayStartTime,
-                    );
-                    return CustomScrollView(
-                      slivers: [
-                        SliverPadding(
-                          padding: EdgeInsets.fromLTRB(
-                            AppDesign.spacing.lg,
-                            AppDesign.spacing.lg,
-                            AppDesign.spacing.lg,
-                            AppDesign.spacing.md,
-                          ),
-                          sliver: SliverToBoxAdapter(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                _WeightTracker(days: logDays ?? [today]),
-                                SizedBox(height: AppDesign.spacing.lg),
-                                Row(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Expanded(
-                                      child: NutritionBar(
-                                        nutrition: breakdown.nutrition,
-                                        calorieGoal: calorieGoal,
-                                        onSetGoal: () => context.go(
-                                          '${Routes.settings}?focus=goals',
+      body: GestureDetector(
+        onHorizontalDragEnd: _onHorizontalDragEnd,
+        child: SafeArea(
+          bottom: false,
+          child:
+              BlocSelector<
+                UserSettingsBloc,
+                UserSettingsState,
+                (
+                  Map<MealOfTheDay, List<UsualMeal>>,
+                  bool,
+                  List<CalorieGoalEntry>,
+                  TimeOfDay,
+                )
+              >(
+                bloc: getIt<UserSettingsBloc>(),
+                selector: (state) => (
+                  state.usuals,
+                  state.expandNutritionByDefault,
+                  state.calorieGoalHistory,
+                  state.dayStartTime,
+                ),
+                builder: (context, selected) {
+                  final (
+                    usualMeals,
+                    expandNutritionByDefault,
+                    calorieGoalHistory,
+                    dayStartTime,
+                  ) = selected;
+                  final today = now.logicalDay(dayStartTime);
+                  final selectedRange = _selectedRange;
+                  final isToday = selectedRange == null;
+                  final displayDay = selectedRange == null
+                      ? today
+                      : DateUtils.dateOnly(selectedRange.start);
+                  // The bar shows the goal active on the day being viewed, not
+                  // today's, so a past day keeps the goal it had then.
+                  final calorieGoal = calorieGoalHistory.goalOn(displayDay);
+                  final logDays = selectedRange?.logicalDays;
+                  final logDayStart = selectedRange == null
+                      ? null
+                      : dayStartTime;
+                  return BlocSelector<
+                    DailyLogBloc,
+                    DailyLogState,
+                    List<MealLogEntry>
+                  >(
+                    bloc: getIt<DailyLogBloc>(),
+                    selector: (state) => state.mealEntries,
+                    builder: (context, mealEntries) {
+                      final breakdown = mealEntries.breakdownOn(
+                        displayDay,
+                        dayStartTime,
+                      );
+                      return CustomScrollView(
+                        slivers: [
+                          SliverPadding(
+                            padding: EdgeInsets.fromLTRB(
+                              AppDesign.spacing.lg,
+                              AppDesign.spacing.lg,
+                              AppDesign.spacing.lg,
+                              AppDesign.spacing.md,
+                            ),
+                            sliver: SliverToBoxAdapter(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  _WeightTracker(days: logDays ?? [today]),
+                                  SizedBox(height: AppDesign.spacing.lg),
+                                  Row(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Expanded(
+                                        child: NutritionBar(
+                                          nutrition: breakdown.nutrition,
+                                          calorieGoal: calorieGoal,
+                                          onSetGoal: () => context.push(
+                                            '${Routes.settings}?focus=goals',
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                    SizedBox(width: AppDesign.spacing.sm),
-                                    _NutritionExpansionToggle(
-                                      expanded: expandNutritionByDefault,
-                                    ),
-                                  ],
-                                ),
-                              ],
+                                      SizedBox(width: AppDesign.spacing.sm),
+                                      _NutritionExpansionToggle(
+                                        expanded: expandNutritionByDefault,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                        for (final mealOfTheDay in MealOfTheDay.values)
-                          MealLogSection(
-                            mealOfTheDay: mealOfTheDay,
-                            mealLogEntries:
-                                breakdown.entriesByMeal[mealOfTheDay] ??
-                                const <MealLogEntry>[],
-                            quickPicks: mealEntries.orderedQuickPicks(
+                          for (final mealOfTheDay in MealOfTheDay.values)
+                            MealLogSection(
                               mealOfTheDay: mealOfTheDay,
-                              usuals: usualMeals,
-                              day: displayDay,
-                              dayStart: dayStartTime,
+                              mealLogEntries:
+                                  breakdown.entriesByMeal[mealOfTheDay] ??
+                                  const <MealLogEntry>[],
+                              quickPicks: mealEntries.orderedQuickPicks(
+                                mealOfTheDay: mealOfTheDay,
+                                usuals: usualMeals,
+                                day: displayDay,
+                                dayStart: dayStartTime,
+                              ),
+                              otherMealUsuals: mealEntries.usualsFromOtherMeals(
+                                mealOfTheDay: mealOfTheDay,
+                                usuals: usualMeals,
+                                day: displayDay,
+                                dayStart: dayStartTime,
+                              ),
+                              isCurrent: isToday && mealOfTheDay == currentMeal,
+                              nutritionExpandedByDefault:
+                                  expandNutritionByDefault,
+                              logDays: logDays,
+                              dayStart: logDayStart,
                             ),
-                            otherMealUsuals: mealEntries.usualsFromOtherMeals(
-                              mealOfTheDay: mealOfTheDay,
-                              usuals: usualMeals,
-                              day: displayDay,
-                              dayStart: dayStartTime,
+                          SliverToBoxAdapter(
+                            child: SizedBox(
+                              height: MediaQuery.paddingOf(context).bottom,
                             ),
-                            isCurrent: isToday && mealOfTheDay == currentMeal,
-                            nutritionExpandedByDefault:
-                                expandNutritionByDefault,
-                            logDays: logDays,
-                            dayStart: logDayStart,
                           ),
-                        SliverToBoxAdapter(
-                          child: SizedBox(
-                            height: MediaQuery.paddingOf(context).bottom,
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-            ),
+                        ],
+                      );
+                    },
+                  );
+                },
+              ),
+        ),
       ),
     );
+  }
+
+  /// Swipes the shown day back (drag left→right) or forward (right→left), with
+  /// today's live view in between. Unbounded, so past and future days are both
+  /// reachable.
+  void _onHorizontalDragEnd(DragEndDetails details) {
+    final velocity = details.primaryVelocity;
+    if (velocity == null || velocity == 0) return;
+    final deltaDays = velocity > 0 ? -1 : 1;
+    final today = clock.now().logicalDay(
+      getIt<UserSettingsBloc>().state.dayStartTime,
+    );
+    setState(() {
+      _selectedRange = selectedDayShifted(_selectedRange, deltaDays, today);
+    });
   }
 
   /// The pill's label: "Today" for the live view, a single formatted date for
@@ -285,9 +305,29 @@ class _NutritionExpansionToggle extends StatelessWidget {
   }
 }
 
+/// A trailing window over which the weight tracker reports the net change.
+enum _WeightTrendRange {
+  sevenDays(Duration(days: 7), '7d', 'Last 7 days'),
+  thirtyDays(Duration(days: 30), '30d', 'Last 30 days'),
+  ninetyDays(Duration(days: 90), '90d', 'Last 90 days'),
+  year(Duration(days: 365), '1y', 'Last year');
+
+  const _WeightTrendRange(this.window, this.shortLabel, this.menuLabel);
+
+  /// The span of time the change is measured across.
+  final Duration window;
+
+  /// Compact label shown on the inline range selector, e.g. "30d".
+  final String shortLabel;
+
+  /// Full label shown in the range selector's menu, e.g. "Last 30 days".
+  final String menuLabel;
+}
+
 /// Today's weight tracker: an inline field for the day's weigh-in, prefilled
-/// with the last recorded weight as a hint.
-class _WeightTracker extends StatelessWidget {
+/// with the last recorded weight as a hint, with the net change over a
+/// selectable trailing window shown beside the label.
+class _WeightTracker extends StatefulWidget {
   const _WeightTracker({required this.days});
 
   /// The days whose weigh-in this field records. One day in the live/single-day
@@ -295,8 +335,17 @@ class _WeightTracker extends StatelessWidget {
   final List<DateTime> days;
 
   @override
+  State<_WeightTracker> createState() => _WeightTrackerState();
+}
+
+class _WeightTrackerState extends State<_WeightTracker> {
+  _WeightTrendRange _range = _WeightTrendRange.thirtyDays;
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final dayStart = getIt<UserSettingsBloc>().state.dayStartTime;
+    final displayDay = widget.days.first;
     return Card(
       margin: EdgeInsets.zero,
       child: Padding(
@@ -310,11 +359,100 @@ class _WeightTracker extends StatelessWidget {
             ),
             SizedBox(width: AppDesign.spacing.sm),
             Text('Weight', style: theme.textTheme.bodyMedium),
+            SizedBox(width: AppDesign.spacing.sm),
+            BlocSelector<DailyLogBloc, DailyLogState, (double?, bool)>(
+              bloc: getIt<DailyLogBloc>(),
+              selector: (state) => (
+                state.weightChangeOver(_range.window, displayDay, dayStart),
+                state.weightEntries.length >= 2,
+              ),
+              builder: (context, selected) {
+                final (change, hasHistory) = selected;
+                if (!hasHistory) return const SizedBox.shrink();
+                return _WeightTrend(
+                  change: change,
+                  range: _range,
+                  onRangeSelected: (range) => setState(() => _range = range),
+                );
+              },
+            ),
             const Spacer(),
-            WeightEntryField(days: days, showLastWeightButton: true),
+            WeightEntryField(days: widget.days, showLastWeightButton: true),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// The net weight [change] over [range], shown as a direction arrow and amount,
+/// next to a tappable selector that switches the range. A null [change] means
+/// the window has too few weigh-ins to measure one.
+class _WeightTrend extends StatelessWidget {
+  const _WeightTrend({
+    required this.change,
+    required this.range,
+    required this.onRangeSelected,
+  });
+
+  final double? change;
+  final _WeightTrendRange range;
+  final ValueChanged<_WeightTrendRange> onRangeSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final textStyle = theme.textTheme.bodyMedium;
+    final iconColor = theme.colorScheme.onSurface;
+    final weightUnit = getIt<UserSettingsBloc>().state.weightUnit;
+
+    final change = this.change;
+    final Widget delta;
+    if (change == null) {
+      delta = Text('—', style: textStyle);
+    } else if (change == 0) {
+      delta = Text('No change', style: textStyle);
+    } else {
+      final amount = '${change.abs().trimmedDecimal} ${weightUnit.name}';
+      delta = Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            change > 0 ? Icons.arrow_upward : Icons.arrow_downward,
+            size: 14,
+            color: iconColor,
+          ),
+          SizedBox(width: AppDesign.spacing.xs),
+          Text(amount, style: textStyle),
+        ],
+      );
+    }
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        delta,
+        SizedBox(width: AppDesign.spacing.sm),
+        PopupMenuButton<_WeightTrendRange>(
+          initialValue: range,
+          tooltip: 'Change range',
+          onSelected: onRangeSelected,
+          itemBuilder: (context) => [
+            for (final trendRange in _WeightTrendRange.values)
+              PopupMenuItem(
+                value: trendRange,
+                child: Text(trendRange.menuLabel),
+              ),
+          ],
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(range.shortLabel, style: textStyle),
+              Icon(Icons.arrow_drop_down, size: 18, color: iconColor),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

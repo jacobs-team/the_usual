@@ -48,8 +48,7 @@ void main() {
       ),
     ).thenAnswer((invocation) async {
       final outputSchema =
-          invocation.namedArguments[#outputSchema]
-              as SchemanticType<double?>;
+          invocation.namedArguments[#outputSchema] as SchemanticType<double?>;
       return outputSchema.parse(rawJson);
     });
   }

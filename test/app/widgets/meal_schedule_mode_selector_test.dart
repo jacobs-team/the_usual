@@ -38,9 +38,11 @@ void main() {
       // Each segment renders as a TextButton in values order.
       final endOfDaySegment = find
           .byType(TextButton)
-          .at(MealCheckinScheduleMode.values.indexOf(
-            MealCheckinScheduleMode.endOfDay,
-          ));
+          .at(
+            MealCheckinScheduleMode.values.indexOf(
+              MealCheckinScheduleMode.endOfDay,
+            ),
+          );
       await tester.tap(endOfDaySegment);
 
       expect(selected, equals(MealCheckinScheduleMode.endOfDay));

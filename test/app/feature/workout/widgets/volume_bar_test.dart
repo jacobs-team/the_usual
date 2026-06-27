@@ -14,8 +14,9 @@ void main() {
       expect(find.byType(VolumeBar), findsOneWidget);
     });
 
-    testWidgets('shows a Text whose data contains the trimmed volume value',
-        (tester) async {
+    testWidgets('shows a Text whose data contains the trimmed volume value', (
+      tester,
+    ) async {
       const volume = 1500.0;
       await tester.pumpPumpPumpItUP(
         const VolumeBar(volume: volume, weightUnit: WeightUnit.kg),
@@ -30,19 +31,20 @@ void main() {
     });
 
     testWidgets(
-        'shows a Text whose data contains the trimmed volume for decimal',
-        (tester) async {
-      const volume = 1500.5;
-      await tester.pumpPumpPumpItUP(
-        const VolumeBar(volume: volume, weightUnit: WeightUnit.kg),
-      );
+      'shows a Text whose data contains the trimmed volume for decimal',
+      (tester) async {
+        const volume = 1500.5;
+        await tester.pumpPumpPumpItUP(
+          const VolumeBar(volume: volume, weightUnit: WeightUnit.kg),
+        );
 
-      final texts = tester
-          .widgetList<Text>(find.byType(Text))
-          .where((text) => text.data?.contains(volume.trimmedDecimal) == true)
-          .toList();
+        final texts = tester
+            .widgetList<Text>(find.byType(Text))
+            .where((text) => text.data?.contains(volume.trimmedDecimal) == true)
+            .toList();
 
-      expect(texts, isNotEmpty);
-    });
+        expect(texts, isNotEmpty);
+      },
+    );
   });
 }

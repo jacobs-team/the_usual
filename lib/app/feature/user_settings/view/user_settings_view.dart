@@ -51,7 +51,7 @@ class _UserSettingsViewState extends State<UserSettingsView> {
       appBar: AppBar(
         centerTitle: true,
         title: const Text('Settings'),
-        leading: BackButton(onPressed: () => context.go(Routes.today)),
+        leading: BackButton(onPressed: () => context.pop()),
       ),
       body: SafeArea(
         child: ListView(

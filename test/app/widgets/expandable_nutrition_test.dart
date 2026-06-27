@@ -9,14 +9,16 @@ void main() {
     // The collapsed name lives in the tile's title Text (rendered only when
     // onNameChanged is null). Reading its data lets us assert the ×N prefix
     // without matching on copy.
-    String titleText(WidgetTester tester) => tester.widget<Text>(
-      find
-          .descendant(
-            of: find.byType(ExpansionTile),
-            matching: find.byType(Text),
-          )
-          .first,
-    ).data!;
+    String titleText(WidgetTester tester) => tester
+        .widget<Text>(
+          find
+              .descendant(
+                of: find.byType(ExpansionTile),
+                matching: find.byType(Text),
+              )
+              .first,
+        )
+        .data!;
 
     testWidgets('collapsed shows a read-only summary, expanded reveals the '
         'fields', (tester) async {

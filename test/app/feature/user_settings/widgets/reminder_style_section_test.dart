@@ -39,9 +39,11 @@ void main() {
 
       // Cards render in ReminderStyle.values order.
       await tester.tap(
-        find.byType(RadioOptionCard).at(
-          ReminderStyle.values.indexOf(ReminderStyle.none),
-        ),
+        find
+            .byType(RadioOptionCard)
+            .at(
+              ReminderStyle.values.indexOf(ReminderStyle.none),
+            ),
       );
 
       verify(
@@ -63,9 +65,11 @@ void main() {
       );
 
       await tester.tap(
-        find.byType(RadioOptionCard).at(
-          ReminderStyle.values.indexOf(ReminderStyle.notifications),
-        ),
+        find
+            .byType(RadioOptionCard)
+            .at(
+              ReminderStyle.values.indexOf(ReminderStyle.notifications),
+            ),
       );
       await tester.pumpAndSettle();
 
@@ -90,9 +94,11 @@ void main() {
       );
 
       await tester.tap(
-        find.byType(RadioOptionCard).at(
-          ReminderStyle.values.indexOf(ReminderStyle.notifications),
-        ),
+        find
+            .byType(RadioOptionCard)
+            .at(
+              ReminderStyle.values.indexOf(ReminderStyle.notifications),
+            ),
       );
       await tester.pumpAndSettle();
 

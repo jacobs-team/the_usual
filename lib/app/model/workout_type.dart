@@ -21,9 +21,8 @@ enum WorkoutType {
         .where((word) => word.isNotEmpty)
         .toSet();
     final isCardio = _cardioGroupNames.any(
-      (term) => term.contains(' ')
-          ? normalized.contains(term)
-          : words.contains(term),
+      (term) =>
+          term.contains(' ') ? normalized.contains(term) : words.contains(term),
     );
     return isCardio ? WorkoutType.cardio : WorkoutType.strength;
   }

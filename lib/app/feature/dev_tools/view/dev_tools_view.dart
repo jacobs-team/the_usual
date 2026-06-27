@@ -72,6 +72,31 @@ class DevToolsView extends StatelessWidget {
           const Divider(),
           ListTile(
             title: Text(
+              'Load sample workouts',
+              style: theme.textTheme.bodyLarge,
+            ),
+            subtitle: const Text(
+              'Replaces the workout log and usual workouts with seeded '
+              'months of training',
+            ),
+            trailing: const Icon(Icons.fitness_center),
+            onTap: () {
+              getIt<WorkoutLogBloc>().add(
+                const WorkoutLogEvent.sampleDataSeeded(),
+              );
+              final userSettingsBloc = getIt<UserSettingsBloc>();
+              userSettingsBloc.add(
+                UserSettingsEvent.settingsCommitted(
+                  userSettingsBloc.state.copyWith(
+                    usualWorkouts: WorkoutLogBloc.sampleUsualWorkouts,
+                  ),
+                ),
+              );
+            },
+          ),
+          const Divider(),
+          ListTile(
+            title: Text(
               'Test Claude connection',
               style: theme.textTheme.bodyLarge,
             ),

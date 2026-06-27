@@ -109,6 +109,28 @@ void main() {
       verify(() => userSettingsBloc.add(any())).called(1);
     });
 
+    testWidgets('seeds sample workouts when the tile is tapped', (
+      tester,
+    ) async {
+      final workoutLogBloc = MockWorkoutLogBloc();
+      when(() => workoutLogBloc.state).thenReturn(const WorkoutLogState());
+      when(
+        () => workoutLogBloc.stream,
+      ).thenAnswer((_) => const Stream.empty());
+
+      await tester.pumpPumpPumpItUP(
+        deps: [devToolsCubit, workoutLogBloc, userSettingsBloc],
+        const DevToolsView(),
+      );
+
+      await tester.tap(find.byIcon(Icons.fitness_center));
+
+      verify(
+        () => workoutLogBloc.add(const WorkoutLogEvent.sampleDataSeeded()),
+      ).called(1);
+      verify(() => userSettingsBloc.add(any())).called(1);
+    });
+
     group('Test Claude connection', () {
       testWidgets('shows missing-key snackbar when not configured', (
         tester,
@@ -368,6 +390,11 @@ void main() {
         const DevToolsView(),
       );
 
+      await tester.scrollUntilVisible(
+        find.byIcon(Icons.bug_report_outlined),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
       await tester.tap(find.byIcon(Icons.bug_report_outlined));
       await tester.pump();
 
@@ -472,6 +499,8 @@ void main() {
         200,
         scrollable: find.byType(Scrollable).first,
       );
+      await tester.ensureVisible(find.byIcon(Icons.restart_alt));
+      await tester.pump();
       await tester.tap(find.byIcon(Icons.restart_alt));
       await tester.pumpAndSettle();
 

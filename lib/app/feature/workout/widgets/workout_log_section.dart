@@ -175,13 +175,12 @@ class WorkoutLogSection extends StatelessWidget {
                                 duration: usualWorkout.duration,
                                 usualWorkoutId: usualWorkout.id,
                               ),
-                              onRemove: () =>
-                                  getIt<UserSettingsBloc>().add(
-                                    UserSettingsEvent.usualWorkoutRemoved(
-                                      workoutGroup.id,
-                                      usualWorkout.id,
-                                    ),
-                                  ),
+                              onRemove: () => getIt<UserSettingsBloc>().add(
+                                UserSettingsEvent.usualWorkoutRemoved(
+                                  workoutGroup.id,
+                                  usualWorkout.id,
+                                ),
+                              ),
                             ),
                         ],
                       ),
@@ -210,12 +209,13 @@ class WorkoutLogSection extends StatelessWidget {
                                 userSettings.weightUnit,
                               );
                             }
-                            final defaultType =
-                                WorkoutType.defaultForGroupName(
-                                  workoutGroup.name,
-                                );
-                            final result = await TheUsualBottomSheet
-                                .show<WorkoutEntryResult>(
+                            final defaultType = WorkoutType.defaultForGroupName(
+                              workoutGroup.name,
+                            );
+                            final result =
+                                await TheUsualBottomSheet.show<
+                                  WorkoutEntryResult
+                                >(
                                   context,
                                   builder: (_) => WorkoutEntrySheet(
                                     title: 'New workout',

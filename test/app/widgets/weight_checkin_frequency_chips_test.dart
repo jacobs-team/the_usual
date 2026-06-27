@@ -34,9 +34,11 @@ void main() {
       // Chips render in WeightCheckinFrequency.values order.
       final weeklyChip = find
           .byType(ChoiceChip)
-          .at(WeightCheckinFrequency.values.indexOf(
-            WeightCheckinFrequency.weekly,
-          ));
+          .at(
+            WeightCheckinFrequency.values.indexOf(
+              WeightCheckinFrequency.weekly,
+            ),
+          );
       await tester.tap(weeklyChip);
 
       expect(selected, equals(WeightCheckinFrequency.weekly));

@@ -3,36 +3,27 @@ import 'dart:async';
 import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
 import 'package:the_usual/design_system/design_system.dart';
 
-/// {@template workout_history_view}
+/// {@template workout_days_lens}
 /// Workout history browsed a month at a time. A horizontal strip selects the
 /// month; swiping the page flips between months. Each month lists its days,
 /// and each day expands to show its workouts grouped by training group.
 /// {@endtemplate}
-class WorkoutHistoryView extends StatefulWidget {
-  /// {@macro workout_history_view}
-  const WorkoutHistoryView({super.key});
+class WorkoutDaysLens extends StatefulWidget {
+  /// {@macro workout_days_lens}
+  const WorkoutDaysLens({super.key});
 
   @override
-  State<WorkoutHistoryView> createState() => _WorkoutHistoryViewState();
+  State<WorkoutDaysLens> createState() => _WorkoutDaysLensState();
 }
 
-class _WorkoutHistoryViewState extends State<WorkoutHistoryView> {
+class _WorkoutDaysLensState extends State<WorkoutDaysLens> {
   final WorkoutLogBloc _workoutLogBloc = getIt<WorkoutLogBloc>();
   late DateTime _selectedMonth;
   late final PageController _pageController;
-
-  /// One scroll controller per month, by month, so tapping a volume bar can
-  /// scroll that month's list to the tapped day.
-  final Map<DateTime, ItemScrollController> _monthScrollControllers = {};
-
-  /// One expansion controller per day card, by logical day, so a day can be
-  /// expanded once scrolled into view.
-  final Map<DateTime, ExpansibleController> _dayExpansionControllers = {};
 
   @override
   void initState() {
@@ -69,173 +60,120 @@ class _WorkoutHistoryViewState extends State<WorkoutHistoryView> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const TheUsualAppBar(title: 'History'),
-      body: SafeArea(
-        bottom: false,
-        child: BlocBuilder<WorkoutLogBloc, WorkoutLogState>(
-          bloc: _workoutLogBloc,
-          builder: (context, state) {
-            final dayStart = getIt<UserSettingsBloc>().state.dayStartTime;
-            final history = state.historyByMonth(dayStart);
-            if (history.isEmpty) {
-              return Center(
-                child: Padding(
-                  padding: EdgeInsets.all(AppDesign.spacing.xl),
-                  child: Text(
-                    'No workout history yet. Log a workout and it shows up '
-                    'here.',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
+    return SafeArea(
+      bottom: false,
+      child: BlocBuilder<WorkoutLogBloc, WorkoutLogState>(
+        bloc: _workoutLogBloc,
+        builder: (context, state) {
+          final dayStart = getIt<UserSettingsBloc>().state.dayStartTime;
+          final history = state.historyByMonth(dayStart);
+          if (history.isEmpty) {
+            return Center(
+              child: Padding(
+                padding: EdgeInsets.all(AppDesign.spacing.xl),
+                child: Text(
+                  'No workout history yet. Log a workout and it shows up '
+                  'here.',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
-              );
-            }
-
-            final selectedMonthExists = history.any(
-              (workoutHistoryMonth) => DateUtils.isSameMonth(
-                workoutHistoryMonth.month,
-                _selectedMonth,
               ),
             );
-            if (!selectedMonthExists) {
-              WidgetsBinding.instance.addPostFrameCallback(
-                (_) => _clampToAvailableMonth(history),
-              );
-            }
+          }
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _WorkoutMonthSelector(
-                  history: history,
-                  selectedMonth: _selectedMonth,
-                  onMonthSelected: (index) => _pageController.animateToPage(
-                    index,
-                    duration: AppDesign.durations.fast,
-                    curve: Curves.easeOut,
-                  ),
-                ),
-                Expanded(
-                  child: PageView.builder(
-                    controller: _pageController,
-                    itemCount: history.length,
-                    onPageChanged: (index) => setState(
-                      () => _selectedMonth = history[index].month,
-                    ),
-                    itemBuilder: (context, monthIndex) {
-                      final workoutHistoryMonth = history[monthIndex];
-                      final localizations = MaterialLocalizations.of(context);
-                      final itemScrollController = _monthScrollControllers
-                          .putIfAbsent(
-                            workoutHistoryMonth.month,
-                            ItemScrollController.new,
-                          );
-
-                      // Scrolls the tapped day's card into view, then expands
-                      // it once built. The chart and month label are the list's
-                      // first item, so day cards are offset by one.
-                      void scrollToDay(WorkoutHistoryDay workoutHistoryDay) {
-                        final dayIndex = workoutHistoryMonth.days.indexOf(
-                          workoutHistoryDay,
-                        );
-                        if (dayIndex < 0) return;
-                        unawaited(
-                          itemScrollController
-                              .scrollTo(
-                                index: dayIndex + 1,
-                                duration: AppDesign.durations.fast,
-                                curve: Curves.easeOut,
-                              )
-                              .then((_) {
-                                if (!mounted) return;
-                                final expansionController =
-                                    _dayExpansionControllers[
-                                        workoutHistoryDay.day];
-                                if (expansionController != null &&
-                                    !expansionController.isExpanded) {
-                                  expansionController.expand();
-                                }
-                              }),
-                        );
-                      }
-
-                      return BlocSelector<
-                        UserSettingsBloc,
-                        UserSettingsState,
-                        (WeightUnit, List<WorkoutGroup>)
-                      >(
-                        bloc: getIt<UserSettingsBloc>(),
-                        selector: (state) => (
-                          state.workoutWeightUnit,
-                          state.workoutGroups,
-                        ),
-                        builder: (context, settingsSelected) {
-                          final (workoutWeightUnit, workoutGroups) =
-                              settingsSelected;
-                          return ScrollablePositionedList.builder(
-                            itemScrollController: itemScrollController,
-                            itemCount: workoutHistoryMonth.days.length + 1,
-                            padding:
-                                EdgeInsets.fromLTRB(
-                                  AppDesign.spacing.lg,
-                                  AppDesign.spacing.sm,
-                                  AppDesign.spacing.lg,
-                                  AppDesign.spacing.xl,
-                                ) +
-                                EdgeInsets.only(
-                                  bottom: MediaQuery.paddingOf(context).bottom,
-                                ),
-                            itemBuilder: (context, itemIndex) {
-                              if (itemIndex == 0) {
-                                return Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.stretch,
-                                  children: [
-                                    WorkoutVolumeChart(
-                                      monthHistory: workoutHistoryMonth,
-                                      weightUnit: workoutWeightUnit,
-                                      onDayTapped: scrollToDay,
-                                    ),
-                                    Padding(
-                                      padding: EdgeInsets.only(
-                                        bottom: AppDesign.spacing.sm,
-                                      ),
-                                      child: SectionLabel(
-                                        localizations
-                                            .formatMonthYear(
-                                              workoutHistoryMonth.month,
-                                            )
-                                            .toUpperCase(),
-                                      ),
-                                    ),
-                                  ],
-                                );
-                              }
-
-                              final workoutHistoryDay =
-                                  workoutHistoryMonth.days[itemIndex - 1];
-                              return _WorkoutHistoryDayCard(
-                                controller: _dayExpansionControllers
-                                    .putIfAbsent(
-                                      workoutHistoryDay.day,
-                                      ExpansibleController.new,
-                                    ),
-                                workoutHistoryDay: workoutHistoryDay,
-                                workoutWeightUnit: workoutWeightUnit,
-                                workoutGroups: workoutGroups,
-                              );
-                            },
-                          );
-                        },
-                      );
-                    },
-                  ),
-                ),
-              ],
+          final selectedMonthExists = history.any(
+            (workoutHistoryMonth) => DateUtils.isSameMonth(
+              workoutHistoryMonth.month,
+              _selectedMonth,
+            ),
+          );
+          if (!selectedMonthExists) {
+            WidgetsBinding.instance.addPostFrameCallback(
+              (_) => _clampToAvailableMonth(history),
             );
-          },
-        ),
+          }
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _WorkoutMonthSelector(
+                history: history,
+                selectedMonth: _selectedMonth,
+                onMonthSelected: (index) => _pageController.animateToPage(
+                  index,
+                  duration: AppDesign.durations.fast,
+                  curve: Curves.easeOut,
+                ),
+              ),
+              Expanded(
+                child: PageView.builder(
+                  controller: _pageController,
+                  itemCount: history.length,
+                  onPageChanged: (index) => setState(
+                    () => _selectedMonth = history[index].month,
+                  ),
+                  itemBuilder: (context, monthIndex) {
+                    final workoutHistoryMonth = history[monthIndex];
+                    final localizations = MaterialLocalizations.of(context);
+
+                    return BlocSelector<
+                      UserSettingsBloc,
+                      UserSettingsState,
+                      (WeightUnit, List<WorkoutGroup>)
+                    >(
+                      bloc: getIt<UserSettingsBloc>(),
+                      selector: (state) => (
+                        state.workoutWeightUnit,
+                        state.workoutGroups,
+                      ),
+                      builder: (context, settingsSelected) {
+                        final (workoutWeightUnit, workoutGroups) =
+                            settingsSelected;
+                        return ListView.builder(
+                          itemCount: workoutHistoryMonth.days.length + 1,
+                          padding:
+                              EdgeInsets.fromLTRB(
+                                AppDesign.spacing.lg,
+                                AppDesign.spacing.sm,
+                                AppDesign.spacing.lg,
+                                AppDesign.spacing.xl,
+                              ) +
+                              EdgeInsets.only(
+                                bottom: MediaQuery.paddingOf(context).bottom,
+                              ),
+                          itemBuilder: (context, itemIndex) {
+                            if (itemIndex == 0) {
+                              return Padding(
+                                padding: EdgeInsets.only(
+                                  bottom: AppDesign.spacing.sm,
+                                ),
+                                child: SectionLabel(
+                                  localizations
+                                      .formatMonthYear(
+                                        workoutHistoryMonth.month,
+                                      )
+                                      .toUpperCase(),
+                                ),
+                              );
+                            }
+
+                            final workoutHistoryDay =
+                                workoutHistoryMonth.days[itemIndex - 1];
+                            return _WorkoutHistoryDayCard(
+                              workoutHistoryDay: workoutHistoryDay,
+                              workoutWeightUnit: workoutWeightUnit,
+                              workoutGroups: workoutGroups,
+                            );
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -388,16 +326,11 @@ class _WorkoutHistoryDayCard extends StatelessWidget {
     required this.workoutHistoryDay,
     required this.workoutWeightUnit,
     required this.workoutGroups,
-    this.controller,
   });
 
   final WorkoutHistoryDay workoutHistoryDay;
   final WeightUnit workoutWeightUnit;
   final List<WorkoutGroup> workoutGroups;
-
-  /// Drives the card's expansion so tapping its volume bar can open it once
-  /// scrolled into view.
-  final ExpansibleController? controller;
 
   @override
   Widget build(BuildContext context) {
@@ -406,8 +339,9 @@ class _WorkoutHistoryDayCard extends StatelessWidget {
       ..sort((a, b) => a.order.compareTo(b.order));
     final entriesByGroupId = <String, List<WorkoutLogEntry>>{};
     for (final workoutLogEntry in workoutHistoryDay.workoutEntries) {
-      (entriesByGroupId[workoutLogEntry.workoutGroupId] ??= [])
-          .add(workoutLogEntry);
+      (entriesByGroupId[workoutLogEntry.workoutGroupId] ??= []).add(
+        workoutLogEntry,
+      );
     }
 
     final knownGroupIds = {
@@ -424,7 +358,6 @@ class _WorkoutHistoryDayCard extends StatelessWidget {
     return Card(
       margin: EdgeInsets.only(bottom: AppDesign.spacing.sm),
       child: ExpansionTile(
-        controller: controller,
         shape: const Border(),
         tilePadding: EdgeInsets.symmetric(horizontal: AppDesign.spacing.md),
         title: Text(localizations.formatMediumDate(workoutHistoryDay.day)),
@@ -443,8 +376,7 @@ class _WorkoutHistoryDayCard extends StatelessWidget {
           for (final workoutGroup in sortedGroups) ...[
             if ((entriesByGroupId[workoutGroup.id] ?? const []).isNotEmpty) ...[
               SectionLabel(workoutGroup.name.toUpperCase()),
-              for (final workoutLogEntry
-                  in entriesByGroupId[workoutGroup.id]!)
+              for (final workoutLogEntry in entriesByGroupId[workoutGroup.id]!)
                 LoggedWorkoutRow(
                   key: ValueKey(workoutLogEntry.id),
                   workoutLogEntry: workoutLogEntry,
