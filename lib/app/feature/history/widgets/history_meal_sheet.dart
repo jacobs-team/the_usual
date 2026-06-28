@@ -64,6 +64,11 @@ class HistoryMealSheet extends StatelessWidget {
                     day: day,
                     dayStart: dayStart,
                   ),
+                  sameAsYesterday: mealEntries.previousDayMeal(
+                    mealOfTheDay: mealOfTheDay,
+                    day: day,
+                    dayStart: dayStart,
+                  ),
                   isCurrent: false,
                   nutritionExpandedByDefault: expandNutritionByDefault,
                   logDays: [day],

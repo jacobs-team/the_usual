@@ -103,10 +103,10 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
     ];
   }
 
-  Future<void> _onStarted(
+  void _onStarted(
     MealEntryStarted event,
     Emitter<MealEntryState> emit,
-  ) async {
+  ) {
     final initialFoods = event.initialFoods;
     final foods = (initialFoods == null || initialFoods.isEmpty)
         ? [FoodDraft(id: _uuid.v4())]
@@ -121,9 +121,6 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
         errorMessage: null,
       ),
     );
-    if (event.autoEstimate && event.photos.isNotEmpty) {
-      await _runPhotoEstimate(emit);
-    }
   }
 
   void _onFoodRemoved(
@@ -257,8 +254,7 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
 
   /// Estimates nutrition from the held photos, sending the first row's typed
   /// name as a hint when present. Reached from the Estimate action when photos
-  /// are attached, and called directly by [_onStarted] for the auto-estimate
-  /// on the share path.
+  /// are attached.
   Future<void> _runPhotoEstimate(Emitter<MealEntryState> emit) async {
     if (state.photos.isEmpty) return;
     if (!_mealAiRepository.isConfigured) {

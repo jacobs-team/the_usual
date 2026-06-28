@@ -241,7 +241,7 @@ class AppTheme {
 }
 
 /// A stadium-shaped, tonal button style for the app's prominent inline actions
-/// (e.g. "Something else", "From another meal", "New workout"). Sized to match
+/// (e.g. "Add", "Other meal", "New workout"). Sized to match
 /// the app bar's date pill: the secondary-container fill, compact label, and
 /// tight padding of the [ChipThemeData] above.
 ButtonStyle pillButtonStyle(BuildContext context) {

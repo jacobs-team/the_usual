@@ -15,6 +15,7 @@ class MealLogSection extends StatelessWidget {
     required this.mealLogEntries,
     required this.quickPicks,
     required this.otherMealUsuals,
+    required this.sameAsYesterday,
     required this.isCurrent,
     required this.nutritionExpandedByDefault,
     this.logDays,
@@ -35,6 +36,11 @@ class MealLogSection extends StatelessWidget {
   /// Usuals from other meals, grouped by their own meal, for the "from another
   /// meal" picker. Empty when there are none to cross-post.
   final Map<MealOfTheDay, List<UsualMeal>> otherMealUsuals;
+
+  /// The prior day's entries for this meal not already logged on the shown day,
+  /// re-logged in one tap by the "same as yesterday" shortcut. Empty when there
+  /// is nothing to copy.
+  final List<MealLogEntry> sameAsYesterday;
 
   /// Whether this is the meal nearest the current time.
   final bool isCurrent;
@@ -226,8 +232,24 @@ class MealLogSection extends StatelessWidget {
                             }
                           },
                           icon: const Icon(Icons.add),
-                          label: const Text('Something else'),
+                          label: const Text('Add'),
                         ),
+                        if (sameAsYesterday.isNotEmpty)
+                          _SameAsYesterdayButton(
+                            entries: sameAsYesterday,
+                            onPressed: () {
+                              for (final mealLogEntry in sameAsYesterday) {
+                                _logOntoTargetDays(
+                                  mealOfTheDay,
+                                  mealLogEntry.name,
+                                  nutrition: mealLogEntry.nutrition,
+                                  quantity: mealLogEntry.quantity,
+                                  usualMealId: mealLogEntry.usualMealId,
+                                  photoPath: mealLogEntry.photoPath,
+                                );
+                              }
+                            },
+                          ),
                         if (otherMealUsuals.isNotEmpty)
                           FilledButton.tonalIcon(
                             style: pillButtonStyle(context),
@@ -241,7 +263,7 @@ class MealLogSection extends StatelessWidget {
                               ),
                             ),
                             icon: const Icon(Icons.restaurant_menu),
-                            label: const Text('From another meal'),
+                            label: const Text('Other meal'),
                           ),
                       ],
                     ),
@@ -251,6 +273,35 @@ class MealLogSection extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// A one-tap shortcut that re-logs the prior day's [entries] for this meal,
+/// with a tooltip naming what it will add so the bulk action isn't a surprise.
+class _SameAsYesterdayButton extends StatelessWidget {
+  const _SameAsYesterdayButton({
+    required this.entries,
+    required this.onPressed,
+  });
+
+  /// The prior day's entries this button re-logs onto the shown day.
+  final List<MealLogEntry> entries;
+
+  /// Called when the button is tapped, logging every entry in [entries].
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final loggedNames = entries.map((entry) => entry.name).join(', ');
+    return Tooltip(
+      message: 'Logs $loggedNames',
+      child: FilledButton.tonalIcon(
+        style: pillButtonStyle(context),
+        onPressed: onPressed,
+        icon: const Icon(Icons.restore),
+        label: const Text('Repeat'),
       ),
     );
   }

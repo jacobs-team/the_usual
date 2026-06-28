@@ -4,13 +4,11 @@ part of 'meal_entry_bloc.dart';
 sealed class MealEntryEvent with _$MealEntryEvent {
   /// Seeds the surface. [initialFoods] become the rows (one empty row when
   /// null/empty); [photos] are held for a photo estimate; [mealOfTheDay] sets
-  /// the target slot. When [autoEstimate] is true and photos are present, a
-  /// photo estimate is kicked immediately (the share path).
+  /// the target slot.
   const factory MealEntryEvent.started({
     List<FoodDraft>? initialFoods,
     @Default(<MealPhoto>[]) List<MealPhoto> photos,
     MealOfTheDay? mealOfTheDay,
-    @Default(false) bool autoEstimate,
   }) = MealEntryStarted;
 
   const factory MealEntryEvent.foodAdded({

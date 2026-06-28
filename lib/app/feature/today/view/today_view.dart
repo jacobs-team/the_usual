@@ -210,6 +210,11 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
                                 day: displayDay,
                                 dayStart: dayStartTime,
                               ),
+                              sameAsYesterday: mealEntries.previousDayMeal(
+                                mealOfTheDay: mealOfTheDay,
+                                day: displayDay,
+                                dayStart: dayStartTime,
+                              ),
                               isCurrent: isToday && mealOfTheDay == currentMeal,
                               nutritionExpandedByDefault:
                                   expandNutritionByDefault,

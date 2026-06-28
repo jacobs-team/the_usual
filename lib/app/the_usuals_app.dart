@@ -107,7 +107,6 @@ class _TheUsualsAppState extends State<TheUsualsApp>
         showMealSelector: true,
         showAddToUsualMeals: true,
         initialPhotos: photos,
-        autoEstimate: true,
         initialMealOfTheDay: getIt<UserSettingsBloc>().state.currentMeal(
           clock.now(),
         ),

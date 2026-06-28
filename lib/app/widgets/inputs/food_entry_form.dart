@@ -38,7 +38,6 @@ class FoodEntryForm extends StatefulWidget {
     this.autofocusFirst = true,
     this.onChanged,
     this.initialPhotos,
-    this.autoEstimate = false,
     this.initialMealOfTheDay,
     super.key,
   });
@@ -61,10 +60,6 @@ class FoodEntryForm extends StatefulWidget {
 
   /// Photos to pre-load into the form (e.g. from the OS share target).
   final List<MealPhoto>? initialPhotos;
-
-  /// When true and [initialPhotos] is non-empty, kicks a photo estimate
-  /// immediately after the bloc starts (the share-to-log path).
-  final bool autoEstimate;
 
   /// The target meal slot to pre-select.
   final MealOfTheDay? initialMealOfTheDay;
@@ -114,7 +109,6 @@ class FoodEntryFormState extends State<FoodEntryForm> {
         initialFoods: initialDrafts,
         photos: widget.initialPhotos ?? const [],
         mealOfTheDay: widget.initialMealOfTheDay,
-        autoEstimate: widget.autoEstimate,
       ),
     );
   }

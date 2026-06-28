@@ -24,7 +24,6 @@ class FoodEntrySheet extends StatefulWidget {
     this.showQuantity = true,
     this.showMealSelector = false,
     this.initialPhotos,
-    this.autoEstimate = false,
     this.initialMealOfTheDay,
     super.key,
   });
@@ -47,10 +46,6 @@ class FoodEntrySheet extends StatefulWidget {
 
   /// Photos to pre-load into the form (e.g. from the OS share target).
   final List<MealPhoto>? initialPhotos;
-
-  /// When true and [initialPhotos] is non-empty, kicks a photo estimate
-  /// immediately after the form starts.
-  final bool autoEstimate;
 
   /// The target meal slot to pre-select in the form.
   final MealOfTheDay? initialMealOfTheDay;
@@ -105,7 +100,6 @@ class _FoodEntrySheetState extends State<FoodEntrySheet> {
             showQuantity: widget.showQuantity,
             showAddToUsualMeals: widget.showAddToUsualMeals,
             initialPhotos: widget.initialPhotos,
-            autoEstimate: widget.autoEstimate,
             initialMealOfTheDay: widget.initialMealOfTheDay,
             onChanged: () => setState(() {}),
           ),

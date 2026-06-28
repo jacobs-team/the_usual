@@ -95,6 +95,34 @@ extension MealLogEntryListFormatting on List<MealLogEntry> {
     return [?mostRecent, ...remaining];
   }
 
+  /// The entries logged for [mealOfTheDay] on the logical day before [day]
+  /// (rolling over at [dayStart]) that aren't already logged on [day] for it,
+  /// matched by name or linked id so something already logged today isn't
+  /// copied twice. Backs the "same as yesterday" shortcut, which re-logs these
+  /// onto [day]. Empty when the prior day had nothing for this meal, or all of
+  /// it is already logged.
+  List<MealLogEntry> previousDayMeal({
+    required MealOfTheDay mealOfTheDay,
+    required DateTime day,
+    required TimeOfDay dayStart,
+  }) {
+    final previousDay = DateTime(day.year, day.month, day.day - 1);
+    final loggedToday = _loggedTodayKeys(mealOfTheDay, day, dayStart);
+
+    return [
+      for (final mealLogEntry in this)
+        if (mealLogEntry.mealOfTheDay == mealOfTheDay &&
+            DateUtils.isSameDay(
+              mealLogEntry.loggedAt.logicalDay(dayStart),
+              previousDay,
+            ) &&
+            !loggedToday.names.contains(mealLogEntry.name.toLowerCase()) &&
+            !(mealLogEntry.usualMealId != null &&
+                loggedToday.ids.contains(mealLogEntry.usualMealId)))
+          mealLogEntry,
+    ];
+  }
+
   /// The user's usuals from meals other than [mealOfTheDay], grouped by their
   /// own meal in [MealOfTheDay] order and kept in library order within each.
   /// Usuals already logged on [day] for [mealOfTheDay] are dropped, and meals
