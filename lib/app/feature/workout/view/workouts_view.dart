@@ -165,6 +165,12 @@ class _WorkoutsViewState extends State<WorkoutsView> {
                               workoutLogEntries:
                                   entriesByGroup[workoutGroup.id] ??
                                   const <WorkoutLogEntry>[],
+                              previousSession: workoutEntries
+                                  .previousSessionWorkouts(
+                                    workoutGroupId: workoutGroup.id,
+                                    day: displayDay,
+                                    dayStart: dayStartTime,
+                                  ),
                               quickPicks: workoutEntries.orderedQuickPicks(
                                 workoutGroupId: workoutGroup.id,
                                 usuals:

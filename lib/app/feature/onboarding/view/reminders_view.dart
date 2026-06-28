@@ -152,8 +152,10 @@ class RemindersView extends StatelessWidget {
                         // Choosing notifications prompts the OS first. If
                         // it isn't granted, revert to no reminders and stay on
                         // this step so the user can continue with the updated
-                        // choice.
-                        if (reminderStyle == ReminderStyle.notifications) {
+                        // choice. The service is mobile-only, so on web there's
+                        // no permission to request and the choice just sets.
+                        if (reminderStyle == ReminderStyle.notifications &&
+                            getIt.isRegistered<NotificationService>()) {
                           final status = await getIt<NotificationService>()
                               .requestPermission();
                           if (!status.isGranted) {

@@ -94,6 +94,8 @@
 - Use `mapJson()` for single object parsing and `mapJsonList()` for list parsing.
 - API clients return raw `Response<dynamic>`. Repositories are responsible for parsing, and other data manipulation before bloc consumption.
 - Only use DTOs when the API response shape doesn't map cleanly to the domain model.
+- Wrap every third-party SDK or plugin in its own repository (or service) that maps the SDK's types to the app's domain types, so the SDK type never leaks into blocs/cubits/widgets (e.g. `AuthRepository` exposes `AuthUser`/`SignInResult`, never `GoogleSignInAccount`/`UserCredential`; `WidgetService` wraps `home_widget`). The only exception is a pure 1:1 pass-through — if every wrapper method just forwards to the package with no added params, branching, type mapping, or error handling, skip the wrapper. When a flow spans two SDKs, wrap each separately and orchestrate them from a higher repository (`AuthRepository` orchestrates `GoogleSignInRepository` + `FirebaseAuthRepository`).
+- Don't add an abstract interface for a repository with a single implementation — that's a speculative abstraction. Use a concrete class; `mocktail` mocks concrete classes fine. Add an interface only when a second real implementation actually exists.
 
 ## Responsive Design
 

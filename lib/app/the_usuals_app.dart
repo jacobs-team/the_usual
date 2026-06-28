@@ -54,19 +54,25 @@ class _TheUsualsAppState extends State<TheUsualsApp>
     _syncNotifications();
     _syncWidget();
     // Tapping a reminder takes the user to Today, where they log meals.
-    getIt<NotificationService>().onReminderTapped = () =>
-        getIt<AppRouter>().router.go(Routes.today);
-    _shareSubscription = getIt<ShareIngestService>().photoStream.listen(
-      _handleSharedPhotos,
-    );
-    // Cold-start photos are fetched once here and NOT re-emitted on photoStream
-    // the service drains and resets its initial-media buffer before the stream
-    // listener above is attached, so these two paths are mutually exclusive and
-    // a share can never open the sheet twice.
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      final initial = await getIt<ShareIngestService>().takeInitialPhotos();
-      if (initial.isNotEmpty) _handleSharedPhotos(initial);
-    });
+    if (getIt.isRegistered<NotificationService>()) {
+      getIt<NotificationService>().onReminderTapped = () =>
+          getIt<AppRouter>().router.go(Routes.today);
+    }
+    // The OS share target is mobile-only, so the service isn't registered on
+    // web.
+    if (getIt.isRegistered<ShareIngestService>()) {
+      _shareSubscription = getIt<ShareIngestService>().photoStream.listen(
+        _handleSharedPhotos,
+      );
+      // Cold-start photos are fetched once here and NOT re-emitted on
+      // photoStream — the service drains and resets its initial-media buffer
+      // before the stream listener above is attached, so these two paths are
+      // mutually exclusive and a share can never open the sheet twice.
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        final initial = await getIt<ShareIngestService>().takeInitialPhotos();
+        if (initial.isNotEmpty) _handleSharedPhotos(initial);
+      });
+    }
   }
 
   @override
@@ -139,6 +145,9 @@ class _TheUsualsAppState extends State<TheUsualsApp>
   /// weight is logged, when the user enabled that. Reads both blocs so it can
   /// run on a settings change or a log change.
   void _syncNotifications() {
+    // Scheduled OS notifications are a mobile-only dependency, so the service
+    // isn't registered on web. Nothing to sync there.
+    if (!getIt.isRegistered<NotificationService>()) return;
     final settings = getIt<UserSettingsBloc>().state;
     final today = clock.now().logicalDay(settings.dayStartTime);
     final dailyLog = getIt<DailyLogBloc>().state;
@@ -169,6 +178,9 @@ class _TheUsualsAppState extends State<TheUsualsApp>
   /// so it can show calories remaining. Reads both blocs so it can run on a
   /// settings change or a log change.
   void _syncWidget() {
+    // The home-screen widget is a mobile-only dependency, so it isn't
+    // registered on web. Nothing to sync there.
+    if (!getIt.isRegistered<WidgetService>()) return;
     final settings = getIt<UserSettingsBloc>().state;
     final dayStart = settings.dayStartTime;
     final today = clock.now().logicalDay(dayStart);

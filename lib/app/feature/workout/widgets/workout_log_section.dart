@@ -14,6 +14,7 @@ class WorkoutLogSection extends StatelessWidget {
   const WorkoutLogSection({
     required this.workoutGroup,
     required this.workoutLogEntries,
+    required this.previousSession,
     required this.quickPicks,
     required this.weightUnit,
     required this.expandedByDefault,
@@ -29,6 +30,10 @@ class WorkoutLogSection extends StatelessWidget {
 
   /// Entries already logged for this group today.
   final List<WorkoutLogEntry> workoutLogEntries;
+
+  /// The group's entries from its most recent earlier session, re-logged in one
+  /// tap by the "copy previous" shortcut. Empty when there is nothing to copy.
+  final List<WorkoutLogEntry> previousSession;
 
   /// The user's usuals offered as quick picks, already filtered to those not
   /// yet logged today.
@@ -136,6 +141,25 @@ class WorkoutLogSection extends StatelessWidget {
                         Text(
                           '${totalVolume.trimmedDecimal} ${weightUnit.name}',
                           style: theme.textTheme.bodyMedium,
+                        )
+                      else if (workoutLogEntries.isEmpty &&
+                          previousSession.isNotEmpty)
+                        CopyPreviousButton(
+                          itemNames: [
+                            for (final workoutLogEntry in previousSession)
+                              workoutLogEntry.name,
+                          ],
+                          onPressed: () {
+                            for (final workoutLogEntry in previousSession) {
+                              _logOntoTargetDays(
+                                workoutLogEntry.name,
+                                workoutLogEntry.sets,
+                                type: workoutLogEntry.type,
+                                duration: workoutLogEntry.duration,
+                                usualWorkoutId: workoutLogEntry.usualWorkoutId,
+                              );
+                            }
+                          },
                         ),
                       IconButton(
                         icon: const Icon(Icons.delete_forever_outlined),

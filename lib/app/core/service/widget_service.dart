@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:home_widget/home_widget.dart';
 import 'package:injectable/injectable.dart';
+import 'package:the_usual/app/core/dependencies/injectable_environments.dart';
 
 /// {@template widget_service}
 /// Pushes today's calorie summary into the home- and lock-screen widget. The
@@ -12,6 +13,7 @@ import 'package:injectable/injectable.dart';
 /// day's logged meals change.
 /// {@endtemplate}
 @singleton
+@mobile
 class WidgetService {
   /// {@macro widget_service}
   WidgetService() {

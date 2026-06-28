@@ -31,8 +31,10 @@ class ReminderStyleSection extends StatelessWidget {
                 onTap: () async {
                   // Switching to notifications needs OS permission. If it
                   // isn't granted, keep the current choice and point the user
-                  // to system settings.
-                  if (reminderStyle == ReminderStyle.notifications) {
+                  // to system settings. The service is mobile-only, so on web
+                  // there's no permission to request and the choice just sets.
+                  if (reminderStyle == ReminderStyle.notifications &&
+                      getIt.isRegistered<NotificationService>()) {
                     final status = await getIt<NotificationService>()
                         .requestPermission();
                     if (!status.isGranted) {

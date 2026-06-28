@@ -71,6 +71,7 @@ void main() {
             WorkoutLogSection(
               workoutGroup: pushGroup,
               workoutLogEntries: workoutLogEntries,
+              previousSession: const [],
               quickPicks: quickPicks,
               weightUnit: WeightUnit.lb,
               expandedByDefault: expandedByDefault,

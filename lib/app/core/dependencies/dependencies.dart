@@ -1,9 +1,10 @@
 // coverage:ignore-file
 
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:injectable/injectable.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.config.dart';
-import 'package:the_usual/environment.dart';
+import 'package:the_usual/app/core/dependencies/injectable_environments.dart';
 
 /// The global instance of [GetIt] used for dependency injection.
 final GetIt getIt = GetIt.instance;
@@ -19,7 +20,10 @@ final GetIt getIt = GetIt.instance;
 /// in `dependencies.config.dart`.
 /// {@endtemplate}
 @InjectableInit()
-Future<void> configureDependencies(String env) {
-  EnvironmentConfig.environment = env;
-  return getIt.init(environment: env);
+Future<void> configureDependencies() {
+  // The running platform is the active environment, so unscoped dependencies
+  // register everywhere while platform-scoped ones register only on their
+  // platform. This skips `@mobile` plugins (home-screen widget, OS share
+  // target, local notifications) on web, where they don't exist.
+  return getIt.init(environment: kIsWeb ? web.name : mobile.name);
 }

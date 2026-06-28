@@ -14,9 +14,6 @@ abstract class EnvironmentConfig {
   /// when not supplied; the AI client treats an empty key as "not configured".
   static const anthropicApiKey = String.fromEnvironment('ANTHROPIC_API_KEY');
 
-  /// e.g prod, dev etc.
-  static late final String environment;
-
   static const _googleIosClientId = String.fromEnvironment(
     'GOOGLE_IOS_CLIENT_ID',
   );

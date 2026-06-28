@@ -2,6 +2,7 @@
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:injectable/injectable.dart';
+import 'package:the_usual/app/core/dependencies/injectable_environments.dart';
 import 'package:the_usual/app/core/service/service.dart';
 
 /// {@template notification_module}
@@ -11,8 +12,10 @@ import 'package:the_usual/app/core/service/service.dart';
 /// {@endtemplate}
 @module
 abstract class NotificationModule {
-  /// Creates and initializes the [NotificationService].
+  /// Creates and initializes the [NotificationService]. Scheduled local OS
+  /// notifications are mobile-only, so it isn't registered on web.
   @preResolve
+  @mobile
   Future<NotificationService> notificationService() async {
     final notificationService = NotificationService(
       FlutterLocalNotificationsPlugin(),

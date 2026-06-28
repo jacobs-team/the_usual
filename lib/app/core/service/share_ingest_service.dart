@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:injectable/injectable.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:the_usual/app/app.dart';
+import 'package:the_usual/app/core/dependencies/injectable_environments.dart';
 
 /// {@template share_ingest_service}
 /// Bridges the OS "Log meal" share target into the app. Exposes the photos a
@@ -13,6 +14,7 @@ import 'package:the_usual/app/app.dart';
 /// estimate.
 /// {@endtemplate}
 @singleton
+@mobile
 class ShareIngestService {
   /// Drains the media the app was cold-started with, then clears it so a later
   /// relaunch does not replay the same share. Empty when not launched from a

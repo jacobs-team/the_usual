@@ -23,6 +23,10 @@ import 'package:the_usual/app/core/networking/api/meal_ai_client.dart' as _i455;
 import 'package:the_usual/app/core/networking/api/rest_client.dart' as _i13;
 import 'package:the_usual/app/core/networking/repository/auth_repository.dart'
     as _i53;
+import 'package:the_usual/app/core/networking/repository/firebase_auth_repository.dart'
+    as _i757;
+import 'package:the_usual/app/core/networking/repository/google_sign_in_repository.dart'
+    as _i322;
 import 'package:the_usual/app/core/networking/repository/meal_ai_repository.dart'
     as _i310;
 import 'package:the_usual/app/core/networking/repository/sync_repository.dart'
@@ -47,6 +51,8 @@ import 'package:the_usual/app/feature/workout/bloc/workout_log_bloc.dart'
     as _i894;
 import 'package:the_usual/app/navigation/app_router.dart' as _i874;
 
+const String _mobile = 'mobile';
+
 extension GetItInjectableX on _i174.GetIt {
   // initializes the registration of main-scope dependencies inside of GetIt
   Future<_i174.GetIt> init({
@@ -60,14 +66,14 @@ extension GetItInjectableX on _i174.GetIt {
       () => hydratedBlocModule.init(),
       preResolve: true,
     );
-    await gh.factoryAsync<_i988.NotificationService>(
-      () => notificationModule.notificationService(),
-      preResolve: true,
-    );
     gh.singleton<_i473.ConnectivityCubit>(() => _i473.ConnectivityCubit());
+    gh.singleton<_i757.FirebaseAuthRepository>(
+      () => _i757.FirebaseAuthRepository(),
+    );
+    gh.singleton<_i322.GoogleSignInRepository>(
+      () => _i322.GoogleSignInRepository(),
+    );
     gh.singleton<_i115.FileCacheService>(() => _i115.FileCacheService());
-    gh.singleton<_i907.ShareIngestService>(() => _i907.ShareIngestService());
-    gh.singleton<_i577.WidgetService>(() => _i577.WidgetService());
     gh.singleton<_i818.DevToolsCubit>(() => _i818.DevToolsCubit());
     gh.lazySingleton<_i640.OnboardingBloc>(() => _i640.OnboardingBloc());
     gh.lazySingleton<_i155.DailyLogBloc>(() => _i155.DailyLogBloc());
@@ -81,7 +87,25 @@ extension GetItInjectableX on _i174.GetIt {
         gh<_i538.OnboardingBloc>(),
       ),
     );
-    gh.lazySingleton<_i53.AuthRepository>(() => _i53.GoogleAuthRepository());
+    gh.singleton<_i907.ShareIngestService>(
+      () => _i907.ShareIngestService(),
+      registerFor: {_mobile},
+    );
+    gh.singleton<_i577.WidgetService>(
+      () => _i577.WidgetService(),
+      registerFor: {_mobile},
+    );
+    await gh.factoryAsync<_i988.NotificationService>(
+      () => notificationModule.notificationService(),
+      registerFor: {_mobile},
+      preResolve: true,
+    );
+    gh.lazySingleton<_i53.AuthRepository>(
+      () => _i53.AuthRepository(
+        gh<_i538.GoogleSignInRepository>(),
+        gh<_i538.FirebaseAuthRepository>(),
+      ),
+    );
     gh.singleton<_i455.MealAiClient>(
       () => _i455.MealAiClient(gh<_i538.DevToolsCubit>()),
     );

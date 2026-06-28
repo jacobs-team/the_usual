@@ -149,6 +149,25 @@ class MealLogSection extends StatelessWidget {
                         DefaultTextStyle.merge(
                           style: theme.textTheme.bodyMedium,
                           child: NutritionSummary(nutrition),
+                        )
+                      else if (sameAsYesterday.isNotEmpty)
+                        CopyPreviousButton(
+                          itemNames: [
+                            for (final mealLogEntry in sameAsYesterday)
+                              mealLogEntry.name,
+                          ],
+                          onPressed: () {
+                            for (final mealLogEntry in sameAsYesterday) {
+                              _logOntoTargetDays(
+                                mealOfTheDay,
+                                mealLogEntry.name,
+                                nutrition: mealLogEntry.nutrition,
+                                quantity: mealLogEntry.quantity,
+                                usualMealId: mealLogEntry.usualMealId,
+                                photoPath: mealLogEntry.photoPath,
+                              );
+                            }
+                          },
                         ),
                     ],
                   ),
@@ -232,24 +251,8 @@ class MealLogSection extends StatelessWidget {
                             }
                           },
                           icon: const Icon(Icons.add),
-                          label: const Text('Add'),
+                          label: const Text('Something else'),
                         ),
-                        if (sameAsYesterday.isNotEmpty)
-                          _SameAsYesterdayButton(
-                            entries: sameAsYesterday,
-                            onPressed: () {
-                              for (final mealLogEntry in sameAsYesterday) {
-                                _logOntoTargetDays(
-                                  mealOfTheDay,
-                                  mealLogEntry.name,
-                                  nutrition: mealLogEntry.nutrition,
-                                  quantity: mealLogEntry.quantity,
-                                  usualMealId: mealLogEntry.usualMealId,
-                                  photoPath: mealLogEntry.photoPath,
-                                );
-                              }
-                            },
-                          ),
                         if (otherMealUsuals.isNotEmpty)
                           FilledButton.tonalIcon(
                             style: pillButtonStyle(context),
@@ -263,7 +266,7 @@ class MealLogSection extends StatelessWidget {
                               ),
                             ),
                             icon: const Icon(Icons.restaurant_menu),
-                            label: const Text('Other meal'),
+                            label: const Text('Other usuals'),
                           ),
                       ],
                     ),
@@ -273,35 +276,6 @@ class MealLogSection extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-/// A one-tap shortcut that re-logs the prior day's [entries] for this meal,
-/// with a tooltip naming what it will add so the bulk action isn't a surprise.
-class _SameAsYesterdayButton extends StatelessWidget {
-  const _SameAsYesterdayButton({
-    required this.entries,
-    required this.onPressed,
-  });
-
-  /// The prior day's entries this button re-logs onto the shown day.
-  final List<MealLogEntry> entries;
-
-  /// Called when the button is tapped, logging every entry in [entries].
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    final loggedNames = entries.map((entry) => entry.name).join(', ');
-    return Tooltip(
-      message: 'Logs $loggedNames',
-      child: FilledButton.tonalIcon(
-        style: pillButtonStyle(context),
-        onPressed: onPressed,
-        icon: const Icon(Icons.restore),
-        label: const Text('Repeat'),
       ),
     );
   }

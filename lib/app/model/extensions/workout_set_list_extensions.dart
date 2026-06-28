@@ -141,6 +141,44 @@ extension WorkoutLogEntryListFormatting on List<WorkoutLogEntry> {
     return [?mostRecent, ...remaining];
   }
 
+  /// The entries for [workoutGroupId] from the most recent logical day before
+  /// [day] (rolling over at [dayStart]) that had any, excluding any already
+  /// logged on [day] for the group so nothing is copied twice. Matched by name
+  /// or linked id so something already logged today isn't copied. Backs the
+  /// "copy previous" shortcut, which re-logs these onto [day]. Empty when the
+  /// group has no earlier session, or all of it is already logged on [day].
+  ///
+  /// Unlike meals, this looks back to the group's most recent prior session
+  /// rather than strictly yesterday, since the same group is rarely trained on
+  /// consecutive days.
+  List<WorkoutLogEntry> previousSessionWorkouts({
+    required String workoutGroupId,
+    required DateTime day,
+    required TimeOfDay dayStart,
+  }) {
+    final entriesByDay = <DateTime, List<WorkoutLogEntry>>{};
+    for (final workoutLogEntry in this) {
+      if (workoutLogEntry.workoutGroupId != workoutGroupId) continue;
+      final loggedDay = workoutLogEntry.loggedAt.logicalDay(dayStart);
+      if (!loggedDay.isBefore(DateUtils.dateOnly(day))) continue;
+      (entriesByDay[loggedDay] ??= <WorkoutLogEntry>[]).add(workoutLogEntry);
+    }
+    if (entriesByDay.isEmpty) return const <WorkoutLogEntry>[];
+
+    final mostRecentDay = entriesByDay.keys.reduce(
+      (a, b) => a.isAfter(b) ? a : b,
+    );
+    final loggedToday = _loggedTodayKeys(workoutGroupId, day, dayStart);
+
+    return [
+      for (final workoutLogEntry in entriesByDay[mostRecentDay]!)
+        if (!loggedToday.names.contains(workoutLogEntry.name.toLowerCase()) &&
+            !(workoutLogEntry.usualWorkoutId != null &&
+                loggedToday.ids.contains(workoutLogEntry.usualWorkoutId)))
+          workoutLogEntry,
+    ];
+  }
+
   /// The lowercased names and linked ids of entries logged on the logical
   /// [day] (rolling over at [dayStart]) for [workoutGroupId], used to hide
   /// usuals already logged in that group today.
