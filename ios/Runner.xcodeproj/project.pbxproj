@@ -384,6 +384,7 @@
 				59A6531D2FE59AF0002A0A5A /* Embed Foundation Extensions */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				830246D81B61668FE03314B2 /* [CP] Embed Pods Frameworks */,
+				358053CDCDB36B6849CD1D90 /* Copy flavored GoogleService-Info.plist */,
 			);
 			buildRules = (
 			);
@@ -526,6 +527,24 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
+		};
+		358053CDCDB36B6849CD1D90 /* Copy flavored GoogleService-Info.plist */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy flavored GoogleService-Info.plist";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Bundles the GoogleService-Info.plist matching the build flavor so the\n# native default Firebase app matches the Dart options for that flavor.\n# Runs after Copy Bundle Resources, overwriting the statically bundled plist.\nDESTINATION=\"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app\"\ncase \"${CONFIGURATION}\" in\n  *development* )\n    SOURCE=\"${PROJECT_DIR}/config/development/GoogleService-Info.plist\" ;;\n  * )\n    SOURCE=\"${PROJECT_DIR}/Runner/GoogleService-Info.plist\" ;;\nesac\necho \"Using ${SOURCE} for ${CONFIGURATION}\"\ncp \"${SOURCE}\" \"${DESTINATION}/GoogleService-Info.plist\"\n";
 		};
 		3B06AD1E1E4923F5004D2608 /* Thin Binary */ = {
 			isa = PBXShellScriptBuildPhase;

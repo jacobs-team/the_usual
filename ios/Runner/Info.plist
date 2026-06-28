@@ -107,10 +107,12 @@
 				<string>Editor</string>
 				<key>CFBundleURLSchemes</key>
 				<array>
-					<!-- Google Sign-In reversed client id (prod bundle
-					     com.jblankenship.theusual). Add the dev client's
-					     reversed id as a second string here when needed. -->
+					<!-- Google Sign-In reversed client ids. iOS matches the
+					     one for the running flavor's bundle, so both prod and
+					     dev are listed. prod: com.jblankenship.theusual,
+					     dev: com.jblankenship.theusual.dev. -->
 					<string>com.googleusercontent.apps.926455129035-ebaam0k75eolib3jedh3mnbmsdi6rog3</string>
+					<string>com.googleusercontent.apps.750338641944-is1v7kur9vq5itse3f3u79k2e0m41ams</string>
 				</array>
 			</dict>
 		</array>

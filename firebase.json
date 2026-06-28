@@ -1,1 +1,54 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"the-usual-500220","appId":"1:926455129035:android:015435224e7b3588784c4e","fileOutput":"android/app/google-services.json"}},"ios":{"default":{"projectId":"the-usual-500220","appId":"1:926455129035:ios:1be7cb3e635d5e80784c4e","uploadDebugSymbols":false,"fileOutput":"ios/Runner/GoogleService-Info.plist"}},"dart":{"lib/firebase_options.dart":{"projectId":"the-usual-500220","configurations":{"android":"1:926455129035:android:015435224e7b3588784c4e","ios":"1:926455129035:ios:1be7cb3e635d5e80784c4e","web":"1:926455129035:web:aa5f12e565f900f2784c4e"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "the-usual-500220",
+          "appId": "1:926455129035:android:015435224e7b3588784c4e",
+          "fileOutput": "android/app/google-services.json"
+        },
+        "buildConfigurations": {
+          "src/development": {
+            "projectId": "the-usual-dev",
+            "appId": "1:750338641944:android:0f3de87cf8f420bc4db36d",
+            "fileOutput": "android/app/src/development/google-services.json"
+          }
+        }
+      },
+      "ios": {
+        "default": {
+          "projectId": "the-usual-500220",
+          "appId": "1:926455129035:ios:1be7cb3e635d5e80784c4e",
+          "uploadDebugSymbols": false,
+          "fileOutput": "ios/Runner/GoogleService-Info.plist"
+        },
+        "buildConfigurations": {
+          "Debug-development": {
+            "projectId": "the-usual-dev",
+            "appId": "1:750338641944:ios:f3cc69d07efeeebc4db36d",
+            "uploadDebugSymbols": false,
+            "fileOutput": "ios/config/development/GoogleService-Info.plist"
+          }
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "the-usual-500220",
+          "configurations": {
+            "android": "1:926455129035:android:015435224e7b3588784c4e",
+            "ios": "1:926455129035:ios:1be7cb3e635d5e80784c4e",
+            "web": "1:926455129035:web:aa5f12e565f900f2784c4e"
+          }
+        },
+        "lib/firebase_options_development.dart": {
+          "projectId": "the-usual-dev",
+          "configurations": {
+            "android": "1:750338641944:android:0f3de87cf8f420bc4db36d",
+            "ios": "1:750338641944:ios:f3cc69d07efeeebc4db36d",
+            "web": "1:750338641944:web:1bb23036a5daaaec4db36d"
+          }
+        }
+      }
+    }
+  }
+}

@@ -8,7 +8,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
-import 'package:the_usual/firebase_options.dart';
 
 /// Signature for reporting uncaught errors, e.g. to a crash-reporting service.
 typedef ErrorReporter = void Function(Object error, StackTrace stackTrace);
@@ -41,6 +40,7 @@ class AppBlocObserver extends BlocObserver {
 // TODO(jb): optimize error handler.
 Future<void> bootstrap(
   FutureOr<Widget> Function() builder, {
+  required FirebaseOptions firebaseOptions,
   ErrorReporter? onError,
 }) async {
   if (onError != null) {
@@ -62,9 +62,7 @@ Future<void> bootstrap(
   // AuthCubit.ready), so a restored session lands on the right screen instead
   // of flashing onboarding.
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: firebaseOptions);
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   runApp(await builder());
 }

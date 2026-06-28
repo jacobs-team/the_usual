@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "750338641944",
+    "project_id": "the-usual-dev",
+    "storage_bucket": "the-usual-dev.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:750338641944:android:0f3de87cf8f420bc4db36d",
+        "android_client_info": {
+          "package_name": "com.jblankenship.theusual.dev"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "750338641944-3ocm5j77pef3toeosdk6qvf1lrpg6d9h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBXsOobOELRWYLcKL94tUNafBuBQGiT1qg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "750338641944-3ocm5j77pef3toeosdk6qvf1lrpg6d9h.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "750338641944-is1v7kur9vq5itse3f3u79k2e0m41ams.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jblankenship.theusual.dev"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
