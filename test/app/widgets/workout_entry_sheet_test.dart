@@ -173,6 +173,124 @@ void main() {
       expect(results.single!.addToUsuals, isTrue);
     });
 
+    testWidgets('switching to cardio and confirming pops a cardio result '
+        'with the entered duration', (tester) async {
+      final results = await showSheet(tester);
+
+      await tester.enterText(find.byType(TextFormField).first, 'Running');
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('workout-type-switch')));
+      await tester.pumpAndSettle();
+
+      // Enter a duration so the cardio TimeField reports it back to the sheet.
+      await tester.enterText(find.byKey(const Key('cardio-minutes')), '30');
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('confirm-button')));
+      await tester.pumpAndSettle();
+
+      expect(results.single, isNotNull);
+      expect(
+        results.single,
+        isA<WorkoutEntryResult>()
+            .having((r) => r.type, 'type', WorkoutType.cardio)
+            .having((r) => r.sets, 'sets', isEmpty)
+            .having(
+              (r) => r.duration,
+              'duration',
+              equals(const Duration(minutes: 30)),
+            ),
+      );
+    });
+
+    testWidgets('tapping the save-as-usual label flips addToUsuals', (
+      tester,
+    ) async {
+      final results = await showSheet(tester, showAddToUsuals: true);
+
+      await tester.enterText(find.byType(TextFormField).first, 'Deadlift');
+      await tester.pump();
+
+      // Tap the label text rather than the checkbox itself.
+      await tester.tap(find.text('Save as usual'));
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('confirm-button')));
+      await tester.pumpAndSettle();
+
+      expect(results.single, isNotNull);
+      expect(results.single!.addToUsuals, isTrue);
+    });
+
+    testWidgets('keeps a manually-weighted set when estimating bodyweight '
+        'load', (tester) async {
+      final repository = configuredAiRepository();
+      final results = await showSheet(
+        tester,
+        aiRepository: repository,
+        bodyWeight: 200,
+      );
+
+      when(
+        () => repository.estimateBodyweightLoad(
+          exerciseName: any(named: 'exerciseName'),
+          bodyWeight: any(named: 'bodyWeight'),
+          unit: any(named: 'unit'),
+        ),
+      ).thenAnswer((_) async => 140.0);
+
+      await tester.enterText(find.byType(TextFormField).first, 'Weighted Dip');
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('bodyweight-checkbox')));
+      await tester.pump();
+
+      // Give the set an explicit weight so the estimate must leave it alone.
+      await tester.enterText(find.byKey(const Key('set-weight-0')), '25');
+      await tester.enterText(find.byKey(const Key('set-reps-0')), '8');
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('confirm-button')));
+      await tester.pumpAndSettle();
+
+      expect(results.single, isNotNull);
+      expect(
+        results.single!.sets.first,
+        isA<WorkoutSet>().having((s) => s.weight, 'weight', equals(25.0)),
+      );
+    });
+
+    testWidgets('a failed bodyweight estimate logs the sets as entered and '
+        'shows a snackbar', (tester) async {
+      final repository = configuredAiRepository();
+      final results = await showSheet(
+        tester,
+        aiRepository: repository,
+        bodyWeight: 200,
+      );
+
+      when(
+        () => repository.estimateBodyweightLoad(
+          exerciseName: any(named: 'exerciseName'),
+          bodyWeight: any(named: 'bodyWeight'),
+          unit: any(named: 'unit'),
+        ),
+      ).thenThrow(Exception('estimate failed'));
+
+      await tester.enterText(find.byType(TextFormField).first, 'Pull-up');
+      await tester.pump();
+      await tester.tap(find.byKey(const Key('bodyweight-checkbox')));
+      await tester.pump();
+      await tester.enterText(find.byKey(const Key('set-reps-0')), '8');
+      await tester.pump();
+
+      await tester.tap(find.byKey(const Key('confirm-button')));
+      await tester.pumpAndSettle();
+
+      expect(results.single, isNotNull);
+      // Logged without an estimated weight.
+      expect(results.single!.sets.first.weight, isNull);
+    });
+
     testWidgets('the close button pops with null', (tester) async {
       final results = await showSheet(tester);
 

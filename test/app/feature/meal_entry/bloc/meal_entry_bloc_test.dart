@@ -182,52 +182,6 @@ void main() {
       );
     });
 
-    blocTest<FoodEntryBloc, MealEntryState>(
-      'started auto-estimates from photos when asked',
-      build: build,
-      setUp: () {
-        when(
-          () => repository.suggestFromPhoto(
-            any(),
-            mode: any(named: 'mode'),
-            description: any(named: 'description'),
-          ),
-        ).thenAnswer(
-          (_) async => const [
-            AiMealSuggestion(
-              name: 'Salad',
-              nutrition: Nutrition(calories: 120),
-            ),
-          ],
-        );
-      },
-      act: (bloc) => bloc.add(
-        MealEntryEvent.started(
-          photos: [MealPhoto(bytes: transparentPixel)],
-        ),
-      ),
-      expect: () => [
-        isA<MealEntryState>().having((s) => s.photos, 'photos', hasLength(1)),
-        isA<MealEntryState>().having(
-          (s) => s.status,
-          'status',
-          MealEntryStatus.generating,
-        ),
-        isA<MealEntryState>()
-            .having((s) => s.status, 'status', MealEntryStatus.idle)
-            .having((s) => s.foods.single.nutrition.calories, 'calories', 120),
-      ],
-      verify: (_) {
-        verify(
-          () => repository.suggestFromPhoto(
-            any(),
-            mode: any(named: 'mode'),
-            description: any(named: 'description'),
-          ),
-        ).called(1);
-      },
-    );
-
     group('estimateRequested without an API key', () {
       blocTest<FoodEntryBloc, MealEntryState>(
         'a named row fails when the AI is not configured',

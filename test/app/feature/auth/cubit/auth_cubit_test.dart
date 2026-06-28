@@ -329,6 +329,37 @@ void main() {
         verifyNever(() => syncRepository.uploadLocal(any()));
         verifyNever(() => syncRepository.downloadAndApply(any()));
       });
+
+      test('keepGuestData rethrows and resets on upload failure', () async {
+        await startPendingSignIn(existing: false);
+        when(
+          () => syncRepository.uploadLocal('u1'),
+        ).thenThrow(Exception('upload'));
+
+        await expectLater(cubit.keepGuestData(), throwsException);
+        expect(cubit.state.pendingPrompt, isNull);
+      });
+
+      test('startFresh rethrows and resets on clear failure', () async {
+        await startPendingSignIn(existing: false);
+        when(
+          () => syncRepository.clearLocal(),
+        ).thenThrow(Exception('clear'));
+
+        await expectLater(cubit.startFresh(), throwsException);
+        expect(cubit.state.pendingPrompt, isNull);
+      });
+
+      test('confirmReplaceWithCloud rethrows and resets on download '
+          'failure', () async {
+        await startPendingSignIn(existing: true);
+        when(
+          () => syncRepository.downloadAndApply('u1'),
+        ).thenThrow(Exception('download'));
+
+        await expectLater(cubit.confirmReplaceWithCloud(), throwsException);
+        expect(cubit.state.pendingPrompt, isNull);
+      });
     });
 
     group('continueAsGuest', () {

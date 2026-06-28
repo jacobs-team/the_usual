@@ -327,6 +327,103 @@ void main() {
     });
   });
 
+  group('previousDayMeal', () {
+    MealLogEntry logEntry({
+      required String id,
+      required DateTime loggedAt,
+      required MealOfTheDay mealOfTheDay,
+      String? name,
+      String? usualMealId,
+    }) {
+      return MealLogEntry(
+        id: id,
+        loggedAt: loggedAt,
+        mealOfTheDay: mealOfTheDay,
+        name: name ?? id,
+        usualMealId: usualMealId,
+      );
+    }
+
+    final day = DateTime(2026, 6, 16);
+
+    test('returns prior-day entries for the meal not yet logged today', () {
+      final entries = [
+        logEntry(
+          id: '1',
+          loggedAt: DateTime(2026, 6, 15, 8),
+          mealOfTheDay: MealOfTheDay.breakfast,
+          name: 'Eggs',
+        ),
+        logEntry(
+          id: '2',
+          loggedAt: DateTime(2026, 6, 15, 13),
+          mealOfTheDay: MealOfTheDay.lunch,
+          name: 'Salad',
+        ),
+      ];
+
+      final previous = entries.previousDayMeal(
+        mealOfTheDay: MealOfTheDay.breakfast,
+        day: day,
+        dayStart: dayStart,
+      );
+
+      expect(previous.map((entry) => entry.id).toList(), equals(['1']));
+    });
+
+    test('drops a prior-day entry already logged today by name', () {
+      final entries = [
+        logEntry(
+          id: '1',
+          loggedAt: DateTime(2026, 6, 15, 8),
+          mealOfTheDay: MealOfTheDay.breakfast,
+          name: 'Eggs',
+        ),
+        logEntry(
+          id: '2',
+          loggedAt: DateTime(2026, 6, 16, 8),
+          mealOfTheDay: MealOfTheDay.breakfast,
+          name: 'eggs',
+        ),
+      ];
+
+      final previous = entries.previousDayMeal(
+        mealOfTheDay: MealOfTheDay.breakfast,
+        day: day,
+        dayStart: dayStart,
+      );
+
+      expect(previous, isEmpty);
+    });
+
+    test('drops a prior-day entry already logged today by linked id', () {
+      final entries = [
+        logEntry(
+          id: '1',
+          loggedAt: DateTime(2026, 6, 15, 8),
+          mealOfTheDay: MealOfTheDay.breakfast,
+          name: 'Eggs',
+          usualMealId: 'eggs',
+        ),
+        logEntry(
+          id: '2',
+          loggedAt: DateTime(2026, 6, 16, 8),
+          mealOfTheDay: MealOfTheDay.breakfast,
+          name: 'Renamed Eggs',
+          usualMealId: 'eggs',
+        ),
+      ];
+
+      final previous = entries.previousDayMeal(
+        mealOfTheDay: MealOfTheDay.breakfast,
+        day: day,
+        dayStart: dayStart,
+      );
+
+      expect(previous, isEmpty);
+    });
+  });
+
   group('usualsFromOtherMeals', () {
     UsualMeal usual(String id, String name) => UsualMeal(id: id, name: name);
 

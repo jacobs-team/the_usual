@@ -167,6 +167,51 @@ void main() {
       ],
     );
 
+    blocTest<WorkoutLogBloc, WorkoutLogState>(
+      'workoutDurationChanged replaces the duration of the matching entry '
+      'only',
+      build: WorkoutLogBloc.new,
+      seed: () => WorkoutLogState(
+        workoutEntries: [
+          WorkoutLogEntry(
+            id: 'a',
+            loggedAt: DateTime(2026, 6, 14),
+            workoutGroupId: 'cardio',
+            name: 'Run',
+            type: WorkoutType.cardio,
+            duration: const Duration(minutes: 20),
+          ),
+          WorkoutLogEntry(
+            id: 'b',
+            loggedAt: DateTime(2026, 6, 14),
+            workoutGroupId: 'cardio',
+            name: 'Row',
+            type: WorkoutType.cardio,
+            duration: const Duration(minutes: 10),
+          ),
+        ],
+      ),
+      act: (bloc) => bloc.add(
+        const WorkoutLogEvent.workoutDurationChanged(
+          'a',
+          Duration(minutes: 30),
+        ),
+      ),
+      expect: () => [
+        isA<WorkoutLogState>()
+            .having(
+              (s) => s.workoutEntries.first.duration,
+              'updated duration',
+              const Duration(minutes: 30),
+            )
+            .having(
+              (s) => s.workoutEntries.last.duration,
+              'untouched duration',
+              const Duration(minutes: 10),
+            ),
+      ],
+    );
+
     test('toJson then fromJson round-trips the state', () {
       final bloc = WorkoutLogBloc();
       final state = WorkoutLogState(

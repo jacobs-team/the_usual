@@ -113,6 +113,58 @@ void main() {
     expect(find.byType(Image), findsOneWidget);
   });
 
+  testWidgets('tapping the "Save as usual" label toggles the flag', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(1200, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final formKey = GlobalKey<FoodEntryFormState>();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: FoodEntryForm(
+            key: formKey,
+            showAddToUsualMeals: true,
+            initialFoods: const [
+              (
+                name: 'Toast',
+                nutrition: Nutrition(calories: 120),
+                quantity: 1.0,
+                addToUsualMeals: false,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(formKey.currentState!.results.single.addToUsualMeals, isFalse);
+
+    // The "Save as usual" label sits in its own opaque GestureDetector beside
+    // the checkbox; tap that detector (the one wrapping a Text), not the
+    // checkbox's own internal gesture detectors.
+    final labelRow = find.ancestor(
+      of: find.byType(Checkbox),
+      matching: find.byType(Row),
+    );
+    final labelGestureDetector = find
+        .descendant(
+          of: labelRow,
+          matching: find.byWidgetPredicate(
+            (widget) => widget is GestureDetector && widget.child is Text,
+          ),
+        )
+        .first;
+    await tester.tap(labelGestureDetector);
+    await tester.pump();
+
+    expect(formKey.currentState!.results.single.addToUsualMeals, isTrue);
+  });
+
   testWidgets('keeps the nutrition field state while editing a value', (
     tester,
   ) async {

@@ -13,9 +13,12 @@ class MockAdditionalUserInfo extends Mock implements AdditionalUserInfo {}
 
 class _FakeAuthCredential extends Fake implements AuthCredential {}
 
+class _FakeAuthProvider extends Fake implements AuthProvider {}
+
 void main() {
   setUpAll(() {
     registerFallbackValue(_FakeAuthCredential());
+    registerFallbackValue(_FakeAuthProvider());
   });
 
   late MockFirebaseAuth firebaseAuth;
@@ -130,6 +133,48 @@ void main() {
         final result = await repository.signInWithGoogleIdToken('id-token');
 
         expect(result.isNewUser, isFalse);
+      });
+    });
+
+    group('signInWithGooglePopup', () {
+      test('returns the signed-in user on success', () async {
+        final firebaseUser = buildFirebaseUser();
+        final additionalUserInfo = MockAdditionalUserInfo();
+        when(() => additionalUserInfo.isNewUser).thenReturn(false);
+        final userCredential = MockUserCredential();
+        when(() => userCredential.user).thenReturn(firebaseUser);
+        when(
+          () => userCredential.additionalUserInfo,
+        ).thenReturn(additionalUserInfo);
+        when(
+          () => firebaseAuth.signInWithPopup(any()),
+        ).thenAnswer((_) async => userCredential);
+
+        final result = await repository.signInWithGooglePopup();
+
+        expect(
+          result?.user,
+          isA<AuthUser>().having((u) => u.id, 'id', equals('uid-1')),
+        );
+      });
+
+      test('returns null when the popup is closed or superseded', () async {
+        when(() => firebaseAuth.signInWithPopup(any())).thenThrow(
+          FirebaseAuthException(code: 'popup-closed-by-user'),
+        );
+
+        expect(await repository.signInWithGooglePopup(), isNull);
+      });
+
+      test('rethrows a non-cancel $FirebaseAuthException', () async {
+        when(() => firebaseAuth.signInWithPopup(any())).thenThrow(
+          FirebaseAuthException(code: 'network-request-failed'),
+        );
+
+        expect(
+          repository.signInWithGooglePopup(),
+          throwsA(isA<FirebaseAuthException>()),
+        );
       });
     });
 

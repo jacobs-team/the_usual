@@ -224,6 +224,59 @@ void main() {
         expect(userSettingsBloc.state.usualMealCount, equals(2));
       });
 
+      test(
+        'leaves an established log untouched on a newer envelope version',
+        () async {
+          dailyLogBloc.add(DailyLogEvent.stateRestored(establishedDailyLog));
+          await pumpEventQueue();
+
+          final document = <String, dynamic>{
+            'schemaVersion': 999,
+            'dailyLog': const DailyLogState().toJson(),
+            'userSettings': const UserSettingsState().toJson(),
+          };
+          when(
+            () => docRef.get(),
+          ).thenAnswer((_) async => snapshotWith(document));
+
+          final dailyLogEmissions = <DailyLogState>[];
+          final sub = dailyLogBloc.stream.listen(dailyLogEmissions.add);
+
+          // Established local data: the newer-version branch reports
+          // established without overwriting local state.
+          final result = await repository.downloadAndApply(uid);
+          await pumpEventQueue();
+
+          expect(result, isTrue);
+          expect(dailyLogEmissions, isEmpty);
+          expect(dailyLogBloc.state.mealEntries, isNotEmpty);
+
+          await sub.cancel();
+        },
+      );
+
+      test('reports established usuals on a newer envelope version', () async {
+        // No logged meals, so the established check falls through to the
+        // usuals side of the condition.
+        userSettingsBloc.add(
+          const UserSettingsEvent.stateRestored(establishedSettings),
+        );
+        await pumpEventQueue();
+
+        final document = <String, dynamic>{
+          'schemaVersion': 999,
+          'dailyLog': const DailyLogState().toJson(),
+          'userSettings': const UserSettingsState().toJson(),
+        };
+        when(
+          () => docRef.get(),
+        ).thenAnswer((_) async => snapshotWith(document));
+
+        final result = await repository.downloadAndApply(uid);
+
+        expect(result, isTrue);
+      });
+
       test('falls back to defaults when nested json is not a map', () async {
         final document = <String, dynamic>{
           'schemaVersion': 1,
@@ -574,6 +627,48 @@ void main() {
           verifyNever(() => docRef.set(any()));
 
           async.elapse(const Duration(seconds: 3));
+
+          verify(() => docRef.set(any())).called(1);
+
+          localRepository.stopWatching();
+          unawaited(controller.close());
+          unawaited(localDailyLog.close());
+          unawaited(localWorkoutLog.close());
+          unawaited(localSettings.close());
+          unawaited(localOnboarding.close());
+        });
+      });
+    });
+
+    group('flushPending', () {
+      test('cancels the debounce and writes through immediately', () {
+        fakeAsync((async) {
+          final localDailyLog = DailyLogBloc();
+          final localWorkoutLog = WorkoutLogBloc();
+          final localSettings = UserSettingsBloc();
+          final localOnboarding = OnboardingBloc();
+          final localRepository = SyncRepository(
+            localDailyLog,
+            localWorkoutLog,
+            localSettings,
+            localOnboarding,
+            firestore,
+          );
+          final controller =
+              StreamController<DocumentSnapshot<Map<String, dynamic>>>();
+          when(() => docRef.snapshots()).thenAnswer((_) => controller.stream);
+
+          localRepository.startWatching(uid);
+
+          localDailyLog.add(
+            DailyLogEvent.stateRestored(establishedDailyLog),
+          );
+          async.elapse(Duration.zero);
+
+          // Before the debounce fires, flushing writes through now.
+          verifyNever(() => docRef.set(any()));
+          localRepository.flushPending();
+          async.elapse(Duration.zero);
 
           verify(() => docRef.set(any())).called(1);
 

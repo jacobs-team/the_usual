@@ -58,6 +58,32 @@ void main() {
       expect(find.byType(ExerciseStrengthChart), findsOneWidget);
     });
 
+    testWidgets('tapping a chart point selects it and updates the summary', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(1200, 3000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpPumpPumpItUP(
+        deps: [workoutLogBloc, userSettingsBloc],
+        const ExerciseProgressDetailView(exerciseName: 'Bench Press'),
+      );
+
+      await tester.tap(
+        find
+            .descendant(
+              of: find.byType(ExerciseStrengthChart),
+              matching: find.byType(GestureDetector),
+            )
+            .first,
+      );
+      await tester.pump();
+
+      expect(find.byType(ExerciseStrengthChart), findsOneWidget);
+    });
+
     testWidgets('shows a fallback when the exercise has no series', (
       tester,
     ) async {

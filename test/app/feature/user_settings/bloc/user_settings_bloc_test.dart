@@ -231,6 +231,53 @@ void main() {
     );
 
     blocTest<UserSettingsBloc, UserSettingsState>(
+      'calorieGoalChanged keeps an entry effective on a different day',
+      build: UserSettingsBloc.new,
+      seed: () => UserSettingsState(
+        calorieGoalHistory: [
+          CalorieGoalEntry(
+            effectiveFrom: DateTime(2020),
+            calories: 1500,
+          ),
+        ],
+      ),
+      act: (bloc) => bloc.add(const UserSettingsEvent.calorieGoalChanged(2200)),
+      expect: () => [
+        isA<UserSettingsState>()
+            .having(
+              (s) => s.calorieGoalHistory,
+              'calorieGoalHistory',
+              hasLength(2),
+            )
+            .having((s) => s.calorieGoal, 'calorieGoal', 2200),
+      ],
+    );
+
+    blocTest<UserSettingsBloc, UserSettingsState>(
+      'weightGoalChanged keeps an entry effective on a different day',
+      build: UserSettingsBloc.new,
+      seed: () => UserSettingsState(
+        weightGoalHistory: [
+          WeightGoalEntry(
+            effectiveFrom: DateTime(2020),
+            weightUnit: WeightUnit.lb,
+            weight: 80,
+          ),
+        ],
+      ),
+      act: (bloc) => bloc.add(const UserSettingsEvent.weightGoalChanged(68)),
+      expect: () => [
+        isA<UserSettingsState>()
+            .having(
+              (s) => s.weightGoalHistory,
+              'weightGoalHistory',
+              hasLength(2),
+            )
+            .having((s) => s.weightGoal, 'weightGoal', 68.0),
+      ],
+    );
+
+    blocTest<UserSettingsBloc, UserSettingsState>(
       'themeModeSelected stores the theme mode',
       build: UserSettingsBloc.new,
       act: (bloc) => bloc.add(
@@ -529,6 +576,27 @@ void main() {
       );
 
       blocTest<UserSettingsBloc, UserSettingsState>(
+        'workoutGroupReordered appends groups missing from the ordered ids',
+        build: UserSettingsBloc.new,
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.workoutGroupReordered(['legs', 'push']),
+        ),
+        expect: () => [
+          isA<UserSettingsState>()
+              .having(
+                (s) => s.workoutGroups.map((g) => g.id).toList(),
+                'order of ids with the unnamed group last',
+                ['legs', 'push', 'pull'],
+              )
+              .having(
+                (s) => s.workoutGroups.last.order,
+                'unnamed group order',
+                2,
+              ),
+        ],
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
         'workoutGroupRemoved removes an empty group',
         build: UserSettingsBloc.new,
         act: (bloc) =>
@@ -647,6 +715,101 @@ void main() {
       );
 
       blocTest<UserSettingsBloc, UserSettingsState>(
+        'usualWorkoutRenamed leaves the other usuals untouched',
+        build: UserSettingsBloc.new,
+        seed: () => const UserSettingsState(
+          usualWorkouts: {
+            'push': [
+              UsualWorkout(id: 'u1', name: 'Bench Press'),
+              UsualWorkout(id: 'u2', name: 'Overhead Press'),
+            ],
+          },
+        ),
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.usualWorkoutRenamed(
+            'push',
+            'u1',
+            'Incline Press',
+          ),
+        ),
+        expect: () => [
+          isA<UserSettingsState>().having(
+            (s) => s.usualWorkouts['push']!.map((w) => w.name).toList(),
+            'names',
+            ['Incline Press', 'Overhead Press'],
+          ),
+        ],
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'usualWorkoutSetsChanged leaves the other usuals untouched',
+        build: UserSettingsBloc.new,
+        seed: () => const UserSettingsState(
+          usualWorkouts: {
+            'push': [
+              UsualWorkout(
+                id: 'u1',
+                name: 'Bench Press',
+                sets: [WorkoutSet(weight: 135, reps: 8)],
+              ),
+              UsualWorkout(id: 'u2', name: 'Overhead Press'),
+            ],
+          },
+        ),
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.usualWorkoutSetsChanged('push', 'u1', [
+            WorkoutSet(weight: 155, reps: 5),
+          ]),
+        ),
+        expect: () => [
+          isA<UserSettingsState>()
+              .having(
+                (s) => s.usualWorkouts['push']!.first.sets.single.weight,
+                'updated set weight',
+                155,
+              )
+              .having(
+                (s) => s.usualWorkouts['push']!.last.sets,
+                'untouched usual sets',
+                isEmpty,
+              ),
+        ],
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        "usualWorkoutDurationChanged updates the matching usual's duration",
+        build: UserSettingsBloc.new,
+        seed: () => const UserSettingsState(
+          usualWorkouts: {
+            'push': [
+              UsualWorkout(id: 'u1', name: 'Plank'),
+              UsualWorkout(id: 'u2', name: 'Run'),
+            ],
+          },
+        ),
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.usualWorkoutDurationChanged(
+            'push',
+            'u2',
+            Duration(minutes: 30),
+          ),
+        ),
+        expect: () => [
+          isA<UserSettingsState>()
+              .having(
+                (s) => s.usualWorkouts['push']!.last.duration,
+                'updated duration',
+                const Duration(minutes: 30),
+              )
+              .having(
+                (s) => s.usualWorkouts['push']!.first.duration,
+                'untouched usual duration',
+                isNull,
+              ),
+        ],
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
         'usualWorkoutRemoved drops the matching usual',
         build: UserSettingsBloc.new,
         seed: () => const UserSettingsState(
@@ -753,6 +916,76 @@ void main() {
         ),
       ],
     );
+
+    blocTest<UserSettingsBloc, UserSettingsState>(
+      'saveMealAsUsualChanged stores the flag',
+      build: UserSettingsBloc.new,
+      act: (bloc) => bloc.add(
+        const UserSettingsEvent.saveMealAsUsualChanged(value: false),
+      ),
+      expect: () => [
+        isA<UserSettingsState>().having(
+          (s) => s.saveMealAsUsual,
+          'saveMealAsUsual',
+          isFalse,
+        ),
+      ],
+    );
+
+    blocTest<UserSettingsBloc, UserSettingsState>(
+      'saveWorkoutAsUsualChanged stores the flag',
+      build: UserSettingsBloc.new,
+      act: (bloc) => bloc.add(
+        const UserSettingsEvent.saveWorkoutAsUsualChanged(value: true),
+      ),
+      expect: () => [
+        isA<UserSettingsState>().having(
+          (s) => s.saveWorkoutAsUsual,
+          'saveWorkoutAsUsual',
+          isTrue,
+        ),
+      ],
+    );
+
+    group('saveAsUsualMeal', () {
+      test('returns the existing id when a usual with that name exists', () {
+        final bloc = UserSettingsBloc()
+          ..emit(
+            const UserSettingsState(
+              usuals: {
+                MealOfTheDay.lunch: [UsualMeal(id: 'existing', name: 'Salad')],
+              },
+            ),
+          );
+
+        final id = bloc.saveAsUsualMeal(
+          MealOfTheDay.lunch,
+          'salad',
+          const Nutrition(calories: 200),
+        );
+
+        expect(id, equals('existing'));
+        expect(bloc.state.usuals[MealOfTheDay.lunch], hasLength(1));
+      });
+
+      test('adds a new usual with a generated id when none exists', () async {
+        final bloc = UserSettingsBloc();
+
+        final id = bloc.saveAsUsualMeal(
+          MealOfTheDay.dinner,
+          '  Tacos  ',
+          const Nutrition(calories: 600),
+        );
+
+        await bloc.stream.first;
+
+        expect(id, isNotEmpty);
+        final dinnerUsuals = bloc.state.usuals[MealOfTheDay.dinner];
+        expect(dinnerUsuals, hasLength(1));
+        expect(dinnerUsuals!.single.id, equals(id));
+        expect(dinnerUsuals.single.name, equals('Tacos'));
+      });
+    });
 
     test('toJson then fromJson round-trips the state', () {
       final bloc = UserSettingsBloc();

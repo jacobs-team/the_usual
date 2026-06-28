@@ -237,8 +237,10 @@ class _WorkoutsViewState extends State<WorkoutsView> {
     if (DateUtils.isSameDay(selectedRange.start, selectedRange.end)) {
       return startLabel;
     }
+    // coverage:ignore-start
     final rangeLabel = '$startLabel – ${formatDate(selectedRange.end)}';
-    return rangeLabel; // coverage:ignore-line
+    return rangeLabel;
+    // coverage:ignore-end
   }
 }
 

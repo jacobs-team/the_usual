@@ -44,5 +44,20 @@ void main() {
         equals(workoutLogEntry),
       );
     });
+
+    test('round-trips a non-null duration', () {
+      final workoutLogEntry = WorkoutLogEntry(
+        id: 'w1',
+        loggedAt: DateTime(2026, 6, 23, 18),
+        workoutGroupId: 'cardio',
+        name: 'Run',
+        duration: const Duration(minutes: 30),
+      );
+
+      expect(
+        WorkoutLogEntry.fromJson(workoutLogEntry.toJson()).duration,
+        equals(const Duration(minutes: 30)),
+      );
+    });
   });
 }

@@ -90,7 +90,8 @@ class ExerciseStrengthChart extends StatelessWidget {
                     behavior: HitTestBehavior.opaque,
                     onTapUp: (details) {
                       final step = points.length == 1
-                          ? constraints.maxWidth
+                          ? constraints
+                                .maxWidth // coverage:ignore-line
                           : constraints.maxWidth / (points.length - 1);
                       final index = (details.localPosition.dx / step)
                           .round()

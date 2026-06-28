@@ -461,5 +461,41 @@ void main() {
         expect(history.last.days.single.weightEntry?.id, equals('w1'));
       });
     });
+
+    group('weightChangeOver', () {
+      WeightEntry weighIn(String id, DateTime loggedAt, double weight) {
+        return WeightEntry(
+          id: id,
+          loggedAt: loggedAt,
+          weight: weight,
+          weightUnit: WeightUnit.lb,
+        );
+      }
+
+      const window = Duration(days: 30);
+      final day = DateTime(2026, 6, 18);
+
+      test('is null with fewer than two weigh-ins in the window', () {
+        final state = DailyLogState(
+          weightEntries: [weighIn('a', DateTime(2026, 6, 14), 165)],
+        );
+
+        expect(state.weightChangeOver(window, day, dayStart), isNull);
+      });
+
+      test('is the latest minus the earliest, rounded to one decimal', () {
+        final state = DailyLogState(
+          weightEntries: [
+            weighIn('a', DateTime(2026, 6), 170.24),
+            weighIn('b', DateTime(2026, 6, 18), 165),
+          ],
+        );
+
+        expect(
+          state.weightChangeOver(window, day, dayStart),
+          equals(-5.2),
+        );
+      });
+    });
   });
 }

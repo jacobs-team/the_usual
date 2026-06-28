@@ -17,6 +17,13 @@ void main() {
   });
 
   group(GoogleSignInRepository, () {
+    test('falls back to the SDK singleton when none is injected', () {
+      // Constructing with no injected dep evaluates GoogleSignIn.instance,
+      // which resolves the platform interface without a registered
+      // implementation in the test host.
+      expect(GoogleSignInRepository.new, returnsNormally);
+    });
+
     group('initialize', () {
       test('initializes the Google sign-in SDK once', () async {
         when(

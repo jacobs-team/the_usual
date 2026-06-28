@@ -271,6 +271,159 @@ void main() {
       verify(() => userSettingsBloc.add(any())).called(1);
     });
 
+    testWidgets('swiping selects an adjacent day as a range', (tester) async {
+      await withTestClock(() async {
+        stubDailyLog(const DailyLogState());
+        stubSettings(const UserSettingsState());
+        await pumpView(tester);
+
+        // A left-to-right fling has positive velocity, stepping back a day, so
+        // the live today view becomes a single-day range.
+        await tester.fling(
+          find.byType(CustomScrollView),
+          const Offset(300, 0),
+          1000,
+        );
+        await tester.pumpAndSettle();
+
+        final sections = tester
+            .widgetList<MealLogSection>(find.byType(MealLogSection))
+            .toList();
+        expect(sections.first.logDays, isNotNull);
+      }, at: testNow);
+    });
+
+    WeightEntry weighIn(String id, DateTime loggedAt, double weight) {
+      return WeightEntry(
+        id: id,
+        loggedAt: loggedAt,
+        weight: weight,
+        weightUnit: WeightUnit.lb,
+      );
+    }
+
+    testWidgets('shows a downward trend when weight dropped', (tester) async {
+      await withTestClock(() async {
+        stubDailyLog(
+          DailyLogState(
+            weightEntries: [
+              weighIn('a', DateTime(2026, 6), 170),
+              weighIn('b', testNow, 165),
+            ],
+          ),
+        );
+        stubSettings(const UserSettingsState());
+        await pumpView(tester);
+
+        expect(find.byIcon(Icons.arrow_downward), findsOneWidget);
+      }, at: testNow);
+    });
+
+    testWidgets('shows an upward trend when weight rose', (tester) async {
+      await withTestClock(() async {
+        stubDailyLog(
+          DailyLogState(
+            weightEntries: [
+              weighIn('a', DateTime(2026, 6), 160),
+              weighIn('b', testNow, 165),
+            ],
+          ),
+        );
+        stubSettings(const UserSettingsState());
+        await pumpView(tester);
+
+        expect(find.byIcon(Icons.arrow_upward), findsOneWidget);
+      }, at: testNow);
+    });
+
+    testWidgets('shows no-change text when the weight is unchanged', (
+      tester,
+    ) async {
+      await withTestClock(() async {
+        stubDailyLog(
+          DailyLogState(
+            weightEntries: [
+              weighIn('a', DateTime(2026, 6), 165),
+              weighIn('b', testNow, 165),
+            ],
+          ),
+        );
+        stubSettings(const UserSettingsState());
+        await pumpView(tester);
+
+        expect(find.byIcon(Icons.arrow_drop_down), findsOneWidget);
+        expect(find.byIcon(Icons.arrow_upward), findsNothing);
+        expect(find.byIcon(Icons.arrow_downward), findsNothing);
+      }, at: testNow);
+    });
+
+    testWidgets('shows a placeholder when the window has no change', (
+      tester,
+    ) async {
+      await withTestClock(() async {
+        // Two weigh-ins, so the trend renders, but both fall outside the
+        // default 30-day window ending today, leaving no change to measure.
+        stubDailyLog(
+          DailyLogState(
+            weightEntries: [
+              weighIn('a', DateTime(2026), 170),
+              weighIn('b', DateTime(2026, 1, 2), 165),
+            ],
+          ),
+        );
+        stubSettings(const UserSettingsState());
+        await pumpView(tester);
+
+        expect(find.byIcon(Icons.arrow_drop_down), findsOneWidget);
+      }, at: testNow);
+    });
+
+    testWidgets('changing the trend range updates the change shown', (
+      tester,
+    ) async {
+      await withTestClock(() async {
+        // Within the default 30-day window the change is small; widening to a
+        // year pulls in an earlier, heavier weigh-in for a larger change.
+        stubDailyLog(
+          DailyLogState(
+            weightEntries: [
+              weighIn('old', DateTime(2026), 200),
+              weighIn('mid', DateTime(2026, 6), 167),
+              weighIn('now', testNow, 165),
+            ],
+          ),
+        );
+        stubSettings(const UserSettingsState());
+        await pumpView(tester);
+
+        await tester.tap(find.byIcon(Icons.arrow_drop_down));
+        await tester.pumpAndSettle();
+        // The last menu item is the widest window (a year), which reaches the
+        // earlier, heavier weigh-in.
+        final yearItem = find
+            .byWidgetPredicate((widget) => widget is PopupMenuItem)
+            .last;
+        await tester.tap(yearItem);
+        await tester.pumpAndSettle();
+
+        expect(find.byIcon(Icons.arrow_downward), findsOneWidget);
+      }, at: testNow);
+    });
+
+    testWidgets('hides the trend until there are at least two weigh-ins', (
+      tester,
+    ) async {
+      await withTestClock(() async {
+        stubDailyLog(
+          DailyLogState(weightEntries: [weighIn('a', testNow, 165)]),
+        );
+        stubSettings(const UserSettingsState());
+        await pumpView(tester);
+
+        expect(find.byIcon(Icons.arrow_drop_down), findsNothing);
+      }, at: testNow);
+    });
+
     testWidgets('reschedules the refresh and rebuilds on resume', (
       tester,
     ) async {

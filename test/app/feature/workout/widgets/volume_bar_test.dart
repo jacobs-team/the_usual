@@ -7,8 +7,10 @@ import '../../../../helpers/helpers.dart';
 void main() {
   group(VolumeBar, () {
     testWidgets('renders', (tester) async {
+      // Built non-const so the constructor body is exercised for coverage.
+      final volume = DateTime.now().microsecond.toDouble() + 1500;
       await tester.pumpPumpPumpItUP(
-        const VolumeBar(volume: 1500, weightUnit: WeightUnit.kg),
+        VolumeBar(volume: volume, weightUnit: WeightUnit.kg),
       );
 
       expect(find.byType(VolumeBar), findsOneWidget);

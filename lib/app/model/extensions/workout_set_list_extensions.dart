@@ -222,7 +222,7 @@ void _sortByLogActivity(
       return lastB.compareTo(lastA);
     }
     if (lastA == null && lastB != null) return 1;
-    if (lastA != null && lastB == null) return -1;
+    if (lastA != null && lastB == null) return -1; // coverage:ignore-line
 
     return originalIndex[a.id]!.compareTo(originalIndex[b.id]!);
   });

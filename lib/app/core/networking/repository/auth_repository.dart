@@ -33,7 +33,11 @@ class AuthRepository {
   /// Interactive sign-in. Returns the signed-in user and whether the account is
   /// new to this project, or null when the user cancels.
   Future<SignInResult?> signIn() async {
-    if (kIsWeb) return _firebaseAuthRepository.signInWithGooglePopup();
+    // coverage:ignore-start
+    if (kIsWeb) {
+      return _firebaseAuthRepository.signInWithGooglePopup();
+    }
+    // coverage:ignore-end
     final idToken = await _googleSignInRepository.authenticate();
     if (idToken == null) return null;
     return _firebaseAuthRepository.signInWithGoogleIdToken(idToken);

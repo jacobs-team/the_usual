@@ -313,6 +313,49 @@ void main() {
       expect(find.byType(Divider), findsOneWidget);
     });
 
+    testWidgets(
+      'draws a stepped goal line with a gap and a goal change',
+      (tester) async {
+        // The first two weigh-ins predate any goal (a null gap in the stepped
+        // line), then the goal applies and later changes value, so the painter
+        // draws separate runs joined by a vertical connector.
+        await tester.pumpPumpPumpItUP(
+          SizedBox(
+            width: 360,
+            height: 600,
+            child: MonthTrendsChart(
+              monthHistory: month(
+                weightEntries: [
+                  weight(1, 166),
+                  weight(5, 165),
+                  weight(9, 164),
+                  weight(13, 163),
+                ],
+              ),
+              weightGoalHistory: [
+                WeightGoalEntry(
+                  effectiveFrom: DateTime(2026, 6, 7),
+                  weightUnit: WeightUnit.lb,
+                  weight: 160,
+                ),
+                WeightGoalEntry(
+                  effectiveFrom: DateTime(2026, 6, 11),
+                  weightUnit: WeightUnit.lb,
+                  weight: 158,
+                ),
+              ],
+              calorieGoalHistory: const [],
+              onDayTapped: (_) {},
+            ),
+          ),
+        );
+        await tester.pump();
+
+        expect(chartPaint, findsWidgets);
+        expect(calorieTapTarget, findsNothing);
+      },
+    );
+
     testWidgets('splits each calorie bar into macro segments', (tester) async {
       await pumpChart(
         tester,

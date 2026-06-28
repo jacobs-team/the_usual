@@ -48,7 +48,7 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
 
   static const _uuid = Uuid();
 
-  // TODO(dev): temporary sample meals for seeding. Each is
+  // temporary sample meals for seeding. Each is
   // (name, calories, protein, fat, carbs). Remove before ship along with the
   // SampleDataSeeded event.
   static const _breakfasts = [

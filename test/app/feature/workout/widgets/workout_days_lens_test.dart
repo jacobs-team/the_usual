@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -100,5 +102,103 @@ void main() {
 
       expect(find.byType(LoggedWorkoutRow), findsWidgets);
     });
+
+    testWidgets('tapping an earlier month chip flips to that month', (
+      tester,
+    ) async {
+      useTallWindow(tester);
+      stub(twoMonthState());
+      await tester.pumpPumpPumpItUP(
+        deps: [workoutLogBloc, userSettingsBloc],
+        const WorkoutDaysLens(),
+      );
+      await tester.pumpAndSettle();
+
+      // Two month chips render; tapping the earlier (May) chip animates the
+      // page to it.
+      await tester.tap(find.byType(InkWell).first);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ExpansionTile), findsWidgets);
+    });
+
+    testWidgets('swiping the page updates the selected month', (
+      tester,
+    ) async {
+      useTallWindow(tester);
+      stub(twoMonthState());
+      await tester.pumpPumpPumpItUP(
+        deps: [workoutLogBloc, userSettingsBloc],
+        const WorkoutDaysLens(),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.fling(find.byType(PageView), const Offset(400, 0), 1000);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ExpansionTile), findsWidgets);
+    });
+
+    testWidgets(
+      'an entry in an unknown group is shown under an "other" section',
+      (tester) async {
+        useTallWindow(tester);
+        stub(
+          WorkoutLogState(
+            workoutEntries: [
+              WorkoutLogEntry(
+                id: 'orphan',
+                loggedAt: DateTime(2026, 6, 10, 8),
+                name: 'Mystery Lift',
+                workoutGroupId: 'deleted-group',
+                sets: const [WorkoutSet(weight: 100, reps: 5)],
+              ),
+            ],
+          ),
+        );
+        await tester.pumpPumpPumpItUP(
+          deps: [workoutLogBloc, userSettingsBloc],
+          const WorkoutDaysLens(),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byType(ExpansionTile).first);
+        await tester.pumpAndSettle();
+
+        expect(find.byType(LoggedWorkoutRow), findsWidgets);
+      },
+    );
+
+    testWidgets(
+      'deleting the selected month clamps to a remaining month',
+      (tester) async {
+        useTallWindow(tester);
+        final controller = StreamController<WorkoutLogState>.broadcast();
+        addTearDown(controller.close);
+
+        when(() => workoutLogBloc.state).thenReturn(twoMonthState());
+        when(() => workoutLogBloc.stream).thenAnswer((_) => controller.stream);
+
+        await tester.pumpPumpPumpItUP(
+          deps: [workoutLogBloc, userSettingsBloc],
+          const WorkoutDaysLens(),
+        );
+        await tester.pumpAndSettle();
+
+        // The lens lands on the latest month (June). Drop June so the selected
+        // month no longer exists, forcing the post-frame clamp to May.
+        final mayOnly = WorkoutLogState(
+          workoutEntries: [
+            entry(DateTime(2026, 5, 10, 8)),
+            entry(DateTime(2026, 5, 15, 8), weight: 110),
+          ],
+        );
+        when(() => workoutLogBloc.state).thenReturn(mayOnly);
+        controller.add(mayOnly);
+        await tester.pumpAndSettle();
+
+        expect(find.byType(ExpansionTile), findsWidgets);
+      },
+    );
   });
 }

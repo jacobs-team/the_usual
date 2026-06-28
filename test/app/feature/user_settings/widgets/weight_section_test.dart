@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -8,17 +10,21 @@ import '../../../../helpers/helpers.dart';
 void main() {
   group(WeightSection, () {
     late UserSettingsBloc userSettingsBloc;
+    late StreamController<UserSettingsState> stateController;
 
     void stub(UserSettingsState state) {
       when(() => userSettingsBloc.state).thenReturn(state);
       when(
         () => userSettingsBloc.stream,
-      ).thenAnswer((_) => const Stream.empty());
+      ).thenAnswer((_) => stateController.stream);
     }
 
     setUp(() {
       userSettingsBloc = MockUserSettingsBloc();
+      stateController = StreamController<UserSettingsState>.broadcast();
     });
+
+    tearDown(() => stateController.close());
 
     void useTallWindow(WidgetTester tester) {
       tester.view.physicalSize = const Size(1200, 3000);
@@ -118,6 +124,30 @@ void main() {
           const UserSettingsEvent.weightUnitSelected(WeightUnit.kg),
         ),
       ).called(1);
+    });
+
+    testWidgets('re-seeds the weight field when it changes underneath it', (
+      tester,
+    ) async {
+      useTallWindow(tester);
+      stub(const UserSettingsState());
+      await tester.pumpPumpPumpItUP(
+        deps: [userSettingsBloc],
+        const WeightSection(),
+      );
+
+      const updated = UserSettingsState(startingWeight: 190);
+      when(() => userSettingsBloc.state).thenReturn(updated);
+      stateController.add(updated);
+      await tester.pump();
+
+      final weightField = tester.widget<EditableText>(
+        find.descendant(
+          of: find.byType(WeightInput),
+          matching: find.byType(EditableText),
+        ),
+      );
+      expect(weightField.controller.text, equals('190.0'));
     });
   });
 }

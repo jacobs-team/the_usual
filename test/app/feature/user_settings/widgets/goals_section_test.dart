@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -8,17 +10,21 @@ import '../../../../helpers/helpers.dart';
 void main() {
   group(GoalsSection, () {
     late UserSettingsBloc userSettingsBloc;
+    late StreamController<UserSettingsState> stateController;
 
     void stub(UserSettingsState state) {
       when(() => userSettingsBloc.state).thenReturn(state);
       when(
         () => userSettingsBloc.stream,
-      ).thenAnswer((_) => const Stream.empty());
+      ).thenAnswer((_) => stateController.stream);
     }
 
     setUp(() {
       userSettingsBloc = MockUserSettingsBloc();
+      stateController = StreamController<UserSettingsState>.broadcast();
     });
+
+    tearDown(() => stateController.close());
 
     testWidgets('seeds the fields from the stored goals', (tester) async {
       stub(
@@ -127,6 +133,83 @@ void main() {
           const UserSettingsEvent.weightUnitSelected(WeightUnit.kg),
         ),
       ).called(1);
+    });
+
+    testWidgets('re-seeds the fields when the goals change underneath it', (
+      tester,
+    ) async {
+      stub(const UserSettingsState());
+      await tester.pumpPumpPumpItUP(
+        deps: [userSettingsBloc],
+        const GoalsSection(),
+      );
+
+      final updated = UserSettingsState(
+        calorieGoalHistory: [
+          CalorieGoalEntry(
+            effectiveFrom: DateTime.fromMillisecondsSinceEpoch(0),
+            calories: 2500,
+          ),
+        ],
+        weightGoalHistory: [
+          WeightGoalEntry(
+            effectiveFrom: DateTime.fromMillisecondsSinceEpoch(0),
+            weightUnit: WeightUnit.lb,
+            weight: 88,
+          ),
+        ],
+      );
+      when(() => userSettingsBloc.state).thenReturn(updated);
+      stateController.add(updated);
+      await tester.pump();
+
+      final calorieField = tester.widget<EditableText>(
+        find.descendant(
+          of: find.byType(MacroField),
+          matching: find.byType(EditableText),
+        ),
+      );
+      expect(calorieField.controller.text, equals('2500'));
+
+      final weightField = tester.widget<EditableText>(
+        find.descendant(
+          of: find.byType(WeightInput),
+          matching: find.byType(EditableText),
+        ),
+      );
+      expect(weightField.controller.text, equals('88.0'));
+    });
+
+    testWidgets('re-seeds only the weight field when just the goal weight '
+        'changes', (tester) async {
+      stub(const UserSettingsState());
+      await tester.pumpPumpPumpItUP(
+        deps: [userSettingsBloc],
+        const GoalsSection(),
+      );
+
+      // Calorie goal stays unset while the weight goal changes, so the listener
+      // fires on the weight-goal arm of its condition.
+      final updated = UserSettingsState(
+        weightGoalHistory: [
+          WeightGoalEntry(
+            effectiveFrom: DateTime.fromMillisecondsSinceEpoch(0),
+            weightUnit: WeightUnit.lb,
+            weight: 99,
+          ),
+        ],
+      );
+      when(() => userSettingsBloc.state).thenReturn(updated);
+      stateController.add(updated);
+      await tester.pump();
+
+      final weightField = tester.widget<EditableText>(
+        find.descendant(
+          of: find.byType(WeightInput),
+          matching: find.byType(EditableText),
+        ),
+      );
+      expect(weightField.controller.text, equals('99.0'));
     });
   });
 }

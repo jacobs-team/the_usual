@@ -27,5 +27,18 @@ void main() {
 
       expect(usualWorkout.sets, isEmpty);
     });
+
+    test('round-trips a non-null duration', () {
+      const usualWorkout = UsualWorkout(
+        id: 'usual-3',
+        name: 'Plank',
+        duration: Duration(minutes: 2),
+      );
+
+      expect(
+        UsualWorkout.fromJson(usualWorkout.toJson()).duration,
+        equals(const Duration(minutes: 2)),
+      );
+    });
   });
 }

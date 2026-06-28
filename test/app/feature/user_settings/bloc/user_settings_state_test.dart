@@ -45,6 +45,46 @@ void main() {
 
         expect(restored.reminderStyle, equals(ReminderStyle.none));
       });
+
+      test('migrates v2 scalar calorie and weight goals into histories', () {
+        final restored = UserSettingsState.fromJson(<String, dynamic>{
+          'version': 2,
+          'calorieGoal': 2100,
+          'weightGoal': 72.5,
+          'weightUnit': 'kg',
+        });
+
+        expect(restored.calorieGoal, equals(2100));
+        expect(restored.calorieGoalHistory, hasLength(1));
+        expect(restored.weightGoal, equals(72.5));
+        expect(restored.weightGoalHistory, hasLength(1));
+        expect(
+          restored.weightGoalHistory.single.weightUnit,
+          equals(WeightUnit.kg),
+        );
+      });
+
+      test('round-trips a populated usualWorkouts map', () {
+        const state = UserSettingsState(
+          usualWorkouts: {
+            'push': [
+              UsualWorkout(
+                id: 'usual-1',
+                name: 'Bench Press',
+                sets: [WorkoutSet(weight: 135, reps: 8)],
+              ),
+            ],
+          },
+        );
+
+        final restored = UserSettingsState.fromJson(state.toJson());
+
+        expect(restored.usualWorkouts['push'], hasLength(1));
+        expect(
+          restored.usualWorkouts['push']!.single.name,
+          equals('Bench Press'),
+        );
+      });
     });
 
     group('usualMealCount', () {

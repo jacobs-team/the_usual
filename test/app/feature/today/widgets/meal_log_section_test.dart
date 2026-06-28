@@ -246,6 +246,16 @@ void main() {
     testWidgets('logs something else and adds it to usuals when checked', (
       tester,
     ) async {
+      // Saving as a usual goes through saveAsUsualMeal, which returns the id to
+      // stamp onto the logged entry so the link is set at log time.
+      when(
+        () => userSettingsBloc.saveAsUsualMeal(
+          MealOfTheDay.breakfast,
+          'Burrito',
+          const Nutrition(),
+        ),
+      ).thenReturn('new-id');
+
       await pumpSection(tester);
 
       await tester.tap(find.byIcon(Icons.add));
@@ -263,17 +273,19 @@ void main() {
       await tester.pumpAndSettle();
 
       verify(
-        () => userSettingsBloc.add(
-          const UserSettingsEvent.usualMealAdded(
-            MealOfTheDay.breakfast,
-            'Burrito',
-            Nutrition(),
-          ),
+        () => userSettingsBloc.saveAsUsualMeal(
+          MealOfTheDay.breakfast,
+          'Burrito',
+          const Nutrition(),
         ),
       ).called(1);
       verify(
         () => dailyLogBloc.add(
-          const DailyLogEvent.mealLogged(MealOfTheDay.breakfast, 'Burrito'),
+          const DailyLogEvent.mealLogged(
+            MealOfTheDay.breakfast,
+            'Burrito',
+            usualMealId: 'new-id',
+          ),
         ),
       ).called(1);
     });
@@ -337,6 +349,39 @@ void main() {
       await tester.pumpAndSettle();
 
       verifyNever(() => dailyLogBloc.add(any(that: isA<MealLogged>())));
+    });
+
+    testWidgets('re-logs every prior-day entry when copy previous is tapped', (
+      tester,
+    ) async {
+      final yesterday = [
+        logged('y1', 'Eggs', calories: 200),
+        logged('y2', 'Coffee', calories: 5),
+      ];
+      // No entries logged today, so the header offers the copy-previous
+      // shortcut instead of a nutrition summary.
+      await pumpSection(tester, sameAsYesterday: yesterday);
+
+      await tester.tap(find.byType(CopyPreviousButton));
+
+      verify(
+        () => dailyLogBloc.add(
+          const DailyLogEvent.mealLogged(
+            MealOfTheDay.breakfast,
+            'Eggs',
+            nutrition: Nutrition(calories: 200),
+          ),
+        ),
+      ).called(1);
+      verify(
+        () => dailyLogBloc.add(
+          const DailyLogEvent.mealLogged(
+            MealOfTheDay.breakfast,
+            'Coffee',
+            nutrition: Nutrition(calories: 5),
+          ),
+        ),
+      ).called(1);
     });
   });
 }

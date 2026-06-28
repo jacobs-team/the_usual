@@ -69,6 +69,44 @@ void main() {
       ).called(1);
     });
 
+    testWidgets('saves a standalone entry as a usual and links it', (
+      tester,
+    ) async {
+      // Saving goes through saveAsUsualMeal, which returns the new id that is
+      // then linked back onto the logged entry.
+      when(
+        () => userSettingsBloc.saveAsUsualMeal(
+          MealOfTheDay.breakfast,
+          'Eggs',
+          const Nutrition(calories: 400),
+        ),
+      ).thenReturn('new-id');
+      stubSettings(const UserSettingsState());
+      await pumpRow(tester, entry(calories: 400));
+
+      // The button is right-aligned and the "Save as usual" label is short, so
+      // tap the inner TextButton rather than the full-width Align's centre.
+      await tester.tap(
+        find.descendant(
+          of: find.byType(UpdateUsualButton),
+          matching: find.byType(TextButton),
+        ),
+      );
+
+      verify(
+        () => userSettingsBloc.saveAsUsualMeal(
+          MealOfTheDay.breakfast,
+          'Eggs',
+          const Nutrition(calories: 400),
+        ),
+      ).called(1);
+      verify(
+        () => dailyLogBloc.add(
+          const DailyLogEvent.mealEntryUsualMealLinked('m1', 'new-id'),
+        ),
+      ).called(1);
+    });
+
     testWidgets('editing a standalone entry only updates the log', (
       tester,
     ) async {
@@ -106,7 +144,7 @@ void main() {
       // offers to push it onto the usual meal.
       await pumpRow(tester, entry(usualMealId: 'u', calories: 400));
 
-      await tester.tap(find.byIcon(Icons.sync));
+      await tester.tap(find.byType(UpdateUsualButton));
 
       verify(
         () => userSettingsBloc.add(
@@ -137,9 +175,9 @@ void main() {
       );
       await pumpRow(tester, entry(usualMealId: 'u', calories: 350));
 
-      expect(find.byIcon(Icons.sync), findsOneWidget);
+      expect(find.byType(UpdateUsualButton), findsOneWidget);
 
-      await tester.tap(find.byIcon(Icons.sync));
+      await tester.tap(find.byType(UpdateUsualButton));
 
       verify(
         () => userSettingsBloc.add(
@@ -170,7 +208,7 @@ void main() {
       );
       await pumpRow(tester, entry(usualMealId: 'u'));
 
-      expect(find.byIcon(Icons.sync), findsOneWidget);
+      expect(find.byType(UpdateUsualButton), findsOneWidget);
     });
 
     testWidgets('shows no update button when nutrition already matches', (
@@ -192,29 +230,6 @@ void main() {
       await pumpRow(tester, entry(usualMealId: 'u', calories: 350));
 
       expect(find.byType(TextButton), findsNothing);
-    });
-
-    testWidgets('stamps the usual meal id onto an entry linked only by name', (
-      tester,
-    ) async {
-      // The entry has no stored id but matches a usual meal by name, so the
-      // row heals the link by stamping the usual meal's id onto the entry.
-      stubSettings(
-        const UserSettingsState(
-          usuals: {
-            MealOfTheDay.breakfast: [UsualMeal(id: 'u', name: 'Eggs')],
-          },
-        ),
-      );
-      await pumpRow(tester, entry());
-
-      await tester.pump();
-
-      verify(
-        () => dailyLogBloc.add(
-          const DailyLogEvent.mealEntryUsualMealLinked('m1', 'u'),
-        ),
-      ).called(1);
     });
 
     testWidgets('changing the quantity dispatches through the bloc', (

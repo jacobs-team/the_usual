@@ -9,6 +9,8 @@ import 'package:the_usual/app/app.dart';
 
 import '../helpers/helpers.dart';
 
+class MockWidgetService extends Mock implements WidgetService {}
+
 void main() {
   group(TheUsualsApp, () {
     late OnboardingBloc onboardingBloc;
@@ -18,6 +20,8 @@ void main() {
     late ShareIngestService shareIngestService;
     late MockMealAiRepository mealAiRepository;
     late AuthCubit authCubit;
+    late MockWidgetService widgetService;
+    late MockSyncRepository syncRepository;
 
     const completeState = OnboardingState(
       step: OnboardingStep.complete,
@@ -110,8 +114,25 @@ void main() {
       when(() => authCubit.restoreOnStartup()).thenAnswer((_) async {});
       when(() => authCubit.ready).thenAnswer((_) async {});
 
+      widgetService = MockWidgetService();
+      when(
+        () => widgetService.updateCalories(
+          goal: any(named: 'goal'),
+          consumed: any(named: 'consumed'),
+          protein: any(named: 'protein'),
+          carbs: any(named: 'carbs'),
+          fat: any(named: 'fat'),
+          dayRollover: any(named: 'dayRollover'),
+        ),
+      ).thenAnswer((_) async {});
+
+      syncRepository = MockSyncRepository();
+      when(() => syncRepository.flushPending()).thenReturn(null);
+
       GetIt.instance
         ..registerSingleton<AuthCubit>(authCubit)
+        ..registerSingleton<WidgetService>(widgetService)
+        ..registerSingleton<SyncRepository>(syncRepository)
         ..registerSingleton<OnboardingBloc>(onboardingBloc)
         ..registerSingleton<UserSettingsBloc>(userSettingsBloc)
         ..registerSingleton<DailyLogBloc>(dailyLogBloc)
@@ -164,6 +185,21 @@ void main() {
               as void Function();
       onReminderTapped();
       await tester.pumpAndSettle();
+    });
+
+    testWidgets('flushes pending sync when the app is paused', (tester) async {
+      tester.view.physicalSize = const Size(1200, 3000);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await tester.pumpWidget(TheUsualsApp(key: UniqueKey()));
+      await tester.pumpAndSettle();
+
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+      await tester.pump();
+
+      verify(() => syncRepository.flushPending()).called(1);
     });
 
     testWidgets('re-syncs notifications when the daily log changes', (
@@ -473,13 +509,135 @@ void main() {
           verifyNever(() => authCubit.confirmReplaceWithCloud());
         },
       );
+
+      testWidgets(
+        'keepOrStartFresh prompt: a failed keep shows the error snackbar',
+        (tester) async {
+          when(
+            () => authCubit.keepGuestData(),
+          ).thenThrow(Exception('migration failed'));
+          when(() => authCubit.startFresh()).thenAnswer((_) async {});
+          whenListen(
+            authCubit,
+            Stream.value(
+              const AuthState(
+                status: AuthStatus.guest,
+                pendingPrompt: SignInPrompt.keepOrStartFresh,
+              ),
+            ),
+            initialState: const AuthState(status: AuthStatus.guest),
+          );
+
+          tester.view.physicalSize = const Size(1200, 3000);
+          tester.view.devicePixelRatio = 1.0;
+          addTearDown(tester.view.resetPhysicalSize);
+          addTearDown(tester.view.resetDevicePixelRatio);
+
+          await tester.pumpWidget(TheUsualsApp(key: UniqueKey()));
+          await tester.pumpAndSettle();
+
+          await tester.tap(
+            find.descendant(
+              of: find.byType(AlertDialog),
+              matching: find.byType(FilledButton),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          verify(() => authCubit.keepGuestData()).called(1);
+          expect(find.byType(SnackBar), findsOneWidget);
+        },
+      );
+
+      testWidgets(
+        'replaceLocalWithCloud prompt: a failed replace shows the error '
+        'snackbar',
+        (tester) async {
+          when(
+            () => authCubit.confirmReplaceWithCloud(),
+          ).thenThrow(Exception('download failed'));
+          when(() => authCubit.cancelSignIn()).thenAnswer((_) async {});
+          whenListen(
+            authCubit,
+            Stream.value(
+              const AuthState(
+                status: AuthStatus.guest,
+                pendingPrompt: SignInPrompt.replaceLocalWithCloud,
+              ),
+            ),
+            initialState: const AuthState(status: AuthStatus.guest),
+          );
+
+          tester.view.physicalSize = const Size(1200, 3000);
+          tester.view.devicePixelRatio = 1.0;
+          addTearDown(tester.view.resetPhysicalSize);
+          addTearDown(tester.view.resetDevicePixelRatio);
+
+          await tester.pumpWidget(TheUsualsApp(key: UniqueKey()));
+          await tester.pumpAndSettle();
+
+          await tester.tap(
+            find.descendant(
+              of: find.byType(AlertDialog),
+              matching: find.byType(FilledButton),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          verify(() => authCubit.confirmReplaceWithCloud()).called(1);
+          expect(find.byType(SnackBar), findsOneWidget);
+        },
+      );
+
+      testWidgets(
+        'replaceLocalWithCloud prompt: a failed cancel is swallowed',
+        (tester) async {
+          when(
+            () => authCubit.confirmReplaceWithCloud(),
+          ).thenAnswer((_) async {});
+          when(
+            () => authCubit.cancelSignIn(),
+          ).thenThrow(Exception('sign-out failed'));
+          whenListen(
+            authCubit,
+            Stream.value(
+              const AuthState(
+                status: AuthStatus.guest,
+                pendingPrompt: SignInPrompt.replaceLocalWithCloud,
+              ),
+            ),
+            initialState: const AuthState(status: AuthStatus.guest),
+          );
+
+          tester.view.physicalSize = const Size(1200, 3000);
+          tester.view.devicePixelRatio = 1.0;
+          addTearDown(tester.view.resetPhysicalSize);
+          addTearDown(tester.view.resetDevicePixelRatio);
+
+          await tester.pumpWidget(TheUsualsApp(key: UniqueKey()));
+          await tester.pumpAndSettle();
+
+          // Cancel (TextButton) fails inside the cubit; the app logs and
+          // continues without surfacing a snackbar.
+          await tester.tap(
+            find.descendant(
+              of: find.byType(AlertDialog),
+              matching: find.byType(TextButton),
+            ),
+          );
+          await tester.pumpAndSettle();
+
+          verify(() => authCubit.cancelSignIn()).called(1);
+          expect(find.byType(SnackBar), findsNothing);
+        },
+      );
     });
 
     group('share flow', () {
       final sharedPhoto = MealPhoto(bytes: transparentPixel);
 
       setUp(() {
-        // Stub AI so the auto-estimate triggered by the share sheet resolves.
+        // Stub AI so the photo estimate from the share sheet resolves.
         when(() => mealAiRepository.isConfigured).thenReturn(true);
         when(
           () => mealAiRepository.suggestFromPhoto(
@@ -508,6 +666,17 @@ void main() {
               const OnboardingState(step: OnboardingStep.complete),
             );
 
+            // The share sheet defaults "save as usual" on (saveMealAsUsual is
+            // true), so confirming also saves the meal as a usual and stamps
+            // the returned id onto the logged entry.
+            when(
+              () => userSettingsBloc.saveAsUsualMeal(
+                MealOfTheDay.breakfast,
+                'Shared meal',
+                const Nutrition(calories: 500),
+              ),
+            ).thenReturn('u1');
+
             final shareController = StreamController<List<MealPhoto>>();
             addTearDown(shareController.close);
             when(
@@ -528,8 +697,13 @@ void main() {
 
             expect(find.byType(FoodEntrySheet), findsOneWidget);
 
-            // The auto-estimate fills "Shared meal" (stubbed above). Tap
-            // confirm and verify the meal is dispatched to the log for the
+            // The shared photo opens the sheet but does not auto-estimate, so
+            // tap Estimate to fill "Shared meal" (stubbed above) from the
+            // photo.
+            await tester.tap(find.byIcon(Icons.auto_awesome_outlined));
+            await tester.pumpAndSettle();
+
+            // Tap confirm and verify the meal is dispatched to the log for the
             // current slot. testNow is 9:30 AM, which resolves to
             // MealOfTheDay.breakfast. The confirm FilledButton is the last
             // one in the sheet; the form also contains AI assist buttons
@@ -550,6 +724,7 @@ void main() {
                   MealOfTheDay.breakfast,
                   'Shared meal',
                   nutrition: Nutrition(calories: 500),
+                  usualMealId: 'u1',
                 ),
               ),
             ).called(1);

@@ -41,7 +41,7 @@ class WorkoutLogBloc extends HydratedBloc<WorkoutLogEvent, WorkoutLogState> {
 
   static const _uuid = Uuid();
 
-  // TODO(dev): temporary sample exercises for seeding, grouped by their default
+  // temporary sample exercises for seeding, grouped by their default
   // workout group. Each is (name, startWeight, endWeight) in lb; the weight is
   // interpolated from start to end across the seeded span so strength trends
   // up. Remove before ship along with the sampleDataSeeded event.

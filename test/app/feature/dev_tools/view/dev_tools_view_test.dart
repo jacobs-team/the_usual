@@ -465,6 +465,25 @@ void main() {
       });
     });
 
+    testWidgets('resets the goal history baseline when the tile is tapped', (
+      tester,
+    ) async {
+      await tester.pumpPumpPumpItUP(
+        deps: [devToolsCubit, userSettingsBloc],
+        const DevToolsView(),
+      );
+
+      await tester.scrollUntilVisible(
+        find.byIcon(Icons.flag_outlined),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.byIcon(Icons.flag_outlined));
+      await tester.pump();
+
+      verify(() => userSettingsBloc.add(any())).called(1);
+    });
+
     testWidgets('resets app state and navigates to onboarding', (tester) async {
       final onboardingBloc = MockOnboardingBloc();
       when(() => onboardingBloc.state).thenReturn(const OnboardingState());

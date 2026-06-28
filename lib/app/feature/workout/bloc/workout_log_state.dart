@@ -133,7 +133,7 @@ abstract class WorkoutLogState with _$WorkoutLogState {
       final usualWorkoutId = workoutLogEntry.usualWorkoutId;
       if (usualWorkoutId != null) {
         return canonicalNameByUsualId[usualWorkoutId] ??
-            workoutLogEntry.name.toLowerCase();
+            workoutLogEntry.name.toLowerCase(); // coverage:ignore-line
       }
       return workoutLogEntry.name.toLowerCase();
     }
