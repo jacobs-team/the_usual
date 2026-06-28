@@ -9,7 +9,7 @@ part of 'user_settings_bloc.dart';
 _UserSettingsState _$UserSettingsStateFromJson(
   Map<String, dynamic> json,
 ) => _UserSettingsState(
-  version: (json['version'] as num?)?.toInt() ?? 3,
+  version: (json['version'] as num?)?.toInt() ?? 4,
   reminderStyle:
       $enumDecodeNullable(_$ReminderStyleEnumMap, json['reminderStyle']) ??
       ReminderStyle.notifications,
@@ -96,6 +96,11 @@ _UserSettingsState _$UserSettingsStateFromJson(
         ),
       ) ??
       const <MealOfTheDay, List<UsualMeal>>{},
+  usualFoods:
+      (json['usualFoods'] as List<dynamic>?)
+          ?.map((e) => UsualFood.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const <UsualFood>[],
   workoutGroups:
       (json['workoutGroups'] as List<dynamic>?)
           ?.map((e) => WorkoutGroup.fromJson(e as Map<String, dynamic>))
@@ -158,6 +163,7 @@ Map<String, dynamic> _$UserSettingsStateToJson(
     (k, e) =>
         MapEntry(_$MealOfTheDayEnumMap[k]!, e.map((e) => e.toJson()).toList()),
   ),
+  'usualFoods': instance.usualFoods.map((e) => e.toJson()).toList(),
   'workoutGroups': instance.workoutGroups.map((e) => e.toJson()).toList(),
   'usualWorkouts': instance.usualWorkouts.map(
     (k, e) => MapEntry(k, e.map((e) => e.toJson()).toList()),

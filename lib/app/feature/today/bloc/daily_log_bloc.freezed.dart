@@ -1035,7 +1035,7 @@ return $default(_that.version,_that.mealEntries,_that.weightEntries,_that.justLo
 
 @JsonSerializable(explicitToJson: true)
 class _DailyLogState extends DailyLogState {
-  const _DailyLogState({this.version = 1, final  List<MealLogEntry> mealEntries = const <MealLogEntry>[], final  List<WeightEntry> weightEntries = const <WeightEntry>[], @JsonKey(includeFromJson: false, includeToJson: false) this.justLoggedEntryId}): _mealEntries = mealEntries,_weightEntries = weightEntries,super._();
+  const _DailyLogState({this.version = 2, final  List<MealLogEntry> mealEntries = const <MealLogEntry>[], final  List<WeightEntry> weightEntries = const <WeightEntry>[], @JsonKey(includeFromJson: false, includeToJson: false) this.justLoggedEntryId}): _mealEntries = mealEntries,_weightEntries = weightEntries,super._();
   factory _DailyLogState.fromJson(Map<String, dynamic> json) => _$DailyLogStateFromJson(json);
 
 /// Schema version of the persisted state. Bump it and add a `fromJson`

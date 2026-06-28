@@ -16,6 +16,7 @@ abstract class UsualMeal with _$UsualMeal {
     required String name,
     String? photoPath,
     @Default(Nutrition()) Nutrition nutrition,
+    @Default(<MealComponent>[]) List<MealComponent> components,
   }) = _UsualMeal;
 
   factory UsualMeal.fromJson(Map<String, dynamic> json) =>

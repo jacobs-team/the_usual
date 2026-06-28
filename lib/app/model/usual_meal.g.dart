@@ -13,6 +13,11 @@ _UsualMeal _$UsualMealFromJson(Map<String, dynamic> json) => _UsualMeal(
   nutrition: json['nutrition'] == null
       ? const Nutrition()
       : Nutrition.fromJson(json['nutrition'] as Map<String, dynamic>),
+  components:
+      (json['components'] as List<dynamic>?)
+          ?.map((e) => MealComponent.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const <MealComponent>[],
 );
 
 Map<String, dynamic> _$UsualMealToJson(_UsualMeal instance) =>
@@ -21,4 +26,5 @@ Map<String, dynamic> _$UsualMealToJson(_UsualMeal instance) =>
       'name': instance.name,
       'photoPath': instance.photoPath,
       'nutrition': instance.nutrition.toJson(),
+      'components': instance.components.map((e) => e.toJson()).toList(),
     };

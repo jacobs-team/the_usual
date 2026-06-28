@@ -221,6 +221,39 @@ void main() {
       });
     });
 
+    group('usualFoods', () {
+      test('defaults to empty', () {
+        expect(const UserSettingsState().usualFoods, isEmpty);
+      });
+
+      test('round-trips a populated usualFoods library', () {
+        const state = UserSettingsState(
+          usualFoods: [
+            UsualFood(
+              id: 'food-1',
+              name: 'Chicken, 1 oz',
+              nutrition: Nutrition(calories: 22, protein: 5),
+            ),
+          ],
+        );
+
+        final restored = UserSettingsState.fromJson(state.toJson());
+
+        expect(restored.usualFoods, hasLength(1));
+        expect(restored.usualFoods.single.name, equals('Chicken, 1 oz'));
+      });
+
+      test('v3 data reads through with an empty library and bumps to v4', () {
+        final restored = UserSettingsState.fromJson(<String, dynamic>{
+          'version': 3,
+          'weightUnit': 'kg',
+        });
+
+        expect(restored.usualFoods, isEmpty);
+        expect(restored.version, equals(4));
+      });
+    });
+
     group('workout weight unit migration', () {
       test('v1 data inherits the body-weight unit and bumps to current', () {
         final state = UserSettingsState.fromJson(<String, dynamic>{
@@ -229,7 +262,7 @@ void main() {
         });
 
         expect(state.workoutWeightUnit, equals(WeightUnit.kg));
-        expect(state.version, equals(3));
+        expect(state.version, equals(4));
       });
 
       test('current-version data reads workoutWeightUnit as stored', () {

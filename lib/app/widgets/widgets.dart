@@ -23,6 +23,7 @@ export 'inputs/weight_entry_field.dart';
 export 'inputs/weight_input.dart';
 export 'inputs/weight_time_of_day_chips.dart';
 export 'inputs/workout_entry_sheet.dart';
+export 'layout/confirm_dialog.dart';
 export 'layout/dashed_border.dart';
 export 'layout/glass_container.dart';
 export 'layout/layout.dart';

@@ -78,9 +78,24 @@ class _UsualMealListState extends State<UsualMealList>
                     name,
                   ),
                 ),
-                onRemoved: (id) => getIt<UserSettingsBloc>().add(
-                  UserSettingsEvent.usualMealRemoved(mealOfTheDay, id),
-                ),
+                onRemoved: (id) async {
+                  final usualMeal = usualMeals.firstWhere(
+                    (usualMeal) => usualMeal.id == id,
+                  );
+                  final confirmed = await ConfirmDialog.show(
+                    context,
+                    title: 'Delete usual meal?',
+                    message:
+                        'This permanently deletes "${usualMeal.name}". '
+                        'Days you already logged it on are unaffected.',
+                    confirmLabel: 'Delete',
+                    isDestructive: true,
+                  );
+                  if (!confirmed) return;
+                  getIt<UserSettingsBloc>().add(
+                    UserSettingsEvent.usualMealRemoved(mealOfTheDay, id),
+                  );
+                },
               ),
             // Clears the floating action button so the last card isn't hidden
             // behind it.

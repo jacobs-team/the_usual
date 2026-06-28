@@ -346,6 +346,16 @@ class DevToolsView extends StatelessWidget {
             ),
             trailing: const Icon(Icons.restart_alt),
             onTap: () async {
+              final confirmed = await ConfirmDialog.show(
+                context,
+                title: 'Reset app state?',
+                message:
+                    'This clears all saved data and restarts onboarding. '
+                    'This cannot be undone.',
+                confirmLabel: 'Reset',
+                isDestructive: true,
+              );
+              if (!confirmed) return;
               await HydratedBloc.storage.clear();
               getIt<OnboardingBloc>().add(const OnboardingEvent.resetPressed());
               if (context.mounted) context.go(Routes.onboarding);

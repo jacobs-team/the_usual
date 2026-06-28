@@ -39,5 +39,38 @@ void main() {
       expect(mealLogEntry.photoPath, isNull);
       expect(mealLogEntry.mealOfTheDay, equals(MealOfTheDay.lunch));
     });
+
+    test('round-trips with components', () {
+      final mealLogEntry = MealLogEntry(
+        id: 'meal-3',
+        loggedAt: loggedAt,
+        mealOfTheDay: MealOfTheDay.lunch,
+        name: 'Chicken & rice bowl',
+        nutrition: const Nutrition(calories: 293),
+        components: const [
+          MealComponent(
+            name: 'Chicken, 1 oz',
+            nutrition: Nutrition(calories: 22, protein: 5),
+            quantity: 4,
+            usualFoodId: 'food-1',
+          ),
+        ],
+      );
+
+      final decoded = MealLogEntry.fromJson(mealLogEntry.toJson());
+
+      expect(decoded, equals(mealLogEntry));
+    });
+
+    test('defaults components to empty for legacy json without the key', () {
+      final mealLogEntry = MealLogEntry.fromJson(<String, dynamic>{
+        'id': 'meal-4',
+        'loggedAt': loggedAt.toIso8601String(),
+        'mealOfTheDay': 'dinner',
+        'name': 'Tacos',
+      });
+
+      expect(mealLogEntry.components, isEmpty);
+    });
   });
 }

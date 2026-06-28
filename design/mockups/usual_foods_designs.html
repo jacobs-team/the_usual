@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Usual Foods — composition designs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    /* palette (light scheme) */
+    --primary:#131B2E; --on-primary:#FFFFFF;
+    --secondary:#00668A;
+    --secondary-container:#40C2FD; --on-secondary-container:#004D6A;
+    --surface:#F8F9FF; --on-surface:#0D1C2E; --on-surface-variant:#45464D;
+    --surface-dim:#CCDBF3;
+    --container-lowest:#FFFFFF; --container-low:#EFF4FF; --container:#E6EEFF;
+    --container-high:#DCE9FF; --container-highest:#D5E3FC;
+    --outline:#76777D; --outline-variant:#C6C6CD;
+    --protein:#2E8B7F; --carbs:#3E78B2; --fat:#C68A2E;
+    --goal:#C2410C; --error:#BA1A1A;
+    --heading:'Plus Jakarta Sans',sans-serif;
+    --body:'Hanken Grotesk',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:#27313f;font-family:var(--body);color:var(--on-surface);padding:32px 24px 56px;}
+  h1.page{font-family:var(--heading);font-weight:800;color:#fff;font-size:26px;margin-bottom:4px;}
+  p.sub{color:#aebfd6;font-size:14px;margin-bottom:28px;max-width:980px;line-height:1.5;}
+  .row{display:flex;gap:26px;align-items:flex-start;flex-wrap:wrap;}
+  .col{width:312px;flex:0 0 auto;}
+  .tag{display:inline-block;font-family:var(--heading);font-weight:700;font-size:13px;color:#fff;background:#3c4a5e;border-radius:999px;padding:4px 12px;margin-bottom:8px;}
+  .tag.rec{background:var(--goal);}
+  .desc{color:#c4d2e6;font-size:12.5px;line-height:1.45;margin-bottom:14px;min-height:54px;}
+
+  /* phone frame */
+  .phone{background:var(--surface);border-radius:30px;padding:18px 14px 22px;border:6px solid #0a0f17;box-shadow:0 16px 40px rgba(0,0,0,.45);height:720px;overflow:hidden;position:relative;}
+  .statusbar{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:600;color:var(--on-surface);padding:0 6px 10px;}
+  .appbar{display:flex;justify-content:space-between;align-items:center;padding:2px 6px 14px;}
+  .appbar .title{font-family:var(--heading);font-weight:800;font-size:22px;}
+  .datepill{background:var(--secondary-container);color:var(--on-secondary-container);font-weight:700;font-size:12px;border-radius:999px;padding:5px 12px;}
+  .screen-scroll{height:612px;overflow:hidden;}
+
+  /* meal card */
+  .card{background:var(--container-lowest);border:1px solid var(--outline);border-radius:16px;box-shadow:0 4px 12px rgba(0,0,0,.08);padding:12px;margin-bottom:12px;}
+  .card.current{border:2px solid var(--primary);border-radius:12px;}
+  .card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+  .meal-name{font-family:var(--heading);font-weight:700;font-size:15px;}
+  .summary{font-weight:700;font-size:12.5px;letter-spacing:.1px;}
+  .cal{color:var(--on-surface);} .p{color:var(--protein);} .c{color:var(--carbs);} .f{color:var(--fat);}
+  .dot{color:var(--on-surface-variant);font-weight:600;}
+
+  /* logged entry rows */
+  .entry{display:flex;align-items:center;gap:8px;padding:7px 2px;}
+  .chev{color:var(--on-surface-variant);font-size:13px;width:14px;transition:transform .2s;}
+  .chev.open{transform:rotate(90deg);}
+  .entry .name{font-size:14.5px;flex:1;}
+  .entry .esum{font-weight:700;font-size:12px;}
+  .trash{color:var(--on-surface-variant);font-size:15px;}
+
+  /* expanded edit block */
+  .editblock{background:var(--container-low);border-radius:12px;padding:10px 10px 12px;margin:2px 0 8px;}
+  .seclabel{font-size:9.5px;font-weight:700;letter-spacing:1.1px;color:var(--on-surface-variant);margin-bottom:5px;}
+  .stepper{display:inline-flex;align-items:center;border:1px solid var(--outline-variant);border-radius:10px;overflow:hidden;background:var(--container-lowest);}
+  .stepper button{border:0;background:transparent;width:30px;height:30px;font-size:17px;color:var(--primary);cursor:pointer;}
+  .stepper .val{min-width:30px;text-align:center;font-weight:700;font-size:14px;}
+  .scaleline{font-size:11px;color:var(--on-surface-variant);margin-top:6px;}
+  .scaleline b{font-weight:700;}
+  .fields{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
+  .field{display:flex;flex-direction:column;gap:3px;}
+  .field .l{font-size:9px;font-weight:700;letter-spacing:.8px;color:var(--on-surface-variant);}
+  .field .box{border:1px solid var(--outline-variant);background:var(--container-lowest);border-radius:10px;padding:6px 8px;font-size:13px;font-weight:600;text-align:right;}
+  .field.cal .box{width:74px;} .field.mac .box{width:54px;}
+  .updateusual{display:flex;align-items:center;gap:5px;color:var(--goal);font-weight:700;font-size:12px;justify-content:flex-end;margin-top:10px;}
+
+  /* nested food rows (Direction A) */
+  .foodgroup{border-left:2px solid var(--container-high);margin:4px 0 6px 6px;padding-left:8px;}
+  .foodrow{display:flex;align-items:center;gap:7px;padding:6px 2px;}
+  .foodrow .fname{font-size:13.5px;flex:1;color:var(--on-surface);}
+  .foodrow .fsum{font-size:11px;font-weight:700;color:var(--on-surface-variant);}
+  .mini-chev{color:var(--on-surface-variant);font-size:11px;width:12px;}
+
+  /* Direction B compact food list */
+  .bfood{display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:10px;background:var(--container-low);margin-bottom:6px;}
+  .bfood .bq{font-weight:800;font-size:13px;color:var(--secondary);min-width:26px;}
+  .bfood .bn{flex:1;font-size:13.5px;}
+  .bfood .bs{font-size:11px;font-weight:700;color:var(--on-surface-variant);}
+  .bstep{display:inline-flex;align-items:center;border:1px solid var(--outline-variant);border-radius:8px;background:var(--container-lowest);}
+  .bstep button{border:0;background:transparent;width:24px;height:26px;font-size:14px;color:var(--primary);cursor:pointer;}
+  .bstep .v{min-width:18px;text-align:center;font-weight:700;font-size:12px;}
+  .addfood{display:flex;align-items:center;gap:6px;color:var(--secondary);font-weight:700;font-size:12.5px;padding:6px 2px;}
+
+  /* chips */
+  .chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px;}
+  .chip{background:var(--secondary-container);color:var(--on-secondary-container);font-weight:700;font-size:12px;border-radius:999px;padding:5px 11px;}
+  .pillbtn{display:inline-flex;align-items:center;gap:5px;background:var(--secondary-container);color:var(--on-secondary-container);font-weight:700;font-size:12px;border-radius:999px;padding:6px 12px;}
+
+  /* drill-in (Direction C) */
+  .backbar{display:flex;align-items:center;gap:10px;padding:2px 4px 14px;}
+  .backbar .bk{font-size:18px;color:var(--on-surface);}
+  .backbar .ttl{font-family:var(--heading);font-weight:800;font-size:20px;}
+  .totalcard{background:var(--primary);color:#fff;border-radius:16px;padding:14px 16px;margin-bottom:14px;}
+  .totalcard .tlabel{font-size:11px;font-weight:600;color:#aeb8d0;letter-spacing:.4px;}
+  .totalcard .tval{font-family:var(--heading);font-weight:800;font-size:22px;margin-top:2px;}
+  .totalcard .tmac{font-size:12.5px;font-weight:700;margin-top:6px;}
+  .totalcard .pp{color:#7fd6c9;} .totalcard .cc{color:#9cc2ee;} .totalcard .ff{color:#e8c98a;}
+  .cfood{background:var(--container-lowest);border:1px solid var(--outline-variant);border-radius:14px;padding:12px;margin-bottom:10px;}
+  .cfood-head{display:flex;justify-content:space-between;align-items:center;}
+  .cfood .cn{font-family:var(--heading);font-weight:700;font-size:14.5px;}
+  .cfood .cs{font-size:12px;font-weight:700;color:var(--on-surface-variant);margin-top:2px;}
+
+  .note{margin-top:6px;font-size:11px;color:#9fb0c8;line-height:1.4;}
+  .badge{display:inline-block;font-size:9px;font-weight:800;letter-spacing:.5px;color:var(--secondary);background:var(--container);border-radius:6px;padding:2px 6px;vertical-align:middle;margin-left:6px;}
+</style>
+</head>
+<body>
+  <h1 class="page">Usual foods — how composition shows up in the log</h1>
+  <p class="sub">The hero moment: a logged usual meal made of foods, on the Today view. Tap-the-usual-then-done still works (collapsed, it's one line). The new power is expanding it to nudge one component — "chicken ×4 → ×3" — and watch the meal total recalc. Three directions for that interaction, with today's flat blob meal on the left for reference.</p>
+
+  <div class="row">
+
+    <!-- ============ CURRENT ============ -->
+    <div class="col">
+      <span class="tag">Current</span>
+      <div class="desc">Today. A usual meal is one opaque blob: a single nutrition total, edited as one set of fields. No parts. "Same lunch but less rice" means re-estimating the whole thing.</div>
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span>● ● ●</span></div>
+        <div class="appbar"><span class="title">Today</span><span class="datepill">Sat, Jun 28</span></div>
+        <div class="screen-scroll">
+          <div class="card current">
+            <div class="card-head"><span class="meal-name">Lunch</span>
+              <span class="summary"><span class="cal">640 cal</span> <span class="dot">·</span> <span class="p">52P</span> <span class="dot">·</span> <span class="c">58C</span> <span class="dot">·</span> <span class="f">20F</span></span>
+            </div>
+            <div class="entry"><span class="chev open">▶</span><span class="name">Chicken &amp; rice bowl</span><span class="trash">🗑</span></div>
+            <div class="editblock">
+              <div class="seclabel">NUTRITION</div>
+              <div class="fields">
+                <div class="field cal"><span class="l">CALORIES</span><span class="box">640</span></div>
+                <div class="field mac"><span class="l">PROTEIN</span><span class="box">52</span></div>
+                <div class="field mac"><span class="l">CARBS</span><span class="box">58</span></div>
+                <div class="field mac"><span class="l">FAT</span><span class="box">20</span></div>
+              </div>
+              <div class="updateusual">💾 Update usual meal to match</div>
+            </div>
+            <div class="chips">
+              <span class="chip">+ Greek yogurt</span><span class="chip">+ Turkey wrap</span>
+            </div>
+            <div style="margin-top:10px"><span class="pillbtn">＋ Something else</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="note">One total, no parts. The starting point.</div>
+    </div>
+
+    <!-- ============ DIRECTION A ============ -->
+    <div class="col">
+      <span class="tag">A · Nested accordion</span>
+      <div class="desc">Expand the meal → its foods appear as a nested mini-list. Each food is itself expandable with its own stepper. Reuses the exact row you already have, one level down. Powerful, but two levels of chevrons can feel deep.</div>
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span>● ● ●</span></div>
+        <div class="appbar"><span class="title">Today</span><span class="datepill">Sat, Jun 28</span></div>
+        <div class="screen-scroll">
+          <div class="card current">
+            <div class="card-head"><span class="meal-name">Lunch</span>
+              <span class="summary"><span class="cal">595 cal</span> <span class="dot">·</span> <span class="p">49P</span> <span class="dot">·</span> <span class="c">52C</span> <span class="dot">·</span> <span class="f">18F</span></span>
+            </div>
+            <!-- meal entry, expanded to reveal foods -->
+            <div class="entry"><span class="chev open">▶</span><span class="name">Chicken &amp; rice bowl</span><span class="esum"></span><span class="trash">🗑</span></div>
+            <div class="foodgroup">
+              <!-- food 1 expanded with stepper -->
+              <div class="foodrow"><span class="mini-chev">▼</span><span class="fname">×3 Chicken, 1 oz</span></div>
+              <div class="editblock" style="margin-left:6px">
+                <div class="seclabel">QUANTITY</div>
+                <div class="stepper"><button>−</button><span class="val">3</span><button>＋</button></div>
+                <div class="scaleline">×3 = <b>×</b> <span class="p">14P</span> · <span class="cal">66 cal</span></div>
+                <div class="fields">
+                  <div class="field cal"><span class="l">CAL</span><span class="box">22</span></div>
+                  <div class="field mac"><span class="l">PROT</span><span class="box">5</span></div>
+                  <div class="field mac"><span class="l">CARB</span><span class="box">0</span></div>
+                  <div class="field mac"><span class="l">FAT</span><span class="box">1</span></div>
+                </div>
+                <div class="updateusual">💾 Update usual food</div>
+              </div>
+              <!-- food 2 collapsed -->
+              <div class="foodrow"><span class="mini-chev">▶</span><span class="fname">×1 Jasmine rice, cooked cup</span><span class="fsum">205 cal</span></div>
+              <!-- food 3 collapsed -->
+              <div class="foodrow"><span class="mini-chev">▶</span><span class="fname">×1 Broccoli, cup</span><span class="fsum">55 cal</span></div>
+              <div class="addfood">＋ Add a food</div>
+            </div>
+            <div class="updateusual" style="margin-top:2px">💾 Update usual meal</div>
+          </div>
+        </div>
+      </div>
+      <div class="note">Collapsed, this is still a one-tap log. Drop down once for foods, again for one food's fields.</div>
+    </div>
+
+    <!-- ============ DIRECTION B (recommended) ============ -->
+    <div class="col">
+      <span class="tag rec">B · Inline food list (recommended)</span>
+      <div class="desc">Expand the meal → a flat, compact list of its foods, each with an inline ＋/− stepper right there. No second chevron level: nudge ×4→×3 in one tap and the meal total above updates. Tap a food's name to edit its macros. Meal stays the hero; foods are light rows.</div>
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span>● ● ●</span></div>
+        <div class="appbar"><span class="title">Today</span><span class="datepill">Sat, Jun 28</span></div>
+        <div class="screen-scroll">
+          <div class="card current">
+            <div class="card-head"><span class="meal-name">Lunch</span>
+              <span class="summary"><span class="cal">595 cal</span> <span class="dot">·</span> <span class="p">49P</span> <span class="dot">·</span> <span class="c">52C</span> <span class="dot">·</span> <span class="f">18F</span></span>
+            </div>
+            <div class="entry"><span class="chev open">▶</span><span class="name">Chicken &amp; rice bowl</span><span class="trash">🗑</span></div>
+            <div class="editblock">
+              <div class="bfood">
+                <span class="bn">Chicken, 1 oz <span class="badge">USUAL FOOD</span></span>
+                <span class="bs">66 cal</span>
+                <span class="bstep"><button>−</button><span class="v">3</span><button>＋</button></span>
+              </div>
+              <div class="bfood">
+                <span class="bn">Jasmine rice, cooked cup</span>
+                <span class="bs">205 cal</span>
+                <span class="bstep"><button>−</button><span class="v">1</span><button>＋</button></span>
+              </div>
+              <div class="bfood">
+                <span class="bn">Broccoli, cup</span>
+                <span class="bs">55 cal</span>
+                <span class="bstep"><button>−</button><span class="v">1</span><button>＋</button></span>
+              </div>
+              <div class="addfood">＋ Add a food</div>
+              <div class="updateusual">💾 Update usual meal</div>
+            </div>
+            <div class="chips">
+              <span class="chip">+ Greek yogurt</span><span class="chip">+ Turkey wrap</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="note">The stepper is on the surface — your "4oz→3oz" is a single tap, no drilling. Macros hide behind a name tap for the rare edit.</div>
+    </div>
+
+    <!-- ============ DIRECTION C ============ -->
+    <div class="col">
+      <span class="tag">C · Drill-in detail</span>
+      <div class="desc">The day stays clean — composed meals show only as one line. Tap to push a full "meal detail" screen: total pinned at top, every food a full-width editable card. Best for big meals, but it's a navigation away from the day, more taps for a quick tweak.</div>
+      <div class="phone">
+        <div class="statusbar"><span>9:41</span><span>● ● ●</span></div>
+        <div class="backbar"><span class="bk">←</span><span class="ttl">Chicken &amp; rice bowl</span></div>
+        <div class="screen-scroll">
+          <div class="totalcard">
+            <div class="tlabel">MEAL TOTAL</div>
+            <div class="tval">595 cal</div>
+            <div class="tmac"><span class="pp">49P</span> · <span class="cc">52C</span> · <span class="ff">18F</span></div>
+          </div>
+          <div class="cfood">
+            <div class="cfood-head"><div><div class="cn">×3 Chicken, 1 oz</div><div class="cs">66 cal · 14P · 0C · 3F</div></div>
+              <span class="bstep"><button>−</button><span class="v">3</span><button>＋</button></span>
+            </div>
+          </div>
+          <div class="cfood">
+            <div class="cfood-head"><div><div class="cn">×1 Jasmine rice, cooked cup</div><div class="cs">205 cal · 4P · 45C · 0F</div></div>
+              <span class="bstep"><button>−</button><span class="v">1</span><button>＋</button></span>
+            </div>
+          </div>
+          <div class="cfood">
+            <div class="cfood-head"><div><div class="cn">×1 Broccoli, cup</div><div class="cs">55 cal · 4P · 11C · 0F</div></div>
+              <span class="bstep"><button>−</button><span class="v">1</span><button>＋</button></span>
+            </div>
+          </div>
+          <div class="addfood" style="padding:8px 2px">＋ Add a food</div>
+          <div style="margin-top:8px"><span class="pillbtn">💾 Save changes to usual</span></div>
+        </div>
+      </div>
+      <div class="note">Most breathing room, cleanest day view — at the cost of a screen transition for every tweak.</div>
+    </div>
+
+  </div>
+</body>
+</html>

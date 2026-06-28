@@ -29,7 +29,7 @@ abstract class DailyLogState with _$DailyLogState {
     /// Schema version of the persisted state. Bump it and add a `fromJson`
     /// case whenever the persisted shape changes in a way old stored data
     /// can't be read as-is, so existing users are migrated instead of reset.
-    @Default(1) int version,
+    @Default(2) int version,
     @Default(<MealLogEntry>[]) List<MealLogEntry> mealEntries,
     @Default(<WeightEntry>[]) List<WeightEntry> weightEntries,
 
@@ -43,7 +43,7 @@ abstract class DailyLogState with _$DailyLogState {
   const DailyLogState._();
 
   /// The version written by the current app.
-  static const _currentVersion = 1;
+  static const _currentVersion = 2;
 
   factory DailyLogState.fromJson(Map<String, dynamic> json) =>
       DailyLogState._fromVersionedJson(json);
@@ -51,11 +51,13 @@ abstract class DailyLogState with _$DailyLogState {
   factory DailyLogState._fromVersionedJson(Map<String, dynamic> json) {
     final version = json['version'] as int? ?? 0;
     switch (version) {
-      // No migrations yet. v0 is unversioned data written before this field
-      // existed; it has the current shape and reads straight through. When the
-      // shape changes, bump [_currentVersion] and add a case that migrates
-      // older versions up to the current one before this case.
+      // v0 is unversioned data; v1 predates the `components` field on meal
+      // entries. Both read straight through, since `components` is additive and
+      // defaults to empty. When a future shape change can't be read as-is, bump
+      // [_currentVersion] and add a case that migrates older versions up before
+      // this one.
       case 0:
+      case 1:
       case _currentVersion:
         return _$DailyLogStateFromJson(json);
       default:

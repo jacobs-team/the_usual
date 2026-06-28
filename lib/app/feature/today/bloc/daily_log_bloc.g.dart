@@ -8,7 +8,7 @@ part of 'daily_log_bloc.dart';
 
 _DailyLogState _$DailyLogStateFromJson(Map<String, dynamic> json) =>
     _DailyLogState(
-      version: (json['version'] as num?)?.toInt() ?? 1,
+      version: (json['version'] as num?)?.toInt() ?? 2,
       mealEntries:
           (json['mealEntries'] as List<dynamic>?)
               ?.map((e) => MealLogEntry.fromJson(e as Map<String, dynamic>))

@@ -462,6 +462,77 @@ void main() {
       });
     });
 
+    group('DailyLogState fromJson', () {
+      final loggedAt = DateTime(2026, 6, 14, 8, 30);
+
+      test('reads current-version data straight through', () {
+        final state = DailyLogState(
+          mealEntries: [
+            MealLogEntry(
+              id: 'meal-1',
+              loggedAt: loggedAt,
+              mealOfTheDay: MealOfTheDay.breakfast,
+              name: 'Eggs',
+              nutrition: const Nutrition(calories: 200),
+            ),
+          ],
+        );
+
+        final restored = DailyLogState.fromJson(state.toJson());
+
+        expect(restored.mealEntries, hasLength(1));
+        expect(restored.version, equals(2));
+      });
+
+      test('reads v1 data with entries that have no components', () {
+        final restored = DailyLogState.fromJson(<String, dynamic>{
+          'version': 1,
+          'mealEntries': [
+            {
+              'id': 'meal-1',
+              'loggedAt': loggedAt.toIso8601String(),
+              'mealOfTheDay': 'lunch',
+              'name': 'Sandwich',
+            },
+          ],
+          'weightEntries': <dynamic>[],
+        });
+
+        expect(restored.mealEntries.single.components, isEmpty);
+        expect(restored.mealEntries.single.name, equals('Sandwich'));
+      });
+
+      test('round-trips an entry composed of components', () {
+        final state = DailyLogState(
+          mealEntries: [
+            MealLogEntry(
+              id: 'meal-2',
+              loggedAt: loggedAt,
+              mealOfTheDay: MealOfTheDay.dinner,
+              name: 'Chicken & rice bowl',
+              nutrition: const Nutrition(calories: 293),
+              components: const [
+                MealComponent(
+                  name: 'Chicken, 1 oz',
+                  nutrition: Nutrition(calories: 22, protein: 5),
+                  quantity: 4,
+                  usualFoodId: 'food-1',
+                ),
+              ],
+            ),
+          ],
+        );
+
+        final restored = DailyLogState.fromJson(state.toJson());
+
+        expect(restored.mealEntries.single.components, hasLength(1));
+        expect(
+          restored.mealEntries.single.components.single.usualFoodId,
+          equals('food-1'),
+        );
+      });
+    });
+
     group('weightChangeOver', () {
       WeightEntry weighIn(String id, DateTime loggedAt, double weight) {
         return WeightEntry(

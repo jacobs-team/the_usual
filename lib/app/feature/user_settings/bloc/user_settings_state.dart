@@ -12,7 +12,7 @@ abstract class UserSettingsState with _$UserSettingsState {
     /// Schema version of the persisted state. Bump it and add a `fromJson`
     /// case whenever the persisted shape changes in a way old stored data
     /// can't be read as-is, so existing users are migrated instead of reset.
-    @Default(3) int version,
+    @Default(4) int version,
 
     /// How the app checks in about meals.
     @Default(ReminderStyle.notifications) ReminderStyle reminderStyle,
@@ -101,6 +101,11 @@ abstract class UserSettingsState with _$UserSettingsState {
     @Default(<MealOfTheDay, List<UsualMeal>>{})
     Map<MealOfTheDay, List<UsualMeal>> usuals,
 
+    /// The user's usual foods library: reusable base-unit nutritional items
+    /// that compose meals. Flat (not keyed by meal timing) because a food like
+    /// "Chicken, 1 oz" is reused across meals.
+    @Default(<UsualFood>[]) List<UsualFood> usualFoods,
+
     /// The user's workout groups, for example Push / Pull / Legs. Ordered by
     /// [WorkoutGroup.order]. Seeded with three defaults that use stable const
     /// ids so they can be a const default and stay linked to logged workouts
@@ -140,7 +145,7 @@ abstract class UserSettingsState with _$UserSettingsState {
   const UserSettingsState._();
 
   /// The version written by the current app.
-  static const _currentVersion = 3;
+  static const _currentVersion = 4;
 
   /// The total number of saved usual meals across all meal timings.
   int get usualMealCount =>

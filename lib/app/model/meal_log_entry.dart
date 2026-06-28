@@ -20,6 +20,7 @@ abstract class MealLogEntry with _$MealLogEntry {
     @Default(1) double quantity,
     String? usualMealId,
     String? photoPath,
+    @Default(<MealComponent>[]) List<MealComponent> components,
   }) = _MealLogEntry;
 
   const MealLogEntry._();

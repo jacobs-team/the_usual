@@ -18,6 +18,11 @@ _MealLogEntry _$MealLogEntryFromJson(Map<String, dynamic> json) =>
       quantity: (json['quantity'] as num?)?.toDouble() ?? 1,
       usualMealId: json['usualMealId'] as String?,
       photoPath: json['photoPath'] as String?,
+      components:
+          (json['components'] as List<dynamic>?)
+              ?.map((e) => MealComponent.fromJson(e as Map<String, dynamic>))
+              .toList() ??
+          const <MealComponent>[],
     );
 
 Map<String, dynamic> _$MealLogEntryToJson(_MealLogEntry instance) =>
@@ -30,6 +35,7 @@ Map<String, dynamic> _$MealLogEntryToJson(_MealLogEntry instance) =>
       'quantity': instance.quantity,
       'usualMealId': instance.usualMealId,
       'photoPath': instance.photoPath,
+      'components': instance.components.map((e) => e.toJson()).toList(),
     };
 
 const _$MealOfTheDayEnumMap = {
