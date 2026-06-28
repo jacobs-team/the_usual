@@ -14,12 +14,12 @@ class AuthAccountTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocSelector<AuthCubit, AuthState, AuthState>(
+    return BlocSelector<AuthCubit, AuthState, (AuthStatus, AuthUser?)>(
       bloc: getIt<AuthCubit>(),
-      selector: (state) => state,
-      builder: (context, state) {
-        final user = state.user;
-        if (state.status == AuthStatus.signedIn && user != null) {
+      selector: (state) => (state.status, state.user),
+      builder: (context, selected) {
+        final (status, user) = selected;
+        if (status == AuthStatus.signedIn && user != null) {
           return Card(
             margin: EdgeInsets.zero,
             child: ListTile(

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
@@ -120,21 +121,20 @@ class _TheUsualsAppState extends State<TheUsualsApp>
     );
     if (result == null) return;
     for (final foodResult in result.foods) {
-      if (foodResult.addToUsualMeals) {
-        getIt<UserSettingsBloc>().add(
-          UserSettingsEvent.usualMealAdded(
-            result.mealOfTheDay,
-            foodResult.name,
-            foodResult.nutrition,
-          ),
-        );
-      }
+      final usualMealId = foodResult.addToUsualMeals
+          ? getIt<UserSettingsBloc>().saveAsUsualMeal(
+              result.mealOfTheDay,
+              foodResult.name,
+              foodResult.nutrition,
+            )
+          : null;
       getIt<DailyLogBloc>().add(
         DailyLogEvent.mealLogged(
           result.mealOfTheDay,
           foodResult.name,
           nutrition: foodResult.nutrition,
           quantity: foodResult.quantity,
+          usualMealId: usualMealId,
         ),
       );
     }
@@ -232,7 +232,11 @@ class _TheUsualsAppState extends State<TheUsualsApp>
           ),
         );
         if (keep == null) return;
-        await (keep ? authCubit.keepGuestData() : authCubit.startFresh());
+        try {
+          await (keep ? authCubit.keepGuestData() : authCubit.startFresh());
+        } on Object catch (error, stackTrace) {
+          _showSignInError(error, stackTrace);
+        }
       case SignInPrompt.replaceLocalWithCloud:
         final replace = await showDialog<bool>(
           context: navigatorContext,
@@ -256,10 +260,44 @@ class _TheUsualsAppState extends State<TheUsualsApp>
             ],
           ),
         );
-        await (replace ?? false
-            ? authCubit.confirmReplaceWithCloud()
-            : authCubit.cancelSignIn());
+        if (replace ?? false) {
+          try {
+            await authCubit.confirmReplaceWithCloud();
+          } on Object catch (error, stackTrace) {
+            _showSignInError(error, stackTrace);
+          }
+        } else {
+          try {
+            await authCubit.cancelSignIn();
+          } on Object catch (error, stackTrace) {
+            // Best-effort backout; the cubit resets its in-flight state in its
+            // finally even when sign-out fails, so just log it.
+            log(
+              'Sign-in cancel failed',
+              name: 'TheUsualsApp',
+              error: error,
+              stackTrace: stackTrace,
+            );
+          }
+        }
     }
+  }
+
+  /// Logs a sign-in data-migration failure and tells the user it could not be
+  /// completed. Used when a guest-data dialog choice fails after the credential
+  /// is already obtained.
+  void _showSignInError(Object error, StackTrace stackTrace) {
+    log(
+      'Sign-in could not be completed',
+      name: 'TheUsualsApp',
+      error: error,
+      stackTrace: stackTrace,
+    );
+    final context = AppRouter.rootNavigatorKey.currentContext;
+    if (context == null) return;
+    _scaffoldMessengerKey.currentState?.showSnackBar(
+      SnackBar(content: Text(context.l10n.signInFailed)),
+    );
   }
 
   @override

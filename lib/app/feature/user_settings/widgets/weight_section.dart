@@ -38,65 +38,86 @@ class _WeightSectionState extends State<WeightSection> {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    return BlocSelector<
-      UserSettingsBloc,
-      UserSettingsState,
-      (WeightCheckinFrequency, WeightTimeOfDay, WeightUnit)
-    >(
+    return BlocListener<UserSettingsBloc, UserSettingsState>(
       bloc: getIt<UserSettingsBloc>(),
-      selector: (state) => (
-        state.weightCheckinFrequency,
-        state.weightTimeOfDay,
-        state.weightUnit,
-      ),
-      builder: (context, selected) {
-        final (weightCheckinFrequency, weightTimeOfDay, weightUnit) = selected;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text('How often', style: textTheme.bodySmall),
-            SizedBox(height: AppDesign.spacing.sm),
-            WeightCheckinFrequencyChips(
-              selected: weightCheckinFrequency,
-              onSelected: (weightCheckinFrequency) =>
-                  getIt<UserSettingsBloc>().add(
-                    UserSettingsEvent.weightCheckinFrequencySelected(
-                      weightCheckinFrequency,
-                    ),
-                  ),
-            ),
-            SizedBox(height: AppDesign.spacing.md),
-            if (weightCheckinFrequency == WeightCheckinFrequency.off)
-              const InfoBox(
-                'Weight check-ins are off. Pick a frequency to turn them '
-                'back on.',
-              )
-            else ...[
-              Text('What time of day', style: textTheme.bodySmall),
-              SizedBox(height: AppDesign.spacing.sm),
-              WeightTimeOfDayChips(
-                selected: weightTimeOfDay,
-                onSelected: (weightTimeOfDay) => getIt<UserSettingsBloc>().add(
-                  UserSettingsEvent.weightTimeOfDaySelected(weightTimeOfDay),
-                ),
-              ),
-              SizedBox(height: AppDesign.spacing.md),
-              Text('Starting weight', style: textTheme.bodySmall),
-              SizedBox(height: AppDesign.spacing.sm),
-              WeightInput(
-                controller: _weightController,
-                weightUnit: weightUnit,
-                onWeightChanged: (weight) => getIt<UserSettingsBloc>().add(
-                  UserSettingsEvent.startingWeightChanged(weight),
-                ),
-                onUnitSelected: (weightUnit) => getIt<UserSettingsBloc>().add(
-                  UserSettingsEvent.weightUnitSelected(weightUnit),
-                ),
-              ),
-            ],
-          ],
-        );
+      listenWhen: (previous, current) =>
+          previous.startingWeight != current.startingWeight,
+      listener: (context, state) {
+        // Re-seed the field when the value changes underneath us (a cloud
+        // restore on sign-in or a sync from another device). Compared
+        // numerically so the user's own keystrokes, which echo back as the same
+        // value, don't reset the cursor mid-edit.
+        if (double.tryParse(_weightController.text) != state.startingWeight) {
+          _weightController.text = state.startingWeight?.toString() ?? '';
+        }
       },
+      child:
+          BlocSelector<
+            UserSettingsBloc,
+            UserSettingsState,
+            (WeightCheckinFrequency, WeightTimeOfDay, WeightUnit)
+          >(
+            bloc: getIt<UserSettingsBloc>(),
+            selector: (state) => (
+              state.weightCheckinFrequency,
+              state.weightTimeOfDay,
+              state.weightUnit,
+            ),
+            builder: (context, selected) {
+              final (weightCheckinFrequency, weightTimeOfDay, weightUnit) =
+                  selected;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text('How often', style: textTheme.bodySmall),
+                  SizedBox(height: AppDesign.spacing.sm),
+                  WeightCheckinFrequencyChips(
+                    selected: weightCheckinFrequency,
+                    onSelected: (weightCheckinFrequency) =>
+                        getIt<UserSettingsBloc>().add(
+                          UserSettingsEvent.weightCheckinFrequencySelected(
+                            weightCheckinFrequency,
+                          ),
+                        ),
+                  ),
+                  SizedBox(height: AppDesign.spacing.md),
+                  if (weightCheckinFrequency == WeightCheckinFrequency.off)
+                    const InfoBox(
+                      'Weight check-ins are off. Pick a frequency to turn them '
+                      'back on.',
+                    )
+                  else ...[
+                    Text('What time of day', style: textTheme.bodySmall),
+                    SizedBox(height: AppDesign.spacing.sm),
+                    WeightTimeOfDayChips(
+                      selected: weightTimeOfDay,
+                      onSelected: (weightTimeOfDay) =>
+                          getIt<UserSettingsBloc>().add(
+                            UserSettingsEvent.weightTimeOfDaySelected(
+                              weightTimeOfDay,
+                            ),
+                          ),
+                    ),
+                    SizedBox(height: AppDesign.spacing.md),
+                    Text('Starting weight', style: textTheme.bodySmall),
+                    SizedBox(height: AppDesign.spacing.sm),
+                    WeightInput(
+                      controller: _weightController,
+                      weightUnit: weightUnit,
+                      onWeightChanged: (weight) =>
+                          getIt<UserSettingsBloc>().add(
+                            UserSettingsEvent.startingWeightChanged(weight),
+                          ),
+                      onUnitSelected: (weightUnit) =>
+                          getIt<UserSettingsBloc>().add(
+                            UserSettingsEvent.weightUnitSelected(weightUnit),
+                          ),
+                    ),
+                  ],
+                ],
+              );
+            },
+          ),
     );
   }
 }

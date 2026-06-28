@@ -170,36 +170,52 @@ class AuthCubit extends HydratedCubit<AuthState> implements Listenable {
         }
       }
     } catch (_) {
-      _interactiveSignInInProgress = false;
+      _resetInteractiveSignIn();
       rethrow;
     }
   }
 
   /// New account, "keep my data": uploads the guest data as the account's first
-  /// cloud document.
+  /// cloud document. Throws on failure so the caller can surface it.
   Future<void> keepGuestData() async {
     final uid = _pendingUid;
     if (uid == null) return;
-    await _syncRepository.uploadLocal(uid);
-    _completeSignIn();
+    try {
+      await _syncRepository.uploadLocal(uid);
+      _completeSignIn();
+    } catch (_) {
+      _resetInteractiveSignIn();
+      rethrow;
+    }
   }
 
   /// New account, "start fresh": discards local guest data and starts an empty
-  /// cloud account, routing back through onboarding.
+  /// cloud account, routing back through onboarding. Throws on failure so the
+  /// caller can surface it.
   Future<void> startFresh() async {
     final uid = _pendingUid;
     if (uid == null) return;
-    await _syncRepository.clearLocal();
-    await _syncRepository.uploadLocal(uid);
-    _completeSignIn();
+    try {
+      await _syncRepository.clearLocal();
+      await _syncRepository.uploadLocal(uid);
+      _completeSignIn();
+    } catch (_) {
+      _resetInteractiveSignIn();
+      rethrow;
+    }
   }
 
   /// Existing account, confirmed: downloads the cloud data over local, which is
-  /// lost.
+  /// lost. Throws on failure so the caller can surface it.
   Future<void> confirmReplaceWithCloud() async {
     final uid = _pendingUid;
     if (uid == null) return;
-    await _applyExistingAccount(uid);
+    try {
+      await _applyExistingAccount(uid);
+    } catch (_) {
+      _resetInteractiveSignIn();
+      rethrow;
+    }
   }
 
   /// Downloads an existing account's cloud data and resolves onboarding from
@@ -217,11 +233,23 @@ class AuthCubit extends HydratedCubit<AuthState> implements Listenable {
 
   /// Backs out of signing into an existing account, keeping local guest data.
   Future<void> cancelSignIn() async {
-    await _authRepository.signOut();
+    try {
+      await _authRepository.signOut();
+    } finally {
+      _resetInteractiveSignIn();
+    }
+  }
+
+  /// Clears an in-flight interactive sign-in: drops the pending account, closes
+  /// any open prompt, and re-enables the auth stream so a failure mid-flow
+  /// can't wedge the cubit. Leaves [AuthState.status] as it was.
+  void _resetInteractiveSignIn() {
     _pendingUid = null;
     _pendingUser = null;
     _interactiveSignInInProgress = false;
-    emit(state.copyWith(pendingPrompt: null));
+    if (state.pendingPrompt != null) {
+      emit(state.copyWith(pendingPrompt: null));
+    }
   }
 
   void _completeSignIn() {

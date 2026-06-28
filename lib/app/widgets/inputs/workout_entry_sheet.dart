@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
@@ -161,6 +163,7 @@ class WorkoutEntrySheetState extends State<WorkoutEntrySheet> {
     var sets = _currentSets;
 
     if (_bodyweightChecked && widget.bodyWeight != null && _aiAvailable) {
+      final messenger = ScaffoldMessenger.of(context);
       setState(() => _estimating = true);
       try {
         final estimate = await getIt<WorkoutAiRepository>()
@@ -187,6 +190,21 @@ class WorkoutEntrySheetState extends State<WorkoutEntrySheet> {
                 workoutSet,
           ];
         }
+      } on Object catch (error, stackTrace) {
+        // A failed estimate must not drop the user's confirm: log the exercise
+        // with the sets as entered and tell them the estimate was skipped.
+        log(
+          'Bodyweight load estimate failed',
+          name: 'WorkoutEntrySheet',
+          error: error,
+          stackTrace: stackTrace,
+        );
+        if (!mounted) return;
+        messenger.showSnackBar(
+          const SnackBar(
+            content: Text('Could not estimate set weight. Logged without it.'),
+          ),
+        );
       } finally {
         if (mounted) setState(() => _estimating = false);
       }

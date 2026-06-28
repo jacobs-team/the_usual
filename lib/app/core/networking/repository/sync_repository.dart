@@ -105,15 +105,28 @@ class SyncRepository {
   }
 
   bool _apply(Map<String, dynamic> document) {
-    final dailyLogJson = document['dailyLog'];
+    final version = document['schemaVersion'] as int? ?? 0;
+    final migrated = _migratedDocument(document, version);
+    if (migrated == null) {
+      // An envelope version newer than this build understands (e.g. the user
+      // downgraded). Reading it with the current shape would drop the unknown
+      // keys, and the next write-through would upload that lossy document back
+      // over good cloud data, so leave local state untouched instead.
+      return _dailyLogBloc.state.hasEstablishedLog(
+            _userSettingsBloc.state.dayStartTime,
+          ) ||
+          _userSettingsBloc.state.hasEstablishedUsuals;
+    }
+
+    final dailyLogJson = migrated['dailyLog'];
     final dailyLog = dailyLogJson is Map<String, dynamic>
         ? DailyLogState.fromJson(dailyLogJson)
         : const DailyLogState();
-    final settingsJson = document['userSettings'];
+    final settingsJson = migrated['userSettings'];
     final settings = settingsJson is Map<String, dynamic>
         ? UserSettingsState.fromJson(settingsJson)
         : const UserSettingsState();
-    final workoutLogJson = document['workoutLog'];
+    final workoutLogJson = migrated['workoutLog'];
     final workoutLog = workoutLogJson is Map<String, dynamic>
         ? WorkoutLogState.fromJson(workoutLogJson)
         : const WorkoutLogState();
@@ -139,6 +152,30 @@ class SyncRepository {
     _lastSyncedJson = jsonEncode(_documentOf(dailyLog, settings, workoutLog));
     return dailyLog.hasEstablishedLog(settings.dayStartTime) ||
         settings.hasEstablishedUsuals;
+  }
+
+  /// Brings a cloud [document] up to the current [_schemaVersion] envelope
+  /// shape, or returns null when [version] is one this build cannot read.
+  ///
+  /// This routes on the outer envelope version (the top-level key layout),
+  /// which is separate from the per-bloc versions nested inside each section.
+  /// When the envelope shape changes in a future version, map the old layout to
+  /// the current keys here so [_apply] never misreads a moved key as an absent
+  /// one and restores empty state over the user's data.
+  Map<String, dynamic>? _migratedDocument(
+    Map<String, dynamic> document,
+    int version,
+  ) {
+    switch (version) {
+      case 0:
+      case _schemaVersion:
+        // v0 (unversioned early documents) used the same top-level keys as v1,
+        // so both read with the current layout as-is.
+        return document;
+      default:
+        // Newer than we understand: refuse rather than read lossily.
+        return null;
+    }
   }
 
   /// Begins two-way sync for [uid]: pulls remote changes onto the blocs and

@@ -27,13 +27,12 @@ class LoggedEntryRow extends StatelessWidget {
   final bool expandedByDefault;
 
   UsualMeal? _linkedUsualMeal(UserSettingsState state) {
+    final usualMealId = mealLogEntry.usualMealId;
+    if (usualMealId == null) return null;
     final usualMeals =
         state.usuals[mealLogEntry.mealOfTheDay] ?? const <UsualMeal>[];
     for (final usualMeal in usualMeals) {
-      if (usualMeal.id == mealLogEntry.usualMealId ||
-          usualMeal.name.toLowerCase() == mealLogEntry.name.toLowerCase()) {
-        return usualMeal;
-      }
+      if (usualMeal.id == usualMealId) return usualMeal;
     }
     return null;
   }
@@ -44,22 +43,6 @@ class LoggedEntryRow extends StatelessWidget {
       bloc: getIt<UserSettingsBloc>(),
       selector: _linkedUsualMeal,
       builder: (context, usualMeal) {
-        // When linked only by name (the stored id is stale or absent), stamp
-        // the usual meal's current id onto the entry so the link survives a
-        // later rename. Deferred to after the frame to keep build pure.
-
-        // TODO(jb): fix this trash later.
-        if (usualMeal != null && usualMeal.id != mealLogEntry.usualMealId) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            getIt<DailyLogBloc>().add(
-              DailyLogEvent.mealEntryUsualMealLinked(
-                mealLogEntry.id,
-                usualMeal.id,
-              ),
-            );
-          });
-        }
-
         final nutrition = mealLogEntry.nutrition;
         final differsFromUsualMeal =
             usualMeal != null && usualMeal.nutrition != nutrition;
@@ -81,13 +64,20 @@ class LoggedEntryRow extends StatelessWidget {
           expandedFooter: usualMeal == null
               ? UpdateUsualButton(
                   label: 'Save as usual',
-                  onPressed: () => getIt<UserSettingsBloc>().add(
-                    UserSettingsEvent.usualMealAdded(
-                      mealLogEntry.mealOfTheDay,
-                      mealLogEntry.name,
-                      nutrition,
-                    ),
-                  ),
+                  onPressed: () {
+                    final usualMealId = getIt<UserSettingsBloc>()
+                        .saveAsUsualMeal(
+                          mealLogEntry.mealOfTheDay,
+                          mealLogEntry.name,
+                          nutrition,
+                        );
+                    getIt<DailyLogBloc>().add(
+                      DailyLogEvent.mealEntryUsualMealLinked(
+                        mealLogEntry.id,
+                        usualMealId,
+                      ),
+                    );
+                  },
                 )
               : differsFromUsualMeal
               ? UpdateUsualButton(

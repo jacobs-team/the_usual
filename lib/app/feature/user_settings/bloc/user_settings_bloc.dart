@@ -224,11 +224,43 @@ class UserSettingsBloc
           ...state.usuals,
           event.mealOfTheDay: [
             ...usualMeals,
-            UsualMeal(id: _uuid.v4(), name: name, nutrition: event.nutrition),
+            UsualMeal(
+              id: event.id ?? _uuid.v4(),
+              name: name,
+              nutrition: event.nutrition,
+            ),
           ],
         },
       ),
     );
+  }
+
+  /// Returns the id of the usual meal named [name] under [mealOfTheDay], adding
+  /// it with [nutrition] when none exists yet. Lets a caller link a meal it is
+  /// logging to the usual it is saved as in the same action, so the link is set
+  /// at log time rather than reconstructed by name afterwards.
+  String saveAsUsualMeal(
+    MealOfTheDay mealOfTheDay,
+    String name,
+    Nutrition nutrition,
+  ) {
+    final trimmed = name.trim();
+    final usualMeals = state.usuals[mealOfTheDay] ?? const <UsualMeal>[];
+    for (final usualMeal in usualMeals) {
+      if (usualMeal.name.toLowerCase() == trimmed.toLowerCase()) {
+        return usualMeal.id;
+      }
+    }
+    final id = _uuid.v4();
+    add(
+      UserSettingsEvent.usualMealAdded(
+        mealOfTheDay,
+        trimmed,
+        nutrition,
+        id: id,
+      ),
+    );
+    return id;
   }
 
   void _onUsualMealRemoved(

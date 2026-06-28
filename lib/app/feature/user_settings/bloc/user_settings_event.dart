@@ -55,8 +55,9 @@ sealed class UserSettingsEvent with _$UserSettingsEvent {
   const factory UserSettingsEvent.usualMealAdded(
     MealOfTheDay mealOfTheDay,
     String name,
-    Nutrition nutrition,
-  ) = SettingsUsualMealAdded;
+    Nutrition nutrition, {
+    String? id,
+  }) = SettingsUsualMealAdded;
   const factory UserSettingsEvent.usualMealRemoved(
     MealOfTheDay mealOfTheDay,
     String id,

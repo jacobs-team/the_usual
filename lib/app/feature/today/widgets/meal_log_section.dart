@@ -233,20 +233,19 @@ class MealLogSection extends StatelessWidget {
                                 );
                             if (result == null) return;
                             for (final foodResult in result.foods) {
-                              if (foodResult.addToUsualMeals) {
-                                getIt<UserSettingsBloc>().add(
-                                  UserSettingsEvent.usualMealAdded(
-                                    mealOfTheDay,
-                                    foodResult.name,
-                                    foodResult.nutrition,
-                                  ),
-                                );
-                              }
+                              final usualMealId = foodResult.addToUsualMeals
+                                  ? getIt<UserSettingsBloc>().saveAsUsualMeal(
+                                      mealOfTheDay,
+                                      foodResult.name,
+                                      foodResult.nutrition,
+                                    )
+                                  : null;
                               _logOntoTargetDays(
                                 mealOfTheDay,
                                 foodResult.name,
                                 nutrition: foodResult.nutrition,
                                 quantity: foodResult.quantity,
+                                usualMealId: usualMealId,
                               );
                             }
                           },
