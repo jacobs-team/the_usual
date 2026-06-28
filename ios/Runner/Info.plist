@@ -87,6 +87,11 @@
 		<false/>
 		<key>AppGroupId</key>
 		<string>$(CUSTOM_GROUP_ID)</string>
+		<!-- Let receive_sharing_intent handle the ShareMedia-* URL the share
+		     extension opens, instead of Flutter routing it into GoRouter (which
+		     has no route for it and would throw "no routes for location"). -->
+		<key>FlutterDeepLinkingEnabled</key>
+		<false/>
 		<key>CFBundleURLTypes</key>
 		<array>
 			<dict>
