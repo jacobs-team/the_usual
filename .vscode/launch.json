@@ -21,7 +21,6 @@
       "name": "Launch prod",
       "request": "launch",
       "type": "dart",
-      "flutterMode": "release",
       "program": "lib/main_production.dart",
       "args": [
         "--flavor",
@@ -32,9 +31,10 @@
       ]
     },
     {
-      "name": "Launch prod debug",
+      "name": "Launch prod release",
       "request": "launch",
       "type": "dart",
+      "flutterMode": "release",
       "program": "lib/main_production.dart",
       "args": [
         "--flavor",

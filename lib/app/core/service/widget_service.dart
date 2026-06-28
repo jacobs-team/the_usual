@@ -1,5 +1,7 @@
 // coverage:ignore-file
 // Platform glue over home_widget; no unit-testable logic.
+import 'dart:async';
+
 import 'package:home_widget/home_widget.dart';
 import 'package:injectable/injectable.dart';
 
@@ -13,7 +15,7 @@ import 'package:injectable/injectable.dart';
 class WidgetService {
   /// {@macro widget_service}
   WidgetService() {
-    HomeWidget.setAppGroupId(_appGroupId);
+    unawaited(HomeWidget.setAppGroupId(_appGroupId));
   }
 
   /// Matches the App Group the iOS widget and Share extension already share.
@@ -21,6 +23,13 @@ class WidgetService {
 
   /// The iOS widget's `kind`, used to ask WidgetKit to reload it.
   static const _iOSWidgetKind = 'TheUsualLauncherWidget';
+
+  /// The Android widget's fully-qualified `AppWidgetProvider` class. It livesin
+  /// the app's namespace, which stays constant while the applicationId gains a
+  /// `.dev`/`.stg` suffix per flavor, so it must be passed in full rather than
+  /// resolved against the (suffixed) applicationId.
+  static const _androidWidgetProvider =
+      'com.jblankenship.theusual.LaunchWidgetProvider';
 
   /// Writes the day's calorie [goal] and [consumed] totals to the widget and
   /// asks the OS to redraw it. A null [goal] means the user hasn't set one, so
@@ -52,6 +61,9 @@ class WidgetService {
       'dayRolloverEpoch',
       dayRollover.millisecondsSinceEpoch ~/ 1000,
     );
-    await HomeWidget.updateWidget(iOSName: _iOSWidgetKind);
+    await HomeWidget.updateWidget(
+      iOSName: _iOSWidgetKind,
+      qualifiedAndroidName: _androidWidgetProvider,
+    );
   }
 }

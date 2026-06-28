@@ -204,7 +204,6 @@ void main() {
       act: (bloc) => bloc.add(
         MealEntryEvent.started(
           photos: [MealPhoto(bytes: transparentPixel)],
-          autoEstimate: true,
         ),
       ),
       expect: () => [
