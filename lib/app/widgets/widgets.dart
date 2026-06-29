@@ -15,6 +15,7 @@ export 'inputs/meal_photo_picker.dart';
 export 'inputs/nutrition_fields.dart';
 export 'inputs/quantity_stepper.dart';
 export 'inputs/radio_option_card.dart';
+export 'inputs/save_as_usual_checkbox.dart';
 export 'inputs/set_fields.dart';
 export 'inputs/the_usual_text_field.dart';
 export 'inputs/time_field.dart';

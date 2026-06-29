@@ -109,99 +109,103 @@ class _ExpandableWorkoutState extends State<ExpandableWorkout> {
             ? 'No time'
             : widget.duration.clockLabel,
     };
-    return ExpansionTile(
-      dense: true,
-      controller: _controller,
-      initiallyExpanded: widget.expandedByDefault,
-      onExpansionChanged: (expanded) => setState(() => _expanded = expanded),
-      controlAffinity: ListTileControlAffinity.leading,
-      tilePadding: EdgeInsets.zero,
-      childrenPadding: EdgeInsets.zero,
-      shape: const Border(),
-      collapsedShape: const Border(),
-      expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
-      title: widget.onNameChanged != null
-          ? LayoutBuilder(
-              builder: (context, constraints) {
-                return Wrap(
-                  spacing: AppDesign.spacing.sm,
-                  runSpacing: AppDesign.spacing.xs,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxWidth: constraints.maxWidth,
-                      ),
-                      child: TheUsualTextField(
-                        controller: _nameController,
-                        onChanged: widget.onNameChanged,
-                        textCapitalization: TextCapitalization.sentences,
-                        textStyle: theme.textTheme.bodyLarge,
-                        dense: true,
-                        autoSize: true,
-                      ),
-                    ),
-                    if (!_expanded)
-                      Text(
-                        summary,
-                        style: theme.textTheme.bodyMedium,
-                      ),
-                  ],
-                );
-              },
-            )
-          : LayoutBuilder(
-              builder: (context, constraints) {
-                return Wrap(
-                  spacing: AppDesign.spacing.sm,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxWidth: constraints.maxWidth,
-                      ),
-                      child: Text(
-                        widget.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          textBaseline: TextBaseline.alphabetic,
+    return ListTileTheme.merge(
+      minLeadingWidth: 0,
+      horizontalTitleGap: AppDesign.spacing.sm,
+      child: ExpansionTile(
+        dense: true,
+        controller: _controller,
+        initiallyExpanded: widget.expandedByDefault,
+        onExpansionChanged: (expanded) => setState(() => _expanded = expanded),
+        controlAffinity: ListTileControlAffinity.leading,
+        tilePadding: EdgeInsets.zero,
+        childrenPadding: EdgeInsets.only(left: AppDesign.spacing.lg),
+        shape: const Border(),
+        collapsedShape: const Border(),
+        expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
+        title: widget.onNameChanged != null
+            ? LayoutBuilder(
+                builder: (context, constraints) {
+                  return Wrap(
+                    spacing: AppDesign.spacing.sm,
+                    runSpacing: AppDesign.spacing.xs,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: constraints.maxWidth,
+                        ),
+                        child: TheUsualTextField(
+                          controller: _nameController,
+                          onChanged: widget.onNameChanged,
+                          textCapitalization: TextCapitalization.sentences,
+                          textStyle: theme.textTheme.bodyLarge,
+                          dense: true,
+                          autoSize: true,
                         ),
                       ),
-                    ),
-                    if (!_expanded)
-                      Text(
-                        summary,
-                        style: theme.textTheme.bodyMedium,
+                      if (!_expanded)
+                        Text(
+                          summary,
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                    ],
+                  );
+                },
+              )
+            : LayoutBuilder(
+                builder: (context, constraints) {
+                  return Wrap(
+                    spacing: AppDesign.spacing.sm,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: constraints.maxWidth,
+                        ),
+                        child: Text(
+                          widget.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            textBaseline: TextBaseline.alphabetic,
+                          ),
+                        ),
                       ),
-                  ],
-                );
-              },
+                      if (!_expanded)
+                        Text(
+                          summary,
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                    ],
+                  );
+                },
+              ),
+        trailing: IconButton(
+          icon: const Icon(Icons.delete_forever_outlined),
+          onPressed: widget.onRemoved,
+        ),
+        children: [
+          if (widget.type == WorkoutType.cardio) ...[
+            const SectionLabel('TIME'),
+            SizedBox(height: AppDesign.spacing.sm),
+            TimeField(
+              initial: widget.duration,
+              onChanged: widget.onDurationChanged ?? (_) {},
             ),
-      trailing: IconButton(
-        icon: const Icon(Icons.delete_forever_outlined),
-        onPressed: widget.onRemoved,
-      ),
-      children: [
-        if (widget.type == WorkoutType.cardio) ...[
-          const SectionLabel('TIME'),
-          SizedBox(height: AppDesign.spacing.sm),
-          TimeField(
-            initial: widget.duration,
-            onChanged: widget.onDurationChanged ?? (_) {},
-          ),
-          if (widget.expandedFooter != null) widget.expandedFooter!,
-        ] else ...[
-          const SectionLabel('SETS'),
-          SetFields(
-            dense: true,
-            initial: widget.sets,
-            weightUnit: widget.weightUnit,
-            onChanged: widget.onChanged,
-            trailing: widget.expandedFooter,
-          ),
+            if (widget.expandedFooter != null) widget.expandedFooter!,
+          ] else ...[
+            const SectionLabel('SETS'),
+            SetFields(
+              dense: true,
+              initial: widget.sets,
+              weightUnit: widget.weightUnit,
+              onChanged: widget.onChanged,
+              trailing: widget.expandedFooter,
+            ),
+          ],
         ],
-      ],
+      ),
     );
   }
 }

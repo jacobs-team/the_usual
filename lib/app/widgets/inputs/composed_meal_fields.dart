@@ -21,10 +21,20 @@ class ComposedMealFields extends StatelessWidget {
     required this.onFoodRemoved,
     required this.onFoodAdded,
     required this.onFoodSaveToLibrary,
+    this.saveMealAsUsual = false,
+    this.onSaveMealAsUsualChanged,
     super.key,
   });
 
   final MealEntryState state;
+
+  /// Whether the composed meal is saved to the usuals. Reflected by the
+  /// meal-level "Save as usual" checkbox.
+  final bool saveMealAsUsual;
+
+  /// Toggles whether the composed meal is saved to the usuals. Null hides the
+  /// meal-level checkbox (e.g. onboarding, where saving is implicit).
+  final ValueChanged<bool>? onSaveMealAsUsualChanged;
 
   /// Called as the user edits the "describe a meal" field, whose text the
   /// Estimate action itemizes into component foods.
@@ -99,9 +109,20 @@ class ComposedMealFields extends StatelessWidget {
           ),
         ),
         SizedBox(height: AppDesign.spacing.sm),
-        DefaultTextStyle.merge(
-          style: Theme.of(context).textTheme.bodySmall,
-          child: NutritionSummary(components.componentsTotal),
+        Row(
+          children: [
+            DefaultTextStyle.merge(
+              style: Theme.of(context).textTheme.bodySmall,
+              child: NutritionSummary(components.componentsTotal),
+            ),
+            if (onSaveMealAsUsualChanged != null) ...[
+              const Spacer(),
+              SaveAsUsualCheckbox(
+                value: saveMealAsUsual,
+                onChanged: onSaveMealAsUsualChanged!,
+              ),
+            ],
+          ],
         ),
       ],
     );
@@ -215,18 +236,10 @@ class _ComposedFoodRowState extends State<_ComposedFoodRow> {
                 Expanded(
                   child: TheUsualTextField(
                     controller: _nameController,
-                    hintText: 'Food name',
+                    hintText: 'Ingredient name',
                     onChanged: widget.onNameChanged,
                   ),
                 ),
-                if (widget.foodDraft.usualFoodId != null)
-                  const Icon(Icons.bookmark, semanticLabel: 'In library')
-                else
-                  IconButton(
-                    onPressed: widget.onSaveToLibrary,
-                    icon: const Icon(Icons.bookmark_add_outlined),
-                    tooltip: 'Save to library',
-                  ),
                 if (widget.canRemove)
                   IconButton(
                     onPressed: widget.onRemove,
@@ -242,10 +255,22 @@ class _ComposedFoodRowState extends State<_ComposedFoodRow> {
               onChanged: widget.onNutritionChanged,
             ),
             SizedBox(height: AppDesign.spacing.sm),
-            QuantityStepper(
-              dense: true,
-              quantity: widget.foodDraft.quantity,
-              onChanged: widget.onQuantityChanged,
+            Row(
+              children: [
+                QuantityStepper(
+                  dense: true,
+                  quantity: widget.foodDraft.quantity,
+                  onChanged: widget.onQuantityChanged,
+                ),
+                const Spacer(),
+                SaveAsUsualCheckbox(
+                  label: 'Save food as usual',
+                  value: widget.foodDraft.usualFoodId != null,
+                  onChanged: (value) {
+                    if (value) widget.onSaveToLibrary();
+                  },
+                ),
+              ],
             ),
           ],
         ),

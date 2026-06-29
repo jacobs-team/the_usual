@@ -3,6 +3,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -245,6 +246,76 @@ class DevToolsView extends StatelessWidget {
               for (final storageKey in storageKeys) {
                 final value = HydratedBloc.storage.read(storageKey);
                 log('HYDRATED[$storageKey] = ${jsonEncode(value)}');
+              }
+            },
+          ),
+          const Divider(),
+          ListTile(
+            title: Text(
+              'Dump composed meals',
+              style: theme.textTheme.bodyLarge,
+            ),
+            subtitle: const Text(
+              'Logs each logged entry vs its linked usual meal, and why the '
+              '"Update usual" CTA shows',
+            ),
+            trailing: const Icon(Icons.compare_arrows),
+            onTap: () {
+              final dailyLogBloc = getIt<DailyLogBloc>();
+              final userSettingsBloc = getIt<UserSettingsBloc>();
+
+              for (final mealLogEntry in dailyLogBloc.state.mealEntries) {
+                final isComposed = mealLogEntry.components.isNotEmpty;
+                final usualMealId = mealLogEntry.usualMealId;
+                if (!isComposed && usualMealId == null) continue;
+
+                final usualMeals =
+                    userSettingsBloc.state.usuals[mealLogEntry.mealOfTheDay] ??
+                    const <UsualMeal>[];
+                UsualMeal? linkedUsualMeal;
+                for (final usualMeal in usualMeals) {
+                  if (usualMeal.id == usualMealId) {
+                    linkedUsualMeal = usualMeal;
+                    break;
+                  }
+                }
+
+                final entryComponents = jsonEncode(
+                  mealLogEntry.components.map((c) => c.toJson()).toList(),
+                );
+                final entryNutrition = jsonEncode(
+                  mealLogEntry.nutrition.toJson(),
+                );
+
+                log(
+                  'ENTRY "${mealLogEntry.name}" id=${mealLogEntry.id} '
+                  'usualMealId=$usualMealId',
+                );
+                log('  entry.nutrition  = $entryNutrition');
+                log('  entry.components = $entryComponents');
+
+                if (linkedUsualMeal == null) {
+                  log('  linked usual: NONE (id not found in library)');
+                  continue;
+                }
+
+                final usualComponents = jsonEncode(
+                  linkedUsualMeal.components.map((c) => c.toJson()).toList(),
+                );
+                final usualNutrition = jsonEncode(
+                  linkedUsualMeal.nutrition.toJson(),
+                );
+                log('  usual.nutrition  = $usualNutrition');
+                log('  usual.components = $usualComponents');
+                log(
+                  '  nutrition differs = '
+                  '${linkedUsualMeal.nutrition != mealLogEntry.nutrition}',
+                );
+                final componentsDiffer = !listEquals(
+                  linkedUsualMeal.components,
+                  mealLogEntry.components,
+                );
+                log('  components differs = $componentsDiffer');
               }
             },
           ),

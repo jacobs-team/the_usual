@@ -64,13 +64,15 @@ class UsualFoodList extends StatelessWidget {
                             nutrition,
                           ),
                         );
-                      final mealsUsing =
-                          settingsBloc.state.usualMealsUsingFood(usualFood.id);
+                      final mealsUsing = settingsBloc.state.usualMealsUsingFood(
+                        usualFood.id,
+                      );
                       if (mealsUsing == 0) return;
                       final confirmed = await ConfirmDialog.show(
                         context,
                         title: 'Update meals too?',
-                        message: 'This food is used in $mealsUsing usual '
+                        message:
+                            'This food is used in $mealsUsing usual '
                             '${mealsUsing == 1 ? 'meal' : 'meals'}. Update '
                             '${mealsUsing == 1 ? 'it' : 'them'} to match'
                             ' the new nutrition?',

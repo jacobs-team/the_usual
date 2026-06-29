@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
@@ -143,8 +144,9 @@ class _ComposedLoggedEntry extends StatelessWidget {
         mealLogEntry.usualMealId,
       ),
       builder: (context, usualMeal) {
-        final differsFromUsualMeal = usualMeal != null &&
-            (usualMeal.components != mealLogEntry.components ||
+        final differsFromUsualMeal =
+            usualMeal != null &&
+            (!listEquals(usualMeal.components, mealLogEntry.components) ||
                 usualMeal.nutrition != mealLogEntry.nutrition);
 
         UpdateUsualButton? footer;
@@ -177,47 +179,55 @@ class _ComposedLoggedEntry extends StatelessWidget {
           );
         }
 
-        return ExpansionTile(
-          dense: true,
-          initiallyExpanded: expandedByDefault,
-          controlAffinity: ListTileControlAffinity.leading,
-          tilePadding: EdgeInsets.zero,
-          childrenPadding: EdgeInsets.zero,
-          shape: const Border(),
-          collapsedShape: const Border(),
-          expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
-          title: DefaultTextStyle.merge(
-            style: theme.textTheme.bodyMedium,
-            child: Wrap(
-              spacing: AppDesign.spacing.sm,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              children: [
-                Text(
-                  mealLogEntry.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodyLarge,
-                ),
-                NutritionSummary(mealLogEntry.nutrition),
-              ],
-            ),
-          ),
-          trailing: IconButton(
-            icon: const Icon(Icons.delete_forever_outlined),
-            onPressed: () => getIt<DailyLogBloc>().add(
-              DailyLogEvent.mealEntryRemoved(mealLogEntry.id),
-            ),
-          ),
-          children: [
-            for (var index = 0; index < mealLogEntry.components.length; index++)
-              _ComposedComponentRow(
-                key: ValueKey(index),
-                mealLogEntryId: mealLogEntry.id,
-                mealComponent: mealLogEntry.components[index],
-                componentIndex: index,
+        return ListTileTheme.merge(
+          minLeadingWidth: 0,
+          horizontalTitleGap: AppDesign.spacing.sm,
+          child: ExpansionTile(
+            dense: true,
+            initiallyExpanded: expandedByDefault,
+            controlAffinity: ListTileControlAffinity.leading,
+            tilePadding: EdgeInsets.zero,
+            childrenPadding: EdgeInsets.only(left: AppDesign.spacing.lg),
+            shape: const Border(),
+            collapsedShape: const Border(),
+            expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
+            title: DefaultTextStyle.merge(
+              style: theme.textTheme.bodyMedium,
+              child: Wrap(
+                spacing: AppDesign.spacing.sm,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Text(
+                    mealLogEntry.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodyLarge,
+                  ),
+                  NutritionSummary(mealLogEntry.nutrition),
+                ],
               ),
-            ?footer,
-          ],
+            ),
+            trailing: IconButton(
+              icon: const Icon(Icons.delete_forever_outlined),
+              onPressed: () => getIt<DailyLogBloc>().add(
+                DailyLogEvent.mealEntryRemoved(mealLogEntry.id),
+              ),
+            ),
+            children: [
+              for (
+                var index = 0;
+                index < mealLogEntry.components.length;
+                index++
+              )
+                _ComposedComponentRow(
+                  key: ValueKey(index),
+                  mealLogEntryId: mealLogEntry.id,
+                  mealComponent: mealLogEntry.components[index],
+                  componentIndex: index,
+                ),
+              ?footer,
+            ],
+          ),
         );
       },
     );

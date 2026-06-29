@@ -126,6 +126,7 @@ class _TheUsualsAppState extends State<TheUsualsApp>
               result.mealOfTheDay,
               foodResult.name,
               foodResult.nutrition,
+              components: foodResult.components,
             )
           : null;
       getIt<DailyLogBloc>().add(
@@ -135,6 +136,7 @@ class _TheUsualsAppState extends State<TheUsualsApp>
           nutrition: foodResult.nutrition,
           quantity: foodResult.quantity,
           usualMealId: usualMealId,
+          components: foodResult.components,
         ),
       );
     }
@@ -374,6 +376,7 @@ class _TheUsualsAppState extends State<TheUsualsApp>
                       quantity: state.firstLogQuantities[usualMeal.id] ?? 1,
                       usualMealId: usualMeal.id,
                       photoPath: usualMeal.photoPath,
+                      components: usualMeal.components,
                     ),
                   );
                 }

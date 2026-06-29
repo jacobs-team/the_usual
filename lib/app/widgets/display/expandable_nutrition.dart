@@ -109,122 +109,126 @@ class _ExpandableNutritionState extends State<ExpandableNutrition> {
         : widget.name;
     final showsQuantityStepper =
         quantity != null && widget.onQuantityChanged != null;
-    return ExpansionTile(
-      dense: true,
-      controller: _controller,
-      initiallyExpanded: widget.expandedByDefault,
-      onExpansionChanged: (expanded) => setState(() => _expanded = expanded),
-      controlAffinity: ListTileControlAffinity.leading,
-      tilePadding: EdgeInsets.zero,
-      childrenPadding: EdgeInsets.zero,
-      shape: const Border(),
-      collapsedShape: const Border(),
-      expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
-      title: widget.onNameChanged != null
-          ? LayoutBuilder(
-              builder: (context, constraints) {
-                return Wrap(
-                  spacing: AppDesign.spacing.sm,
-                  runSpacing: AppDesign.spacing.xs,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    // Sized to the name so the summary can sit beside a short
-                    // name, capped to the row so a long one fills the line and
-                    // wraps the summary below.
-                    ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxWidth: constraints.maxWidth,
-                      ),
-                      child: TheUsualTextField(
-                        controller: _nameController,
-                        onChanged: widget.onNameChanged,
-                        textCapitalization: TextCapitalization.sentences,
-                        textStyle: theme.textTheme.bodyLarge,
-                        dense: true,
-                        autoSize: true,
-                      ),
-                    ),
-                    if (!_expanded)
-                      DefaultTextStyle.merge(
-                        style: theme.textTheme.bodyMedium,
-                        child: NutritionSummary(displayNutrition),
-                      ),
-                  ],
-                );
-              },
-            )
-          : LayoutBuilder(
-              builder: (context, constraints) {
-                return Wrap(
-                  spacing: AppDesign.spacing.sm,
-                  crossAxisAlignment: WrapCrossAlignment.center,
-                  children: [
-                    ConstrainedBox(
-                      constraints: BoxConstraints(
-                        maxWidth: constraints.maxWidth,
-                      ),
-                      child: Text(
-                        displayName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodyLarge?.copyWith(
-                          textBaseline: TextBaseline.alphabetic,
+    return ListTileTheme.merge(
+      minLeadingWidth: 0,
+      horizontalTitleGap: AppDesign.spacing.sm,
+      child: ExpansionTile(
+        dense: true,
+        controller: _controller,
+        initiallyExpanded: widget.expandedByDefault,
+        onExpansionChanged: (expanded) => setState(() => _expanded = expanded),
+        controlAffinity: ListTileControlAffinity.leading,
+        tilePadding: EdgeInsets.zero,
+        childrenPadding: EdgeInsets.only(left: AppDesign.spacing.lg),
+        shape: const Border(),
+        collapsedShape: const Border(),
+        expandedCrossAxisAlignment: CrossAxisAlignment.stretch,
+        title: widget.onNameChanged != null
+            ? LayoutBuilder(
+                builder: (context, constraints) {
+                  return Wrap(
+                    spacing: AppDesign.spacing.sm,
+                    runSpacing: AppDesign.spacing.xs,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      // Sized to the name so the summary can sit beside a short
+                      // name, capped to the row so a long one fills the line and
+                      // wraps the summary below.
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: constraints.maxWidth,
+                        ),
+                        child: TheUsualTextField(
+                          controller: _nameController,
+                          onChanged: widget.onNameChanged,
+                          textCapitalization: TextCapitalization.sentences,
+                          textStyle: theme.textTheme.bodyLarge,
+                          dense: true,
+                          autoSize: true,
                         ),
                       ),
-                    ),
-                    if (!_expanded)
-                      DefaultTextStyle.merge(
-                        style: theme.textTheme.bodyMedium,
-                        child: NutritionSummary(displayNutrition),
+                      if (!_expanded)
+                        DefaultTextStyle.merge(
+                          style: theme.textTheme.bodyMedium,
+                          child: NutritionSummary(displayNutrition),
+                        ),
+                    ],
+                  );
+                },
+              )
+            : LayoutBuilder(
+                builder: (context, constraints) {
+                  return Wrap(
+                    spacing: AppDesign.spacing.sm,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          maxWidth: constraints.maxWidth,
+                        ),
+                        child: Text(
+                          displayName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            textBaseline: TextBaseline.alphabetic,
+                          ),
+                        ),
                       ),
-                  ],
-                );
-              },
-            ),
-      trailing: IconButton(
-        icon: const Icon(Icons.delete_forever_outlined),
-        onPressed: widget.onRemoved,
-      ),
-      children: [
-        if (showsQuantityStepper) ...[
-          const SectionLabel('QUANTITY'),
-          SizedBox(height: AppDesign.spacing.xs),
-          Row(
-            children: [
-              QuantityStepper(
-                dense: true,
-                quantity: quantity,
-                onChanged: widget.onQuantityChanged!,
+                      if (!_expanded)
+                        DefaultTextStyle.merge(
+                          style: theme.textTheme.bodyMedium,
+                          child: NutritionSummary(displayNutrition),
+                        ),
+                    ],
+                  );
+                },
               ),
-              if (widget.expandedFooter != null)
-                Expanded(child: widget.expandedFooter!),
-            ],
-          ),
-          if (quantity != 1 && !widget.nutrition.isEmpty) ...[
-            SizedBox(height: AppDesign.spacing.xs),
-            DefaultTextStyle.merge(
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('×${quantity.trimmedDecimal} = '),
-                  NutritionSummary(displayNutrition),
-                ],
-              ),
-            ),
-          ],
-          SizedBox(height: AppDesign.spacing.md),
-        ],
-        NutritionFields(
-          dense: true,
-          initial: widget.nutrition,
-          onChanged: widget.onChanged,
+        trailing: IconButton(
+          icon: const Icon(Icons.delete_forever_outlined),
+          onPressed: widget.onRemoved,
         ),
-        if (widget.expandedFooter != null && !showsQuantityStepper)
-          widget.expandedFooter!,
-      ],
+        children: [
+          if (showsQuantityStepper) ...[
+            const SectionLabel('QUANTITY'),
+            SizedBox(height: AppDesign.spacing.xs),
+            Row(
+              children: [
+                QuantityStepper(
+                  dense: true,
+                  quantity: quantity,
+                  onChanged: widget.onQuantityChanged!,
+                ),
+                if (widget.expandedFooter != null)
+                  Expanded(child: widget.expandedFooter!),
+              ],
+            ),
+            if (quantity != 1 && !widget.nutrition.isEmpty) ...[
+              SizedBox(height: AppDesign.spacing.xs),
+              DefaultTextStyle.merge(
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('×${quantity.trimmedDecimal} = '),
+                    NutritionSummary(displayNutrition),
+                  ],
+                ),
+              ),
+            ],
+            SizedBox(height: AppDesign.spacing.md),
+          ],
+          NutritionFields(
+            dense: true,
+            initial: widget.nutrition,
+            onChanged: widget.onChanged,
+          ),
+          if (widget.expandedFooter != null && !showsQuantityStepper)
+            widget.expandedFooter!,
+        ],
+      ),
     );
   }
 }

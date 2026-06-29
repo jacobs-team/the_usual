@@ -66,6 +66,7 @@ class OtherMealUsualsSheet extends StatelessWidget {
                           nutrition: usualMeal.nutrition,
                           usualMealId: usualMeal.id,
                           photoPath: usualMeal.photoPath,
+                          components: usualMeal.components,
                         ),
                       );
                     } else {
@@ -79,6 +80,7 @@ class OtherMealUsualsSheet extends StatelessWidget {
                             photoPath: usualMeal.photoPath,
                             day: day,
                             dayStart: dayStart,
+                            components: usualMeal.components,
                           ),
                         );
                       }

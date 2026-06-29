@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:injectable/injectable.dart';
 import 'package:the_usual/app/app.dart';
 
@@ -33,6 +34,17 @@ class SyncRepository {
   /// Shape version of the cloud document, independent of the per-bloc versions
   /// nested inside it.
   static const _schemaVersion = 1;
+
+  /// Storage key for this device's highest-seen sync revision.
+  static const _revisionKey = 'syncRevision';
+
+  /// A monotonically increasing version stamped on the cloud document. Every
+  /// upload bumps it; [_apply] ignores any snapshot whose revision isn't
+  /// strictly newer, so a delayed or stale snapshot can never overwrite data
+  /// this device has already moved past. Persisted so the ordering survives a
+  /// restart and outranks documents left in the cloud by older app versions.
+  int get _revision => HydratedBloc.storage.read(_revisionKey) as int? ?? 0;
+  set _revision(int value) => HydratedBloc.storage.write(_revisionKey, value);
 
   /// How long rapid local edits are collapsed before a single upload.
   static const _writeThroughDebounce = Duration(seconds: 3);
@@ -90,21 +102,25 @@ class SyncRepository {
 
   /// Writes the current local state as the user's cloud document.
   Future<void> uploadLocal(String uid) async {
-    final document = _currentDocument();
-    await _doc(uid).set(document);
-    _lastSyncedJson = jsonEncode(document);
+    final data = _currentDocument();
+    final revision = _revision + 1;
+    await _doc(uid).set({...data, 'revision': revision});
+    _revision = revision;
+    _lastSyncedJson = jsonEncode(data);
   }
 
   /// Downloads the user's document and applies it to the blocs. Returns whether
   /// the downloaded data is established, which drives onboarding routing.
+  /// Forced because it is only called on an explicit pull (sign-in / reinstall)
+  /// where the cloud is authoritative, so it bypasses the revision guard.
   Future<bool> downloadAndApply(String uid) async {
     final snapshot = await _doc(uid).get();
     final document = snapshot.data();
     if (document == null) return false;
-    return _apply(document);
+    return _apply(document, force: true);
   }
 
-  bool _apply(Map<String, dynamic> document) {
+  bool _apply(Map<String, dynamic> document, {bool force = false}) {
     final version = document['schemaVersion'] as int? ?? 0;
     final migrated = _migratedDocument(document, version);
     if (migrated == null) {
@@ -131,6 +147,19 @@ class SyncRepository {
         ? WorkoutLogState.fromJson(workoutLogJson)
         : const WorkoutLogState();
 
+    // Ignore any snapshot that isn't strictly newer than what this device has
+    // already seen. A delayed echo, an intermediate write state, or a document
+    // left behind by an older app version all carry an older-or-equal revision,
+    // so this is what stops a stale snapshot from clobbering newer local data.
+    // A forced pull (explicit sign-in / reinstall download) bypasses the guard.
+    final remoteRevision = document['revision'] as int? ?? 0;
+    if (!force && remoteRevision <= _revision) {
+      return _dailyLogBloc.state.hasEstablishedLog(
+            _userSettingsBloc.state.dayStartTime,
+          ) ||
+          _userSettingsBloc.state.hasEstablishedUsuals;
+    }
+
     // Compare ignoring the transient justLoggedEntryId, which the cloud doc
     // can't carry, so an echo of our own write doesn't clear the quick-edit
     // highlight by restoring an otherwise-identical state.
@@ -146,6 +175,9 @@ class SyncRepository {
     if (workoutLog != workoutLogEcho) {
       _workoutLogBloc.add(WorkoutLogEvent.stateRestored(workoutLog));
     }
+    // Adopt the applied revision so the next snapshot is judged against it and
+    // a later write bumps from here.
+    _revision = remoteRevision;
     // Store the canonical encoding (from toJson) rather than the raw document,
     // whose key order can differ, so write-through recognises it as unchanged
     // and skips a redundant upload.
@@ -210,10 +242,12 @@ class SyncRepository {
   Future<void> _writeThroughNow() async {
     final uid = _uid;
     if (uid == null) return;
-    final document = _currentDocument();
-    final json = jsonEncode(document);
+    final data = _currentDocument();
+    final json = jsonEncode(data);
     if (json == _lastSyncedJson) return;
-    await _doc(uid).set(document);
+    final revision = _revision + 1;
+    await _doc(uid).set({...data, 'revision': revision});
+    _revision = revision;
     _lastSyncedJson = json;
   }
 
@@ -230,10 +264,12 @@ class SyncRepository {
   /// timeout guards against a drop between that check and the write.
   Future<void> flushAndConfirm(String uid) async {
     _debounce?.cancel();
-    final document = _currentDocument();
-    final json = jsonEncode(document);
+    final data = _currentDocument();
+    final json = jsonEncode(data);
     if (json == _lastSyncedJson) return;
-    await _doc(uid).set(document).timeout(_flushTimeout);
+    final revision = _revision + 1;
+    await _doc(uid).set({...data, 'revision': revision}).timeout(_flushTimeout);
+    _revision = revision;
     _lastSyncedJson = json;
   }
 

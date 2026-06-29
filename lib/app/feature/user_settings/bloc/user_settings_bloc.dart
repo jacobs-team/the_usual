@@ -130,10 +130,14 @@ class UserSettingsBloc
         SettingsSaveWorkoutAsUsualChanged() => emit(
           state.copyWith(saveWorkoutAsUsual: event.value),
         ),
-        SettingsUsualFoodPropagatedToMeals() =>
-          _onUsualFoodPropagatedToMeals(event, emit),
-        SettingsUsualMealComponentsChanged() =>
-          _onUsualMealComponentsChanged(event, emit),
+        SettingsUsualFoodPropagatedToMeals() => _onUsualFoodPropagatedToMeals(
+          event,
+          emit,
+        ),
+        SettingsUsualMealComponentsChanged() => _onUsualMealComponentsChanged(
+          event,
+          emit,
+        ),
         SettingsUsualFoodAdded() => _onUsualFoodAdded(event, emit),
         SettingsUsualFoodRemoved() => emit(
           state.copyWith(
@@ -237,10 +241,6 @@ class UserSettingsBloc
     if (name.isEmpty) return;
 
     final usualMeals = state.usuals[event.mealOfTheDay] ?? <UsualMeal>[];
-    final exists = usualMeals.any(
-      (usualMeal) => usualMeal.name.toLowerCase() == name.toLowerCase(),
-    );
-    if (exists) return;
 
     emit(
       state.copyWith(
@@ -260,28 +260,21 @@ class UserSettingsBloc
     );
   }
 
-  /// Returns the id of the usual meal named [name] under [mealOfTheDay], adding
-  /// it with [nutrition] when none exists yet. Lets a caller link a meal it is
-  /// logging to the usual it is saved as in the same action, so the link is set
-  /// at log time rather than reconstructed by name afterwards.
+  /// Adds a new usual meal under [mealOfTheDay] and returns its id, letting a
+  /// caller link a meal it is logging to the usual it is saved as in the same
+  /// action, so the link is set at log time rather than reconstructed
+  /// afterwards.
   String saveAsUsualMeal(
     MealOfTheDay mealOfTheDay,
     String name,
     Nutrition nutrition, {
     List<MealComponent> components = const <MealComponent>[],
   }) {
-    final trimmed = name.trim();
-    final usualMeals = state.usuals[mealOfTheDay] ?? const <UsualMeal>[];
-    for (final usualMeal in usualMeals) {
-      if (usualMeal.name.toLowerCase() == trimmed.toLowerCase()) {
-        return usualMeal.id;
-      }
-    }
     final id = _uuid.v4();
     add(
       UserSettingsEvent.usualMealAdded(
         mealOfTheDay,
-        trimmed,
+        name.trim(),
         nutrition,
         id: id,
         components: components,
@@ -564,8 +557,9 @@ class UserSettingsBloc
     for (final entry in state.usuals.entries) {
       updatedUsuals[entry.key] = [
         for (final usualMeal in entry.value)
-          if (usualMeal.components
-              .any((c) => c.usualFoodId == event.usualFoodId))
+          if (usualMeal.components.any(
+            (c) => c.usualFoodId == event.usualFoodId,
+          ))
             _withPropagatedFood(usualMeal, event.usualFoodId, event.nutrition)
           else
             usualMeal,

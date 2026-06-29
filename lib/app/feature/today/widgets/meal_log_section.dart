@@ -168,6 +168,7 @@ class MealLogSection extends StatelessWidget {
                                 quantity: mealLogEntry.quantity,
                                 usualMealId: mealLogEntry.usualMealId,
                                 photoPath: mealLogEntry.photoPath,
+                                components: mealLogEntry.components,
                               );
                             }
                           },
@@ -204,6 +205,7 @@ class MealLogSection extends StatelessWidget {
                                 nutrition: usualMeal.nutrition,
                                 usualMealId: usualMeal.id,
                                 photoPath: usualMeal.photoPath,
+                                components: usualMeal.components,
                               ),
                               onRemove: () => getIt<UserSettingsBloc>().add(
                                 UserSettingsEvent.usualMealRemoved(

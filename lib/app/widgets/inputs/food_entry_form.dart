@@ -81,6 +81,11 @@ class FoodEntryFormState extends State<FoodEntryForm> {
       widget.showAddToUsualMeals &&
       getIt<UserSettingsBloc>().state.saveMealAsUsual;
 
+  /// Whether a composed (by-foods) meal is saved to the usuals. Seeded from
+  /// the user's last choice and toggled by the meal-level checkbox in
+  /// by-foods mode.
+  late bool _saveMealAsUsual = _addToUsualMealsDefault;
+
   static const _uuid = Uuid();
 
   @override
@@ -166,9 +171,9 @@ class FoodEntryFormState extends State<FoodEntryForm> {
         name: name,
         nutrition: components.componentsTotal,
         quantity: 1,
-        // A composed meal's save-as-usual is a meal-level choice, so it follows
-        // the form's default preference rather than any one food row's flag.
-        addToUsualMeals: widget.showAddToUsualMeals && _addToUsualMealsDefault,
+        // A composed meal's save-as-usual is a meal-level choice driven by the
+        // meal-level checkbox, not any one food row's flag.
+        addToUsualMeals: widget.showAddToUsualMeals && _saveMealAsUsual,
         components: components,
       ),
     ];
@@ -311,6 +316,17 @@ class FoodEntryFormState extends State<FoodEntryForm> {
               if (state.mealEntryMode == MealEntryMode.itemized)
                 ComposedMealFields(
                   state: state,
+                  saveMealAsUsual: _saveMealAsUsual,
+                  onSaveMealAsUsualChanged: widget.showAddToUsualMeals
+                      ? (value) {
+                          setState(() => _saveMealAsUsual = value);
+                          getIt<UserSettingsBloc>().add(
+                            UserSettingsEvent.saveMealAsUsualChanged(
+                              value: value,
+                            ),
+                          );
+                        }
+                      : null,
                   onDescriptionChanged: (description) =>
                       _bloc.add(MealEntryEvent.descriptionChanged(description)),
                   onMealNameChanged: (name) =>
@@ -326,9 +342,11 @@ class FoodEntryFormState extends State<FoodEntryForm> {
                   onFoodRemoved: (id) =>
                       _bloc.add(MealEntryEvent.foodRemoved(id)),
                   onFoodAdded: () async {
-                    final result = await TheUsualBottomSheet.show<
-                      UsualFoodPickerResult
-                    >(context, builder: (_) => const UsualFoodPickerSheet());
+                    final result =
+                        await TheUsualBottomSheet.show<UsualFoodPickerResult>(
+                          context,
+                          builder: (_) => const UsualFoodPickerSheet(),
+                        );
                     if (result == null) return;
                     switch (result) {
                       case NewFoodPickerResult():
@@ -342,8 +360,9 @@ class FoodEntryFormState extends State<FoodEntryForm> {
                     }
                   },
                   onFoodSaveToLibrary: (id) {
-                    final foodDraft =
-                        _bloc.state.foods.firstWhere((f) => f.id == id);
+                    final foodDraft = _bloc.state.foods.firstWhere(
+                      (f) => f.id == id,
+                    );
                     final name = foodDraft.name.trim();
                     if (name.isEmpty) return;
                     final usualFoodId = getIt<UserSettingsBloc>()
@@ -588,23 +607,9 @@ class _FoodEntryRowState extends State<_FoodEntryRow> {
                     ),
                   const Spacer(),
                   if (widget.showAddToUsualMeals)
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Checkbox(
-                          visualDensity: VisualDensity.compact,
-                          value: widget.foodDraft.addToUsualMeals,
-                          onChanged: (value) =>
-                              widget.onAddToUsualMealsToggled(value ?? false),
-                        ),
-                        GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onTap: () => widget.onAddToUsualMealsToggled(
-                            !widget.foodDraft.addToUsualMeals,
-                          ),
-                          child: const Text('Save as usual'),
-                        ),
-                      ],
+                    SaveAsUsualCheckbox(
+                      value: widget.foodDraft.addToUsualMeals,
+                      onChanged: widget.onAddToUsualMealsToggled,
                     ),
                 ],
               ),

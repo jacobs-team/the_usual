@@ -14,7 +14,7 @@ enum MealEntryMode {
   /// The meal is broken into its individual foods, each its own entry with its
   /// own count and per-unit nutrition.
   itemized(
-    'By foods',
+    'By Ingredients',
     summary: 'Each food gets its own row and nutrition.',
     detail:
         'Steak and potatoes become separate entries, steak one row and '
