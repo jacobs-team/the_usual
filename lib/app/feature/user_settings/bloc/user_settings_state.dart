@@ -147,6 +147,23 @@ abstract class UserSettingsState with _$UserSettingsState {
   /// The version written by the current app.
   static const _currentVersion = 4;
 
+  /// The number of usual meals (across all timings) with at least one component
+  /// linked to the usual food [usualFoodId].
+  int usualMealsUsingFood(String usualFoodId) {
+    var count = 0;
+    for (final usualMeals in usuals.values) {
+      for (final usualMeal in usualMeals) {
+        if (usualMeal.components.any((c) => c.usualFoodId == usualFoodId)) {
+          count++;
+        }
+      }
+    }
+    return count;
+  }
+
+  /// The number of saved usual foods in the library.
+  int get usualFoodCount => usualFoods.length;
+
   /// The total number of saved usual meals across all meal timings.
   int get usualMealCount =>
       usuals.values.fold(0, (count, usualMeals) => count + usualMeals.length);

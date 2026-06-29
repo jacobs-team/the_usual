@@ -503,6 +503,39 @@ void main() {
         ),
         expect: () => <UserSettingsState>[],
       );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'usualMealAdded stores components on the usual meal',
+        build: UserSettingsBloc.new,
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.usualMealAdded(
+            MealOfTheDay.lunch,
+            'Chicken & rice bowl',
+            Nutrition(calories: 293),
+            components: [
+              MealComponent(name: 'Chicken, 1 oz', quantity: 4),
+            ],
+          ),
+        ),
+        verify: (bloc) {
+          final usualMeals = bloc.state.usuals[MealOfTheDay.lunch]!;
+          expect(usualMeals.single.components, hasLength(1));
+        },
+      );
+
+      test('saveAsUsualMeal stores components and returns the id', () async {
+        final bloc = UserSettingsBloc();
+        final id = bloc.saveAsUsualMeal(
+          MealOfTheDay.lunch,
+          'Chicken & rice bowl',
+          const Nutrition(calories: 293),
+          components: const [MealComponent(name: 'Chicken, 1 oz', quantity: 4)],
+        );
+        await bloc.stream.first;
+        final usualMeal = bloc.state.usuals[MealOfTheDay.lunch]!
+            .firstWhere((usualMeal) => usualMeal.id == id);
+        expect(usualMeal.components, hasLength(1));
+      });
     });
 
     group('workout groups', () {
@@ -984,6 +1017,335 @@ void main() {
         expect(dinnerUsuals, hasLength(1));
         expect(dinnerUsuals!.single.id, equals(id));
         expect(dinnerUsuals.single.name, equals('Tacos'));
+      });
+    });
+
+    group('usual food propagation', () {
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'usualFoodPropagatedToMeals updates matching components and '
+        'recomputes meal totals',
+        build: UserSettingsBloc.new,
+        seed: () => const UserSettingsState(
+          usuals: {
+            MealOfTheDay.lunch: [
+              UsualMeal(
+                id: 'm1',
+                name: 'Bowl',
+                nutrition: Nutrition(calories: 293),
+                components: [
+                  MealComponent(
+                    name: 'Chicken, 1 oz',
+                    nutrition: Nutrition(calories: 22, protein: 5),
+                    quantity: 4,
+                    usualFoodId: 'f1',
+                  ),
+                  MealComponent(
+                    name: 'Rice, 100 g',
+                    nutrition: Nutrition(calories: 205, carbs: 45),
+                    usualFoodId: 'f2',
+                  ),
+                ],
+              ),
+            ],
+          },
+        ),
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.usualFoodPropagatedToMeals(
+            'f1',
+            Nutrition(calories: 30, protein: 6),
+          ),
+        ),
+        verify: (bloc) {
+          final usualMeal = bloc.state.usuals[MealOfTheDay.lunch]!.single;
+          expect(usualMeal.components.first.nutrition.calories, equals(30));
+          // recomputed total: 30*4 + 205 = 325 cal, 6*4 = 24 protein, 45 carbs.
+          expect(usualMeal.nutrition.calories, equals(325));
+          expect(usualMeal.nutrition.protein, equals(24));
+          expect(usualMeal.nutrition.carbs, equals(45));
+        },
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'usualFoodPropagatedToMeals leaves meals without the food unchanged',
+        build: UserSettingsBloc.new,
+        seed: () => const UserSettingsState(
+          usuals: {
+            MealOfTheDay.lunch: [
+              UsualMeal(
+                id: 'm1',
+                name: 'Bowl',
+                nutrition: Nutrition(calories: 293),
+                components: [
+                  MealComponent(
+                    name: 'Chicken, 1 oz',
+                    nutrition: Nutrition(calories: 22, protein: 5),
+                    quantity: 4,
+                    usualFoodId: 'f1',
+                  ),
+                ],
+              ),
+              UsualMeal(
+                id: 'm2',
+                name: 'Salad',
+                nutrition: Nutrition(calories: 100),
+                components: [
+                  MealComponent(
+                    name: 'Lettuce',
+                    nutrition: Nutrition(calories: 100),
+                  ),
+                ],
+              ),
+            ],
+          },
+        ),
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.usualFoodPropagatedToMeals(
+            'f1',
+            Nutrition(calories: 30, protein: 6),
+          ),
+        ),
+        verify: (bloc) {
+          final usualMeals = bloc.state.usuals[MealOfTheDay.lunch]!;
+          final salad = usualMeals.firstWhere(
+            (usualMeal) => usualMeal.id == 'm2',
+          );
+          expect(salad.nutrition.calories, equals(100));
+          expect(salad.components.single.name, equals('Lettuce'));
+        },
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'usualMealComponentsChanged sets components and nutrition',
+        build: UserSettingsBloc.new,
+        seed: () => const UserSettingsState(
+          usuals: {MealOfTheDay.lunch: [UsualMeal(id: 'm1', name: 'Bowl')]},
+        ),
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.usualMealComponentsChanged(
+            MealOfTheDay.lunch,
+            'm1',
+            [
+              MealComponent(
+                name: 'Chicken, 1 oz',
+                nutrition: Nutrition(calories: 22),
+                quantity: 3,
+                usualFoodId: 'f1',
+              ),
+            ],
+            Nutrition(calories: 66),
+          ),
+        ),
+        verify: (bloc) {
+          final usualMeal = bloc.state.usuals[MealOfTheDay.lunch]!.single;
+          expect(usualMeal.components, hasLength(1));
+          expect(usualMeal.nutrition.calories, equals(66));
+        },
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'usualMealComponentsChanged is a no-op when the id does not match',
+        build: UserSettingsBloc.new,
+        seed: () => const UserSettingsState(
+          usuals: {
+            MealOfTheDay.lunch: [
+              UsualMeal(
+                id: 'm1',
+                name: 'Bowl',
+                nutrition: Nutrition(calories: 200),
+              ),
+            ],
+          },
+        ),
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.usualMealComponentsChanged(
+            MealOfTheDay.lunch,
+            'zzz',
+            [
+              MealComponent(
+                name: 'Chicken, 1 oz',
+                nutrition: Nutrition(calories: 22),
+              ),
+            ],
+            Nutrition(calories: 22),
+          ),
+        ),
+        verify: (bloc) {
+          final usualMeal = bloc.state.usuals[MealOfTheDay.lunch]!.single;
+          expect(usualMeal.components, isEmpty);
+          expect(usualMeal.nutrition.calories, equals(200));
+        },
+      );
+    });
+
+    group('usual foods', () {
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'usualFoodAdded adds a food with a generated id',
+        build: UserSettingsBloc.new,
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.usualFoodAdded(
+            'Chicken, 1 oz', Nutrition(calories: 22, protein: 5),
+          ),
+        ),
+        verify: (bloc) {
+          expect(bloc.state.usualFoods, hasLength(1));
+          expect(bloc.state.usualFoods.single.name, equals('Chicken, 1 oz'));
+        },
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'usualFoodNameChanged and usualFoodNutritionChanged edit in place',
+        build: UserSettingsBloc.new,
+        seed: () => const UserSettingsState(
+          usualFoods: [
+            UsualFood(
+              id: 'f1',
+              name: 'Chicken',
+              nutrition: Nutrition(calories: 22),
+            ),
+          ],
+        ),
+        act: (bloc) => bloc
+          ..add(
+            const UserSettingsEvent.usualFoodNameChanged('f1', 'Chicken, 1 oz'),
+          )
+          ..add(
+            const UserSettingsEvent.usualFoodNutritionChanged(
+              'f1',
+              Nutrition(calories: 25),
+            ),
+          ),
+        verify: (bloc) {
+          expect(bloc.state.usualFoods.single.name, equals('Chicken, 1 oz'));
+          expect(bloc.state.usualFoods.single.nutrition.calories, equals(25));
+        },
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'usualFoodNutritionChanged is a no-op when the id does not match',
+        build: UserSettingsBloc.new,
+        seed: () => const UserSettingsState(
+          usualFoods: [
+            UsualFood(
+              id: 'f1',
+              name: 'Chicken',
+              nutrition: Nutrition(calories: 22),
+            ),
+          ],
+        ),
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.usualFoodNutritionChanged(
+            'zzz',
+            Nutrition(calories: 999),
+          ),
+        ),
+        verify: (bloc) {
+          expect(bloc.state.usualFoods.single.nutrition.calories, equals(22));
+        },
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'usualFoodAdded is a no-op when a food with the same name already '
+        'exists (case-insensitive)',
+        build: UserSettingsBloc.new,
+        seed: () => const UserSettingsState(
+          usualFoods: [
+            UsualFood(
+              id: 'f1',
+              name: 'Chicken, 1 oz',
+              nutrition: Nutrition(calories: 22),
+            ),
+          ],
+        ),
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.usualFoodAdded(
+            'chicken, 1 oz',
+            Nutrition(calories: 50),
+          ),
+        ),
+        verify: (bloc) {
+          expect(bloc.state.usualFoods, hasLength(1));
+        },
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'usualFoodNameChanged is a no-op when the id does not match',
+        build: UserSettingsBloc.new,
+        seed: () => const UserSettingsState(
+          usualFoods: [
+            UsualFood(id: 'f1', name: 'Chicken'),
+            UsualFood(id: 'f2', name: 'Rice'),
+          ],
+        ),
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.usualFoodNameChanged('f1', 'Renamed'),
+        ),
+        verify: (bloc) {
+          expect(bloc.state.usualFoods.last.name, equals('Rice'));
+        },
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'usualFoodNameChanged is a no-op when the name is blank',
+        build: UserSettingsBloc.new,
+        seed: () => const UserSettingsState(
+          usualFoods: [UsualFood(id: 'f1', name: 'Chicken')],
+        ),
+        act: (bloc) => bloc.add(
+          const UserSettingsEvent.usualFoodNameChanged('f1', '   '),
+        ),
+        expect: () => <UserSettingsState>[],
+      );
+
+      blocTest<UserSettingsBloc, UserSettingsState>(
+        'usualFoodRemoved deletes by id',
+        build: UserSettingsBloc.new,
+        seed: () => const UserSettingsState(
+          usualFoods: [UsualFood(id: 'f1', name: 'Chicken')],
+        ),
+        act: (bloc) => bloc.add(const UserSettingsEvent.usualFoodRemoved('f1')),
+        verify: (bloc) => expect(bloc.state.usualFoods, isEmpty),
+      );
+
+      test('saveAsUsualFood returns the existing id when a food with that '
+          'name exists', () {
+        final bloc = UserSettingsBloc()
+          ..emit(
+            const UserSettingsState(
+              usualFoods: [
+                UsualFood(
+                  id: 'f1',
+                  name: 'Chicken, 1 oz',
+                  nutrition: Nutrition(calories: 22),
+                ),
+              ],
+            ),
+          );
+
+        final id = bloc.saveAsUsualFood(
+          'chicken, 1 oz',
+          const Nutrition(calories: 99),
+        );
+
+        expect(id, equals('f1'));
+        expect(bloc.state.usualFoods, hasLength(1));
+        expect(bloc.state.usualFoods.single.nutrition.calories, equals(22));
+      });
+
+      test('saveAsUsualFood adds a new food with a generated id when none '
+          'exists', () async {
+        final bloc = UserSettingsBloc();
+
+        final id = bloc.saveAsUsualFood(
+          '  Rice, 100 g  ',
+          const Nutrition(calories: 205),
+        );
+
+        await bloc.stream.first;
+
+        expect(id, isNotEmpty);
+        expect(bloc.state.usualFoods, hasLength(1));
+        expect(bloc.state.usualFoods.single.id, equals(id));
+        expect(bloc.state.usualFoods.single.name, equals('Rice, 100 g'));
       });
     });
 

@@ -15,6 +15,7 @@ typedef FoodEntryResult = ({
   Nutrition nutrition,
   double quantity,
   bool addToUsualMeals,
+  List<MealComponent> components,
 });
 
 /// {@template food_entry_form}
@@ -120,17 +121,58 @@ class FoodEntryFormState extends State<FoodEntryForm> {
   }
 
   /// The non-empty rows as results for the host to log or save.
-  List<FoodEntryResult> get results => [
-    for (final foodDraft in _bloc.state.foods)
-      if (foodDraft.name.trim().isNotEmpty)
-        (
-          name: foodDraft.name.trim(),
-          nutrition: foodDraft.nutrition,
-          quantity: foodDraft.quantity,
-          addToUsualMeals:
-              widget.showAddToUsualMeals && foodDraft.addToUsualMeals,
-        ),
-  ];
+  ///
+  /// In [MealEntryMode.wholeMeal] each named row becomes one result with no
+  /// components. In [MealEntryMode.itemized] all named rows are gathered into
+  /// a single composed [FoodEntryResult] whose nutrition is the scaled total.
+  List<FoodEntryResult> get results {
+    final state = _bloc.state;
+    if (state.mealEntryMode == MealEntryMode.wholeMeal) {
+      return [
+        for (final foodDraft in state.foods)
+          if (foodDraft.name.trim().isNotEmpty)
+            (
+              name: foodDraft.name.trim(),
+              nutrition: foodDraft.nutrition,
+              quantity: foodDraft.quantity,
+              addToUsualMeals:
+                  widget.showAddToUsualMeals && foodDraft.addToUsualMeals,
+              components: const <MealComponent>[],
+            ),
+      ];
+    }
+
+    // itemized: build components from all named rows.
+    final components = [
+      for (final foodDraft in state.foods)
+        if (foodDraft.name.trim().isNotEmpty)
+          MealComponent(
+            name: foodDraft.name.trim(),
+            nutrition: foodDraft.nutrition,
+            quantity: foodDraft.quantity,
+            usualFoodId: foodDraft.usualFoodId,
+          ),
+    ];
+    if (components.isEmpty) return const [];
+
+    // Use the meal name when set; fall back to the first component's name so
+    // an unnamed composed meal still logs something sensible.
+    final name = state.mealName.trim().isNotEmpty
+        ? state.mealName.trim()
+        : components.first.name;
+
+    return [
+      (
+        name: name,
+        nutrition: components.componentsTotal,
+        quantity: 1,
+        // A composed meal's save-as-usual is a meal-level choice, so it follows
+        // the form's default preference rather than any one food row's flag.
+        addToUsualMeals: widget.showAddToUsualMeals && _addToUsualMealsDefault,
+        components: components,
+      ),
+    ];
+  }
 
   /// Whether any row has a name entered.
   bool get hasContent => _bloc.state.hasContent;
@@ -193,15 +235,12 @@ class FoodEntryFormState extends State<FoodEntryForm> {
                         onPressed: isGenerating
                             ? null
                             : () {
-                                final hasInput =
-                                    _bloc.state.hasContent ||
-                                    _bloc.state.photos.isNotEmpty;
-                                if (!hasInput) {
+                                if (!_bloc.state.hasEstimateInput) {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Text(
-                                        'Type a meal name or add a photo'
-                                        ' first.',
+                                        'Add a food, describe a meal, or add '
+                                        'a photo first.',
                                       ),
                                     ),
                                   );
@@ -224,31 +263,24 @@ class FoodEntryFormState extends State<FoodEntryForm> {
                         label: const Text('Photo'),
                       ),
                     ),
-                    SizedBox(width: AppDesign.spacing.sm),
-                    Checkbox(
-                      visualDensity: VisualDensity.compact,
-                      value: state.mealEntryMode == MealEntryMode.itemized,
-                      onChanged: isGenerating
-                          ? null
-                          : (value) => _bloc.add(
-                              MealEntryEvent.entryModeToggled(
-                                (value ?? false)
-                                    ? MealEntryMode.itemized
-                                    : MealEntryMode.wholeMeal,
-                              ),
-                            ),
-                    ),
-                    const Text('Itemize'),
-                    Tooltip(
-                      message: MealEntryMode.itemized.detail,
-                      triggerMode: TooltipTriggerMode.tap,
-                      showDuration: const Duration(seconds: 4),
-                      child: Padding(
-                        padding: EdgeInsets.all(AppDesign.spacing.xs),
-                        child: const Icon(Icons.info_outline, size: 18),
-                      ),
-                    ),
                   ],
+                ),
+                SizedBox(height: AppDesign.spacing.sm),
+                SegmentedButton<MealEntryMode>(
+                  showSelectedIcon: false,
+                  segments: [
+                    for (final mealEntryMode in MealEntryMode.values)
+                      ButtonSegment(
+                        value: mealEntryMode,
+                        label: Text(mealEntryMode.label),
+                      ),
+                  ],
+                  selected: {state.mealEntryMode},
+                  onSelectionChanged: isGenerating
+                      ? null
+                      : (selection) => _bloc.add(
+                          MealEntryEvent.entryModeToggled(selection.first),
+                        ),
                 ),
                 if (state.photos.isNotEmpty) ...[
                   SizedBox(height: AppDesign.spacing.sm),
@@ -276,61 +308,111 @@ class FoodEntryFormState extends State<FoodEntryForm> {
                 ],
                 SizedBox(height: AppDesign.spacing.md),
               ],
-              for (var index = 0; index < state.foods.length; index++) ...[
-                if (index > 0) SizedBox(height: AppDesign.spacing.md),
-                _FoodEntryRow(
-                  key: ValueKey(state.foods[index].id),
-                  foodDraft: state.foods[index],
-                  autofocus: widget.autofocusFirst && index == 0,
-                  showEstimateHint: _aiAvailable && index == 0,
-                  showQuantity: widget.showQuantity,
-                  showAddToUsualMeals: widget.showAddToUsualMeals,
-                  canRemove: state.foods.length > 1,
-                  onNameChanged: (name) => _bloc.add(
-                    MealEntryEvent.foodNameChanged(state.foods[index].id, name),
+              if (state.mealEntryMode == MealEntryMode.itemized)
+                ComposedMealFields(
+                  state: state,
+                  onDescriptionChanged: (description) =>
+                      _bloc.add(MealEntryEvent.descriptionChanged(description)),
+                  onMealNameChanged: (name) =>
+                      _bloc.add(MealEntryEvent.mealNameChanged(name)),
+                  onFoodNameChanged: (id, name) =>
+                      _bloc.add(MealEntryEvent.foodNameChanged(id, name)),
+                  onFoodNutritionChanged: (id, nutrition) => _bloc.add(
+                    MealEntryEvent.foodNutritionChanged(id, nutrition),
                   ),
-                  onNutritionChanged: (nutrition) => _bloc.add(
-                    MealEntryEvent.foodNutritionChanged(
-                      state.foods[index].id,
-                      nutrition,
-                    ),
+                  onFoodQuantityChanged: (id, quantity) => _bloc.add(
+                    MealEntryEvent.foodQuantityChanged(id, quantity),
                   ),
-                  onQuantityChanged: (quantity) => _bloc.add(
-                    MealEntryEvent.foodQuantityChanged(
-                      state.foods[index].id,
-                      quantity,
-                    ),
-                  ),
-                  onAddToUsualMealsToggled: (addToUsualMeals) {
+                  onFoodRemoved: (id) =>
+                      _bloc.add(MealEntryEvent.foodRemoved(id)),
+                  onFoodAdded: () async {
+                    final result = await TheUsualBottomSheet.show<
+                      UsualFoodPickerResult
+                    >(context, builder: (_) => const UsualFoodPickerSheet());
+                    if (result == null) return;
+                    switch (result) {
+                      case NewFoodPickerResult():
+                        _bloc.add(
+                          MealEntryEvent.foodAdded(
+                            addToUsualMeals: _addToUsualMealsDefault,
+                          ),
+                        );
+                      case PickedFoodPickerResult(:final usualFood):
+                        _bloc.add(MealEntryEvent.foodPicked(usualFood));
+                    }
+                  },
+                  onFoodSaveToLibrary: (id) {
+                    final foodDraft =
+                        _bloc.state.foods.firstWhere((f) => f.id == id);
+                    final name = foodDraft.name.trim();
+                    if (name.isEmpty) return;
+                    final usualFoodId = getIt<UserSettingsBloc>()
+                        .saveAsUsualFood(name, foodDraft.nutrition);
                     _bloc.add(
-                      MealEntryEvent.foodAddToUsualMealsToggled(
-                        state.foods[index].id,
-                        addToUsualMeals: addToUsualMeals,
-                      ),
-                    );
-                    getIt<UserSettingsBloc>().add(
-                      UserSettingsEvent.saveMealAsUsualChanged(
-                        value: addToUsualMeals,
-                      ),
+                      MealEntryEvent.foodSavedAsUsual(id, usualFoodId),
                     );
                   },
-                  onRemove: () => _bloc.add(
-                    MealEntryEvent.foodRemoved(state.foods[index].id),
+                )
+              else ...[
+                for (var index = 0; index < state.foods.length; index++) ...[
+                  if (index > 0) SizedBox(height: AppDesign.spacing.md),
+                  _FoodEntryRow(
+                    key: ValueKey(state.foods[index].id),
+                    foodDraft: state.foods[index],
+                    autofocus: widget.autofocusFirst && index == 0,
+                    showEstimateHint: _aiAvailable && index == 0,
+                    showQuantity: widget.showQuantity,
+                    showAddToUsualMeals: widget.showAddToUsualMeals,
+                    canRemove: state.foods.length > 1,
+                    onNameChanged: (name) => _bloc.add(
+                      MealEntryEvent.foodNameChanged(
+                        state.foods[index].id,
+                        name,
+                      ),
+                    ),
+                    onNutritionChanged: (nutrition) => _bloc.add(
+                      MealEntryEvent.foodNutritionChanged(
+                        state.foods[index].id,
+                        nutrition,
+                      ),
+                    ),
+                    onQuantityChanged: (quantity) => _bloc.add(
+                      MealEntryEvent.foodQuantityChanged(
+                        state.foods[index].id,
+                        quantity,
+                      ),
+                    ),
+                    onAddToUsualMealsToggled: (addToUsualMeals) {
+                      _bloc.add(
+                        MealEntryEvent.foodAddToUsualMealsToggled(
+                          state.foods[index].id,
+                          addToUsualMeals: addToUsualMeals,
+                        ),
+                      );
+                      getIt<UserSettingsBloc>().add(
+                        UserSettingsEvent.saveMealAsUsualChanged(
+                          value: addToUsualMeals,
+                        ),
+                      );
+                    },
+                    onRemove: () => _bloc.add(
+                      MealEntryEvent.foodRemoved(state.foods[index].id),
+                    ),
+                  ),
+                ],
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: () => _bloc.add(
+                      MealEntryEvent.foodAdded(
+                        addToUsualMeals: _addToUsualMealsDefault,
+                      ),
+                    ),
+                    icon: const Icon(Icons.add),
+                    label: const Text('Add item'),
                   ),
                 ),
               ],
-              Align(
-                alignment: Alignment.centerLeft,
-                child: TextButton.icon(
-                  onPressed: () => _bloc.add(
-                    MealEntryEvent.foodAdded(
-                      addToUsualMeals: _addToUsualMealsDefault,
-                    ),
-                  ),
-                  icon: const Icon(Icons.add),
-                  label: const Text('Add item'),
-                ),
-              ),
             ],
           );
         },

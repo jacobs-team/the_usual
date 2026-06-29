@@ -99,6 +99,9 @@ void main() {
       ).called(1);
 
       await tester.tap(find.byIcon(Icons.delete_forever_outlined).first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('confirm-dialog-confirm')));
+      await tester.pumpAndSettle();
       verify(
         () => userSettingsBloc.add(
           const UserSettingsEvent.usualMealRemoved(MealOfTheDay.breakfast, 'a'),

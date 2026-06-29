@@ -36,4 +36,12 @@ sealed class MealEntryEvent with _$MealEntryEvent {
   const factory MealEntryEvent.photoRemoved(int index) = MealEntryPhotoRemoved;
   const factory MealEntryEvent.photosCleared() = MealEntryPhotosCleared;
   const factory MealEntryEvent.estimateRequested() = MealEntryEstimateRequested;
+  const factory MealEntryEvent.mealNameChanged(String mealName) =
+      MealEntryMealNameChanged;
+  const factory MealEntryEvent.descriptionChanged(String description) =
+      MealEntryDescriptionChanged;
+  const factory MealEntryEvent.foodPicked(UsualFood usualFood) =
+      MealEntryFoodPicked;
+  const factory MealEntryEvent.foodSavedAsUsual(String id, String usualFoodId) =
+      MealEntryFoodSavedAsUsual;
 }

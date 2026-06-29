@@ -78,6 +78,33 @@ void main() {
       );
 
       blocTest<DailyLogBloc, DailyLogState>(
+        'mealLogged stores components on the entry',
+        build: DailyLogBloc.new,
+        act: (bloc) => bloc.add(
+          const DailyLogEvent.mealLogged(
+            MealOfTheDay.lunch,
+            'Chicken & rice bowl',
+            nutrition: Nutrition(calories: 293),
+            components: [
+              MealComponent(
+                name: 'Chicken, 1 oz',
+                nutrition: Nutrition(calories: 22, protein: 5),
+                quantity: 4,
+              ),
+            ],
+          ),
+        ),
+        verify: (bloc) {
+          expect(bloc.state.mealEntries, hasLength(1));
+          expect(bloc.state.mealEntries.single.components, hasLength(1));
+          expect(
+            bloc.state.mealEntries.single.components.single.name,
+            equals('Chicken, 1 oz'),
+          );
+        },
+      );
+
+      blocTest<DailyLogBloc, DailyLogState>(
         'stamps loggedAt at the logical day start when a day is given',
         build: DailyLogBloc.new,
         act: (bloc) => bloc.add(
@@ -292,6 +319,151 @@ void main() {
         ],
       );
     });
+
+    blocTest<DailyLogBloc, DailyLogState>(
+      'mealEntryComponentQuantityChanged updates the component and '
+      'recomputes the entry total',
+      build: DailyLogBloc.new,
+      seed: () => DailyLogState(
+        mealEntries: [
+          MealLogEntry(
+            id: 'entry-1',
+            loggedAt: DateTime(2026, 6, 28, 12),
+            mealOfTheDay: MealOfTheDay.lunch,
+            name: 'Chicken & rice bowl',
+            nutrition: const Nutrition(calories: 293, protein: 20, carbs: 45),
+            components: const [
+              MealComponent(
+                name: 'Chicken, 1 oz',
+                nutrition: Nutrition(calories: 22, protein: 5),
+                quantity: 4,
+              ),
+              MealComponent(
+                name: 'Rice, 100 g',
+                nutrition: Nutrition(calories: 205, carbs: 45),
+              ),
+            ],
+          ),
+        ],
+      ),
+      act: (bloc) => bloc.add(
+        const DailyLogEvent.mealEntryComponentQuantityChanged('entry-1', 0, 3),
+      ),
+      verify: (bloc) {
+        final mealLogEntry = bloc.state.mealEntries.single;
+        expect(mealLogEntry.components.first.quantity, equals(3));
+        // 22*3 + 205 = 271 calories, 5*3 = 15 protein, 45 carbs.
+        expect(mealLogEntry.nutrition.calories, equals(271));
+        expect(mealLogEntry.nutrition.protein, equals(15));
+        expect(mealLogEntry.nutrition.carbs, equals(45));
+      },
+    );
+
+    blocTest<DailyLogBloc, DailyLogState>(
+      'mealEntryComponentNutritionChanged updates the component and '
+      'recomputes the entry total',
+      build: DailyLogBloc.new,
+      seed: () => DailyLogState(
+        mealEntries: [
+          MealLogEntry(
+            id: 'entry-1',
+            loggedAt: DateTime(2026, 6, 28, 12),
+            mealOfTheDay: MealOfTheDay.lunch,
+            name: 'Bowl',
+            nutrition: const Nutrition(calories: 22),
+            components: const [
+              MealComponent(
+                name: 'Chicken, 1 oz',
+                nutrition: Nutrition(calories: 22),
+              ),
+            ],
+          ),
+        ],
+      ),
+      act: (bloc) => bloc.add(
+        const DailyLogEvent.mealEntryComponentNutritionChanged(
+          'entry-1', 0, Nutrition(calories: 30, protein: 6),
+        ),
+      ),
+      verify: (bloc) {
+        final mealLogEntry = bloc.state.mealEntries.single;
+        expect(mealLogEntry.components.first.nutrition.calories, equals(30));
+        expect(mealLogEntry.nutrition.calories, equals(30));
+        expect(mealLogEntry.nutrition.protein, equals(6));
+      },
+    );
+
+    blocTest<DailyLogBloc, DailyLogState>(
+      'mealEntryComponentQuantityChanged is a no-op when the entry id '
+      'does not match',
+      build: DailyLogBloc.new,
+      seed: () => DailyLogState(
+        mealEntries: [
+          MealLogEntry(
+            id: 'entry-1',
+            loggedAt: DateTime(2026, 6, 28, 12),
+            mealOfTheDay: MealOfTheDay.lunch,
+            name: 'Bowl',
+            nutrition: const Nutrition(calories: 100),
+            components: const [
+              MealComponent(
+                name: 'Chicken, 1 oz',
+                nutrition: Nutrition(calories: 100),
+                quantity: 2,
+              ),
+            ],
+          ),
+        ],
+      ),
+      act: (bloc) => bloc.add(
+        const DailyLogEvent.mealEntryComponentQuantityChanged(
+          'no-such-id',
+          0,
+          5,
+        ),
+      ),
+      verify: (bloc) {
+        final mealLogEntry = bloc.state.mealEntries.single;
+        expect(mealLogEntry.components.single.quantity, equals(2));
+        expect(mealLogEntry.nutrition.calories, equals(100));
+      },
+    );
+
+    blocTest<DailyLogBloc, DailyLogState>(
+      'mealEntryComponentQuantityChanged is a no-op when componentIndex '
+      'is out of range',
+      build: DailyLogBloc.new,
+      seed: () => DailyLogState(
+        mealEntries: [
+          MealLogEntry(
+            id: 'entry-1',
+            loggedAt: DateTime(2026, 6, 28, 12),
+            mealOfTheDay: MealOfTheDay.lunch,
+            name: 'Bowl',
+            nutrition: const Nutrition(calories: 100),
+            components: const [
+              MealComponent(
+                name: 'Chicken, 1 oz',
+                nutrition: Nutrition(calories: 100),
+                quantity: 2,
+              ),
+            ],
+          ),
+        ],
+      ),
+      act: (bloc) => bloc.add(
+        const DailyLogEvent.mealEntryComponentQuantityChanged(
+          'entry-1',
+          99,
+          5,
+        ),
+      ),
+      verify: (bloc) {
+        final mealLogEntry = bloc.state.mealEntries.single;
+        expect(mealLogEntry.components.single.quantity, equals(2));
+        expect(mealLogEntry.nutrition.calories, equals(100));
+      },
+    );
 
     blocTest<DailyLogBloc, DailyLogState>(
       'sampleDataSeeded fills the log with sample meals and weigh-ins',

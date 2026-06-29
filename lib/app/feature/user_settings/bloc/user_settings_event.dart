@@ -57,6 +57,7 @@ sealed class UserSettingsEvent with _$UserSettingsEvent {
     String name,
     Nutrition nutrition, {
     String? id,
+    @Default(<MealComponent>[]) List<MealComponent> components,
   }) = SettingsUsualMealAdded;
   const factory UserSettingsEvent.usualMealRemoved(
     MealOfTheDay mealOfTheDay,
@@ -72,6 +73,31 @@ sealed class UserSettingsEvent with _$UserSettingsEvent {
     String id,
     String name,
   ) = SettingsUsualMealNameChanged;
+
+  const factory UserSettingsEvent.usualFoodPropagatedToMeals(
+    String usualFoodId,
+    Nutrition nutrition,
+  ) = SettingsUsualFoodPropagatedToMeals;
+  const factory UserSettingsEvent.usualMealComponentsChanged(
+    MealOfTheDay mealOfTheDay,
+    String id,
+    List<MealComponent> components,
+    Nutrition nutrition,
+  ) = SettingsUsualMealComponentsChanged;
+
+  const factory UserSettingsEvent.usualFoodAdded(
+    String name,
+    Nutrition nutrition, {
+    String? id,
+  }) = SettingsUsualFoodAdded;
+  const factory UserSettingsEvent.usualFoodRemoved(String id) =
+      SettingsUsualFoodRemoved;
+  const factory UserSettingsEvent.usualFoodNutritionChanged(
+    String id,
+    Nutrition nutrition,
+  ) = SettingsUsualFoodNutritionChanged;
+  const factory UserSettingsEvent.usualFoodNameChanged(String id, String name) =
+      SettingsUsualFoodNameChanged;
 
   const factory UserSettingsEvent.workoutGroupAdded(String name) =
       SettingsWorkoutGroupAdded;

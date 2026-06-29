@@ -16,6 +16,12 @@ abstract class MealEntryState with _$MealEntryState {
     @Default(MealOfTheDay.breakfast) MealOfTheDay mealOfTheDay,
     @Default(<MealPhoto>[]) List<MealPhoto> photos,
     @Default(MealEntryStatus.idle) MealEntryStatus status,
+    @Default('') String mealName,
+
+    /// Free-text meal description used in by-foods mode to itemize a meal into
+    /// its component foods. Separate from [mealName]; cleared once the AI has
+    /// turned it into food rows.
+    @Default('') String description,
     String? errorMessage,
   }) = _MealEntryState;
 
@@ -24,6 +30,11 @@ abstract class MealEntryState with _$MealEntryState {
   /// Whether any row has a name entered.
   bool get hasContent =>
       foods.any((foodDraft) => foodDraft.name.trim().isNotEmpty);
+
+  /// Whether there is anything to estimate from: a named food row, a typed
+  /// description, or an attached photo.
+  bool get hasEstimateInput =>
+      hasContent || description.trim().isNotEmpty || photos.isNotEmpty;
 
   /// Whether an estimate is currently running.
   bool get isGenerating => status == MealEntryStatus.generating;

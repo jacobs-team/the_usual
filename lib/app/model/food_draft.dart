@@ -19,5 +19,6 @@ abstract class FoodDraft with _$FoodDraft {
     @Default(1) double quantity,
     @Default(Nutrition()) Nutrition nutrition,
     @Default(false) bool addToUsualMeals,
+    String? usualFoodId,
   }) = _FoodDraft;
 }

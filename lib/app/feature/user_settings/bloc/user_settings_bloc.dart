@@ -130,6 +130,30 @@ class UserSettingsBloc
         SettingsSaveWorkoutAsUsualChanged() => emit(
           state.copyWith(saveWorkoutAsUsual: event.value),
         ),
+        SettingsUsualFoodPropagatedToMeals() =>
+          _onUsualFoodPropagatedToMeals(event, emit),
+        SettingsUsualMealComponentsChanged() =>
+          _onUsualMealComponentsChanged(event, emit),
+        SettingsUsualFoodAdded() => _onUsualFoodAdded(event, emit),
+        SettingsUsualFoodRemoved() => emit(
+          state.copyWith(
+            usualFoods: state.usualFoods
+                .where((usualFood) => usualFood.id != event.id)
+                .toList(),
+          ),
+        ),
+        SettingsUsualFoodNutritionChanged() => emit(
+          state.copyWith(
+            usualFoods: [
+              for (final usualFood in state.usualFoods)
+                if (usualFood.id == event.id)
+                  usualFood.copyWith(nutrition: event.nutrition)
+                else
+                  usualFood,
+            ],
+          ),
+        ),
+        SettingsUsualFoodNameChanged() => _onUsualFoodNameChanged(event, emit),
       },
     );
   }
@@ -228,6 +252,7 @@ class UserSettingsBloc
               id: event.id ?? _uuid.v4(),
               name: name,
               nutrition: event.nutrition,
+              components: event.components,
             ),
           ],
         },
@@ -242,8 +267,9 @@ class UserSettingsBloc
   String saveAsUsualMeal(
     MealOfTheDay mealOfTheDay,
     String name,
-    Nutrition nutrition,
-  ) {
+    Nutrition nutrition, {
+    List<MealComponent> components = const <MealComponent>[],
+  }) {
     final trimmed = name.trim();
     final usualMeals = state.usuals[mealOfTheDay] ?? const <UsualMeal>[];
     for (final usualMeal in usualMeals) {
@@ -258,6 +284,7 @@ class UserSettingsBloc
         trimmed,
         nutrition,
         id: id,
+        components: components,
       ),
     );
     return id;
@@ -527,6 +554,121 @@ class UserSettingsBloc
         workoutReminder: state.workoutReminder.copyWith(daysOfWeek: updated),
       ),
     );
+  }
+
+  void _onUsualFoodPropagatedToMeals(
+    SettingsUsualFoodPropagatedToMeals event,
+    Emitter<UserSettingsState> emit,
+  ) {
+    final updatedUsuals = <MealOfTheDay, List<UsualMeal>>{};
+    for (final entry in state.usuals.entries) {
+      updatedUsuals[entry.key] = [
+        for (final usualMeal in entry.value)
+          if (usualMeal.components
+              .any((c) => c.usualFoodId == event.usualFoodId))
+            _withPropagatedFood(usualMeal, event.usualFoodId, event.nutrition)
+          else
+            usualMeal,
+      ];
+    }
+    emit(state.copyWith(usuals: updatedUsuals));
+  }
+
+  UsualMeal _withPropagatedFood(
+    UsualMeal usualMeal,
+    String usualFoodId,
+    Nutrition nutrition,
+  ) {
+    final updatedComponents = [
+      for (final mealComponent in usualMeal.components)
+        if (mealComponent.usualFoodId == usualFoodId)
+          mealComponent.copyWith(nutrition: nutrition)
+        else
+          mealComponent,
+    ];
+    return usualMeal.copyWith(
+      components: updatedComponents,
+      nutrition: updatedComponents.componentsTotal,
+    );
+  }
+
+  void _onUsualMealComponentsChanged(
+    SettingsUsualMealComponentsChanged event,
+    Emitter<UserSettingsState> emit,
+  ) {
+    final usualMeals = state.usuals[event.mealOfTheDay] ?? const <UsualMeal>[];
+    final updatedUsualMeals = [
+      for (final usualMeal in usualMeals)
+        if (usualMeal.id == event.id)
+          usualMeal.copyWith(
+            components: event.components,
+            nutrition: event.nutrition,
+          )
+        else
+          usualMeal,
+    ];
+    emit(
+      state.copyWith(
+        usuals: {...state.usuals, event.mealOfTheDay: updatedUsualMeals},
+      ),
+    );
+  }
+
+  void _onUsualFoodAdded(
+    SettingsUsualFoodAdded event,
+    Emitter<UserSettingsState> emit,
+  ) {
+    final name = event.name.trim();
+    if (name.isEmpty) return;
+    final alreadyExists = state.usualFoods.any(
+      (usualFood) => usualFood.name.toLowerCase() == name.toLowerCase(),
+    );
+    if (alreadyExists) return;
+    emit(
+      state.copyWith(
+        usualFoods: [
+          ...state.usualFoods,
+          UsualFood(
+            id: event.id ?? _uuid.v4(),
+            name: name,
+            nutrition: event.nutrition,
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _onUsualFoodNameChanged(
+    SettingsUsualFoodNameChanged event,
+    Emitter<UserSettingsState> emit,
+  ) {
+    final name = event.name.trim();
+    if (name.isEmpty) return;
+    emit(
+      state.copyWith(
+        usualFoods: [
+          for (final usualFood in state.usualFoods)
+            if (usualFood.id == event.id)
+              usualFood.copyWith(name: name)
+            else
+              usualFood,
+        ],
+      ),
+    );
+  }
+
+  /// Returns the id of the usual food whose name matches [name]
+  /// (case-insensitive), creating one with [nutrition] when none exists.
+  String saveAsUsualFood(String name, Nutrition nutrition) {
+    final trimmed = name.trim();
+    for (final usualFood in state.usualFoods) {
+      if (usualFood.name.toLowerCase() == trimmed.toLowerCase()) {
+        return usualFood.id;
+      }
+    }
+    final id = _uuid.v4();
+    add(UserSettingsEvent.usualFoodAdded(trimmed, nutrition, id: id));
+    return id;
   }
 
   void _onWorkoutGroupRemoved(

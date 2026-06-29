@@ -66,6 +66,7 @@ class MealLogSection extends StatelessWidget {
     double quantity = 1,
     String? usualMealId,
     String? photoPath,
+    List<MealComponent> components = const <MealComponent>[],
   }) {
     final targetDays = logDays;
     final dailyLogBloc = getIt<DailyLogBloc>();
@@ -78,6 +79,7 @@ class MealLogSection extends StatelessWidget {
           quantity: quantity,
           usualMealId: usualMealId,
           photoPath: photoPath,
+          components: components,
         ),
       );
       return;
@@ -93,6 +95,7 @@ class MealLogSection extends StatelessWidget {
           photoPath: photoPath,
           day: day,
           dayStart: dayStart,
+          components: components,
         ),
       );
     }
@@ -238,6 +241,7 @@ class MealLogSection extends StatelessWidget {
                                       mealOfTheDay,
                                       foodResult.name,
                                       foodResult.nutrition,
+                                      components: foodResult.components,
                                     )
                                   : null;
                               _logOntoTargetDays(
@@ -246,6 +250,7 @@ class MealLogSection extends StatelessWidget {
                                 nutrition: foodResult.nutrition,
                                 quantity: foodResult.quantity,
                                 usualMealId: usualMealId,
+                                components: foodResult.components,
                               );
                             }
                           },

@@ -246,5 +246,340 @@ void main() {
         ),
       ).called(1);
     });
+
+    // --- composed entry tests ---
+
+    MealLogEntry composedEntry() {
+      return MealLogEntry(
+        id: 'm2',
+        loggedAt: testNow,
+        mealOfTheDay: MealOfTheDay.breakfast,
+        name: 'Big Meal',
+        nutrition: const Nutrition(calories: 700),
+        components: const [
+          MealComponent(
+            name: 'Eggs',
+            nutrition: Nutrition(calories: 300),
+            quantity: 2,
+          ),
+          MealComponent(
+            name: 'Toast',
+            nutrition: Nutrition(calories: 200),
+            quantity: 2,
+          ),
+        ],
+      );
+    }
+
+    testWidgets('a composed entry shows a stepper per component', (
+      tester,
+    ) async {
+      stubSettings(const UserSettingsState());
+      registerFallbackValue(
+        const DailyLogEvent.mealEntryComponentQuantityChanged('x', 0, 1),
+      );
+      await pumpRow(tester, composedEntry());
+
+      expect(find.byType(QuantityStepper), findsNWidgets(2));
+    });
+
+    testWidgets('stepping a component dispatches a component quantity change', (
+      tester,
+    ) async {
+      stubSettings(const UserSettingsState());
+      registerFallbackValue(
+        const DailyLogEvent.mealEntryComponentQuantityChanged('x', 0, 1),
+      );
+      await pumpRow(tester, composedEntry());
+
+      // Tap the add button in the first component row.
+      await tester.tap(find.byIcon(Icons.add).first);
+
+      verify(
+        () => dailyLogBloc.add(
+          any(
+            that: isA<MealEntryComponentQuantityChanged>()
+                .having((e) => e.componentIndex, 'componentIndex', 0),
+          ),
+        ),
+      ).called(1);
+    });
+
+    testWidgets('a plain entry still renders the single nutrition row', (
+      tester,
+    ) async {
+      stubSettings(const UserSettingsState());
+      await pumpRow(tester, entry());
+
+      expect(find.byType(ExpandableNutrition), findsOneWidget);
+      expect(find.byType(QuantityStepper), findsOneWidget);
+    });
+
+    // --- composed entry usual-meal footer tests ---
+
+    MealLogEntry composedEntryWith({
+      String? usualMealId,
+      List<MealComponent>? components,
+      Nutrition? nutrition,
+    }) {
+      return MealLogEntry(
+        id: 'm2',
+        loggedAt: testNow,
+        mealOfTheDay: MealOfTheDay.breakfast,
+        name: 'Big Meal',
+        nutrition: nutrition ?? const Nutrition(calories: 700),
+        usualMealId: usualMealId,
+        components: components ??
+            const [
+              MealComponent(
+                name: 'Eggs',
+                nutrition: Nutrition(calories: 300),
+                quantity: 2,
+              ),
+              MealComponent(
+                name: 'Toast',
+                nutrition: Nutrition(calories: 200),
+                quantity: 2,
+              ),
+            ],
+      );
+    }
+
+    testWidgets(
+      'an unlinked composed entry offers Save as usual',
+      (tester) async {
+        when(
+          () => userSettingsBloc.saveAsUsualMeal(
+            MealOfTheDay.breakfast,
+            'Big Meal',
+            const Nutrition(calories: 700),
+            components: [
+              const MealComponent(
+                name: 'Eggs',
+                nutrition: Nutrition(calories: 300),
+                quantity: 2,
+              ),
+              const MealComponent(
+                name: 'Toast',
+                nutrition: Nutrition(calories: 200),
+                quantity: 2,
+              ),
+            ],
+          ),
+        ).thenReturn('new-composed-id');
+        registerFallbackValue(
+          const DailyLogEvent.mealEntryComponentQuantityChanged('x', 0, 1),
+        );
+        stubSettings(const UserSettingsState());
+        await pumpRow(tester, composedEntryWith());
+
+        expect(find.byType(UpdateUsualButton), findsOneWidget);
+
+        await tester.tap(
+          find.descendant(
+            of: find.byType(UpdateUsualButton),
+            matching: find.byType(TextButton),
+          ),
+        );
+
+        verify(
+          () => userSettingsBloc.saveAsUsualMeal(
+            MealOfTheDay.breakfast,
+            'Big Meal',
+            const Nutrition(calories: 700),
+            components: [
+              const MealComponent(
+                name: 'Eggs',
+                nutrition: Nutrition(calories: 300),
+                quantity: 2,
+              ),
+              const MealComponent(
+                name: 'Toast',
+                nutrition: Nutrition(calories: 200),
+                quantity: 2,
+              ),
+            ],
+          ),
+        ).called(1);
+        verify(
+          () => dailyLogBloc.add(
+            const DailyLogEvent.mealEntryUsualMealLinked(
+              'm2',
+              'new-composed-id',
+            ),
+          ),
+        ).called(1);
+      },
+    );
+
+    testWidgets(
+      'a linked composed entry that differs offers Update usual meal to match',
+      (tester) async {
+        registerFallbackValue(
+          const DailyLogEvent.mealEntryComponentQuantityChanged('x', 0, 1),
+        );
+        registerFallbackValue(
+          const UserSettingsEvent.usualMealComponentsChanged(
+            MealOfTheDay.breakfast,
+            'u',
+            [],
+            Nutrition(),
+          ),
+        );
+        // The usual meal has different components than the log entry.
+        stubSettings(
+          const UserSettingsState(
+            usuals: {
+              MealOfTheDay.breakfast: [
+                UsualMeal(
+                  id: 'u',
+                  name: 'Big Meal',
+                  nutrition: Nutrition(calories: 500),
+                  components: [
+                    MealComponent(
+                      name: 'Eggs',
+                      nutrition: Nutrition(calories: 100),
+                    ),
+                  ],
+                ),
+              ],
+            },
+          ),
+        );
+        await pumpRow(tester, composedEntryWith(usualMealId: 'u'));
+
+        expect(find.byType(UpdateUsualButton), findsOneWidget);
+
+        await tester.tap(
+          find.descendant(
+            of: find.byType(UpdateUsualButton),
+            matching: find.byType(TextButton),
+          ),
+        );
+
+        verify(
+          () => userSettingsBloc.add(
+            any(that: isA<SettingsUsualMealComponentsChanged>()),
+          ),
+        ).called(1);
+      },
+    );
+
+    testWidgets(
+      'delete button on a composed entry dispatches mealEntryRemoved',
+      (tester) async {
+        registerFallbackValue(
+          const DailyLogEvent.mealEntryComponentQuantityChanged('x', 0, 1),
+        );
+        stubSettings(const UserSettingsState());
+        await pumpRow(tester, composedEntry());
+
+        await tester.tap(find.byIcon(Icons.delete_forever_outlined));
+
+        verify(
+          () => dailyLogBloc.add(
+            const DailyLogEvent.mealEntryRemoved('m2'),
+          ),
+        ).called(1);
+      },
+    );
+
+    testWidgets(
+      'tapping a component row expands nutrition fields; '
+      'editing calories dispatches mealEntryComponentNutritionChanged',
+      (tester) async {
+        registerFallbackValue(
+          const DailyLogEvent.mealEntryComponentQuantityChanged('x', 0, 1),
+        );
+        registerFallbackValue(
+          const DailyLogEvent.mealEntryComponentNutritionChanged(
+            'x',
+            0,
+            Nutrition(),
+          ),
+        );
+        stubSettings(const UserSettingsState());
+        await pumpRow(tester, composedEntry());
+
+        // Tap the InkWell wrapping the first component row to expand it.
+        await tester.tap(
+          find
+              .descendant(
+                of: find.byType(InkWell),
+                matching: find.text('Eggs'),
+              )
+              .first,
+        );
+        await tester.pump();
+
+        // NutritionFields is now visible for the expanded row.
+        expect(find.byType(NutritionFields), findsWidgets);
+
+        // Enter a value in the first TextFormField (calories).
+        await tester.enterText(
+          find.byType(TextFormField).first,
+          '350',
+        );
+
+        verify(
+          () => dailyLogBloc.add(
+            any(
+              that: isA<MealEntryComponentNutritionChanged>()
+                  .having((e) => e.id, 'id', 'm2')
+                  .having(
+                    (e) => e.componentIndex,
+                    'componentIndex',
+                    0,
+                  ),
+            ),
+          ),
+        ).called(1);
+      },
+    );
+
+    testWidgets(
+      'a linked composed entry identical to its usual shows no footer',
+      (tester) async {
+        registerFallbackValue(
+          const DailyLogEvent.mealEntryComponentQuantityChanged('x', 0, 1),
+        );
+        const matchingComponents = [
+          MealComponent(
+            name: 'Eggs',
+            nutrition: Nutrition(calories: 300),
+            quantity: 2,
+          ),
+          MealComponent(
+            name: 'Toast',
+            nutrition: Nutrition(calories: 200),
+            quantity: 2,
+          ),
+        ];
+        stubSettings(
+          const UserSettingsState(
+            usuals: {
+              MealOfTheDay.breakfast: [
+                UsualMeal(
+                  id: 'u',
+                  name: 'Big Meal',
+                  nutrition: Nutrition(calories: 700),
+                  components: matchingComponents,
+                ),
+              ],
+            },
+          ),
+        );
+        await pumpRow(
+          tester,
+          composedEntryWith(
+            usualMealId: 'u',
+            nutrition: const Nutrition(calories: 700),
+            components: matchingComponents,
+          ),
+        );
+
+        expect(find.byType(UpdateUsualButton), findsNothing);
+      },
+    );
   });
 }

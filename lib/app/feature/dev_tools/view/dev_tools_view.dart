@@ -159,18 +159,17 @@ class DevToolsView extends StatelessWidget {
                 const SnackBar(content: Text('Estimating…')),
               );
               try {
-                final suggestions = await repository.suggestFromDescription(
-                  'two large eggs and a slice of sourdough toast',
-                  mode: MealEntryMode.itemized,
+                final composed = await repository.suggestComposedMeal(
+                  description: 'two large eggs and a slice of sourdough toast',
                 );
-                final summary = suggestions
+                final summary = composed.items
                     .map(
                       (s) =>
                           '×${s.quantity.trimmedDecimal} ${s.name} '
                           '(${s.nutrition.summary})',
                     )
                     .join('  •  ');
-                log('CLAUDE suggestion: $summary');
+                log('CLAUDE suggestion: ${composed.name} — $summary');
                 messenger.showSnackBar(SnackBar(content: Text(summary)));
               } catch (error, stackTrace) {
                 log('CLAUDE extract error: $error', stackTrace: stackTrace);
@@ -209,17 +208,12 @@ class DevToolsView extends StatelessWidget {
                 const SnackBar(content: Text('Estimating…')),
               );
               try {
-                final suggestions = await repository.suggestFromPhoto(
-                  photos,
-                  mode: MealEntryMode.wholeMeal,
+                final suggestion = await repository.suggestWholeMeal(
+                  photos: photos,
                 );
-                final summary = suggestions
-                    .map(
-                      (s) =>
-                          '×${s.quantity.trimmedDecimal} ${s.name} '
-                          '(${s.nutrition.summary})',
-                    )
-                    .join('  •  ');
+                final summary =
+                    '×${suggestion.quantity.trimmedDecimal} '
+                    '${suggestion.name} (${suggestion.nutrition.summary})';
                 log('CLAUDE photo suggestion: $summary');
                 messenger.showSnackBar(SnackBar(content: Text(summary)));
               } catch (error, stackTrace) {

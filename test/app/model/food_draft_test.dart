@@ -15,5 +15,11 @@ void main() {
       const draft = FoodDraft(id: 'a');
       expect(draft.copyWith(name: 'Toast').name, equals('Toast'));
     });
+
+    test('usualFoodId defaults to null and is settable', () {
+      const foodDraft = FoodDraft(id: 'd1');
+      expect(foodDraft.usualFoodId, isNull);
+      expect(foodDraft.copyWith(usualFoodId: 'f1').usualFoodId, equals('f1'));
+    });
   });
 }

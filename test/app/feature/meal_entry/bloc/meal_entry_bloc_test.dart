@@ -182,6 +182,51 @@ void main() {
       );
     });
 
+    blocTest<FoodEntryBloc, MealEntryState>(
+      'mealNameChanged updates the meal name',
+      build: build,
+      act: (bloc) => bloc.add(const MealEntryEvent.mealNameChanged('Bowl')),
+      expect: () => [
+        isA<MealEntryState>().having((s) => s.mealName, 'mealName', 'Bowl'),
+      ],
+    );
+
+    blocTest<FoodEntryBloc, MealEntryState>(
+      'foodPicked appends a linked, pre-filled row',
+      build: build,
+      act: (bloc) => bloc.add(const MealEntryEvent.foodPicked(
+        UsualFood(
+          id: 'f1',
+          name: 'Chicken, 1 oz',
+          nutrition: Nutrition(calories: 22, protein: 5),
+        ),
+      )),
+      verify: (bloc) {
+        final foodDraft = bloc.state.foods.last;
+        expect(foodDraft.name, equals('Chicken, 1 oz'));
+        expect(foodDraft.usualFoodId, equals('f1'));
+        expect(foodDraft.nutrition.calories, equals(22));
+      },
+    );
+
+    blocTest<FoodEntryBloc, MealEntryState>(
+      'foodSavedAsUsual stamps the link onto the row',
+      build: build,
+      seed: () => const MealEntryState(
+        foods: [FoodDraft(id: 'd1', name: 'Rice, 100 g')],
+      ),
+      act: (bloc) => bloc.add(
+        const MealEntryEvent.foodSavedAsUsual('d1', 'f2'),
+      ),
+      expect: () => [
+        isA<MealEntryState>().having(
+          (s) => s.foods.single.usualFoodId,
+          'usualFoodId',
+          'f2',
+        ),
+      ],
+    );
+
     group('estimateRequested without an API key', () {
       blocTest<FoodEntryBloc, MealEntryState>(
         'a named row fails when the AI is not configured',
@@ -342,6 +387,159 @@ void main() {
                 150,
               ),
         ],
+      );
+    });
+
+    group('estimateRequested in itemized mode', () {
+      blocTest<FoodEntryBloc, MealEntryState>(
+        'itemized estimate fills component rows and keeps the meal name',
+        build: () {
+          when(
+            () => repository.suggestFromDescription(
+              any(),
+              mode: MealEntryMode.itemized,
+            ),
+          ).thenAnswer(
+            (_) async => const [
+              AiMealSuggestion(
+                name: 'Chicken, 1 oz',
+                quantity: 4,
+                nutrition: Nutrition(calories: 22, protein: 5),
+              ),
+              AiMealSuggestion(
+                name: 'Rice, cup',
+                nutrition: Nutrition(calories: 205, carbs: 45),
+              ),
+            ],
+          );
+          return build();
+        },
+        seed: () => const MealEntryState(
+          mealEntryMode: MealEntryMode.itemized,
+          mealName: 'Chicken & rice bowl',
+          foods: [FoodDraft(id: 'seed', name: 'chicken and rice')],
+        ),
+        act: (bloc) => bloc.add(const MealEntryEvent.estimateRequested()),
+        expect: () => [
+          isA<MealEntryState>().having(
+            (s) => s.isGenerating,
+            'generating',
+            isTrue,
+          ),
+          isA<MealEntryState>()
+              .having((s) => s.foods.length, 'rows', 2)
+              .having((s) => s.mealName, 'mealName', 'Chicken & rice bowl'),
+        ],
+      );
+
+      blocTest<FoodEntryBloc, MealEntryState>(
+        'itemized estimate sets mealName from typed row when mealName is empty',
+        build: () {
+          when(
+            () => repository.suggestFromDescription(
+              any(),
+              mode: MealEntryMode.itemized,
+            ),
+          ).thenAnswer(
+            (_) async => const [
+              AiMealSuggestion(
+                name: 'Chicken, 1 oz',
+                nutrition: Nutrition(calories: 22, protein: 5),
+              ),
+              AiMealSuggestion(
+                name: 'Rice, cup',
+                nutrition: Nutrition(calories: 205, carbs: 45),
+              ),
+            ],
+          );
+          return build();
+        },
+        seed: () => const MealEntryState(
+          mealEntryMode: MealEntryMode.itemized,
+          foods: [FoodDraft(id: 'seed', name: 'chicken and rice')],
+        ),
+        act: (bloc) => bloc.add(const MealEntryEvent.estimateRequested()),
+        expect: () => [
+          isA<MealEntryState>().having(
+            (s) => s.isGenerating,
+            'generating',
+            isTrue,
+          ),
+          isA<MealEntryState>()
+              .having((s) => s.foods.length, 'rows', 2)
+              .having(
+                (s) => s.mealName,
+                'mealName',
+                'chicken and rice',
+              ),
+        ],
+      );
+    });
+
+    group('estimateRequested with photos in itemized mode', () {
+      blocTest<FoodEntryBloc, MealEntryState>(
+        'photo estimate in itemized mode with typed row and empty mealName '
+        'resolves mealName from the typed description',
+        build: build,
+        setUp: () {
+          when(
+            () => repository.suggestFromPhoto(
+              any(),
+              mode: any(named: 'mode'),
+              description: any(named: 'description'),
+            ),
+          ).thenAnswer(
+            (_) async => const [
+              AiMealSuggestion(
+                name: 'Chicken, 1 oz',
+                nutrition: Nutrition(calories: 22, protein: 5),
+              ),
+            ],
+          );
+        },
+        seed: () => MealEntryState(
+          mealEntryMode: MealEntryMode.itemized,
+          photos: [MealPhoto(bytes: transparentPixel)],
+          foods: const [FoodDraft(id: 'a', name: 'chicken and rice')],
+        ),
+        act: (bloc) => bloc.add(const MealEntryEvent.estimateRequested()),
+        verify: (bloc) {
+          expect(
+            bloc.state.mealName,
+            equals('chicken and rice'),
+          );
+        },
+      );
+
+      blocTest<FoodEntryBloc, MealEntryState>(
+        'photo estimate in itemized mode keeps an existing mealName',
+        build: build,
+        setUp: () {
+          when(
+            () => repository.suggestFromPhoto(
+              any(),
+              mode: any(named: 'mode'),
+              description: any(named: 'description'),
+            ),
+          ).thenAnswer(
+            (_) async => const [
+              AiMealSuggestion(
+                name: 'Chicken, 1 oz',
+                nutrition: Nutrition(calories: 22, protein: 5),
+              ),
+            ],
+          );
+        },
+        seed: () => MealEntryState(
+          mealEntryMode: MealEntryMode.itemized,
+          mealName: 'My bowl',
+          photos: [MealPhoto(bytes: transparentPixel)],
+          foods: const [FoodDraft(id: 'a', name: 'chicken and rice')],
+        ),
+        act: (bloc) => bloc.add(const MealEntryEvent.estimateRequested()),
+        verify: (bloc) {
+          expect(bloc.state.mealName, equals('My bowl'));
+        },
       );
     });
 

@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$FoodDraft {
 
- String get id; String get name; double get quantity; Nutrition get nutrition; bool get addToUsualMeals;
+ String get id; String get name; double get quantity; Nutrition get nutrition; bool get addToUsualMeals; String? get usualFoodId;
 /// Create a copy of FoodDraft
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $FoodDraftCopyWith<FoodDraft> get copyWith => _$FoodDraftCopyWithImpl<FoodDraft>
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FoodDraft&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.nutrition, nutrition) || other.nutrition == nutrition)&&(identical(other.addToUsualMeals, addToUsualMeals) || other.addToUsualMeals == addToUsualMeals));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FoodDraft&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.nutrition, nutrition) || other.nutrition == nutrition)&&(identical(other.addToUsualMeals, addToUsualMeals) || other.addToUsualMeals == addToUsualMeals)&&(identical(other.usualFoodId, usualFoodId) || other.usualFoodId == usualFoodId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,quantity,nutrition,addToUsualMeals);
+int get hashCode => Object.hash(runtimeType,id,name,quantity,nutrition,addToUsualMeals,usualFoodId);
 
 @override
 String toString() {
-  return 'FoodDraft(id: $id, name: $name, quantity: $quantity, nutrition: $nutrition, addToUsualMeals: $addToUsualMeals)';
+  return 'FoodDraft(id: $id, name: $name, quantity: $quantity, nutrition: $nutrition, addToUsualMeals: $addToUsualMeals, usualFoodId: $usualFoodId)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $FoodDraftCopyWith<$Res>  {
   factory $FoodDraftCopyWith(FoodDraft value, $Res Function(FoodDraft) _then) = _$FoodDraftCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, double quantity, Nutrition nutrition, bool addToUsualMeals
+ String id, String name, double quantity, Nutrition nutrition, bool addToUsualMeals, String? usualFoodId
 });
 
 
@@ -62,14 +62,15 @@ class _$FoodDraftCopyWithImpl<$Res>
 
 /// Create a copy of FoodDraft
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? quantity = null,Object? nutrition = null,Object? addToUsualMeals = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? quantity = null,Object? nutrition = null,Object? addToUsualMeals = null,Object? usualFoodId = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
 as double,nutrition: null == nutrition ? _self.nutrition : nutrition // ignore: cast_nullable_to_non_nullable
 as Nutrition,addToUsualMeals: null == addToUsualMeals ? _self.addToUsualMeals : addToUsualMeals // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,usualFoodId: freezed == usualFoodId ? _self.usualFoodId : usualFoodId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 /// Create a copy of FoodDraft
@@ -163,10 +164,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  double quantity,  Nutrition nutrition,  bool addToUsualMeals)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  double quantity,  Nutrition nutrition,  bool addToUsualMeals,  String? usualFoodId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FoodDraft() when $default != null:
-return $default(_that.id,_that.name,_that.quantity,_that.nutrition,_that.addToUsualMeals);case _:
+return $default(_that.id,_that.name,_that.quantity,_that.nutrition,_that.addToUsualMeals,_that.usualFoodId);case _:
   return orElse();
 
 }
@@ -184,10 +185,10 @@ return $default(_that.id,_that.name,_that.quantity,_that.nutrition,_that.addToUs
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  double quantity,  Nutrition nutrition,  bool addToUsualMeals)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  double quantity,  Nutrition nutrition,  bool addToUsualMeals,  String? usualFoodId)  $default,) {final _that = this;
 switch (_that) {
 case _FoodDraft():
-return $default(_that.id,_that.name,_that.quantity,_that.nutrition,_that.addToUsualMeals);case _:
+return $default(_that.id,_that.name,_that.quantity,_that.nutrition,_that.addToUsualMeals,_that.usualFoodId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -204,10 +205,10 @@ return $default(_that.id,_that.name,_that.quantity,_that.nutrition,_that.addToUs
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  double quantity,  Nutrition nutrition,  bool addToUsualMeals)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  double quantity,  Nutrition nutrition,  bool addToUsualMeals,  String? usualFoodId)?  $default,) {final _that = this;
 switch (_that) {
 case _FoodDraft() when $default != null:
-return $default(_that.id,_that.name,_that.quantity,_that.nutrition,_that.addToUsualMeals);case _:
+return $default(_that.id,_that.name,_that.quantity,_that.nutrition,_that.addToUsualMeals,_that.usualFoodId);case _:
   return null;
 
 }
@@ -219,7 +220,7 @@ return $default(_that.id,_that.name,_that.quantity,_that.nutrition,_that.addToUs
 
 
 class _FoodDraft implements FoodDraft {
-  const _FoodDraft({required this.id, this.name = '', this.quantity = 1, this.nutrition = const Nutrition(), this.addToUsualMeals = false});
+  const _FoodDraft({required this.id, this.name = '', this.quantity = 1, this.nutrition = const Nutrition(), this.addToUsualMeals = false, this.usualFoodId});
   
 
 @override final  String id;
@@ -227,6 +228,7 @@ class _FoodDraft implements FoodDraft {
 @override@JsonKey() final  double quantity;
 @override@JsonKey() final  Nutrition nutrition;
 @override@JsonKey() final  bool addToUsualMeals;
+@override final  String? usualFoodId;
 
 /// Create a copy of FoodDraft
 /// with the given fields replaced by the non-null parameter values.
@@ -238,16 +240,16 @@ _$FoodDraftCopyWith<_FoodDraft> get copyWith => __$FoodDraftCopyWithImpl<_FoodDr
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FoodDraft&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.nutrition, nutrition) || other.nutrition == nutrition)&&(identical(other.addToUsualMeals, addToUsualMeals) || other.addToUsualMeals == addToUsualMeals));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FoodDraft&&(identical(other.id, id) || other.id == id)&&(identical(other.name, name) || other.name == name)&&(identical(other.quantity, quantity) || other.quantity == quantity)&&(identical(other.nutrition, nutrition) || other.nutrition == nutrition)&&(identical(other.addToUsualMeals, addToUsualMeals) || other.addToUsualMeals == addToUsualMeals)&&(identical(other.usualFoodId, usualFoodId) || other.usualFoodId == usualFoodId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,name,quantity,nutrition,addToUsualMeals);
+int get hashCode => Object.hash(runtimeType,id,name,quantity,nutrition,addToUsualMeals,usualFoodId);
 
 @override
 String toString() {
-  return 'FoodDraft(id: $id, name: $name, quantity: $quantity, nutrition: $nutrition, addToUsualMeals: $addToUsualMeals)';
+  return 'FoodDraft(id: $id, name: $name, quantity: $quantity, nutrition: $nutrition, addToUsualMeals: $addToUsualMeals, usualFoodId: $usualFoodId)';
 }
 
 
@@ -258,7 +260,7 @@ abstract mixin class _$FoodDraftCopyWith<$Res> implements $FoodDraftCopyWith<$Re
   factory _$FoodDraftCopyWith(_FoodDraft value, $Res Function(_FoodDraft) _then) = __$FoodDraftCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, double quantity, Nutrition nutrition, bool addToUsualMeals
+ String id, String name, double quantity, Nutrition nutrition, bool addToUsualMeals, String? usualFoodId
 });
 
 
@@ -275,14 +277,15 @@ class __$FoodDraftCopyWithImpl<$Res>
 
 /// Create a copy of FoodDraft
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? quantity = null,Object? nutrition = null,Object? addToUsualMeals = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? quantity = null,Object? nutrition = null,Object? addToUsualMeals = null,Object? usualFoodId = freezed,}) {
   return _then(_FoodDraft(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,quantity: null == quantity ? _self.quantity : quantity // ignore: cast_nullable_to_non_nullable
 as double,nutrition: null == nutrition ? _self.nutrition : nutrition // ignore: cast_nullable_to_non_nullable
 as Nutrition,addToUsualMeals: null == addToUsualMeals ? _self.addToUsualMeals : addToUsualMeals // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,usualFoodId: freezed == usualFoodId ? _self.usualFoodId : usualFoodId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

@@ -47,6 +47,7 @@ void main() {
       expect(find.byType(WeightSection), findsOneWidget);
       expect(find.byType(WorkoutSection), findsOneWidget);
       expect(find.byType(UsualMealsTile), findsOneWidget);
+      expect(find.byType(UsualFoodsTile), findsOneWidget);
       expect(find.byType(AppearanceSection), findsOneWidget);
     });
 

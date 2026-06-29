@@ -77,6 +77,33 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
           state.copyWith(photos: const []),
         ),
         MealEntryEstimateRequested() => _onEstimateRequested(event, emit),
+        MealEntryMealNameChanged() => emit(
+          state.copyWith(mealName: event.mealName),
+        ),
+        MealEntryDescriptionChanged() => emit(
+          state.copyWith(description: event.description),
+        ),
+        MealEntryFoodPicked() => emit(
+          state.copyWith(
+            foods: [
+              ...state.foods,
+              FoodDraft(
+                id: _uuid.v4(),
+                name: event.usualFood.name,
+                nutrition: event.usualFood.nutrition,
+                usualFoodId: event.usualFood.id,
+              ),
+            ],
+          ),
+        ),
+        MealEntryFoodSavedAsUsual() => emit(
+          state.copyWith(
+            foods: _mapFood(
+              event.id,
+              (foodDraft) => foodDraft.copyWith(usualFoodId: event.usualFoodId),
+            ),
+          ),
+        ),
       },
     );
   }
@@ -155,23 +182,31 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
     emit(state.copyWith(mealEntryMode: event.mealEntryMode));
   }
 
-  /// Estimates nutrition for the entry. With photos attached this estimates
-  /// from the photos (sending any typed description as a hint). Otherwise a
-  /// single named row is sent as a description the mode may split, and several
-  /// named rows are already itemized by the user, so each is estimated on its
-  /// own and filled in place keeping its name.
+  /// Estimates nutrition for the entry. Attached photos are added context
+  /// (their count does not matter); the flow is chosen by the mode and what the
+  /// user has entered, not by whether photos are present.
+  ///
+  /// In by-foods mode a typed description — or a photo with no foods listed —
+  /// is itemized into fresh component foods and the meal is named when unnamed;
+  /// when the user has listed foods, their names and quantities are kept and
+  /// only each food's nutrition is filled in. The description is kept so it can
+  /// be tweaked and re-run. In whole-meal mode a single row (or a photo) yields
+  /// one combined item and several rows are each estimated in place.
   Future<void> _onEstimateRequested(
     MealEntryEstimateRequested event,
     Emitter<MealEntryState> emit,
   ) async {
-    if (state.photos.isNotEmpty) {
-      await _runPhotoEstimate(emit);
-      return;
-    }
+    final isItemized = state.mealEntryMode == MealEntryMode.itemized;
+    final description = state.description.trim();
+    final photos = state.photos;
     final namedFoods = state.foods
         .where((foodDraft) => foodDraft.name.trim().isNotEmpty)
         .toList();
-    if (namedFoods.isEmpty) return;
+
+    final hasInput =
+        namedFoods.isNotEmpty || photos.isNotEmpty || description.isNotEmpty;
+    if (!hasInput) return;
+
     if (!_mealAiRepository.isConfigured) {
       emit(
         state.copyWith(
@@ -186,25 +221,62 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
       state.copyWith(status: MealEntryStatus.generating, errorMessage: null),
     );
     try {
-      if (namedFoods.length == 1) {
-        final description = namedFoods.first.name.trim();
-        final suggestions = await _mealAiRepository.suggestFromDescription(
-          description,
-          mode: state.mealEntryMode,
+      if (isItemized) {
+        // Itemize into fresh foods when the user described or photographed a
+        // meal without listing foods; otherwise fill the foods they listed in
+        // place, keeping names and quantities. Photos are context either way.
+        final itemizeFromInput =
+            description.isNotEmpty || (namedFoods.isEmpty && photos.isNotEmpty);
+        if (itemizeFromInput) {
+          final composed = await _mealAiRepository.suggestComposedMeal(
+            description: description.isEmpty ? null : description,
+            photos: photos,
+          );
+          emit(
+            state.copyWith(
+              status: MealEntryStatus.idle,
+              // Name the meal from the AI only when the user hasn't named it.
+              mealName: state.mealName.trim().isEmpty
+                  ? composed.name
+                  : state.mealName,
+              foods: _foodsFromSuggestions(
+                composed.items,
+                addToUsualMeals: false,
+              ),
+            ),
+          );
+        } else {
+          await _estimateEachRow(
+            namedFoods,
+            emit,
+            keepQuantity: true,
+            photos: photos,
+          );
+        }
+        return;
+      }
+      if (namedFoods.length <= 1) {
+        final wholeDescription = namedFoods.isEmpty
+            ? null
+            : namedFoods.first.name.trim();
+        final suggestion = await _mealAiRepository.suggestWholeMeal(
+          description: wholeDescription,
+          photos: photos,
         );
         emit(
           state.copyWith(
             status: MealEntryStatus.idle,
             foods: _foodsFromSuggestions(
-              suggestions,
-              keepFirstName: _nameToKeep(description, suggestions),
-              addToUsualMeals: namedFoods.first.addToUsualMeals,
+              [suggestion],
+              keepFirstName: wholeDescription,
+              addToUsualMeals:
+                  namedFoods.isNotEmpty && namedFoods.first.addToUsualMeals,
             ),
           ),
         );
         return;
       }
-      await _estimateEachRow(namedFoods, emit);
+      await _estimateEachRow(namedFoods, emit, photos: photos);
     } on Object {
       emit(
         state.copyWith(
@@ -215,26 +287,28 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
     }
   }
 
-  /// Estimates each named row as its own whole-meal item, in parallel, and
-  /// fills nutrition and quantity in place while keeping every row and name.
+  /// Estimates each named row as its own whole-meal item, in parallel, filling
+  /// nutrition in place while keeping every row and name; any [photos] are sent
+  /// as context with each. The estimated quantity is applied too unless
+  /// [keepQuantity] is set, in which case the user's own quantity is preserved
+  /// (used in by-foods mode).
   Future<void> _estimateEachRow(
     List<FoodDraft> namedFoods,
-    Emitter<MealEntryState> emit,
-  ) async {
+    Emitter<MealEntryState> emit, {
+    bool keepQuantity = false,
+    List<MealPhoto> photos = const <MealPhoto>[],
+  }) async {
     final estimates = await Future.wait([
       for (final foodDraft in namedFoods)
-        _mealAiRepository.suggestFromDescription(
-          foodDraft.name.trim(),
-          mode: MealEntryMode.wholeMeal,
+        _mealAiRepository.suggestWholeMeal(
+          description: foodDraft.name.trim(),
+          photos: photos,
         ),
     ]);
-    final estimateById = <String, AiMealSuggestion>{};
-    for (final (index, foodDraft) in namedFoods.indexed) {
-      final suggestions = estimates[index];
-      if (suggestions.isNotEmpty) {
-        estimateById[foodDraft.id] = suggestions.first;
-      }
-    }
+    final estimateById = <String, AiMealSuggestion>{
+      for (final (index, foodDraft) in namedFoods.indexed)
+        foodDraft.id: estimates[index],
+    };
     emit(
       state.copyWith(
         status: MealEntryStatus.idle,
@@ -242,7 +316,7 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
           for (final foodDraft in state.foods)
             if (estimateById[foodDraft.id] case final estimate?)
               foodDraft.copyWith(
-                quantity: estimate.quantity,
+                quantity: keepQuantity ? foodDraft.quantity : estimate.quantity,
                 nutrition: estimate.nutrition,
               )
             else
@@ -250,66 +324,6 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
         ],
       ),
     );
-  }
-
-  /// Estimates nutrition from the held photos, sending the first row's typed
-  /// name as a hint when present. Reached from the Estimate action when photos
-  /// are attached.
-  Future<void> _runPhotoEstimate(Emitter<MealEntryState> emit) async {
-    if (state.photos.isEmpty) return;
-    if (!_mealAiRepository.isConfigured) {
-      emit(
-        state.copyWith(
-          status: MealEntryStatus.failure,
-          errorMessage: _aiUnavailableMessage,
-        ),
-      );
-      return;
-    }
-    final firstName = state.foods.isEmpty ? '' : state.foods.first.name.trim();
-    final hasDescription = firstName.isNotEmpty;
-    emit(
-      state.copyWith(status: MealEntryStatus.generating, errorMessage: null),
-    );
-    try {
-      final suggestions = await _mealAiRepository.suggestFromPhoto(
-        state.photos,
-        mode: state.mealEntryMode,
-        description: hasDescription ? firstName : null,
-      );
-      emit(
-        state.copyWith(
-          status: MealEntryStatus.idle,
-          foods: _foodsFromSuggestions(
-            suggestions,
-            keepFirstName: _nameToKeep(
-              hasDescription ? firstName : null,
-              suggestions,
-            ),
-            addToUsualMeals:
-                state.foods.isNotEmpty && state.foods.first.addToUsualMeals,
-          ),
-        ),
-      );
-    } on Object {
-      emit(
-        state.copyWith(
-          status: MealEntryStatus.failure,
-          errorMessage: _estimateFailedMessage,
-        ),
-      );
-    }
-  }
-
-  /// The typed [description] to preserve as the first row's name after an
-  /// estimate, or null to let the AI name every row. The user's text is kept as
-  /// long as it is non-empty, unless they asked to itemize and the AI actually
-  /// returned more than one food to split the description into.
-  String? _nameToKeep(String? description, List<AiMealSuggestion> suggestions) {
-    if (description == null || description.isEmpty) return null;
-    final splittingIntoItems =
-        state.mealEntryMode == MealEntryMode.itemized && suggestions.length > 1;
-    return splittingIntoItems ? null : description;
   }
 
   /// Builds rows from [suggestions]; when [keepFirstName] is set the first row

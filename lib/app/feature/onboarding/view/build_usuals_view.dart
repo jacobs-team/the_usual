@@ -41,6 +41,7 @@ class _BuildUsualsViewState extends State<BuildUsualsView> {
               nutrition: usualMeal.nutrition,
               quantity: 1.0,
               addToUsualMeals: false,
+              components: const <MealComponent>[],
             ),
         ],
     };

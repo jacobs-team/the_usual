@@ -157,6 +157,7 @@ void main() {
             nutrition: const Nutrition(calories: 380),
             quantity: 1,
             addToUsualMeals: true,
+            components: const <MealComponent>[],
           ),
         ]),
       );
@@ -181,6 +182,7 @@ void main() {
             nutrition: const Nutrition(),
             quantity: 3,
             addToUsualMeals: true,
+            components: const <MealComponent>[],
           ),
         ]),
       );
@@ -206,6 +208,7 @@ void main() {
             nutrition: const Nutrition(),
             quantity: 1,
             addToUsualMeals: false,
+            components: const <MealComponent>[],
           ),
         ]),
       );
@@ -260,12 +263,14 @@ void main() {
             nutrition: const Nutrition(),
             quantity: 1.0,
             addToUsualMeals: false,
+            components: const <MealComponent>[],
           ),
           (
             name: 'Toast',
             nutrition: const Nutrition(),
             quantity: 1.0,
             addToUsualMeals: false,
+            components: const <MealComponent>[],
           ),
         ]),
       );
@@ -277,9 +282,10 @@ void main() {
 
         expect(find.byIcon(Icons.auto_awesome_outlined), findsOneWidget);
         expect(find.byIcon(Icons.photo_camera_outlined), findsOneWidget);
-        expect(find.byIcon(Icons.info_outline), findsOneWidget);
-        // The only checkbox here is the itemize toggle.
-        expect(find.byType(Checkbox), findsOneWidget);
+        expect(
+          find.byType(SegmentedButton<MealEntryMode>),
+          findsOneWidget,
+        );
       });
 
       testWidgets('toggling itemize remembers the mode as the default', (
@@ -292,7 +298,7 @@ void main() {
           userSettingsBloc: userSettingsBloc,
         );
 
-        await tester.tap(find.byType(Checkbox));
+        await tester.tap(find.text(MealEntryMode.itemized.label));
         await tester.pump();
 
         verify(
@@ -302,8 +308,6 @@ void main() {
             ),
           ),
         ).called(1);
-        final checkbox = tester.widget<Checkbox>(find.byType(Checkbox));
-        expect(checkbox.value, isTrue);
       });
 
       testWidgets('estimate without a name does not call the repository', (
@@ -370,6 +374,7 @@ void main() {
                 nutrition: const Nutrition(calories: 420, protein: 35),
                 quantity: 1.0,
                 addToUsualMeals: true,
+                components: const <MealComponent>[],
               ),
             ]),
           );
@@ -404,17 +409,22 @@ void main() {
           userSettingsBloc: userSettingsBloc,
         );
 
+        // In itemized mode the form renders ComposedMealFields: the first
+        // nameField is the meal-name field; food-name fields start at index 1.
+        // Enter the description in the food row so the bloc sees hasContent.
         await tester.enterText(
-          nameFields().first,
+          nameFields().at(1),
           'Steak and potatoes',
         );
         await tester.pump();
         await tester.tap(find.byIcon(Icons.auto_awesome_outlined));
         await tester.pumpAndSettle();
 
-        expect(nameFields(), findsNWidgets(2));
-        expect(fieldText(tester, nameFields().first), equals('Steak'));
-        expect(fieldText(tester, nameFields().at(1)), equals('Potatoes'));
+        // After the estimate, the two suggestions populate the component rows.
+        // nameFields: [meal_name, food1_name, food2_name].
+        expect(nameFields(), findsNWidgets(3));
+        expect(fieldText(tester, nameFields().at(1)), equals('Steak'));
+        expect(fieldText(tester, nameFields().at(2)), equals('Potatoes'));
       });
 
       testWidgets('an empty estimate leaves the row untouched', (tester) async {

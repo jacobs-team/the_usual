@@ -221,6 +221,50 @@ void main() {
       });
     });
 
+    group('usualFoodCount', () {
+      test('usualFoodCount counts the library', () {
+        const state = UserSettingsState(
+          usualFoods: [
+            UsualFood(id: 'a', name: 'Chicken'),
+            UsualFood(id: 'b', name: 'Rice'),
+          ],
+        );
+        expect(state.usualFoodCount, equals(2));
+      });
+    });
+
+    group('usualMealsUsingFood', () {
+      test('counts meals with a matching component link', () {
+        const state = UserSettingsState(
+          usuals: {
+            MealOfTheDay.lunch: [
+              UsualMeal(id: 'm1', name: 'Bowl', components: [
+                MealComponent(
+                  name: 'Chicken, 1 oz',
+                  usualFoodId: 'f1',
+                  quantity: 4,
+                ),
+                MealComponent(name: 'Rice, 100 g', usualFoodId: 'f2'),
+              ]),
+            ],
+            MealOfTheDay.dinner: [
+              UsualMeal(id: 'm2', name: 'Plate', components: [
+                MealComponent(
+                  name: 'Chicken, 1 oz',
+                  usualFoodId: 'f1',
+                  quantity: 2,
+                ),
+              ]),
+              UsualMeal(id: 'm3', name: 'Salad'),
+            ],
+          },
+        );
+        expect(state.usualMealsUsingFood('f1'), equals(2));
+        expect(state.usualMealsUsingFood('f2'), equals(1));
+        expect(state.usualMealsUsingFood('f9'), equals(0));
+      });
+    });
+
     group('usualFoods', () {
       test('defaults to empty', () {
         expect(const UserSettingsState().usualFoods, isEmpty);

@@ -2,7 +2,7 @@
 enum MealEntryMode {
   /// The meal is captured as a single combined item, logged as one entry.
   wholeMeal(
-    'One meal',
+    'Whole meal',
     summary:
         'Logged as one row with combined nutrition. '
         'Best for one-tap usual meals.',
@@ -14,7 +14,7 @@ enum MealEntryMode {
   /// The meal is broken into its individual foods, each its own entry with its
   /// own count and per-unit nutrition.
   itemized(
-    'Itemize',
+    'By foods',
     summary: 'Each food gets its own row and nutrition.',
     detail:
         'Steak and potatoes become separate entries, steak one row and '

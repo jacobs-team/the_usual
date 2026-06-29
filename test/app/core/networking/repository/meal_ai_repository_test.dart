@@ -83,6 +83,33 @@ void main() {
     });
 
     group('suggestFromDescription', () {
+      test('itemized description prompt asks for single-unit base foods',
+          () async {
+        when(() => client.isConfigured).thenReturn(true);
+        when(
+          () => client.generateStructured<List<AiMealSuggestion>>(
+            prompt: any(named: 'prompt'),
+            outputSchema: any(named: 'outputSchema'),
+            images: any(named: 'images'),
+          ),
+        ).thenAnswer((_) async => <AiMealSuggestion>[]);
+
+        await repository.suggestFromDescription(
+          '4 oz chicken, rice',
+          mode: MealEntryMode.itemized,
+        );
+
+        final captured = verify(
+          () => client.generateStructured<List<AiMealSuggestion>>(
+            prompt: captureAny(named: 'prompt'),
+            outputSchema: any(named: 'outputSchema'),
+            images: any(named: 'images'),
+          ),
+        ).captured.single as String;
+        expect(captured.toLowerCase(), contains('base unit'));
+        expect(captured.toLowerCase(), contains('quantity'));
+      });
+
       test('wraps a whole-meal estimate in a single-element list', () async {
         stubWholeMeal(<String, dynamic>{
           'name': '2 eggs & toast',

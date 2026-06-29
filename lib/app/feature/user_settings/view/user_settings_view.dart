@@ -80,6 +80,7 @@ class _UserSettingsViewState extends State<UserSettingsView> {
             const SectionLabel('YOUR FOOD'),
             SizedBox(height: AppDesign.spacing.sm),
             const UsualMealsTile(),
+            const UsualFoodsTile(),
             SizedBox(height: AppDesign.spacing.xl),
             const SectionLabel('YOUR DAY'),
             SizedBox(height: AppDesign.spacing.sm),

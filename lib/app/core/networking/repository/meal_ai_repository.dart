@@ -2,6 +2,11 @@ import 'package:injectable/injectable.dart';
 import 'package:schemantic/schemantic.dart';
 import 'package:the_usual/app/app.dart';
 
+/// An AI-estimated composed meal: a short `name` for the whole meal plus its
+/// component foods as `items`. Returned by
+/// `MealAiRepository.suggestComposedMealFromDescription`.
+typedef AiComposedMeal = ({String name, List<AiMealSuggestion> items});
+
 /// {@template meal_ai_repository}
 /// Coordinates AI-assisted meal entry: it asks Claude to estimate a meal's
 /// name, quantity, and [Nutrition] from a free-text description or a photo,
@@ -24,52 +29,54 @@ class MealAiRepository {
   /// smoke test to confirm connectivity before real prompts exist.
   Future<String> debugEcho(String prompt) => _client.generateText(prompt);
 
-  /// Estimates the food in a free-text [description] of what the user ate,
-  /// returning one combined item or a per-food breakdown per [mode].
-  Future<List<AiMealSuggestion>> suggestFromDescription(
-    String description, {
-    required MealEntryMode mode,
-  }) {
-    return _estimate(prompt: _descriptionPrompt(description, mode), mode: mode);
-  }
-
-  /// Estimates the food in [photos] of the meal or its nutrition label,
-  /// returning one combined item or a per-food breakdown per [mode]. When the
-  /// user has typed a [description] of the food it is sent alongside the photos
-  /// to sharpen the estimate.
-  Future<List<AiMealSuggestion>> suggestFromPhoto(
-    List<MealPhoto> photos, {
-    required MealEntryMode mode,
+  /// Estimates one combined whole-meal item from a free-text [description]
+  /// and/or any number of [photos] as added context (the count of photos does
+  /// not matter). Returns the nutrition for one unit with a count.
+  Future<AiMealSuggestion> suggestWholeMeal({
     String? description,
+    List<MealPhoto> photos = const <MealPhoto>[],
   }) {
-    return _estimate(
-      prompt: _photoPrompt(mode, description),
-      mode: mode,
+    return _client.generateStructured(
+      prompt: _estimatePrompt(
+        MealEntryMode.wholeMeal,
+        description: description,
+        fromPhoto: photos.isNotEmpty,
+      ),
+      outputSchema: _suggestionSchema,
       images: photos,
     );
   }
 
-  /// Sends [prompt] (with optional [images]) to Claude and normalises the
-  /// result to a list: itemized mode returns the model's list directly, while
-  /// whole-meal mode returns its single item wrapped in a one-element list.
-  Future<List<AiMealSuggestion>> _estimate({
-    required String prompt,
-    required MealEntryMode mode,
-    List<MealPhoto> images = const <MealPhoto>[],
-  }) async {
-    if (mode == MealEntryMode.itemized) {
-      return _client.generateStructured(
-        prompt: prompt,
-        outputSchema: _itemsSchema,
-        images: images,
-      );
-    }
-    final suggestion = await _client.generateStructured(
-      prompt: prompt,
-      outputSchema: _suggestionSchema,
-      images: images,
+  /// Estimates a composed meal — a short name plus its base-unit component
+  /// foods — from a free-text [description] and/or any number of [photos] as
+  /// added context. Used by the by-foods flow to turn a description or photo
+  /// into food rows and to name the meal.
+  Future<AiComposedMeal> suggestComposedMeal({
+    String? description,
+    List<MealPhoto> photos = const <MealPhoto>[],
+  }) {
+    return _client.generateStructured(
+      prompt: _estimatePrompt(
+        MealEntryMode.itemized,
+        description: description,
+        fromPhoto: photos.isNotEmpty,
+      ),
+      outputSchema: _composedMealSchema,
+      images: photos,
     );
-    return [suggestion];
+  }
+
+  /// Builds the prompt for an estimate: the photo intro when [fromPhoto], else
+  /// the description intro, with any typed [description] woven in and the
+  /// mode-specific rules appended.
+  String _estimatePrompt(
+    MealEntryMode mode, {
+    required bool fromPhoto,
+    String? description,
+  }) {
+    return fromPhoto
+        ? _photoPrompt(mode, description)
+        : _descriptionPrompt(description ?? '', mode);
   }
 
   String _descriptionPrompt(String description, MealEntryMode mode) =>
@@ -97,9 +104,14 @@ class MealAiRepository {
       MealEntryMode.wholeMeal => _wholeMealGrouping,
       MealEntryMode.itemized => _itemizedGrouping,
     };
-    final naming = fromPhoto
-        ? '$_shortNameRule $_photoPortionInName'
-        : _shortNameRule;
+    final naming = switch (mode) {
+      // Itemized foods must carry their base unit in the name, so the
+      // short-name rule (which strips amounts) does not apply.
+      MealEntryMode.itemized => _itemizedNameRule,
+      MealEntryMode.wholeMeal => fromPhoto
+          ? '$_shortNameRule $_photoPortionInName'
+          : _shortNameRule,
+    };
     return '$grouping\n$naming\n$_valueRules';
   }
 
@@ -113,14 +125,37 @@ class MealAiRepository {
 
   static const String _itemizedGrouping =
       'Break the meal into its individual foods and return one item per '
-      'distinct food. Set the quantity of each item to the count of that food '
-      '(for example 5 strips of bacon is quantity 5 with the nutrition of one '
-      'strip), and give the nutrition of each item for a single unit.';
+      'distinct food. For each food, return the nutrition of ONE BASE UNIT and '
+      'set quantity to how many of that unit there are, so a portion is '
+      'expressed as a base unit times a count. The base unit should be the '
+      'smallest amount a person would realistically eat in a meal, so the '
+      'quantity stays a small, sensible number the user can adjust in a few '
+      'taps. Never pick a tiny unit that forces a huge quantity: do NOT use '
+      '"Rice, 1 g" with quantity 150 — use "Rice, 100 g" with quantity about '
+      '1 to 2. For a countable food the base unit is one of it: "1 egg", '
+      '"1 strip of bacon", "1 carrot", "1 slice of toast". For a food measured '
+      'by weight or volume the base unit is a natural serving, rarely smaller '
+      'than 1 oz: meat in 1 oz steps (a 4 oz steak is "Steak, 1 oz" quantity '
+      '4), rice or grains in ~100 g steps, chips or nuts in 1 oz steps. '
+      'Examples: "4 oz chicken" becomes "Chicken, 1 oz" quantity 4; "200 g '
+      'rice" becomes "Rice, 100 g" quantity 2; "5 strips of bacon" becomes '
+      '"Bacon, 1 strip" quantity 5; "3 eggs" becomes "Egg, 1 egg" quantity 3.';
 
   static const String _shortNameRule =
       'Keep each name as short as possible while still clearly identifying the '
       'food, dropping filler words like "a slice of" or "large" (for example '
       '"2 eggs & sourdough toast").';
+
+  static const String _itemizedNameRule =
+      'Name every food as the food followed by its base unit, and ALWAYS '
+      'include that unit or amount in the name: "Chicken, 1 oz", "Cheese, '
+      '1 oz", "Sour cream, 1 oz", "Tortilla, medium", "Rice, 100 g", "Egg, '
+      '1 egg". Never drop the unit and never return a bare food name like '
+      '"Cheese" or "Flour tortilla" with no amount. Stay faithful to the '
+      'foods the user listed: keep each one as its own food and do not rename, '
+      'merge, or reinterpret it — if the user says "chicken" use "Chicken, '
+      '1 oz", not "chicken quesadilla filling". When the user gives a unit or '
+      'amount for a food, use exactly that as its base unit.';
 
   static const String _photoPortionInName =
       'When you can confidently estimate a portion size from the photo, '
@@ -183,28 +218,41 @@ class MealAiRepository {
             AiMealSuggestion.fromJson((json! as Map).cast<String, dynamic>()),
       );
 
-  /// Maps Claude's `{items: [...]}` output into a list of [AiMealSuggestion]s,
-  /// used for itemized estimates.
-  static final SchemanticType<List<AiMealSuggestion>> _itemsSchema =
+  /// Maps Claude's `{mealName, items}` output into a short meal name and the
+  /// list of [AiMealSuggestion]s, used to itemize a typed description into a
+  /// composed meal.
+  static final SchemanticType<AiComposedMeal> _composedMealSchema =
       SchemanticType.from(
         jsonSchema: <String, Object?>{
           'type': 'object',
           'properties': <String, Object?>{
+            'mealName': <String, Object?>{
+              'type': 'string',
+              'description':
+                  'A short, descriptive name for the whole meal, two to four '
+                  'words, for example "Chicken quesadilla". Do not include '
+                  'amounts or list every ingredient.',
+            },
             'items': <String, Object?>{
               'type': 'array',
               'description': 'One entry per distinct food in the meal.',
               'items': _itemSchema,
             },
           },
-          'required': <String>['items'],
+          'required': <String>['mealName', 'items'],
         },
         parse: (json) {
           final map = (json! as Map).cast<String, dynamic>();
           final items = map['items'] as List;
-          return [
-            for (final item in items)
-              AiMealSuggestion.fromJson((item as Map).cast<String, dynamic>()),
-          ];
+          return (
+            name: (map['mealName'] as String? ?? '').trim(),
+            items: [
+              for (final item in items)
+                AiMealSuggestion.fromJson(
+                  (item as Map).cast<String, dynamic>(),
+                ),
+            ],
+          );
         },
       );
 }

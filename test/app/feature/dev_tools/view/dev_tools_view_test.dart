@@ -522,6 +522,8 @@ void main() {
       await tester.pump();
       await tester.tap(find.byIcon(Icons.restart_alt));
       await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('confirm-dialog-confirm')));
+      await tester.pumpAndSettle();
 
       verify(
         () => onboardingBloc.add(const OnboardingEvent.resetPressed()),

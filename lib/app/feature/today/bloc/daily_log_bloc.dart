@@ -37,6 +37,10 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
           emit,
         ),
         MealEntryQuantityChanged() => _onMealEntryQuantityChanged(event, emit),
+        MealEntryComponentQuantityChanged() =>
+          _onMealEntryComponentQuantityChanged(event, emit),
+        MealEntryComponentNutritionChanged() =>
+          _onMealEntryComponentNutritionChanged(event, emit),
         MealEntryUsualMealLinked() => _onMealEntryUsualMealLinked(event, emit),
         WeightLogged() => _onWeightLogged(event, emit),
         WeightOnDayChanged() => _onWeightOnDayChanged(event, emit),
@@ -132,6 +136,7 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
       quantity: event.quantity.asLoggedQuantity,
       usualMealId: event.usualMealId,
       photoPath: event.photoPath,
+      components: event.components,
     );
     emit(
       state.copyWith(
@@ -168,6 +173,70 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
           mealLogEntry,
     ];
     emit(state.copyWith(mealEntries: updatedEntries));
+  }
+
+  void _onMealEntryComponentQuantityChanged(
+    MealEntryComponentQuantityChanged event,
+    Emitter<DailyLogState> emit,
+  ) {
+    _editComponent(
+      event.id,
+      event.componentIndex,
+      (mealComponent) => mealComponent.copyWith(quantity: event.quantity),
+      emit,
+    );
+  }
+
+  void _onMealEntryComponentNutritionChanged(
+    MealEntryComponentNutritionChanged event,
+    Emitter<DailyLogState> emit,
+  ) {
+    _editComponent(
+      event.id,
+      event.componentIndex,
+      (mealComponent) => mealComponent.copyWith(nutrition: event.nutrition),
+      emit,
+    );
+  }
+
+  /// Replaces the component at [componentIndex] of the entry with [id] using
+  /// [transform], then recomputes that entry's stored nutrition to the
+  /// components' total so every summary stays in sync. A no-op if the entry or
+  /// index is missing.
+  void _editComponent(
+    String id,
+    int componentIndex,
+    MealComponent Function(MealComponent) transform,
+    Emitter<DailyLogState> emit,
+  ) {
+    final updatedEntries = [
+      for (final mealLogEntry in state.mealEntries)
+        if (mealLogEntry.id == id &&
+            componentIndex >= 0 &&
+            componentIndex < mealLogEntry.components.length)
+          _withRecomputedTotal(mealLogEntry, componentIndex, transform)
+        else
+          mealLogEntry,
+    ];
+    emit(state.copyWith(mealEntries: updatedEntries));
+  }
+
+  MealLogEntry _withRecomputedTotal(
+    MealLogEntry mealLogEntry,
+    int componentIndex,
+    MealComponent Function(MealComponent) transform,
+  ) {
+    final updatedComponents = [
+      for (final (index, mealComponent) in mealLogEntry.components.indexed)
+        if (index == componentIndex)
+          transform(mealComponent)
+        else
+          mealComponent,
+    ];
+    return mealLogEntry.copyWith(
+      components: updatedComponents,
+      nutrition: updatedComponents.componentsTotal,
+    );
   }
 
   void _onMealEntryUsualMealLinked(

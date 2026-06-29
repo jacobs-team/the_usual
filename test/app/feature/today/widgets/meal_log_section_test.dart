@@ -383,5 +383,89 @@ void main() {
         ),
       ).called(1);
     });
+
+    testWidgets(
+      'logging a composed result threads components into the mealLogged event',
+      (tester) async {
+        // The mode toggle (SegmentedButton) only appears when AI is configured.
+        final aiRepository = MockMealAiRepository();
+        when(() => aiRepository.isConfigured).thenReturn(true);
+        // saveMealAsUsual: false so the composed result's addToUsualMeals is
+        // false, avoiding a call to saveAsUsualMeal in this test.
+        when(
+          () => userSettingsBloc.state,
+        ).thenReturn(const UserSettingsState(saveMealAsUsual: false));
+
+        tester.view.physicalSize = const Size(1200, 3000);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        await tester.pumpPumpPumpItUP(
+          deps: [dailyLogBloc, userSettingsBloc, aiRepository],
+          const CustomScrollView(
+            slivers: [
+              MealLogSection(
+                mealOfTheDay: MealOfTheDay.breakfast,
+                mealLogEntries: [],
+                quickPicks: [],
+                otherMealUsuals: {},
+                sameAsYesterday: [],
+                isCurrent: false,
+                nutritionExpandedByDefault: false,
+              ),
+            ],
+          ),
+        );
+
+        // Open the "Something else" sheet.
+        await tester.tap(find.byIcon(Icons.add));
+        await tester.pumpAndSettle();
+
+        // Switch to "By foods" (itemized) mode.
+        await tester.tap(
+          find.descendant(
+            of: find.byType(SegmentedButton<MealEntryMode>),
+            matching: find.text(MealEntryMode.itemized.label),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Enter a food name in the first component row. The first TextFormField
+        // in ComposedMealFields is the meal-name field; the second is the first
+        // food row's name field.
+        await tester.enterText(
+          find.descendant(
+            of: find.byType(ComposedMealFields),
+            matching: find.byType(TextFormField),
+          ).at(1),
+          'Eggs',
+        );
+        await tester.pump();
+
+        // Confirm from within the sheet (last FilledButton; the AI controls
+        // above are FilledButton.tonalIcon variants that also render as
+        // FilledButton in the widget tree).
+        await tester.tap(
+          find.descendant(
+            of: find.byType(FoodEntrySheet),
+            matching: find.byType(FilledButton),
+          ).last,
+        );
+        await tester.pumpAndSettle();
+
+        verify(
+          () => dailyLogBloc.add(
+            any(
+              that: isA<MealLogged>().having(
+                (e) => e.components,
+                'components',
+                hasLength(1),
+              ),
+            ),
+          ),
+        ).called(1);
+      },
+    );
   });
 }
