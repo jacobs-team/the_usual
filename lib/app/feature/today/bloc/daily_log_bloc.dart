@@ -41,6 +41,18 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
           _onMealEntryComponentQuantityChanged(event, emit),
         MealEntryComponentNutritionChanged() =>
           _onMealEntryComponentNutritionChanged(event, emit),
+        MealEntryComponentAdded() => _onMealEntryComponentAdded(event, emit),
+        MealEntryComponentRemoved() => _onMealEntryComponentRemoved(
+          event,
+          emit,
+        ),
+        MealEntryComponentUsualFoodLinked() => _editComponent(
+          event.id,
+          event.componentIndex,
+          (mealComponent) =>
+              mealComponent.copyWith(usualFoodId: event.usualFoodId),
+          emit,
+        ),
         MealEntryUsualMealLinked() => _onMealEntryUsualMealLinked(event, emit),
         WeightLogged() => _onWeightLogged(event, emit),
         WeightOnDayChanged() => _onWeightOnDayChanged(event, emit),
@@ -233,9 +245,55 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
         else
           mealComponent,
     ];
+    return _withComponents(mealLogEntry, updatedComponents);
+  }
+
+  void _onMealEntryComponentAdded(
+    MealEntryComponentAdded event,
+    Emitter<DailyLogState> emit,
+  ) {
+    final updatedEntries = [
+      for (final mealLogEntry in state.mealEntries)
+        if (mealLogEntry.id == event.id)
+          _withComponents(mealLogEntry, [
+            ...mealLogEntry.components,
+            event.component,
+          ])
+        else
+          mealLogEntry,
+    ];
+    emit(state.copyWith(mealEntries: updatedEntries));
+  }
+
+  void _onMealEntryComponentRemoved(
+    MealEntryComponentRemoved event,
+    Emitter<DailyLogState> emit,
+  ) {
+    final updatedEntries = [
+      for (final mealLogEntry in state.mealEntries)
+        if (mealLogEntry.id == event.id &&
+            event.componentIndex >= 0 &&
+            event.componentIndex < mealLogEntry.components.length)
+          _withComponents(mealLogEntry, [
+            for (final (index, mealComponent)
+                in mealLogEntry.components.indexed)
+              if (index != event.componentIndex) mealComponent,
+          ])
+        else
+          mealLogEntry,
+    ];
+    emit(state.copyWith(mealEntries: updatedEntries));
+  }
+
+  /// Replaces an entry's components and recomputes its stored nutrition to the
+  /// components' total, so every summary stays in sync.
+  MealLogEntry _withComponents(
+    MealLogEntry mealLogEntry,
+    List<MealComponent> components,
+  ) {
     return mealLogEntry.copyWith(
-      components: updatedComponents,
-      nutrition: updatedComponents.componentsTotal,
+      components: components,
+      nutrition: components.componentsTotal,
     );
   }
 

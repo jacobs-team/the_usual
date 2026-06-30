@@ -257,19 +257,16 @@ class _ComposedFoodRowState extends State<_ComposedFoodRow> {
             SizedBox(height: AppDesign.spacing.sm),
             Row(
               children: [
+                if (widget.foodDraft.usualFoodId == null) ...[
+                  SaveUsualIconButton(onPressed: widget.onSaveToLibrary),
+                  SizedBox(width: AppDesign.spacing.sm),
+                ],
                 QuantityStepper(
                   dense: true,
                   quantity: widget.foodDraft.quantity,
                   onChanged: widget.onQuantityChanged,
                 ),
                 const Spacer(),
-                SaveAsUsualCheckbox(
-                  label: 'Save food as usual',
-                  value: widget.foodDraft.usualFoodId != null,
-                  onChanged: (value) {
-                    if (value) widget.onSaveToLibrary();
-                  },
-                ),
               ],
             ),
           ],

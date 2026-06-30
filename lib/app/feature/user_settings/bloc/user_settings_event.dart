@@ -153,6 +153,9 @@ sealed class UserSettingsEvent with _$UserSettingsEvent {
   const factory UserSettingsEvent.saveMealAsUsualChanged({
     required bool value,
   }) = SettingsSaveMealAsUsualChanged;
+  const factory UserSettingsEvent.saveFoodAsUsualDefaultChanged({
+    required bool value,
+  }) = SettingsSaveFoodAsUsualDefaultChanged;
   const factory UserSettingsEvent.saveWorkoutAsUsualChanged({
     required bool value,
   }) = SettingsSaveWorkoutAsUsualChanged;

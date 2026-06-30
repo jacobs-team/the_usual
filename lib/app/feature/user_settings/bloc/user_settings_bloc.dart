@@ -127,6 +127,9 @@ class UserSettingsBloc
         SettingsSaveMealAsUsualChanged() => emit(
           state.copyWith(saveMealAsUsual: event.value),
         ),
+        SettingsSaveFoodAsUsualDefaultChanged() => emit(
+          state.copyWith(saveFoodAsUsualDefault: event.value),
+        ),
         SettingsSaveWorkoutAsUsualChanged() => emit(
           state.copyWith(saveWorkoutAsUsual: event.value),
         ),

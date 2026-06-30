@@ -32,6 +32,22 @@ sealed class DailyLogEvent with _$DailyLogEvent {
     int componentIndex,
     Nutrition nutrition,
   ) = MealEntryComponentNutritionChanged;
+  const factory DailyLogEvent.mealEntryComponentAdded(
+    String id,
+    MealComponent component,
+  ) = MealEntryComponentAdded;
+  const factory DailyLogEvent.mealEntryComponentRemoved(
+    String id,
+    int componentIndex,
+  ) = MealEntryComponentRemoved;
+
+  /// Links the component at [componentIndex] of the entry with [id] to the
+  /// usual food [usualFoodId], marking it saved to the library.
+  const factory DailyLogEvent.mealEntryComponentUsualFoodLinked(
+    String id,
+    int componentIndex,
+    String usualFoodId,
+  ) = MealEntryComponentUsualFoodLinked;
 
   /// Repairs the link from a logged entry to its usual meal by stamping the
   /// usual meal's current id onto the entry. Used to heal entries whose stored

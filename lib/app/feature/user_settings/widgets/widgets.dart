@@ -5,6 +5,7 @@ export 'goals_section.dart';
 export 'info_box.dart';
 export 'meal_schedule_section.dart';
 export 'reminder_style_section.dart';
+export 'save_food_as_usual_default_tile.dart';
 export 'settings_nav_row.dart';
 export 'usual_food_list.dart';
 export 'usual_foods_tile.dart';

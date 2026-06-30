@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<title>Add food sheet — design directions</title>
+<style>
+  :root{
+    --surface:#F8F9FF;
+    --sheet:#EFF4FF;
+    --card:#FFFFFF;
+    --field:#EFF4FF;
+    --container:#E6EEFF;
+    --on:#0D1C2E;
+    --onVar:#45464D;
+    --primary:#131B2E;
+    --secondary:#00668A;
+    --secondaryContainer:#7BD0FF;
+    --onSecondaryContainer:#004D6A;
+    --protein:#2E8B7F;
+    --carbs:#3E78B2;
+    --fat:#C68A2E;
+    --goal:#C2410C;
+    --outline:#76777D;
+    --outlineVar:#C6C6CD;
+    --r-sm:12px; --r-md:16px; --r-lg:24px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#1f2533;padding:28px;font-family:'Hanken Grotesk',sans-serif;color:var(--on)}
+  h1{font-family:'Plus Jakarta Sans';color:#fff;font-size:20px;margin:0 0 4px}
+  .sub{color:#aab3c5;font-size:13px;margin:0 0 24px;max-width:1400px}
+  .row{display:flex;gap:22px;align-items:flex-start}
+  .col{width:344px;flex:0 0 344px}
+  .col-head{margin:0 4px 10px}
+  .col-head .name{font-family:'Plus Jakarta Sans';font-weight:700;color:#fff;font-size:15px}
+  .col-head .desc{color:#aab3c5;font-size:12px;line-height:1.45;margin-top:3px}
+
+  /* phone with scrim + bottom sheet */
+  .phone{position:relative;height:680px;background:var(--surface);border-radius:40px;
+    border:6px solid #0a0d14;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+  .scrim{position:absolute;inset:0;background:rgba(0,0,0,.38)}
+  .sheet{position:absolute;left:0;right:0;bottom:0;background:var(--sheet);
+    border-radius:var(--r-lg) var(--r-lg) 0 0;padding:14px 14px 18px;max-height:94%;
+    display:flex;flex-direction:column;gap:12px}
+  .grab{width:36px;height:4px;border-radius:2px;background:var(--outlineVar);margin:0 auto 2px}
+  .sheet-title{font-family:'Plus Jakarta Sans';font-weight:700;font-size:18px}
+
+  /* describe + estimate */
+  .describe{display:flex;gap:8px;align-items:stretch}
+  .tf{flex:1;background:var(--field);border:1px solid var(--outlineVar);border-radius:var(--r-md);
+    padding:11px 14px;color:var(--onVar);font-size:13.5px}
+  .tf.full{width:100%}
+  .ai-btn{display:inline-flex;align-items:center;gap:6px;background:var(--secondaryContainer);
+    color:var(--onSecondaryContainer);border:none;border-radius:var(--r-md);padding:0 14px;
+    font-weight:700;font-size:13px;white-space:nowrap}
+  .icon-btn{width:42px;border:1px solid var(--outlineVar);background:#fff;border-radius:var(--r-md);
+    color:var(--secondary);font-size:16px;display:flex;align-items:center;justify-content:center}
+
+  /* entry card */
+  .entry{background:var(--card);border:1px solid var(--outline);border-radius:var(--r-md);
+    padding:12px;box-shadow:0 3px 8px rgba(0,0,0,.07)}
+  .name-row{display:flex;gap:8px;align-items:center}
+  .name-field{flex:1;background:var(--field);border:1px solid var(--outlineVar);border-radius:var(--r-md);
+    padding:11px 14px;color:var(--onVar);font-size:14px}
+  .x{color:var(--onVar);font-size:18px;width:22px;text-align:center}
+  .fields{display:flex;gap:8px;margin-top:10px}
+  .field .lab{font-size:9px;letter-spacing:.5px;color:var(--onVar);font-weight:700;margin-bottom:3px}
+  .field .box{background:var(--field);border:1px solid var(--outlineVar);border-radius:var(--r-md);
+    height:34px;display:flex;align-items:center;justify-content:flex-end;padding:0 9px;font-size:13px;gap:3px;color:var(--onVar)}
+  .field.cal .box{width:74px} .field.m .box{width:54px}
+  .save{display:flex;align-items:center;gap:8px;margin-top:10px;justify-content:flex-end}
+  .chk{width:18px;height:18px;border:2px solid var(--onVar);border-radius:4px}
+  .save span{font-size:13px;color:var(--on)}
+
+  /* segmented */
+  .seg{display:flex;background:var(--container);border-radius:999px;padding:3px;gap:3px}
+  .seg div{flex:1;text-align:center;padding:7px;border-radius:999px;font-size:13px;font-weight:600;color:var(--onVar)}
+  .seg div.on{background:#fff;color:var(--on);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+
+  /* list */
+  .list-lab{font-size:10px;letter-spacing:.6px;color:var(--onVar);font-weight:700;margin:2px 2px -2px}
+  .list{background:var(--card);border:1px solid var(--outlineVar);border-radius:var(--r-md);overflow:hidden;
+    flex:1;overflow-y:auto}
+  .li{display:flex;align-items:center;gap:10px;padding:11px 14px;border-bottom:1px solid var(--outlineVar)}
+  .li:last-child{border-bottom:none}
+  .li .grow{flex:1;min-width:0}
+  .li .nm{font-size:14.5px;font-weight:600}
+  .li .meta{font-size:11px;color:var(--onVar);margin-top:1px}
+  .li .add{width:30px;height:30px;border-radius:999px;background:var(--secondaryContainer);
+    color:var(--onSecondaryContainer);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;flex:0 0 auto}
+  .sum{font-weight:700;font-size:12px}
+  .sum .p{color:var(--protein)} .sum .c{color:var(--carbs)} .sum .f{color:var(--fat)}
+  .sum .dot{color:var(--onVar)}
+  .new-row .nm{color:var(--secondary)}
+  .new-row .add{background:var(--secondary);color:#fff}
+  .hint{font-size:11px;color:var(--onVar);text-align:center;padding:4px}
+  .ghost{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px dashed var(--outline);
+    border-radius:var(--r-md);color:var(--secondary);font-weight:600;font-size:13px;justify-content:center}
+</style>
+</head>
+<body>
+  <h1>“Add a food” sheet — enhanced</h1>
+  <p class="sub">Reached from the composed-meal “Add a food” action. Each option keeps the three required pieces: an AI describe field, a name + macros entry (no quantity) with “Save food as usual”, and the foods list sorted by most recent usage. They differ in how those are arranged.</p>
+
+  <div class="row">
+
+    <!-- CURRENT -->
+    <div class="col">
+      <div class="col-head">
+        <div class="name">Current</div>
+        <div class="desc">Just a “New food” row and a flat, unsorted list of every usual food. No manual entry, no AI, no recency.</div>
+      </div>
+      <div class="phone">
+        <div class="scrim"></div>
+        <div class="sheet">
+          <div class="grab"></div>
+          <div class="sheet-title">Add a food</div>
+          <div class="list" style="flex:none">
+            <div class="li new-row"><span class="add">+</span><div class="grow"><div class="nm">New food</div></div></div>
+            <div class="li"><div class="grow"><div class="nm">Chicken breast</div><div class="sum"><span>165 cal</span> <span class="dot">·</span> <span class="p">31P</span></div></div></div>
+            <div class="li"><div class="grow"><div class="nm">White rice</div><div class="sum"><span>205 cal</span> <span class="dot">·</span> <span class="c">45C</span></div></div></div>
+            <div class="li"><div class="grow"><div class="nm">Olive oil</div><div class="sum"><span>119 cal</span> <span class="dot">·</span> <span class="f">14F</span></div></div></div>
+            <div class="li"><div class="grow"><div class="nm">Broccoli</div><div class="sum"><span>55 cal</span> <span class="dot">·</span> <span class="p">4P</span> <span class="dot">·</span> <span class="c">11C</span></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- A -->
+    <div class="col">
+      <div class="col-head">
+        <div class="name">A · Stacked (everything visible)</div>
+        <div class="desc">Describe + Estimate, then the full entry card, then the recent-usage list — all on one scroll. Nothing hidden; tallest.</div>
+      </div>
+      <div class="phone">
+        <div class="scrim"></div>
+        <div class="sheet">
+          <div class="grab"></div>
+          <div class="sheet-title">Add a food</div>
+          <div class="describe">
+            <div class="tf">Describe a food…</div>
+            <button class="ai-btn">✦ Estimate</button>
+            <div class="icon-btn">▦</div>
+          </div>
+          <div class="entry">
+            <div class="name-row">
+              <div class="name-field">Ingredient name</div>
+              <span class="x">✕</span>
+            </div>
+            <div class="fields">
+              <div class="field cal"><div class="lab">CALORIES</div><div class="box">cal</div></div>
+              <div class="field m"><div class="lab">PROTEIN</div><div class="box">g</div></div>
+              <div class="field m"><div class="lab">CARBS</div><div class="box">g</div></div>
+              <div class="field m"><div class="lab">FAT</div><div class="box">g</div></div>
+            </div>
+            <div class="save"><span class="chk"></span><span>Save food as usual</span></div>
+          </div>
+          <div class="list-lab">RECENTLY USED</div>
+          <div class="list">
+            <div class="li"><div class="grow"><div class="nm">Chicken breast</div><div class="meta">used today · in 3 logs</div></div><span class="sum"><span>165 cal</span> <span class="dot">·</span> <span class="p">31P</span></span><span class="add">+</span></div>
+            <div class="li"><div class="grow"><div class="nm">White rice</div><div class="meta">yesterday</div></div><span class="sum"><span>205 cal</span> <span class="dot">·</span> <span class="c">45C</span></span><span class="add">+</span></div>
+            <div class="li"><div class="grow"><div class="nm">Olive oil</div><div class="meta">3 days ago</div></div><span class="sum"><span>119 cal</span> <span class="dot">·</span> <span class="f">14F</span></span><span class="add">+</span></div>
+            <div class="li"><div class="grow"><div class="nm">Broccoli</div><div class="meta">last week</div></div><span class="sum"><span>55 cal</span> <span class="dot">·</span> <span class="c">11C</span></span><span class="add">+</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- B -->
+    <div class="col">
+      <div class="col-head">
+        <div class="name">B · Compact compose + list</div>
+        <div class="desc">A one-line entry (name with inline macro chips-fields) and an ✦AI button that fills it from a description. Save toggle beside it. The recent list gets most of the height.</div>
+      </div>
+      <div class="phone">
+        <div class="scrim"></div>
+        <div class="sheet">
+          <div class="grab"></div>
+          <div class="sheet-title">Add a food</div>
+          <div class="entry" style="padding:10px">
+            <div class="name-row">
+              <div class="name-field">Ingredient name</div>
+              <button class="ai-btn" style="padding:0 11px">✦ AI</button>
+            </div>
+            <div class="fields" style="margin-top:8px">
+              <div class="field cal"><div class="box" style="width:72px">cal</div></div>
+              <div class="field m"><div class="box" style="width:52px">P</div></div>
+              <div class="field m"><div class="box" style="width:52px">C</div></div>
+              <div class="field m"><div class="box" style="width:52px">F</div></div>
+              <div style="flex:1"></div>
+              <div class="add" style="width:34px;height:34px;background:var(--primary);color:#fff;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-size:18px;align-self:flex-end">+</div>
+            </div>
+            <div class="save" style="justify-content:flex-start;margin-top:9px"><span class="chk"></span><span>Save food as usual</span></div>
+          </div>
+          <div class="list-lab">RECENTLY USED</div>
+          <div class="list">
+            <div class="li"><div class="grow"><div class="nm">Chicken breast</div><div class="meta">used today · in 3 logs</div></div><span class="sum"><span>165 cal</span> <span class="dot">·</span> <span class="p">31P</span></span><span class="add">+</span></div>
+            <div class="li"><div class="grow"><div class="nm">White rice</div><div class="meta">yesterday</div></div><span class="sum"><span>205 cal</span> <span class="dot">·</span> <span class="c">45C</span></span><span class="add">+</span></div>
+            <div class="li"><div class="grow"><div class="nm">Olive oil</div><div class="meta">3 days ago</div></div><span class="sum"><span>119 cal</span> <span class="dot">·</span> <span class="f">14F</span></span><span class="add">+</span></div>
+            <div class="li"><div class="grow"><div class="nm">Broccoli</div><div class="meta">last week</div></div><span class="sum"><span>55 cal</span> <span class="dot">·</span> <span class="c">11C</span></span><span class="add">+</span></div>
+            <div class="li"><div class="grow"><div class="nm">Greek yogurt</div><div class="meta">last week</div></div><span class="sum"><span>100 cal</span> <span class="dot">·</span> <span class="p">17P</span></span><span class="add">+</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- C -->
+    <div class="col">
+      <div class="col-head">
+        <div class="name">C · Search-first, create on demand</div>
+        <div class="desc">One field that searches the list as you type and doubles as the AI describe. The entry card only appears when you choose “Estimate” or “Add manually”, so picking an existing food stays one tap. List is the hero.</div>
+      </div>
+      <div class="phone">
+        <div class="scrim"></div>
+        <div class="sheet">
+          <div class="grab"></div>
+          <div class="sheet-title">Add a food</div>
+          <div class="tf full">Search or describe a food…</div>
+          <div class="describe" style="gap:8px">
+            <div class="ghost" style="flex:1">✦ Estimate with AI</div>
+            <div class="ghost" style="flex:1">＋ Add manually</div>
+          </div>
+          <div class="list-lab">RECENTLY USED</div>
+          <div class="list">
+            <div class="li"><div class="grow"><div class="nm">Chicken breast</div><div class="meta">used today · in 3 logs</div></div><span class="sum"><span>165 cal</span> <span class="dot">·</span> <span class="p">31P</span></span><span class="add">+</span></div>
+            <div class="li"><div class="grow"><div class="nm">White rice</div><div class="meta">yesterday</div></div><span class="sum"><span>205 cal</span> <span class="dot">·</span> <span class="c">45C</span></span><span class="add">+</span></div>
+            <div class="li"><div class="grow"><div class="nm">Olive oil</div><div class="meta">3 days ago</div></div><span class="sum"><span>119 cal</span> <span class="dot">·</span> <span class="f">14F</span></span><span class="add">+</span></div>
+            <div class="li"><div class="grow"><div class="nm">Broccoli</div><div class="meta">last week</div></div><span class="sum"><span>55 cal</span> <span class="dot">·</span> <span class="c">11C</span></span><span class="add">+</span></div>
+            <div class="li"><div class="grow"><div class="nm">Greek yogurt</div><div class="meta">last week</div></div><span class="sum"><span>100 cal</span> <span class="dot">·</span> <span class="p">17P</span></span><span class="add">+</span></div>
+            <div class="li"><div class="grow"><div class="nm">Almonds</div><div class="meta">2 weeks ago</div></div><span class="sum"><span>164 cal</span> <span class="dot">·</span> <span class="f">14F</span></span><span class="add">+</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

@@ -30,6 +30,20 @@ void main() {
       await getIt.unregister<UserSettingsBloc>();
     }
     getIt.registerSingleton<UserSettingsBloc>(userSettingsBloc);
+
+    final dailyLogBloc = MockDailyLogBloc();
+    when(() => dailyLogBloc.state).thenReturn(const DailyLogState());
+    if (getIt.isRegistered<DailyLogBloc>()) {
+      await getIt.unregister<DailyLogBloc>();
+    }
+    getIt.registerSingleton<DailyLogBloc>(dailyLogBloc);
+
+    final mealAiRepository = MockMealAiRepository();
+    when(() => mealAiRepository.isConfigured).thenReturn(false);
+    if (getIt.isRegistered<MealAiRepository>()) {
+      await getIt.unregister<MealAiRepository>();
+    }
+    getIt.registerSingleton<MealAiRepository>(mealAiRepository);
   });
 
   Future<void> pumpSheet(WidgetTester tester) async {
@@ -52,15 +66,16 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('renders a ListTile per usual food plus the new-food tile', (
+  testWidgets('renders a new-food entry card plus a row per usual food', (
     tester,
   ) async {
     await pumpSheet(tester);
 
-    expect(find.byKey(const Key('pickerNewFood')), findsOneWidget);
+    expect(find.byKey(const Key('newFoodName')), findsOneWidget);
+    expect(find.byType(NutritionFields), findsOneWidget);
+    expect(find.byType(SaveAsUsualCheckbox), findsOneWidget);
     expect(find.byKey(const ValueKey('f1')), findsOneWidget);
     expect(find.byKey(const ValueKey('f2')), findsOneWidget);
-    expect(find.byType(ListTile), findsNWidgets(3));
   });
 
   testWidgets('tapping a food pops the sheet with that UsualFood', (
@@ -98,37 +113,46 @@ void main() {
     expect(picked.usualFood.name, equals('Chicken, 1 oz'));
   });
 
-  testWidgets('tapping "New food" pops the sheet with NewFoodPickerResult', (
-    tester,
-  ) async {
-    UsualFoodPickerResult? poppedResult;
+  testWidgets(
+    'entering a food and tapping Add pops with CreatedFoodPickerResult',
+    (tester) async {
+      UsualFoodPickerResult? poppedResult;
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: Builder(
-            builder: (context) => TextButton(
-              onPressed: () async {
-                poppedResult =
-                    await TheUsualBottomSheet.show<UsualFoodPickerResult>(
-                      context,
-                      builder: (_) => const UsualFoodPickerSheet(),
-                    );
-              },
-              child: const Text('Open'),
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => TextButton(
+                onPressed: () async {
+                  poppedResult =
+                      await TheUsualBottomSheet.show<UsualFoodPickerResult>(
+                        context,
+                        builder: (_) => const UsualFoodPickerSheet(),
+                      );
+                },
+                child: const Text('Open'),
+              ),
             ),
           ),
         ),
-      ),
-    );
-    await tester.tap(find.byType(TextButton));
-    await tester.pumpAndSettle();
+      );
+      await tester.tap(find.byType(TextButton));
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.byKey(const Key('pickerNewFood')));
-    await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const Key('newFoodName')),
+        'Greek yogurt',
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithIcon(FilledButton, Icons.add));
+      await tester.pumpAndSettle();
 
-    expect(poppedResult, isA<NewFoodPickerResult>());
-  });
+      expect(poppedResult, isA<CreatedFoodPickerResult>());
+      final created = poppedResult! as CreatedFoodPickerResult;
+      expect(created.name, equals('Greek yogurt'));
+      expect(created.saveAsUsual, isFalse);
+    },
+  );
 
   testWidgets('shows NutritionSummary as subtitle for each food', (
     tester,

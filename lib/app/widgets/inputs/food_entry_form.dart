@@ -289,7 +289,7 @@ class FoodEntryFormState extends State<FoodEntryForm> {
                 ),
                 if (state.photos.isNotEmpty) ...[
                   SizedBox(height: AppDesign.spacing.sm),
-                  _AttachedPhotos(
+                  AttachedPhotos(
                     photos: state.photos,
                     onRemove: isGenerating
                         ? null
@@ -349,10 +349,22 @@ class FoodEntryFormState extends State<FoodEntryForm> {
                         );
                     if (result == null) return;
                     switch (result) {
-                      case NewFoodPickerResult():
+                      case CreatedFoodPickerResult(
+                        :final name,
+                        :final nutrition,
+                        :final saveAsUsual,
+                      ):
+                        final usualFoodId = saveAsUsual
+                            ? getIt<UserSettingsBloc>().saveAsUsualFood(
+                                name,
+                                nutrition,
+                              )
+                            : null;
                         _bloc.add(
-                          MealEntryEvent.foodAdded(
-                            addToUsualMeals: _addToUsualMealsDefault,
+                          MealEntryEvent.foodEntered(
+                            name: name,
+                            nutrition: nutrition,
+                            usualFoodId: usualFoodId,
                           ),
                         );
                       case PickedFoodPickerResult(:final usualFood):
@@ -432,68 +444,6 @@ class FoodEntryFormState extends State<FoodEntryForm> {
                   ),
                 ),
               ],
-            ],
-          );
-        },
-      ),
-    );
-  }
-}
-
-/// A horizontal strip of thumbnails for the photos attached to the next
-/// estimate, each with a remove button. Shown once the user has added at least
-/// one photo, so they can see what will be sent before pressing Estimate.
-class _AttachedPhotos extends StatelessWidget {
-  const _AttachedPhotos({required this.photos, required this.onRemove});
-
-  final List<MealPhoto> photos;
-
-  /// Removes the photo at the given index, or null while an estimate runs.
-  final ValueChanged<int>? onRemove;
-
-  @override
-  Widget build(BuildContext context) {
-    const thumbnailSize = 64.0;
-    return SizedBox(
-      height: thumbnailSize,
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: photos.length,
-        separatorBuilder: (context, index) =>
-            SizedBox(width: AppDesign.spacing.sm),
-        itemBuilder: (context, index) {
-          return Stack(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(AppDesign.spacing.sm),
-                child: Image.memory(
-                  photos[index].bytes,
-                  width: thumbnailSize,
-                  height: thumbnailSize,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              if (onRemove != null)
-                Positioned(
-                  top: 0,
-                  right: 0,
-                  child: GestureDetector(
-                    onTap: () => onRemove!(index),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: Colors.black54,
-                        borderRadius: BorderRadius.circular(
-                          AppDesign.spacing.sm,
-                        ),
-                      ),
-                      child: const Icon(
-                        Icons.close,
-                        size: 16,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
             ],
           );
         },

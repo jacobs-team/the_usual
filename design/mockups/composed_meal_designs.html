@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<title>Composed meal — design directions</title>
+<style>
+  :root{
+    --surface:#F8F9FF;
+    --card:#FFFFFF;
+    --field:#EFF4FF;
+    --container:#E6EEFF;
+    --on:#0D1C2E;
+    --onVar:#45464D;
+    --primary:#131B2E;
+    --secondary:#00668A;
+    --secondaryContainer:#40C2FD;
+    --onSecondaryContainer:#004D6A;
+    --protein:#2E8B7F;
+    --carbs:#3E78B2;
+    --fat:#C68A2E;
+    --goal:#C2410C;
+    --outline:#76777D;
+    --outlineVar:#C6C6CD;
+    --r-sm:12px; --r-md:16px; --r-lg:24px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:#1f2533; padding:28px;
+    font-family:'Hanken Grotesk',sans-serif; color:var(--on);
+  }
+  h1{font-family:'Plus Jakarta Sans';color:#fff;font-size:20px;margin:0 0 4px}
+  .sub{color:#aab3c5;font-size:13px;margin:0 0 24px}
+  .row{display:flex;gap:22px;align-items:flex-start}
+  .col{width:344px;flex:0 0 344px}
+  .col-head{margin:0 4px 10px}
+  .col-head .name{font-family:'Plus Jakarta Sans';font-weight:700;color:#fff;font-size:15px}
+  .col-head .desc{color:#aab3c5;font-size:12px;line-height:1.45;margin-top:3px}
+  .tag-without{color:#7bd0a0}
+  .tag-with{color:#7bd0ff}
+
+  .phone{
+    background:var(--surface);
+    border-radius:40px;
+    padding:16px 12px;
+    border:6px solid #0a0d14;
+    box-shadow:0 10px 30px rgba(0,0,0,.4);
+  }
+
+  /* meal card */
+  .meal-card{
+    background:var(--card);
+    border:1px solid var(--outline);
+    border-radius:var(--r-md);
+    padding:14px;
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
+  }
+  .meal-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  .meal-title{font-family:'Plus Jakarta Sans';font-weight:700;font-size:16px}
+  .icon{color:var(--onVar);font-size:18px;line-height:1}
+  .chev{color:var(--on);font-size:13px;width:16px;display:inline-block}
+
+  /* nutrition summary inline */
+  .sum{font-weight:700;font-size:13px}
+  .sum .p{color:var(--protein)} .sum .c{color:var(--carbs)} .sum .f{color:var(--fat)}
+  .sum .dot{color:var(--onVar);font-weight:600}
+  .sum-sm{font-size:12px}
+
+  /* quantity stepper */
+  .qty{display:inline-flex;align-items:center;border:1px solid var(--outlineVar);
+    border-radius:var(--r-sm);background:#fff;overflow:hidden}
+  .qty button{width:26px;height:26px;border:none;background:#fff;color:var(--on);
+    font-size:15px;line-height:1;cursor:default}
+  .qty .val{min-width:26px;text-align:center;font-family:'Plus Jakarta Sans';font-weight:700;font-size:14px}
+  .toggle{margin-left:6px;width:30px;height:28px;border:1px solid var(--outlineVar);
+    border-radius:var(--r-sm);background:#fff;color:var(--secondary);
+    font-weight:700;font-size:13px;display:inline-flex;align-items:center;justify-content:center}
+
+  /* macro chips (direction C) */
+  .chips{display:flex;gap:6px;flex-wrap:wrap}
+  .chip{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;color:#fff}
+  .chip.cal{background:var(--primary)}
+  .chip.p{background:var(--protein)} .chip.c{background:var(--carbs)} .chip.f{background:var(--fat)}
+
+  /* nutrition entry fields */
+  .fields{display:flex;gap:8px;margin-top:10px}
+  .field{flex:0 0 auto}
+  .field .lab{font-size:9px;letter-spacing:.5px;color:var(--onVar);font-weight:700;margin-bottom:3px}
+  .field .box{background:var(--field);border-radius:var(--r-sm);height:34px;display:flex;
+    align-items:center;justify-content:flex-end;padding:0 8px;font-weight:600;font-size:13px;gap:3px}
+  .field.cal .box{width:76px} .field.m .box{width:56px}
+  .field .unit{color:var(--onVar);font-size:11px;font-weight:500}
+
+  /* dashed quick pick chips */
+  .qp{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .qp .pick{border:1px dashed var(--outline);border-radius:999px;padding:7px 12px;
+    font-size:12.5px;color:var(--on);background:transparent}
+  .actions{display:flex;gap:8px;margin-top:10px}
+  .btn-primary{background:var(--secondaryContainer);color:var(--onSecondaryContainer);
+    border:none;border-radius:999px;padding:8px 13px;font-size:12.5px;font-weight:600;font-family:'Hanken Grotesk'}
+
+  /* update-usual link */
+  .update{display:inline-flex;align-items:center;gap:5px;color:var(--goal);
+    font-weight:600;font-size:12.5px}
+  .update .ic{font-size:13px}
+
+  .divider{height:1px;background:var(--outlineVar);opacity:.6;margin:0}
+
+  /* ingredient row generic */
+  .ing{display:flex;align-items:center;gap:10px;padding:9px 0}
+  .ing .grow{flex:1;min-width:0}
+  .ing .nm{font-size:14px;font-weight:600}
+  .pencil{width:30px;height:30px;border-radius:8px;border:1px solid var(--outlineVar);
+    background:#fff;color:var(--secondary);display:inline-flex;align-items:center;
+    justify-content:center;font-size:14px;flex:0 0 auto}
+
+  /* meal total chip line */
+  .lunch-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .lunch-name{font-family:'Plus Jakarta Sans';font-weight:700;font-size:18px}
+
+  /* C nested group */
+  .group{background:var(--field);border-radius:var(--r-sm);padding:4px 12px;margin-top:4px}
+  .rail{position:relative;padding-left:14px}
+  .rail:before{content:"";position:absolute;left:3px;top:6px;bottom:6px;width:2px;
+    background:var(--outlineVar);border-radius:2px}
+</style>
+</head>
+<body>
+  <h1>Composed meal in Today — declutter directions</h1>
+  <p class="sub">Lunch card with “Meal 12345” expanded into its ingredients. Same data across all four. Macro entry: <span class="tag-without">green = removed</span>, <span class="tag-with">blue = kept but hidden</span>.</p>
+
+  <div class="row">
+
+    <!-- ============ CURRENT ============ -->
+    <div class="col">
+      <div class="col-head">
+        <div class="name">Current</div>
+        <div class="desc">Every ingredient shows its full macro entry, always open. Two stacked orange actions. Hard to scan, very tall.</div>
+      </div>
+      <div class="phone">
+        <div class="meal-card">
+          <div class="lunch-head">
+            <span class="lunch-name">Lunch</span>
+            <span class="sum"><span>122 cal</span> <span class="dot">·</span> <span class="p">11P</span> <span class="dot">·</span> <span class="c">0C</span> <span class="dot">·</span> <span class="f">22F</span></span>
+          </div>
+          <div class="meal-top">
+            <span><span class="chev">⌄</span> <span class="meal-title">Meal 12345</span></span>
+            <span class="icon">🗑</span>
+          </div>
+          <div class="sum sum-sm" style="margin:-4px 0 6px 16px"><span>122 cal</span> <span class="dot">·</span> <span class="p">11P</span> <span class="dot">·</span> <span class="c">0C</span> <span class="dot">·</span> <span class="f">22F</span></div>
+
+          <div style="padding-left:16px">
+            <div class="ing">
+              <div class="grow"><span class="nm">test 2 meal</span> <span class="sum sum-sm"><span>111 cal</span> <span class="dot">·</span> <span class="f">11F</span></span></div>
+              <div class="qty"><button>−</button><span class="val">1</span><button>+</button></div><span class="toggle">.1</span>
+            </div>
+            <div class="fields">
+              <div class="field cal"><div class="lab">CALORIES</div><div class="box">111 <span class="unit">cal</span></div></div>
+              <div class="field m"><div class="lab">PROTEIN</div><div class="box"><span class="unit">g</span></div></div>
+              <div class="field m"><div class="lab">CARBS</div><div class="box"><span class="unit">g</span></div></div>
+              <div class="field m"><div class="lab">FAT</div><div class="box">11 <span class="unit">g</span></div></div>
+            </div>
+            <div class="ing" style="margin-top:6px">
+              <div class="grow"><span class="nm">test 211111</span> <span class="sum sum-sm"><span>11 cal</span> <span class="dot">·</span> <span class="p">11P</span> <span class="dot">·</span> <span class="f">11F</span></span></div>
+              <div class="qty"><button>−</button><span class="val">1</span><button>+</button></div><span class="toggle">.1</span>
+            </div>
+            <div class="fields">
+              <div class="field cal"><div class="lab">CALORIES</div><div class="box">11 <span class="unit">cal</span></div></div>
+              <div class="field m"><div class="lab">PROTEIN</div><div class="box">11 <span class="unit">g</span></div></div>
+              <div class="field m"><div class="lab">CARBS</div><div class="box"><span class="unit">g</span></div></div>
+              <div class="field m"><div class="lab">FAT</div><div class="box">11 <span class="unit">g</span></div></div>
+            </div>
+            <div style="text-align:right;margin-top:8px"><span class="update"><span class="ic">▣</span> Update usual ingredient</span></div>
+            <div style="text-align:right;margin-top:6px"><span class="update"><span class="ic">▣</span> Update usual meal to match</span></div>
+          </div>
+
+          <div class="qp">
+            <span class="pick">+ Beef Stir Fry</span><span class="pick">+ Test 12</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ A ============ -->
+    <div class="col">
+      <div class="col-head">
+        <div class="name">A · Read-only ingredients <span class="tag-without">(no fields)</span></div>
+        <div class="desc">Ingredients become clean rows: name, macros, quantity. A small pencil per ingredient jumps to Settings to edit its nutrition. Tightest layout.</div>
+      </div>
+      <div class="phone">
+        <div class="meal-card">
+          <div class="lunch-head">
+            <span class="lunch-name">Lunch</span>
+            <span class="sum"><span>122 cal</span> <span class="dot">·</span> <span class="p">11P</span> <span class="dot">·</span> <span class="c">0C</span> <span class="dot">·</span> <span class="f">22F</span></span>
+          </div>
+          <div class="meal-top">
+            <span><span class="chev">⌄</span> <span class="meal-title">Meal 12345</span></span>
+            <span class="icon">🗑</span>
+          </div>
+          <div class="sum sum-sm" style="margin:-4px 0 4px 16px"><span>122 cal</span> <span class="dot">·</span> <span class="p">11P</span> <span class="dot">·</span> <span class="c">0C</span> <span class="dot">·</span> <span class="f">22F</span></div>
+
+          <div style="padding-left:16px">
+            <div class="divider"></div>
+            <div class="ing">
+              <div class="grow">
+                <div class="nm">test 2 meal</div>
+                <div class="sum sum-sm" style="margin-top:2px"><span>111 cal</span> <span class="dot">·</span> <span class="f">11F</span></div>
+              </div>
+              <div class="qty"><button>−</button><span class="val">1</span><button>+</button></div>
+              <span class="pencil">✎</span>
+            </div>
+            <div class="divider"></div>
+            <div class="ing">
+              <div class="grow">
+                <div class="nm">test 211111</div>
+                <div class="sum sum-sm" style="margin-top:2px"><span>11 cal</span> <span class="dot">·</span> <span class="p">11P</span> <span class="dot">·</span> <span class="f">11F</span></div>
+              </div>
+              <div class="qty"><button>−</button><span class="val">1</span><button>+</button></div>
+              <span class="pencil">✎</span>
+            </div>
+            <div class="divider"></div>
+            <div style="text-align:right;margin-top:10px"><span class="update"><span class="ic">▣</span> Update usual meal to match</span></div>
+          </div>
+
+          <div class="qp">
+            <span class="pick">+ Beef Stir Fry</span><span class="pick">+ Test 12</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ B ============ -->
+    <div class="col">
+      <div class="col-head">
+        <div class="name">B · Tap to edit <span class="tag-with">(fields hidden)</span></div>
+        <div class="desc">Rows are compact by default. Tapping one accordions open just that ingredient’s macro fields (here: row 1 open, row 2 closed). Keeps inline editing, kills the clutter.</div>
+      </div>
+      <div class="phone">
+        <div class="meal-card">
+          <div class="lunch-head">
+            <span class="lunch-name">Lunch</span>
+            <span class="sum"><span>122 cal</span> <span class="dot">·</span> <span class="p">11P</span> <span class="dot">·</span> <span class="c">0C</span> <span class="dot">·</span> <span class="f">22F</span></span>
+          </div>
+          <div class="meal-top">
+            <span><span class="chev">⌄</span> <span class="meal-title">Meal 12345</span></span>
+            <span class="icon">🗑</span>
+          </div>
+          <div class="sum sum-sm" style="margin:-4px 0 4px 16px"><span>122 cal</span> <span class="dot">·</span> <span class="p">11P</span> <span class="dot">·</span> <span class="c">0C</span> <span class="dot">·</span> <span class="f">22F</span></div>
+
+          <div style="padding-left:16px">
+            <div class="divider"></div>
+            <!-- open row -->
+            <div class="ing">
+              <div class="grow"><span style="font-size:12px;color:var(--onVar)">⌄</span> <span class="nm">test 2 meal</span>
+                <div class="sum sum-sm" style="margin:2px 0 0 14px"><span>111 cal</span> <span class="dot">·</span> <span class="f">11F</span></div>
+              </div>
+              <div class="qty"><button>−</button><span class="val">1</span><button>+</button></div>
+            </div>
+            <div class="fields" style="padding-left:14px">
+              <div class="field cal"><div class="lab">CALORIES</div><div class="box">111 <span class="unit">cal</span></div></div>
+              <div class="field m"><div class="lab">PROTEIN</div><div class="box"><span class="unit">g</span></div></div>
+              <div class="field m"><div class="lab">CARBS</div><div class="box"><span class="unit">g</span></div></div>
+              <div class="field m"><div class="lab">FAT</div><div class="box">11 <span class="unit">g</span></div></div>
+            </div>
+            <div style="text-align:right;margin:8px 0 2px"><span class="update"><span class="ic">▣</span> Update usual ingredient</span></div>
+            <div class="divider"></div>
+            <!-- closed row -->
+            <div class="ing">
+              <div class="grow"><span style="font-size:12px;color:var(--onVar)">›</span> <span class="nm">test 211111</span>
+                <div class="sum sum-sm" style="margin:2px 0 0 14px"><span>11 cal</span> <span class="dot">·</span> <span class="p">11P</span> <span class="dot">·</span> <span class="f">11F</span></div>
+              </div>
+              <div class="qty"><button>−</button><span class="val">1</span><button>+</button></div>
+            </div>
+            <div class="divider"></div>
+            <div style="text-align:right;margin-top:10px"><span class="update"><span class="ic">▣</span> Update usual meal to match</span></div>
+          </div>
+
+          <div class="qp">
+            <span class="pick">+ Beef Stir Fry</span><span class="pick">+ Test 12</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============ C ============ -->
+    <div class="col">
+      <div class="col-head">
+        <div class="name">C · Nested group + macro chips <span class="tag-without">(no fields)</span></div>
+        <div class="desc">Ingredients live in a tinted sub-block with a connector rail so the nesting is obvious. Macros read as small colored chips. One “Edit in settings” pencil in the meal header.</div>
+      </div>
+      <div class="phone">
+        <div class="meal-card">
+          <div class="lunch-head">
+            <span class="lunch-name">Lunch</span>
+            <span class="sum"><span>122 cal</span> <span class="dot">·</span> <span class="p">11P</span> <span class="dot">·</span> <span class="c">0C</span> <span class="dot">·</span> <span class="f">22F</span></span>
+          </div>
+          <div class="meal-top">
+            <span><span class="chev">⌄</span> <span class="meal-title">Meal 12345</span></span>
+            <span style="display:flex;gap:10px;align-items:center"><span class="pencil" style="border:none;color:var(--secondary)">✎</span><span class="icon">🗑</span></span>
+          </div>
+
+          <div class="group rail">
+            <div class="ing" style="padding:10px 0">
+              <div class="grow">
+                <div class="nm">test 2 meal</div>
+                <div class="chips" style="margin-top:5px">
+                  <span class="chip cal">111 cal</span><span class="chip f">11 F</span>
+                </div>
+              </div>
+              <div class="qty"><button>−</button><span class="val">1</span><button>+</button></div>
+            </div>
+            <div class="divider"></div>
+            <div class="ing" style="padding:10px 0">
+              <div class="grow">
+                <div class="nm">test 211111</div>
+                <div class="chips" style="margin-top:5px">
+                  <span class="chip cal">11 cal</span><span class="chip p">11 P</span><span class="chip f">11 F</span>
+                </div>
+              </div>
+              <div class="qty"><button>−</button><span class="val">1</span><button>+</button></div>
+            </div>
+          </div>
+          <div style="text-align:right;margin-top:10px"><span class="update"><span class="ic">▣</span> Update usual meal to match</span></div>
+
+          <div class="qp">
+            <span class="pick">+ Beef Stir Fry</span><span class="pick">+ Test 12</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

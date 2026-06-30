@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:the_usual/app/app.dart';
@@ -36,74 +38,10 @@ class UsualFoodList extends StatelessWidget {
           padding: EdgeInsets.all(AppDesign.spacing.lg),
           children: [
             for (final usualFood in usualFoods)
-              Card(
+              _UsualFoodCard(
                 key: ValueKey(usualFood.id),
-                margin: EdgeInsets.only(bottom: AppDesign.spacing.sm),
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    AppDesign.spacing.md,
-                    AppDesign.spacing.sm,
-                    AppDesign.spacing.sm,
-                    AppDesign.spacing.md,
-                  ),
-                  child: ExpandableNutrition(
-                    name: usualFood.name,
-                    nutrition: usualFood.nutrition,
-                    expandedByDefault: expandNutritionByDefault,
-                    onNameChanged: (name) => getIt<UserSettingsBloc>().add(
-                      UserSettingsEvent.usualFoodNameChanged(
-                        usualFood.id,
-                        name,
-                      ),
-                    ),
-                    onChanged: (nutrition) async {
-                      final settingsBloc = getIt<UserSettingsBloc>()
-                        ..add(
-                          UserSettingsEvent.usualFoodNutritionChanged(
-                            usualFood.id,
-                            nutrition,
-                          ),
-                        );
-                      final mealsUsing = settingsBloc.state.usualMealsUsingFood(
-                        usualFood.id,
-                      );
-                      if (mealsUsing == 0) return;
-                      final confirmed = await ConfirmDialog.show(
-                        context,
-                        title: 'Update meals too?',
-                        message:
-                            'This food is used in $mealsUsing usual '
-                            '${mealsUsing == 1 ? 'meal' : 'meals'}. Update '
-                            '${mealsUsing == 1 ? 'it' : 'them'} to match'
-                            ' the new nutrition?',
-                        confirmLabel: 'Update',
-                      );
-                      if (!context.mounted) return;
-                      if (!confirmed) return;
-                      settingsBloc.add(
-                        UserSettingsEvent.usualFoodPropagatedToMeals(
-                          usualFood.id,
-                          nutrition,
-                        ),
-                      );
-                    },
-                    onRemoved: () async {
-                      final confirmed = await ConfirmDialog.show(
-                        context,
-                        title: 'Delete usual food?',
-                        message:
-                            'This permanently deletes "${usualFood.name}". '
-                            'Meals you already built with it are unaffected.',
-                        confirmLabel: 'Delete',
-                        isDestructive: true,
-                      );
-                      if (!confirmed) return;
-                      getIt<UserSettingsBloc>().add(
-                        UserSettingsEvent.usualFoodRemoved(usualFood.id),
-                      );
-                    },
-                  ),
-                ),
+                usualFood: usualFood,
+                expandedByDefault: expandNutritionByDefault,
               ),
             // Clears the floating action button so the last card isn't hidden
             // behind it.
@@ -111,6 +49,90 @@ class UsualFoodList extends StatelessWidget {
           ],
         );
       },
+    );
+  }
+}
+
+/// One usual food's editable card. Nutrition edits update the food immediately
+/// and, once the user pauses, propagate to every usual meal that uses it — so
+/// the meals' own copies stay in sync without a prompt on every keystroke.
+class _UsualFoodCard extends StatefulWidget {
+  const _UsualFoodCard({
+    required this.usualFood,
+    required this.expandedByDefault,
+    super.key,
+  });
+
+  final UsualFood usualFood;
+  final bool expandedByDefault;
+
+  @override
+  State<_UsualFoodCard> createState() => _UsualFoodCardState();
+}
+
+class _UsualFoodCardState extends State<_UsualFoodCard> {
+  /// How long the user must pause editing before the new nutrition is pushed
+  /// out to the usual meals that use this food.
+  static const _propagationDelay = Duration(seconds: 2);
+
+  Timer? _propagationDebounce;
+
+  @override
+  void dispose() {
+    _propagationDebounce?.cancel();
+    super.dispose();
+  }
+
+  void _onNutritionChanged(Nutrition nutrition) {
+    final id = widget.usualFood.id;
+    getIt<UserSettingsBloc>().add(
+      UserSettingsEvent.usualFoodNutritionChanged(id, nutrition),
+    );
+    _propagationDebounce?.cancel();
+    _propagationDebounce = Timer(_propagationDelay, () {
+      getIt<UserSettingsBloc>().add(
+        UserSettingsEvent.usualFoodPropagatedToMeals(id, nutrition),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final usualFood = widget.usualFood;
+    return Card(
+      margin: EdgeInsets.only(bottom: AppDesign.spacing.sm),
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          AppDesign.spacing.md,
+          AppDesign.spacing.sm,
+          AppDesign.spacing.sm,
+          AppDesign.spacing.md,
+        ),
+        child: ExpandableNutrition(
+          name: usualFood.name,
+          nutrition: usualFood.nutrition,
+          expandedByDefault: widget.expandedByDefault,
+          onNameChanged: (name) => getIt<UserSettingsBloc>().add(
+            UserSettingsEvent.usualFoodNameChanged(usualFood.id, name),
+          ),
+          onChanged: _onNutritionChanged,
+          onRemoved: () async {
+            final confirmed = await ConfirmDialog.show(
+              context,
+              title: 'Delete usual food?',
+              message:
+                  'This permanently deletes "${usualFood.name}". '
+                  'Meals you already built with it are unaffected.',
+              confirmLabel: 'Delete',
+              isDestructive: true,
+            );
+            if (!confirmed) return;
+            getIt<UserSettingsBloc>().add(
+              UserSettingsEvent.usualFoodRemoved(usualFood.id),
+            );
+          },
+        ),
+      ),
     );
   }
 }

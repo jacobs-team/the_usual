@@ -137,6 +137,11 @@ abstract class UserSettingsState with _$UserSettingsState {
     /// checkbox's default the next time it opens.
     @Default(true) bool saveMealAsUsual,
 
+    /// The default value of the per-food "Save food as usual" checkbox. Chosen
+    /// in Settings; unlike [saveMealAsUsual] it is not updated by toggling the
+    /// checkbox itself.
+    @Default(false) bool saveFoodAsUsualDefault,
+
     /// The last "Save as usual" choice in the workout entry sheet, restored as
     /// the checkbox's default the next time it opens.
     @Default(false) bool saveWorkoutAsUsual,

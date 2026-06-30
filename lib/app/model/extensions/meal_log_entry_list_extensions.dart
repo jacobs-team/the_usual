@@ -95,6 +95,37 @@ extension MealLogEntryListFormatting on List<MealLogEntry> {
     return [?mostRecent, ...remaining];
   }
 
+  /// The usual [foods] ordered by most recently used: the food most recently
+  /// logged as a component of any meal entry comes first. Foods never logged
+  /// keep their original library order, after every food that has been logged.
+  List<UsualFood> orderedByRecentUse(List<UsualFood> foods) {
+    final lastUsed = <String, DateTime>{};
+    for (final mealLogEntry in this) {
+      for (final mealComponent in mealLogEntry.components) {
+        final usualFoodId = mealComponent.usualFoodId;
+        if (usualFoodId == null) continue;
+        final last = lastUsed[usualFoodId];
+        if (last == null || mealLogEntry.loggedAt.isAfter(last)) {
+          lastUsed[usualFoodId] = mealLogEntry.loggedAt;
+        }
+      }
+    }
+
+    final originalIndex = {
+      for (final (index, food) in foods.indexed) food.id: index,
+    };
+    return [...foods]..sort((a, b) {
+      final lastA = lastUsed[a.id];
+      final lastB = lastUsed[b.id];
+      if (lastA != null && lastB != null && lastA != lastB) {
+        return lastB.compareTo(lastA);
+      }
+      if (lastA == null && lastB != null) return 1;
+      if (lastA != null && lastB == null) return -1;
+      return originalIndex[a.id]!.compareTo(originalIndex[b.id]!);
+    });
+  }
+
   /// The entries logged for [mealOfTheDay] on the logical day before [day]
   /// (rolling over at [dayStart]) that aren't already logged on [day] for it,
   /// matched by name or linked id so something already logged today isn't

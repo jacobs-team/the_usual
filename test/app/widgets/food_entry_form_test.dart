@@ -27,6 +27,12 @@ void main() {
       await getIt.unregister<UserSettingsBloc>();
     }
     getIt.registerSingleton<UserSettingsBloc>(userSettingsBloc);
+    final dailyLogBloc = MockDailyLogBloc();
+    when(() => dailyLogBloc.state).thenReturn(const DailyLogState());
+    if (getIt.isRegistered<DailyLogBloc>()) {
+      await getIt.unregister<DailyLogBloc>();
+    }
+    getIt.registerSingleton<DailyLogBloc>(dailyLogBloc);
     if (!getIt.isRegistered<FoodEntryBloc>()) {
       getIt.registerFactory<FoodEntryBloc>(
         () => FoodEntryBloc(
@@ -501,7 +507,7 @@ void main() {
   );
 
   testWidgets(
-    'by-foods: tapping "Add a food" then "New food" fires foodAdded',
+    'by-foods: entering a food in the picker and tapping Add adds a row',
     (tester) async {
       await pumpByFoodsForm(tester);
 
@@ -515,11 +521,13 @@ void main() {
 
       expect(find.byType(UsualFoodPickerSheet), findsOneWidget);
 
-      // Tap the "New food" tile.
-      await tester.tap(find.byKey(const Key('pickerNewFood')));
+      // Enter a name in the picker's entry card and tap its Add button.
+      await tester.enterText(find.byKey(const Key('newFoodName')), 'Avocado');
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithIcon(FilledButton, Icons.add));
       await tester.pumpAndSettle();
 
-      // The sheet is dismissed and a new food row was added
+      // The sheet is dismissed and the entered food was added as a new row
       // (two QuantitySteppers: the initial one plus the new one).
       expect(find.byType(UsualFoodPickerSheet), findsNothing);
       expect(find.byType(QuantityStepper), findsWidgets);

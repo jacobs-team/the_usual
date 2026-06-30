@@ -96,6 +96,19 @@ class FoodEntryBloc extends Bloc<MealEntryEvent, MealEntryState> {
             ],
           ),
         ),
+        MealEntryFoodEntered() => emit(
+          state.copyWith(
+            foods: [
+              ...state.foods,
+              FoodDraft(
+                id: _uuid.v4(),
+                name: event.name,
+                nutrition: event.nutrition,
+                usualFoodId: event.usualFoodId,
+              ),
+            ],
+          ),
+        ),
         MealEntryFoodSavedAsUsual() => emit(
           state.copyWith(
             foods: _mapFood(

@@ -55,7 +55,7 @@ extension MealEntryEventPatterns on MealEntryEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( MealEntryStarted value)?  started,TResult Function( MealEntryFoodAdded value)?  foodAdded,TResult Function( MealEntryFoodRemoved value)?  foodRemoved,TResult Function( MealEntryFoodNameChanged value)?  foodNameChanged,TResult Function( MealEntryFoodNutritionChanged value)?  foodNutritionChanged,TResult Function( MealEntryFoodQuantityChanged value)?  foodQuantityChanged,TResult Function( MealEntryFoodAddToUsualMealsToggled value)?  foodAddToUsualMealsToggled,TResult Function( MealEntryModeToggled value)?  entryModeToggled,TResult Function( MealEntryMealOfTheDayChanged value)?  mealOfTheDayChanged,TResult Function( MealEntryPhotosAdded value)?  photosAdded,TResult Function( MealEntryPhotoRemoved value)?  photoRemoved,TResult Function( MealEntryPhotosCleared value)?  photosCleared,TResult Function( MealEntryEstimateRequested value)?  estimateRequested,TResult Function( MealEntryMealNameChanged value)?  mealNameChanged,TResult Function( MealEntryDescriptionChanged value)?  descriptionChanged,TResult Function( MealEntryFoodPicked value)?  foodPicked,TResult Function( MealEntryFoodSavedAsUsual value)?  foodSavedAsUsual,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( MealEntryStarted value)?  started,TResult Function( MealEntryFoodAdded value)?  foodAdded,TResult Function( MealEntryFoodRemoved value)?  foodRemoved,TResult Function( MealEntryFoodNameChanged value)?  foodNameChanged,TResult Function( MealEntryFoodNutritionChanged value)?  foodNutritionChanged,TResult Function( MealEntryFoodQuantityChanged value)?  foodQuantityChanged,TResult Function( MealEntryFoodAddToUsualMealsToggled value)?  foodAddToUsualMealsToggled,TResult Function( MealEntryModeToggled value)?  entryModeToggled,TResult Function( MealEntryMealOfTheDayChanged value)?  mealOfTheDayChanged,TResult Function( MealEntryPhotosAdded value)?  photosAdded,TResult Function( MealEntryPhotoRemoved value)?  photoRemoved,TResult Function( MealEntryPhotosCleared value)?  photosCleared,TResult Function( MealEntryEstimateRequested value)?  estimateRequested,TResult Function( MealEntryMealNameChanged value)?  mealNameChanged,TResult Function( MealEntryDescriptionChanged value)?  descriptionChanged,TResult Function( MealEntryFoodPicked value)?  foodPicked,TResult Function( MealEntryFoodEntered value)?  foodEntered,TResult Function( MealEntryFoodSavedAsUsual value)?  foodSavedAsUsual,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case MealEntryStarted() when started != null:
@@ -74,7 +74,8 @@ return photosCleared(_that);case MealEntryEstimateRequested() when estimateReque
 return estimateRequested(_that);case MealEntryMealNameChanged() when mealNameChanged != null:
 return mealNameChanged(_that);case MealEntryDescriptionChanged() when descriptionChanged != null:
 return descriptionChanged(_that);case MealEntryFoodPicked() when foodPicked != null:
-return foodPicked(_that);case MealEntryFoodSavedAsUsual() when foodSavedAsUsual != null:
+return foodPicked(_that);case MealEntryFoodEntered() when foodEntered != null:
+return foodEntered(_that);case MealEntryFoodSavedAsUsual() when foodSavedAsUsual != null:
 return foodSavedAsUsual(_that);case _:
   return orElse();
 
@@ -93,7 +94,7 @@ return foodSavedAsUsual(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( MealEntryStarted value)  started,required TResult Function( MealEntryFoodAdded value)  foodAdded,required TResult Function( MealEntryFoodRemoved value)  foodRemoved,required TResult Function( MealEntryFoodNameChanged value)  foodNameChanged,required TResult Function( MealEntryFoodNutritionChanged value)  foodNutritionChanged,required TResult Function( MealEntryFoodQuantityChanged value)  foodQuantityChanged,required TResult Function( MealEntryFoodAddToUsualMealsToggled value)  foodAddToUsualMealsToggled,required TResult Function( MealEntryModeToggled value)  entryModeToggled,required TResult Function( MealEntryMealOfTheDayChanged value)  mealOfTheDayChanged,required TResult Function( MealEntryPhotosAdded value)  photosAdded,required TResult Function( MealEntryPhotoRemoved value)  photoRemoved,required TResult Function( MealEntryPhotosCleared value)  photosCleared,required TResult Function( MealEntryEstimateRequested value)  estimateRequested,required TResult Function( MealEntryMealNameChanged value)  mealNameChanged,required TResult Function( MealEntryDescriptionChanged value)  descriptionChanged,required TResult Function( MealEntryFoodPicked value)  foodPicked,required TResult Function( MealEntryFoodSavedAsUsual value)  foodSavedAsUsual,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( MealEntryStarted value)  started,required TResult Function( MealEntryFoodAdded value)  foodAdded,required TResult Function( MealEntryFoodRemoved value)  foodRemoved,required TResult Function( MealEntryFoodNameChanged value)  foodNameChanged,required TResult Function( MealEntryFoodNutritionChanged value)  foodNutritionChanged,required TResult Function( MealEntryFoodQuantityChanged value)  foodQuantityChanged,required TResult Function( MealEntryFoodAddToUsualMealsToggled value)  foodAddToUsualMealsToggled,required TResult Function( MealEntryModeToggled value)  entryModeToggled,required TResult Function( MealEntryMealOfTheDayChanged value)  mealOfTheDayChanged,required TResult Function( MealEntryPhotosAdded value)  photosAdded,required TResult Function( MealEntryPhotoRemoved value)  photoRemoved,required TResult Function( MealEntryPhotosCleared value)  photosCleared,required TResult Function( MealEntryEstimateRequested value)  estimateRequested,required TResult Function( MealEntryMealNameChanged value)  mealNameChanged,required TResult Function( MealEntryDescriptionChanged value)  descriptionChanged,required TResult Function( MealEntryFoodPicked value)  foodPicked,required TResult Function( MealEntryFoodEntered value)  foodEntered,required TResult Function( MealEntryFoodSavedAsUsual value)  foodSavedAsUsual,}){
 final _that = this;
 switch (_that) {
 case MealEntryStarted():
@@ -112,7 +113,8 @@ return photosCleared(_that);case MealEntryEstimateRequested():
 return estimateRequested(_that);case MealEntryMealNameChanged():
 return mealNameChanged(_that);case MealEntryDescriptionChanged():
 return descriptionChanged(_that);case MealEntryFoodPicked():
-return foodPicked(_that);case MealEntryFoodSavedAsUsual():
+return foodPicked(_that);case MealEntryFoodEntered():
+return foodEntered(_that);case MealEntryFoodSavedAsUsual():
 return foodSavedAsUsual(_that);}
 }
 /// A variant of `map` that fallback to returning `null`.
@@ -127,7 +129,7 @@ return foodSavedAsUsual(_that);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( MealEntryStarted value)?  started,TResult? Function( MealEntryFoodAdded value)?  foodAdded,TResult? Function( MealEntryFoodRemoved value)?  foodRemoved,TResult? Function( MealEntryFoodNameChanged value)?  foodNameChanged,TResult? Function( MealEntryFoodNutritionChanged value)?  foodNutritionChanged,TResult? Function( MealEntryFoodQuantityChanged value)?  foodQuantityChanged,TResult? Function( MealEntryFoodAddToUsualMealsToggled value)?  foodAddToUsualMealsToggled,TResult? Function( MealEntryModeToggled value)?  entryModeToggled,TResult? Function( MealEntryMealOfTheDayChanged value)?  mealOfTheDayChanged,TResult? Function( MealEntryPhotosAdded value)?  photosAdded,TResult? Function( MealEntryPhotoRemoved value)?  photoRemoved,TResult? Function( MealEntryPhotosCleared value)?  photosCleared,TResult? Function( MealEntryEstimateRequested value)?  estimateRequested,TResult? Function( MealEntryMealNameChanged value)?  mealNameChanged,TResult? Function( MealEntryDescriptionChanged value)?  descriptionChanged,TResult? Function( MealEntryFoodPicked value)?  foodPicked,TResult? Function( MealEntryFoodSavedAsUsual value)?  foodSavedAsUsual,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( MealEntryStarted value)?  started,TResult? Function( MealEntryFoodAdded value)?  foodAdded,TResult? Function( MealEntryFoodRemoved value)?  foodRemoved,TResult? Function( MealEntryFoodNameChanged value)?  foodNameChanged,TResult? Function( MealEntryFoodNutritionChanged value)?  foodNutritionChanged,TResult? Function( MealEntryFoodQuantityChanged value)?  foodQuantityChanged,TResult? Function( MealEntryFoodAddToUsualMealsToggled value)?  foodAddToUsualMealsToggled,TResult? Function( MealEntryModeToggled value)?  entryModeToggled,TResult? Function( MealEntryMealOfTheDayChanged value)?  mealOfTheDayChanged,TResult? Function( MealEntryPhotosAdded value)?  photosAdded,TResult? Function( MealEntryPhotoRemoved value)?  photoRemoved,TResult? Function( MealEntryPhotosCleared value)?  photosCleared,TResult? Function( MealEntryEstimateRequested value)?  estimateRequested,TResult? Function( MealEntryMealNameChanged value)?  mealNameChanged,TResult? Function( MealEntryDescriptionChanged value)?  descriptionChanged,TResult? Function( MealEntryFoodPicked value)?  foodPicked,TResult? Function( MealEntryFoodEntered value)?  foodEntered,TResult? Function( MealEntryFoodSavedAsUsual value)?  foodSavedAsUsual,}){
 final _that = this;
 switch (_that) {
 case MealEntryStarted() when started != null:
@@ -146,7 +148,8 @@ return photosCleared(_that);case MealEntryEstimateRequested() when estimateReque
 return estimateRequested(_that);case MealEntryMealNameChanged() when mealNameChanged != null:
 return mealNameChanged(_that);case MealEntryDescriptionChanged() when descriptionChanged != null:
 return descriptionChanged(_that);case MealEntryFoodPicked() when foodPicked != null:
-return foodPicked(_that);case MealEntryFoodSavedAsUsual() when foodSavedAsUsual != null:
+return foodPicked(_that);case MealEntryFoodEntered() when foodEntered != null:
+return foodEntered(_that);case MealEntryFoodSavedAsUsual() when foodSavedAsUsual != null:
 return foodSavedAsUsual(_that);case _:
   return null;
 
@@ -164,7 +167,7 @@ return foodSavedAsUsual(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( List<FoodDraft>? initialFoods,  List<MealPhoto> photos,  MealOfTheDay? mealOfTheDay)?  started,TResult Function( bool addToUsualMeals)?  foodAdded,TResult Function( String id)?  foodRemoved,TResult Function( String id,  String name)?  foodNameChanged,TResult Function( String id,  Nutrition nutrition)?  foodNutritionChanged,TResult Function( String id,  double quantity)?  foodQuantityChanged,TResult Function( String id,  bool addToUsualMeals)?  foodAddToUsualMealsToggled,TResult Function( MealEntryMode mealEntryMode)?  entryModeToggled,TResult Function( MealOfTheDay mealOfTheDay)?  mealOfTheDayChanged,TResult Function( List<MealPhoto> photos)?  photosAdded,TResult Function( int index)?  photoRemoved,TResult Function()?  photosCleared,TResult Function()?  estimateRequested,TResult Function( String mealName)?  mealNameChanged,TResult Function( String description)?  descriptionChanged,TResult Function( UsualFood usualFood)?  foodPicked,TResult Function( String id,  String usualFoodId)?  foodSavedAsUsual,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( List<FoodDraft>? initialFoods,  List<MealPhoto> photos,  MealOfTheDay? mealOfTheDay)?  started,TResult Function( bool addToUsualMeals)?  foodAdded,TResult Function( String id)?  foodRemoved,TResult Function( String id,  String name)?  foodNameChanged,TResult Function( String id,  Nutrition nutrition)?  foodNutritionChanged,TResult Function( String id,  double quantity)?  foodQuantityChanged,TResult Function( String id,  bool addToUsualMeals)?  foodAddToUsualMealsToggled,TResult Function( MealEntryMode mealEntryMode)?  entryModeToggled,TResult Function( MealOfTheDay mealOfTheDay)?  mealOfTheDayChanged,TResult Function( List<MealPhoto> photos)?  photosAdded,TResult Function( int index)?  photoRemoved,TResult Function()?  photosCleared,TResult Function()?  estimateRequested,TResult Function( String mealName)?  mealNameChanged,TResult Function( String description)?  descriptionChanged,TResult Function( UsualFood usualFood)?  foodPicked,TResult Function( String name,  Nutrition nutrition,  String? usualFoodId)?  foodEntered,TResult Function( String id,  String usualFoodId)?  foodSavedAsUsual,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case MealEntryStarted() when started != null:
 return started(_that.initialFoods,_that.photos,_that.mealOfTheDay);case MealEntryFoodAdded() when foodAdded != null:
@@ -182,7 +185,8 @@ return photosCleared();case MealEntryEstimateRequested() when estimateRequested 
 return estimateRequested();case MealEntryMealNameChanged() when mealNameChanged != null:
 return mealNameChanged(_that.mealName);case MealEntryDescriptionChanged() when descriptionChanged != null:
 return descriptionChanged(_that.description);case MealEntryFoodPicked() when foodPicked != null:
-return foodPicked(_that.usualFood);case MealEntryFoodSavedAsUsual() when foodSavedAsUsual != null:
+return foodPicked(_that.usualFood);case MealEntryFoodEntered() when foodEntered != null:
+return foodEntered(_that.name,_that.nutrition,_that.usualFoodId);case MealEntryFoodSavedAsUsual() when foodSavedAsUsual != null:
 return foodSavedAsUsual(_that.id,_that.usualFoodId);case _:
   return orElse();
 
@@ -201,7 +205,7 @@ return foodSavedAsUsual(_that.id,_that.usualFoodId);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( List<FoodDraft>? initialFoods,  List<MealPhoto> photos,  MealOfTheDay? mealOfTheDay)  started,required TResult Function( bool addToUsualMeals)  foodAdded,required TResult Function( String id)  foodRemoved,required TResult Function( String id,  String name)  foodNameChanged,required TResult Function( String id,  Nutrition nutrition)  foodNutritionChanged,required TResult Function( String id,  double quantity)  foodQuantityChanged,required TResult Function( String id,  bool addToUsualMeals)  foodAddToUsualMealsToggled,required TResult Function( MealEntryMode mealEntryMode)  entryModeToggled,required TResult Function( MealOfTheDay mealOfTheDay)  mealOfTheDayChanged,required TResult Function( List<MealPhoto> photos)  photosAdded,required TResult Function( int index)  photoRemoved,required TResult Function()  photosCleared,required TResult Function()  estimateRequested,required TResult Function( String mealName)  mealNameChanged,required TResult Function( String description)  descriptionChanged,required TResult Function( UsualFood usualFood)  foodPicked,required TResult Function( String id,  String usualFoodId)  foodSavedAsUsual,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( List<FoodDraft>? initialFoods,  List<MealPhoto> photos,  MealOfTheDay? mealOfTheDay)  started,required TResult Function( bool addToUsualMeals)  foodAdded,required TResult Function( String id)  foodRemoved,required TResult Function( String id,  String name)  foodNameChanged,required TResult Function( String id,  Nutrition nutrition)  foodNutritionChanged,required TResult Function( String id,  double quantity)  foodQuantityChanged,required TResult Function( String id,  bool addToUsualMeals)  foodAddToUsualMealsToggled,required TResult Function( MealEntryMode mealEntryMode)  entryModeToggled,required TResult Function( MealOfTheDay mealOfTheDay)  mealOfTheDayChanged,required TResult Function( List<MealPhoto> photos)  photosAdded,required TResult Function( int index)  photoRemoved,required TResult Function()  photosCleared,required TResult Function()  estimateRequested,required TResult Function( String mealName)  mealNameChanged,required TResult Function( String description)  descriptionChanged,required TResult Function( UsualFood usualFood)  foodPicked,required TResult Function( String name,  Nutrition nutrition,  String? usualFoodId)  foodEntered,required TResult Function( String id,  String usualFoodId)  foodSavedAsUsual,}) {final _that = this;
 switch (_that) {
 case MealEntryStarted():
 return started(_that.initialFoods,_that.photos,_that.mealOfTheDay);case MealEntryFoodAdded():
@@ -219,7 +223,8 @@ return photosCleared();case MealEntryEstimateRequested():
 return estimateRequested();case MealEntryMealNameChanged():
 return mealNameChanged(_that.mealName);case MealEntryDescriptionChanged():
 return descriptionChanged(_that.description);case MealEntryFoodPicked():
-return foodPicked(_that.usualFood);case MealEntryFoodSavedAsUsual():
+return foodPicked(_that.usualFood);case MealEntryFoodEntered():
+return foodEntered(_that.name,_that.nutrition,_that.usualFoodId);case MealEntryFoodSavedAsUsual():
 return foodSavedAsUsual(_that.id,_that.usualFoodId);}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -234,7 +239,7 @@ return foodSavedAsUsual(_that.id,_that.usualFoodId);}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( List<FoodDraft>? initialFoods,  List<MealPhoto> photos,  MealOfTheDay? mealOfTheDay)?  started,TResult? Function( bool addToUsualMeals)?  foodAdded,TResult? Function( String id)?  foodRemoved,TResult? Function( String id,  String name)?  foodNameChanged,TResult? Function( String id,  Nutrition nutrition)?  foodNutritionChanged,TResult? Function( String id,  double quantity)?  foodQuantityChanged,TResult? Function( String id,  bool addToUsualMeals)?  foodAddToUsualMealsToggled,TResult? Function( MealEntryMode mealEntryMode)?  entryModeToggled,TResult? Function( MealOfTheDay mealOfTheDay)?  mealOfTheDayChanged,TResult? Function( List<MealPhoto> photos)?  photosAdded,TResult? Function( int index)?  photoRemoved,TResult? Function()?  photosCleared,TResult? Function()?  estimateRequested,TResult? Function( String mealName)?  mealNameChanged,TResult? Function( String description)?  descriptionChanged,TResult? Function( UsualFood usualFood)?  foodPicked,TResult? Function( String id,  String usualFoodId)?  foodSavedAsUsual,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( List<FoodDraft>? initialFoods,  List<MealPhoto> photos,  MealOfTheDay? mealOfTheDay)?  started,TResult? Function( bool addToUsualMeals)?  foodAdded,TResult? Function( String id)?  foodRemoved,TResult? Function( String id,  String name)?  foodNameChanged,TResult? Function( String id,  Nutrition nutrition)?  foodNutritionChanged,TResult? Function( String id,  double quantity)?  foodQuantityChanged,TResult? Function( String id,  bool addToUsualMeals)?  foodAddToUsualMealsToggled,TResult? Function( MealEntryMode mealEntryMode)?  entryModeToggled,TResult? Function( MealOfTheDay mealOfTheDay)?  mealOfTheDayChanged,TResult? Function( List<MealPhoto> photos)?  photosAdded,TResult? Function( int index)?  photoRemoved,TResult? Function()?  photosCleared,TResult? Function()?  estimateRequested,TResult? Function( String mealName)?  mealNameChanged,TResult? Function( String description)?  descriptionChanged,TResult? Function( UsualFood usualFood)?  foodPicked,TResult? Function( String name,  Nutrition nutrition,  String? usualFoodId)?  foodEntered,TResult? Function( String id,  String usualFoodId)?  foodSavedAsUsual,}) {final _that = this;
 switch (_that) {
 case MealEntryStarted() when started != null:
 return started(_that.initialFoods,_that.photos,_that.mealOfTheDay);case MealEntryFoodAdded() when foodAdded != null:
@@ -252,7 +257,8 @@ return photosCleared();case MealEntryEstimateRequested() when estimateRequested 
 return estimateRequested();case MealEntryMealNameChanged() when mealNameChanged != null:
 return mealNameChanged(_that.mealName);case MealEntryDescriptionChanged() when descriptionChanged != null:
 return descriptionChanged(_that.description);case MealEntryFoodPicked() when foodPicked != null:
-return foodPicked(_that.usualFood);case MealEntryFoodSavedAsUsual() when foodSavedAsUsual != null:
+return foodPicked(_that.usualFood);case MealEntryFoodEntered() when foodEntered != null:
+return foodEntered(_that.name,_that.nutrition,_that.usualFoodId);case MealEntryFoodSavedAsUsual() when foodSavedAsUsual != null:
 return foodSavedAsUsual(_that.id,_that.usualFoodId);case _:
   return null;
 
@@ -1295,6 +1301,85 @@ $UsualFoodCopyWith<$Res> get usualFood {
   
   return $UsualFoodCopyWith<$Res>(_self.usualFood, (value) {
     return _then(_self.copyWith(usualFood: value));
+  });
+}
+}
+
+/// @nodoc
+
+
+class MealEntryFoodEntered implements MealEntryEvent {
+  const MealEntryFoodEntered({required this.name, required this.nutrition, this.usualFoodId});
+  
+
+ final  String name;
+ final  Nutrition nutrition;
+ final  String? usualFoodId;
+
+/// Create a copy of MealEntryEvent
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$MealEntryFoodEnteredCopyWith<MealEntryFoodEntered> get copyWith => _$MealEntryFoodEnteredCopyWithImpl<MealEntryFoodEntered>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is MealEntryFoodEntered&&(identical(other.name, name) || other.name == name)&&(identical(other.nutrition, nutrition) || other.nutrition == nutrition)&&(identical(other.usualFoodId, usualFoodId) || other.usualFoodId == usualFoodId));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,name,nutrition,usualFoodId);
+
+@override
+String toString() {
+  return 'MealEntryEvent.foodEntered(name: $name, nutrition: $nutrition, usualFoodId: $usualFoodId)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $MealEntryFoodEnteredCopyWith<$Res> implements $MealEntryEventCopyWith<$Res> {
+  factory $MealEntryFoodEnteredCopyWith(MealEntryFoodEntered value, $Res Function(MealEntryFoodEntered) _then) = _$MealEntryFoodEnteredCopyWithImpl;
+@useResult
+$Res call({
+ String name, Nutrition nutrition, String? usualFoodId
+});
+
+
+$NutritionCopyWith<$Res> get nutrition;
+
+}
+/// @nodoc
+class _$MealEntryFoodEnteredCopyWithImpl<$Res>
+    implements $MealEntryFoodEnteredCopyWith<$Res> {
+  _$MealEntryFoodEnteredCopyWithImpl(this._self, this._then);
+
+  final MealEntryFoodEntered _self;
+  final $Res Function(MealEntryFoodEntered) _then;
+
+/// Create a copy of MealEntryEvent
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? name = null,Object? nutrition = null,Object? usualFoodId = freezed,}) {
+  return _then(MealEntryFoodEntered(
+name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as String,nutrition: null == nutrition ? _self.nutrition : nutrition // ignore: cast_nullable_to_non_nullable
+as Nutrition,usualFoodId: freezed == usualFoodId ? _self.usualFoodId : usualFoodId // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+/// Create a copy of MealEntryEvent
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$NutritionCopyWith<$Res> get nutrition {
+  
+  return $NutritionCopyWith<$Res>(_self.nutrition, (value) {
+    return _then(_self.copyWith(nutrition: value));
   });
 }
 }

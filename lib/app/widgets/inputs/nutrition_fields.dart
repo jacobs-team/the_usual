@@ -87,14 +87,14 @@ class _NutritionFieldsState extends State<NutritionFields> {
   @override
   Widget build(BuildContext context) {
     return Wrap(
-      spacing: AppDesign.spacing.md,
+      spacing: AppDesign.spacing.sm,
       runSpacing: AppDesign.spacing.sm,
       children: [
         _LabeledMacroField(
           label: 'CALORIES',
           unit: 'cal',
           maxDigits: 4,
-          width: widget.dense ? 96 : 104,
+          width: widget.dense ? 76 : 88,
           dense: widget.dense,
           controller: _caloriesController,
           onChanged: (_) => _emit(),
@@ -103,7 +103,7 @@ class _NutritionFieldsState extends State<NutritionFields> {
           label: 'PROTEIN',
           unit: 'g',
           maxDigits: 3,
-          width: widget.dense ? 72 : 80,
+          width: widget.dense ? 56 : 64,
           dense: widget.dense,
           controller: _proteinController,
           onChanged: (_) => _emit(),
@@ -112,7 +112,7 @@ class _NutritionFieldsState extends State<NutritionFields> {
           label: 'CARBS',
           unit: 'g',
           maxDigits: 3,
-          width: widget.dense ? 72 : 80,
+          width: widget.dense ? 56 : 64,
           dense: widget.dense,
           controller: _carbsController,
           onChanged: (_) => _emit(),
@@ -121,7 +121,7 @@ class _NutritionFieldsState extends State<NutritionFields> {
           label: 'FAT',
           unit: 'g',
           maxDigits: 3,
-          width: widget.dense ? 72 : 80,
+          width: widget.dense ? 56 : 64,
           dense: widget.dense,
           controller: _fatController,
           onChanged: (_) => _emit(),

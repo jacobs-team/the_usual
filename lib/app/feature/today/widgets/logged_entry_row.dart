@@ -120,7 +120,10 @@ UsualMeal? _findLinkedUsualMeal(
 }
 
 /// An [ExpansionTile] showing a composed meal's name and total nutrition when
-/// collapsed, and one [_ComposedComponentRow] per component when expanded.
+/// collapsed, and its components when expanded: one [_ComposedComponentRow] per
+/// component inside a tinted, rail-marked group that reads as nested under the
+/// meal, followed by an action to add another food from the usual foods
+/// library. Component nutrition is read-only here and edited in that library.
 /// Shows an [UpdateUsualButton] footer mirroring the plain-entry footer: "Save
 /// as usual" when not linked, "Update usual meal to match" when linked but the
 /// components or nutrition differ, and nothing when identical.
@@ -214,18 +217,112 @@ class _ComposedLoggedEntry extends StatelessWidget {
               ),
             ),
             children: [
-              for (
-                var index = 0;
-                index < mealLogEntry.components.length;
-                index++
-              )
-                _ComposedComponentRow(
-                  key: ValueKey(index),
-                  mealLogEntryId: mealLogEntry.id,
-                  mealComponent: mealLogEntry.components[index],
-                  componentIndex: index,
+              Container(
+                margin: EdgeInsets.only(top: AppDesign.spacing.xs),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(AppDesign.radius.sm),
                 ),
-              ?footer,
+                child: Stack(
+                  children: [
+                    // Full-height connector rail marking the ingredients as
+                    // nested under the meal.
+                    Positioned(
+                      left: AppDesign.spacing.sm,
+                      top: AppDesign.spacing.sm,
+                      bottom: AppDesign.spacing.sm,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.outlineVariant,
+                          borderRadius: BorderRadius.circular(1),
+                        ),
+                        child: const SizedBox(width: 2),
+                      ),
+                    ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(
+                        AppDesign.spacing.sm + AppDesign.spacing.md,
+                        0,
+                        0,
+                        0,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          for (
+                            var index = 0;
+                            index < mealLogEntry.components.length;
+                            index++
+                          ) ...[
+                            if (index > 0) const Divider(height: 1),
+                            _ComposedComponentRow(
+                              key: ValueKey(index),
+                              mealLogEntryId: mealLogEntry.id,
+                              mealComponent: mealLogEntry.components[index],
+                              componentIndex: index,
+                            ),
+                          ],
+                          const Divider(height: 1),
+                          TextButton.icon(
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.symmetric(
+                                vertical: AppDesign.spacing.xs,
+                              ),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            onPressed: () async {
+                              final result =
+                                  await TheUsualBottomSheet.show<
+                                    UsualFoodPickerResult
+                                  >(
+                                    context,
+                                    builder: (_) =>
+                                        const UsualFoodPickerSheet(),
+                                  );
+                              if (result == null) return;
+                              final component = switch (result) {
+                                PickedFoodPickerResult(:final usualFood) =>
+                                  MealComponent(
+                                    name: usualFood.name,
+                                    nutrition: usualFood.nutrition,
+                                    usualFoodId: usualFood.id,
+                                  ),
+                                CreatedFoodPickerResult(
+                                  :final name,
+                                  :final nutrition,
+                                  :final saveAsUsual,
+                                ) =>
+                                  MealComponent(
+                                    name: name,
+                                    nutrition: nutrition,
+                                    usualFoodId: saveAsUsual
+                                        ? getIt<UserSettingsBloc>()
+                                              .saveAsUsualFood(name, nutrition)
+                                        : null,
+                                  ),
+                              };
+                              getIt<DailyLogBloc>().add(
+                                DailyLogEvent.mealEntryComponentAdded(
+                                  mealLogEntry.id,
+                                  component,
+                                ),
+                              );
+                            },
+                            icon: const Icon(Icons.add),
+                            label: const Text('Add a food'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (footer != null)
+                Padding(
+                  padding: EdgeInsets.only(top: AppDesign.spacing.sm),
+                  child: footer,
+                ),
             ],
           ),
         );
@@ -234,10 +331,11 @@ class _ComposedLoggedEntry extends StatelessWidget {
   }
 }
 
-/// A single component row inside a composed meal entry: the component name,
-/// its scaled nutrition summary, a quantity stepper, and a tap-to-reveal set of
-/// editable nutrition fields.
-class _ComposedComponentRow extends StatefulWidget {
+/// A single component row inside a composed meal entry: the component name, its
+/// scaled nutrition as a [NutritionSummary], and a quantity stepper. Nutrition
+/// itself is read-only here; it is edited in the usual foods library via the
+/// meal header's edit action.
+class _ComposedComponentRow extends StatelessWidget {
   const _ComposedComponentRow({
     required this.mealLogEntryId,
     required this.mealComponent,
@@ -250,73 +348,69 @@ class _ComposedComponentRow extends StatefulWidget {
   final int componentIndex;
 
   @override
-  State<_ComposedComponentRow> createState() => _ComposedComponentRowState();
-}
-
-class _ComposedComponentRowState extends State<_ComposedComponentRow> {
-  bool _nutritionExpanded = false;
-
-  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final mealComponent = widget.mealComponent;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        InkWell(
-          onTap: () => setState(() => _nutritionExpanded = !_nutritionExpanded),
-          child: Padding(
-            padding: EdgeInsets.symmetric(vertical: AppDesign.spacing.xs),
-            child: Row(
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: AppDesign.spacing.sm),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: DefaultTextStyle.merge(
-                    style: theme.textTheme.bodyMedium,
-                    child: Wrap(
-                      spacing: AppDesign.spacing.sm,
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      children: [
-                        Text(
-                          mealComponent.name,
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                        NutritionSummary(mealComponent.scaledNutrition),
-                      ],
-                    ),
-                  ),
-                ),
-                QuantityStepper(
-                  dense: true,
-                  quantity: mealComponent.quantity,
-                  onChanged: (quantity) => getIt<DailyLogBloc>().add(
-                    DailyLogEvent.mealEntryComponentQuantityChanged(
-                      widget.mealLogEntryId,
-                      widget.componentIndex,
-                      quantity,
-                    ),
-                  ),
+                Text(mealComponent.name, style: theme.textTheme.bodyMedium),
+                SizedBox(height: AppDesign.spacing.xs),
+                DefaultTextStyle.merge(
+                  style: theme.textTheme.bodyMedium,
+                  child: NutritionSummary(mealComponent.scaledNutrition),
                 ),
               ],
             ),
           ),
-        ),
-        if (_nutritionExpanded)
-          Padding(
-            padding: EdgeInsets.only(bottom: AppDesign.spacing.sm),
-            child: NutritionFields(
-              dense: true,
-              initial: mealComponent.nutrition,
-              onChanged: (nutrition) => getIt<DailyLogBloc>().add(
-                DailyLogEvent.mealEntryComponentNutritionChanged(
-                  widget.mealLogEntryId,
-                  widget.componentIndex,
-                  nutrition,
-                ),
+          SizedBox(width: AppDesign.spacing.sm),
+          if (mealComponent.usualFoodId == null) ...[
+            SaveUsualIconButton(
+              onPressed: () {
+                final usualFoodId = getIt<UserSettingsBloc>().saveAsUsualFood(
+                  mealComponent.name,
+                  mealComponent.nutrition,
+                );
+                getIt<DailyLogBloc>().add(
+                  DailyLogEvent.mealEntryComponentUsualFoodLinked(
+                    mealLogEntryId,
+                    componentIndex,
+                    usualFoodId,
+                  ),
+                );
+              },
+            ),
+            SizedBox(width: AppDesign.spacing.sm),
+          ],
+          QuantityStepper(
+            dense: true,
+            showStepSizeToggle: false,
+            quantity: mealComponent.quantity,
+            onChanged: (quantity) => getIt<DailyLogBloc>().add(
+              DailyLogEvent.mealEntryComponentQuantityChanged(
+                mealLogEntryId,
+                componentIndex,
+                quantity,
               ),
             ),
           ),
-      ],
+          IconButton(
+            icon: const Icon(Icons.delete_forever_outlined),
+            tooltip: 'Remove food',
+            onPressed: () => getIt<DailyLogBloc>().add(
+              DailyLogEvent.mealEntryComponentRemoved(
+                mealLogEntryId,
+                componentIndex,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

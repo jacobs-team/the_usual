@@ -42,6 +42,11 @@ sealed class MealEntryEvent with _$MealEntryEvent {
       MealEntryDescriptionChanged;
   const factory MealEntryEvent.foodPicked(UsualFood usualFood) =
       MealEntryFoodPicked;
+  const factory MealEntryEvent.foodEntered({
+    required String name,
+    required Nutrition nutrition,
+    String? usualFoodId,
+  }) = MealEntryFoodEntered;
   const factory MealEntryEvent.foodSavedAsUsual(String id, String usualFoodId) =
       MealEntryFoodSavedAsUsual;
 }
