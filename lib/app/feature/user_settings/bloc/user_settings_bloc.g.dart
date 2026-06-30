@@ -129,7 +129,7 @@ _UserSettingsState _$UserSettingsStateFromJson(
       $enumDecodeNullable(_$WeightUnitEnumMap, json['workoutWeightUnit']) ??
       WeightUnit.lb,
   saveMealAsUsual: json['saveMealAsUsual'] as bool? ?? true,
-  saveFoodAsUsualDefault: json['saveFoodAsUsualDefault'] as bool? ?? false,
+  saveFoodAsUsualDefault: json['saveFoodAsUsualDefault'] as bool? ?? true,
   saveWorkoutAsUsual: json['saveWorkoutAsUsual'] as bool? ?? false,
 );
 
