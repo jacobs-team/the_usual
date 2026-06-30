@@ -209,7 +209,7 @@ void main() {
       ).called(1);
     });
 
-    testWidgets('logging something else adds a somethingElseLogged event', (
+    testWidgets('logging Something New adds a somethingElseLogged event', (
       tester,
     ) async {
       useTallWindow(tester);

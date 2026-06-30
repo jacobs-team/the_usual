@@ -243,7 +243,7 @@ void main() {
       ).called(1);
     });
 
-    testWidgets('logs something else and adds it to usuals when checked', (
+    testWidgets('logs Something New and adds it to usuals when checked', (
       tester,
     ) async {
       // Saving as a usual goes through saveAsUsualMeal, which returns the id to
@@ -262,7 +262,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextFormField).first, 'Burrito');
       await tester.pump();
-      // The section's own "Something else" button is still mounted behind the
+      // The section's own "Something New" button is still mounted behind the
       // sheet, so scope to the sheet's confirm button.
       await tester.tap(
         find.descendant(
@@ -301,7 +301,7 @@ void main() {
       await tester.pump();
       await tester.tap(find.byType(Checkbox));
       await tester.pump();
-      // The section's own "Something else" button is still mounted behind the
+      // The section's own "Something New" button is still mounted behind the
       // sheet, so scope to the sheet's confirm button.
       await tester.tap(
         find.descendant(
@@ -418,7 +418,7 @@ void main() {
           ),
         );
 
-        // Open the "Something else" sheet.
+        // Open the "Something New" sheet.
         await tester.tap(find.byIcon(Icons.add));
         await tester.pumpAndSettle();
 
@@ -435,10 +435,12 @@ void main() {
         // in ComposedMealFields is the meal-name field; the second is the first
         // food row's name field.
         await tester.enterText(
-          find.descendant(
-            of: find.byType(ComposedMealFields),
-            matching: find.byType(TextFormField),
-          ).at(1),
+          find
+              .descendant(
+                of: find.byType(ComposedMealFields),
+                matching: find.byType(TextFormField),
+              )
+              .at(1),
           'Eggs',
         );
         await tester.pump();
@@ -447,10 +449,12 @@ void main() {
         // above are FilledButton.tonalIcon variants that also render as
         // FilledButton in the widget tree).
         await tester.tap(
-          find.descendant(
-            of: find.byType(FoodEntrySheet),
-            matching: find.byType(FilledButton),
-          ).last,
+          find
+              .descendant(
+                of: find.byType(FoodEntrySheet),
+                matching: find.byType(FilledButton),
+              )
+              .last,
         );
         await tester.pumpAndSettle();
 

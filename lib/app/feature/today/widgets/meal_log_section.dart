@@ -231,7 +231,7 @@ class MealLogSection extends StatelessWidget {
                                 >(
                                   context,
                                   builder: (context) => const FoodEntrySheet(
-                                    title: 'Log something else',
+                                    title: 'Log Something New',
                                     confirmLabel: 'Log',
                                     showAddToUsualMeals: true,
                                   ),
@@ -257,7 +257,7 @@ class MealLogSection extends StatelessWidget {
                             }
                           },
                           icon: const Icon(Icons.add),
-                          label: const Text('Something else'),
+                          label: const Text('Something New'),
                         ),
                         if (otherMealUsuals.isNotEmpty)
                           FilledButton.tonalIcon(

@@ -46,7 +46,7 @@ class ComposedMealFields extends StatelessWidget {
   final void Function(String id) onFoodRemoved;
   final VoidCallback onFoodAdded;
 
-  /// Called when the user taps "Save to library" on a food row. The id
+  /// Called when the user taps "Save food as usual" on a food row. The id
   /// identifies which [FoodDraft] to save.
   final void Function(String id) onFoodSaveToLibrary;
 
@@ -257,16 +257,19 @@ class _ComposedFoodRowState extends State<_ComposedFoodRow> {
             SizedBox(height: AppDesign.spacing.sm),
             Row(
               children: [
-                if (widget.foodDraft.usualFoodId == null) ...[
-                  SaveUsualIconButton(onPressed: widget.onSaveToLibrary),
-                  SizedBox(width: AppDesign.spacing.sm),
-                ],
                 QuantityStepper(
                   dense: true,
                   quantity: widget.foodDraft.quantity,
                   onChanged: widget.onQuantityChanged,
                 ),
                 const Spacer(),
+                SaveAsUsualCheckbox(
+                  label: 'Save food as usual',
+                  value: widget.foodDraft.usualFoodId != null,
+                  onChanged: (value) {
+                    if (value) widget.onSaveToLibrary();
+                  },
+                ),
               ],
             ),
           ],

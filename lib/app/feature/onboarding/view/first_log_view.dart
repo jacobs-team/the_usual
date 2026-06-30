@@ -67,7 +67,7 @@ class _FirstLogViewState extends State<FirstLogView> {
                     child: mealsWithUsuals.isEmpty
                         ? const Center(
                             child: Text(
-                              'No usual meals yet. Tap "I ate something else" '
+                              'No usual meals yet. Tap "I ate Something New" '
                               'to add what you had.',
                               textAlign: TextAlign.center,
                             ),
@@ -108,7 +108,7 @@ class _FirstLogViewState extends State<FirstLogView> {
                             >(
                               context,
                               builder: (context) => const FoodEntrySheet(
-                                title: 'Log something else',
+                                title: 'Log Something New',
                                 confirmLabel: 'Log',
                               ),
                             );
@@ -125,7 +125,7 @@ class _FirstLogViewState extends State<FirstLogView> {
                         }
                       },
                       icon: const Icon(Icons.camera_alt_outlined),
-                      label: const Text('I ate something else'),
+                      label: const Text('I ate Something New'),
                     ),
                     primary: FilledButton(
                       onPressed: selectedIds.isEmpty

@@ -41,10 +41,12 @@ Enumerate the inclusive calendar days a range spans, each as a date-only
 `DateTime`, so the Today view can fan a log out across a multi-day range.
 
 **Files:**
+
 - Modify: `lib/app/core/extensions/day_boundary.dart`
 - Test: `test/app/core/extensions/day_boundary_test.dart` (create if absent; otherwise add the group)
 
 **Interfaces:**
+
 - Produces: `extension LogicalDaysInRange on DateTimeRange { List<DateTime> get logicalDays; }` — returns date-only `DateTime`s from `start` to `end` inclusive; a single-day range (start and end on the same calendar day) returns one element.
 
 - [ ] **Step 1: Write the failing test**
@@ -151,6 +153,7 @@ to an optional `logDays` list, dispatching one `mealLogged` per day. `null`
 keeps the live-today behavior (`day: null` → `clock.now()`).
 
 **Files:**
+
 - Modify: `lib/app/feature/today/widgets/meal_log_section.dart`
 - Modify: `lib/app/feature/today/widgets/cross_meal_picker_sheet.dart`
 - Modify: `lib/app/feature/history/widgets/history_meal_sheet.dart:50-71`
@@ -158,6 +161,7 @@ keeps the live-today behavior (`day: null` → `clock.now()`).
 - Test: `test/app/feature/today/widgets/cross_meal_picker_sheet_test.dart`
 
 **Interfaces:**
+
 - Consumes: `DateTimeRange.logicalDays` (Task 1) — used by callers, not here.
 - Produces:
   - `MealLogSection({..., List<DateTime>? logDays, TimeOfDay? dayStart, ...})` — `logDays` null logs live to today; non-null logs one entry per listed day stamped via `dayStart`.
@@ -275,7 +279,7 @@ Replace the `day` field (lines 45-47) and its doc with:
 
 (Keep the `dayStart` field and its doc as-is.)
 
-Add this private method to the class (it has several callers below — the quick-pick chip and each food from the "Something else" sheet — so it is not a single-use extraction):
+Add this private method to the class (it has several callers below — the quick-pick chip and each food from the "Something New" sheet — so it is not a single-use extraction):
 
 ```dart
   /// Logs [name] under [mealOfTheDay] onto every day in [logDays], or to today
@@ -332,7 +336,7 @@ Change the quick-pick chip `onPressed` (was lines 132-142) to:
                               ),
 ```
 
-Change the "Something else" per-food dispatch (was lines 181-190) to:
+Change the "Something New" per-food dispatch (was lines 181-190) to:
 
 ```dart
                               _logOntoTargetDays(
@@ -472,12 +476,14 @@ Widen `WeightEntryField` from a single `day` to a `days` list: it displays and
 prefills from the first day and writes the entered weight to every day.
 
 **Files:**
+
 - Modify: `lib/app/widgets/inputs/weight_entry_field.dart`
 - Modify: `lib/app/feature/history/view/history_view.dart:450`
 - Modify: `lib/app/feature/today/view/today_view.dart:242` (inside `_WeightTracker`)
 - Test: `test/app/widgets/weight_entry_field_test.dart`
 
 **Interfaces:**
+
 - Produces: `WeightEntryField({required List<DateTime> days, bool showLastWeightButton})` — reads/prefills the weigh-in for `days.first`; typing/clearing/"Use last" dispatches `weightOnDayChanged` once per day in `days`.
 
 - [ ] **Step 1: Update the `WeightEntryField` tests to the new API and add a multi-day test**
@@ -599,10 +605,12 @@ Let `TheUsualAppBar` render a custom title widget (the date pill) while History
 keeps its plain string title.
 
 **Files:**
+
 - Modify: `lib/app/widgets/display/the_usual_app_bar.dart`
 - Test: `test/app/widgets/display/the_usual_app_bar_test.dart` (create if absent)
 
 **Interfaces:**
+
 - Produces: `TheUsualAppBar({required String title, Widget? titleWidget})` — renders `titleWidget` centered when non-null, otherwise `Text(title)`. `title` remains the semantic/fallback label.
 
 - [ ] **Step 1: Write the failing test**
@@ -695,10 +703,12 @@ render the tappable date pill, and feed everything through. This is the task
 that turns the parts above into the feature.
 
 **Files:**
+
 - Modify: `lib/app/feature/today/view/today_view.dart`
 - Test: `test/app/feature/today/view/today_view_test.dart`
 
 **Interfaces:**
+
 - Consumes: `DateTimeRange.logicalDays` (Task 1); `MealLogSection({logDays, dayStart})` (Task 2); `WeightEntryField({days})` (Task 3); `TheUsualAppBar({titleWidget})` (Task 4).
 
 - [ ] **Step 1: Add the `intl` import and pill key, and the failing render test**
@@ -951,9 +961,10 @@ Expected: All tests pass. If any unrelated test references the old `day:` / `Wei
 - [ ] **Step 3: Ask the developer to run the app and verify manually**
 
 Provide this checklist for the developer to run from VS Code:
+
 - Tap the pill → picker opens. Pick a single past day → pill shows that date; the day's meals, weight, and quick picks reflect that day; logging a meal lands on that day; no meal section is highlighted.
 - Pick today again → pill reads "Today"; the live view returns with the current meal highlighted.
-- Pick a multi-day range → pill shows "start – end". Log a quick pick and a "Something else"; confirm (via History or by switching to each day) the entry landed on every day in the range. Enter a weight; confirm it landed on every day.
+- Pick a multi-day range → pill shows "start – end". Log a quick pick and a "Something New"; confirm (via History or by switching to each day) the entry landed on every day in the range. Enter a weight; confirm it landed on every day.
 - From History, add a forgotten meal → still logs onto that single day (regression check).
 
 - [ ] **Step 4: Commit (if any test fixups were needed in Step 2)**
@@ -966,6 +977,7 @@ Suggested message: `test: align remaining call sites with multi-day logging APIs
 ## Self-Review
 
 **Spec coverage:**
+
 - Selected-day state (`DateTimeRange? _selectedRange`, null = live) → Task 5.
 - Pill + `showDateRangePicker`, any past/present/future date → Task 5 (firstDate 2000, lastDate 2100), Task 4 (slot).
 - Pill label (Today / single date / range) → Task 5 `_pillLabel`.

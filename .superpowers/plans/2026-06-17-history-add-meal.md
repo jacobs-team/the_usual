@@ -30,6 +30,7 @@
 - Modify `lib/app/feature/history/view/history_view.dart` — render all four meals always, each with a `+` that opens the sheet.
 
 Tests:
+
 - Modify `test/app/feature/today/bloc/daily_log_bloc_test.dart`
 - Modify `test/app/feature/today/widgets/meal_log_section_test.dart`
 - Modify `test/app/feature/today/widgets/cross_meal_picker_sheet_test.dart`
@@ -40,11 +41,13 @@ Tests:
 ### Task 1: Day-aware meal logging in the bloc
 
 **Files:**
+
 - Modify: `lib/app/feature/today/bloc/daily_log_event.dart:5-12`
 - Modify: `lib/app/feature/today/bloc/daily_log_bloc.dart:115-130`
 - Test: `test/app/feature/today/bloc/daily_log_bloc_test.dart`
 
 **Interfaces:**
+
 - Produces: `DailyLogEvent.mealLogged(MealOfTheDay mealOfTheDay, String name, {Nutrition nutrition, double quantity, String? usualMealId, String? photoPath, DateTime? day, TimeOfDay? dayStart})`. When `day` and `dayStart` are both non-null, the entry's `loggedAt` is `day.atDayStart(dayStart)`; otherwise `clock.now()`.
 
 - [ ] **Step 1: Write the failing test**
@@ -151,12 +154,14 @@ Tell Jacob the changes are ready and suggest:
 ### Task 2: Thread day/dayStart through the add UI
 
 **Files:**
+
 - Modify: `lib/app/feature/today/widgets/meal_log_section.dart`
 - Modify: `lib/app/feature/today/widgets/cross_meal_picker_sheet.dart`
 - Test: `test/app/feature/today/widgets/meal_log_section_test.dart`
 - Test: `test/app/feature/today/widgets/cross_meal_picker_sheet_test.dart`
 
 **Interfaces:**
+
 - Consumes: `DailyLogEvent.mealLogged(..., {DateTime? day, TimeOfDay? dayStart})` from Task 1.
 - Produces:
   - `MealLogSection(... , {DateTime? day, TimeOfDay? dayStart})` — forwards `day`/`dayStart` into every meal it logs and into `OtherMealUsualsSheet`.
@@ -392,7 +397,7 @@ In the quick-pick chip `onPressed` (lines 123-131), forward them:
                               ),
 ```
 
-In the "Something else" results loop (lines 169-176), forward them:
+In the "Something New" results loop (lines 169-176), forward them:
 
 ```dart
                               getIt<DailyLogBloc>().add(
@@ -433,11 +438,13 @@ Suggested message:
 ### Task 3: History meal sheet widget
 
 **Files:**
+
 - Create: `lib/app/feature/history/widgets/history_meal_sheet.dart`
 - Modify: `lib/app/feature/history/widgets/widgets.dart`
 - Test: `test/app/feature/history/widgets/history_meal_sheet_test.dart`
 
 **Interfaces:**
+
 - Consumes: `MealLogSection(... , {DateTime? day, TimeOfDay? dayStart})` from Task 2; the `orderedQuickPicks` / `usualsFromOtherMeals` / `breakdownOn` extensions on `List<MealLogEntry>`.
 - Produces: `HistoryMealSheet({required MealOfTheDay mealOfTheDay, required DateTime day})` — a sheet body that renders the Today meal card for `mealOfTheDay` on `day`, reactive to `DailyLogBloc` and `UserSettingsBloc`, logging onto `day`.
 
@@ -646,10 +653,12 @@ Suggested message:
 ### Task 4: Per-meal add button on history days
 
 **Files:**
+
 - Modify: `lib/app/feature/history/view/history_view.dart:389-402`
 - Test: `test/app/feature/history/view/history_view_test.dart` (create if absent)
 
 **Interfaces:**
+
 - Consumes: `HistoryMealSheet({required MealOfTheDay mealOfTheDay, required DateTime day})` from Task 3.
 
 - [ ] **Step 1: Write the failing test**
@@ -803,6 +812,7 @@ Suggested message:
 ## Self-Review
 
 **Spec coverage:**
+
 - Day-aware logging → Task 1. ✓
 - Thread target day through `MealLogSection` and `OtherMealUsualsSheet` → Task 2. ✓
 - `HistoryMealSheet` hosting `MealLogSection` in a `CustomScrollView`, reactive to both blocs, computing quick-picks/other-meals/breakdown for the day → Task 3. ✓

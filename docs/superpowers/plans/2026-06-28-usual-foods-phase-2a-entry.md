@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add a "By foods" mode to the meal-entry form that builds one composed meal (a name plus component foods with steppers and a live total), have the AI itemize into base-unit components, and log/save that composed meal through the primary Today "Something else" path.
+**Goal:** Add a "By foods" mode to the meal-entry form that builds one composed meal (a name plus component foods with steppers and a live total), have the AI itemize into base-unit components, and log/save that composed meal through the primary Today "Something New" path.
 
 **Architecture:** Reuse the existing `MealEntryMode` (`wholeMeal` | `itemized`) as the form's "Whole meal / By foods" toggle. Whole-meal mode is today's behavior unchanged (flat rows, each row → its own independent entry) minus the removed itemize checkbox. By-foods mode renders a composed builder: one meal-name field plus a list of component rows, producing a single `FoodEntryResult` carrying `components`. `FoodEntryResult` keeps being a `List<...>` so callers' per-result loops stay intact; whole-meal yields N results with empty `components`, by-foods yields one result with `components`. The logging events (`MealLogged`, `saveAsUsualMeal`, `usualMealAdded`) gain an additive `components` parameter.
 
@@ -14,7 +14,7 @@
 2. **`FoodEntryResult` stays a list element; gains `components`.** Whole-meal builds one result per named row with `components: const []`. By-foods builds exactly one result: `name` = meal name, `nutrition` = the components' total (one serving), `quantity` = 1, `components` = the rows.
 3. **Per-food "Save as a usual food" (library write) and the food picker are DEFERRED to the Phase 4 library work** — they have no payoff without a browse/reuse surface, and Phase 2a's goal is editable composition. The `usualFoods` field from Phase 1 stays unused until then. The by-foods per-food editor in 2a edits name/quantity/macros only.
 4. **Composed display in the Today log (the inline expand-to-tweak interaction) is Phase 3.** In 2a, a logged composed meal renders with today's `LoggedEntryRow` (name + summed nutrition); its `components` persist but aren't shown/expanded yet. That is expected, not a gap.
-5. **Scope is the Today "Something else" path only** (`meal_log_section.dart`). Onboarding (build-usuals, first-log), settings "Add meal", and share-to-log migrate in Phase 2b.
+5. **Scope is the Today "Something New" path only** (`meal_log_section.dart`). Onboarding (build-usuals, first-log), settings "Add meal", and share-to-log migrate in Phase 2b.
 
 ## Global Constraints
 
@@ -48,6 +48,7 @@
 ### Task 1: `MealLogged` and usual-meal save events accept `components`
 
 **Files:**
+
 - Modify: `lib/app/feature/today/bloc/daily_log_event.dart` (the `MealLogged` factory)
 - Modify: `lib/app/feature/today/bloc/daily_log_bloc.dart` (the `_onMealLogged` handler that builds the `MealLogEntry`)
 - Modify: `lib/app/feature/user_settings/bloc/user_settings_event.dart` (`SettingsUsualMealAdded`)
@@ -55,6 +56,7 @@
 - Test: `test/app/feature/today/bloc/daily_log_bloc_test.dart`, `test/app/feature/user_settings/bloc/user_settings_bloc_test.dart`
 
 **Interfaces:**
+
 - Consumes: `MealComponent`, `List<MealComponent>.componentsTotal` (Phase 1).
 - Produces:
   - `DailyLogEvent.mealLogged(... , {List<MealComponent> components = const []})` → the built `MealLogEntry` carries `components`.
@@ -168,6 +170,7 @@ In `user_settings_event.dart`, add to `SettingsUsualMealAdded`:
 ```
 
 In `user_settings_bloc.dart`:
+
 - In the `usualMealAdded` handler, pass `components: event.components` into the `UsualMeal(...)` it builds.
 - In `saveAsUsualMeal`, add `{List<MealComponent> components = const <MealComponent>[]}` to the signature and pass it into the `UsualMeal(...)` created for a new usual. (When it finds an EXISTING usual by name, keep today's behavior — return that id unchanged; do not mutate its components in this task.)
 
@@ -183,10 +186,12 @@ Expected: PASS, including all pre-existing tests.
 ### Task 2: `FoodEntryResult` carries `components`
 
 **Files:**
+
 - Modify: `lib/app/widgets/inputs/food_entry_form.dart` (the `FoodEntryResult` typedef + the `results` getter + the `initialFoods` → `FoodDraft` seeding)
 - Test: `test/app/widgets/food_entry_form_test.dart`
 
 **Interfaces:**
+
 - Produces: `FoodEntryResult = ({String name, Nutrition nutrition, double quantity, bool addToUsualMeals, List<MealComponent> components})`. Whole-meal mode yields results with `components: const <MealComponent>[]`.
 
 - [ ] **Step 1: Write/extend the failing test**
@@ -234,12 +239,14 @@ Expected: PASS.
 ### Task 3: `mealName` state + event for the by-foods builder
 
 **Files:**
+
 - Modify: `lib/app/feature/meal_entry/bloc/meal_entry_state.dart` (add `mealName`)
 - Modify: `lib/app/feature/meal_entry/bloc/meal_entry_event.dart` (add `mealNameChanged`)
 - Modify: `lib/app/feature/meal_entry/bloc/meal_entry_bloc.dart` (handle it; seed it in `_onStarted`)
 - Test: `test/app/feature/meal_entry/bloc/meal_entry_bloc_test.dart` (create if absent; otherwise extend)
 
 **Interfaces:**
+
 - Produces: `MealEntryState.mealName` (`String`, default `''`); `MealEntryEvent.mealNameChanged(String mealName)` → `MealEntryMealNameChanged`. Used only by the by-foods builder; whole-meal ignores it.
 
 - [ ] **Step 1: Write the failing bloc test**
@@ -295,10 +302,12 @@ Expected: PASS.
 ### Task 4: AI itemize normalizes to base-unit foods (prompt + schema wording)
 
 **Files:**
+
 - Modify: `lib/app/core/networking/repository/meal_ai_repository.dart` (the `_itemizedGrouping` and item-name/quantity wording)
 - Test: there is no live-AI test; assert the prompt/rule text the repository sends. Add/extend `test/app/core/networking/repository/meal_ai_repository_test.dart` if a seam exists; otherwise assert via a `MealAiClient` mock capturing the `prompt` argument.
 
 **Interfaces:**
+
 - Consumes/produces: no signature change. `suggestFromDescription`/`suggestFromPhoto` still return `List<AiMealSuggestion>`; itemized mode's prompt now instructs base-unit normalization.
 
 - [ ] **Step 1: Write the failing test**
@@ -367,10 +376,12 @@ Expected: PASS.
 ### Task 5: By-foods estimate assembly in `FoodEntryBloc`
 
 **Files:**
+
 - Modify: `lib/app/feature/meal_entry/bloc/meal_entry_bloc.dart` (the itemized branch of `_onEstimateRequested`/`_runPhotoEstimate`)
 - Test: `test/app/feature/meal_entry/bloc/meal_entry_bloc_test.dart`
 
 **Interfaces:**
+
 - Consumes: `MealAiRepository.suggestFromDescription/suggestFromPhoto`, `MealEntryMode`.
 - Produces: in `itemized` (By foods) mode, an estimate fills the component rows (`state.foods` become the components) AND sets `state.mealName` from the user's typed description when present; in `wholeMeal` mode behavior is unchanged.
 
@@ -432,10 +443,12 @@ Expected: PASS, all pre-existing bloc tests included.
 ### Task 6: The "Whole meal / By foods" toggle replaces the itemize checkbox
 
 **Files:**
+
 - Modify: `lib/app/widgets/inputs/food_entry_form.dart` (the AI assist row)
 - Test: `test/app/widgets/food_entry_form_test.dart`
 
 **Interfaces:**
+
 - Consumes: `MealEntryMode`, `MealEntryEvent.entryModeToggled`.
 - Produces: a `SegmentedButton<MealEntryMode>` with "Whole meal" (`wholeMeal`) and "By foods" (`itemized`) segments, dispatching `entryModeToggled`. The old `Checkbox`+`Text('Itemize')`+`Tooltip` are removed.
 
@@ -489,10 +502,12 @@ Expected: PASS.
 ### Task 7: The by-foods composed builder body + composed `results`
 
 **Files:**
+
 - Modify: `lib/app/widgets/inputs/food_entry_form.dart` — render the by-foods body when `mealEntryMode == itemized`, and produce a single composed `FoodEntryResult` from `results` in that mode. If the file exceeds ~250 lines after this, extract the by-foods body into `lib/app/widgets/inputs/composed_meal_fields.dart` (a private-to-feature widget) and export via the widgets barrel.
 - Test: `test/app/widgets/food_entry_form_test.dart`
 
 **Interfaces:**
+
 - Consumes: `MealEntryState.mealName`/`foods`, `MealComponent`, `List<MealComponent>.componentsTotal`, `QuantityStepper`, `NutritionFields`, `NutritionSummary`.
 - Produces: in `itemized` mode, `FoodEntryFormState.results` returns a single-element list: one `FoodEntryResult` with `name` = `mealName` (fallback to a sensible default if empty), `nutrition` = `components.componentsTotal`, `quantity` = 1, `addToUsualMeals` = the form's save-as-usual choice, `components` = a `MealComponent` per named row (`name`, `nutrition`, `quantity`; `usualFoodId: null` in 2a). In `wholeMeal` mode, `results` is unchanged (one per named row, empty components).
 
@@ -519,6 +534,7 @@ Expected: FAIL — by-foods body/`results` branch not implemented.
 - [ ] **Step 3: Implement the by-foods body and `results` branch**
 
 When `state.mealEntryMode == MealEntryMode.itemized`, render (instead of the flat whole-meal rows):
+
 1. A meal-name `TheUsualTextField` bound to `mealName` (dispatch `mealNameChanged`).
 2. A `FOODS` section: one compact row per `FoodDraft` — name field, a `QuantityStepper` (dispatch `foodQuantityChanged`), and a per-row `NutritionFields` revealed on tap (reuse `ExpandableNutrition` or an inline expander; for 2a an always-visible dense `NutritionFields` under each row is acceptable if expand-on-tap is more work — keep it dense). A remove control when `foods.length > 1`. An "Add a food" button (`foodAdded`).
 3. A read-only meal-total line: `DefaultTextStyle.merge(... NutritionSummary(components.componentsTotal))`, where `components` is built from the current `foods`.
@@ -526,6 +542,7 @@ When `state.mealEntryMode == MealEntryMode.itemized`, render (instead of the fla
 Add a private helper on the state/widget to build `List<MealComponent>` from `state.foods` (named rows only): `name`, `nutrition`, `quantity`, `usualFoodId: null`.
 
 In `results`, branch on `_bloc.state.mealEntryMode`:
+
 - `wholeMeal`: today's behavior (unchanged).
 - `itemized`: return `[(name: mealName-or-fallback, nutrition: components.componentsTotal, quantity: 1, addToUsualMeals: <form save-as-usual>, components: components)]` when there is at least one named component; otherwise `[]`.
 
@@ -542,13 +559,15 @@ Expected: PASS.
 
 ---
 
-### Task 8: Today "Something else" logs the composed meal
+### Task 8: Today "Something New" logs the composed meal
 
 **Files:**
+
 - Modify: `lib/app/feature/today/widgets/meal_log_section.dart` (the `FoodEntrySheet` result handler at ~line 235, and `_logOntoTargetDays`)
 - Test: `test/app/feature/today/widgets/meal_log_section_test.dart`
 
 **Interfaces:**
+
 - Consumes: `FoodEntryResult.components`, `DailyLogEvent.mealLogged(..., components:)`, `UserSettingsBloc.saveAsUsualMeal(..., components:)`.
 - Produces: a composed `FoodEntryResult` logs as ONE `MealLogEntry` with its components; when `addToUsualMeals`, the created usual carries the same components.
 
@@ -594,9 +613,11 @@ Run: `fvm flutter analyze lib test` and grep for `.summary`/`.detail` usages of 
 - [ ] **Step 2: Run the affected suites with a random seed**
 
 Run:
+
 ```bash
 fvm flutter test test/app/widgets test/app/feature/today test/app/feature/user_settings test/app/feature/meal_entry test/app/core/networking --test-randomize-ordering-seed random
 ```
+
 Expected: PASS. Fix any fallout from the `FoodEntryResult` shape change (record literals missing `components`) and the toggle change (tests asserting the old `Itemize` checkbox). Note: a pre-existing unrelated failure in `usual_meal_list_test.dart` (developer's ConfirmDialog WIP) may persist — confirm it is the same failure and unrelated, do not fix it here.
 
 - [ ] **Step 3: Analyzer clean on touched dirs**
@@ -611,6 +632,7 @@ Expected: No errors (fix errors only, not info/warnings).
 ## Self-Review
 
 **Spec coverage (Phase 2a slice):**
+
 - "Whole meal / By foods" toggle replacing the itemize control → Task 6. ✓
 - By-foods composed builder (meal name + component rows + steppers + per-row macros + computed total) → Task 7. ✓
 - `MealComponent`-carrying result + logging one composed entry → Tasks 2, 8. ✓

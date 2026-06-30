@@ -19,17 +19,17 @@ Top to bottom:
 - **App bar**: title "Today", a Settings action, and a debug-only dev tools action.
 - **Weight tracker**: a card showing the most recent weigh-in (value + unit) or "No weigh-ins yet", with a button to log/update today's weight.
 - **Calorie total**: "N cal today", summing the calories of everything logged today.
-- **Four meal sections** (breakfast, lunch, dinner, snacks): each shows what's already logged for that meal, quick-pick chips for the user's usual meals not yet logged, and an "I ate something else" entry point. The meal nearest the current time is outlined as the focal one, but every meal is fillable so the day can be backfilled.
+- **Four meal sections** (breakfast, lunch, dinner, snacks): each shows what's already logged for that meal, quick-pick chips for the user's usual meals not yet logged, and an "I ate Something New" entry point. The meal nearest the current time is outlined as the focal one, but every meal is fillable so the day can be backfilled.
 
 ## Interactions
 
-| Action | What happens |
-| --- | --- |
-| Tap a usual-meal quick-pick chip | Logs that meal instantly, carrying the usual meal's stored calories (which may be null) |
-| Tap "I ate something else" | Opens a sheet for a name + optional calories, logs a one-off entry |
-| Edit the calories field on a logged row | Updates that entry's calories; blank means it stops counting toward the total |
-| Tap the ✕ on a logged row | Removes that entry |
-| Tap "Log weight" / "Update" | Opens a dialog to enter a weight; records a weigh-in stamped with the current unit |
+| Action                                  | What happens                                                                            |
+| --------------------------------------- | --------------------------------------------------------------------------------------- |
+| Tap a usual-meal quick-pick chip        | Logs that meal instantly, carrying the usual meal's stored calories (which may be null) |
+| Tap "I ate Something New"               | Opens a sheet for a name + optional calories, logs a one-off entry                      |
+| Edit the calories field on a logged row | Updates that entry's calories; blank means it stops counting toward the total           |
+| Tap the ✕ on a logged row               | Removes that entry                                                                      |
+| Tap "Log weight" / "Update"             | Opens a dialog to enter a weight; records a weigh-in stamped with the current unit      |
 
 The starting weight entered during onboarding is committed as the first weigh-in when onboarding completes, so a freshly-onboarded user already sees a weight at the top.
 
@@ -61,7 +61,7 @@ Both are **snapshots**: a log entry stores its own `name`/`calories` and a weigh
 
 ### Shared widgets it reuses (`lib/app/widgets/`)
 
-`FoodEntrySheet` (name + optional calories, also used by Settings), `TheUsualTextField` (the calorie field), and `AteSomethingElseDialog` is *not* used here — Today uses `FoodEntrySheet` so a one-off can carry calories.
+`FoodEntrySheet` (name + optional calories, also used by Settings), `TheUsualTextField` (the calorie field), and `AteSomethingElseDialog` is _not_ used here — Today uses `FoodEntrySheet` so a one-off can carry calories.
 
 ### Routing
 

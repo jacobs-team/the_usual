@@ -34,12 +34,14 @@ End state: `FoodEntryForm`/`FoodEntrySheet` behave exactly as today, but their d
 Reason: `MealPhoto` is about to be used by the picker, the bloc, the repository, the AI client, and the share service. Per the typedef-vs-model rule, reused/cross-feature data is a freezed model, and moving it to `lib/app/model/` lets `core/` reference it without depending on a `widgets/` file.
 
 **Files:**
+
 - Create: `lib/app/model/meal_photo.dart`
 - Modify: `lib/app/model/model.dart` (barrel — add export)
 - Modify: `lib/app/widgets/inputs/meal_photo_picker.dart:14` (remove the typedef; import the model via the app barrel)
 - Test: `test/app/model/meal_photo_test.dart`
 
 **Interfaces:**
+
 - Produces: `MealPhoto` freezed model with `Uint8List bytes` and `String mediaType` (default `'image/jpeg'`). Equality is identity on `bytes` (freezed default for `Uint8List`); tests assert on `.length`/`.mediaType`, never whole-object equality of photos.
 
 - [ ] **Step 1: Write the failing test**
@@ -133,11 +135,13 @@ Tell the developer: `MealPhoto` is now a freezed model in `lib/app/model/`, the 
 ### Task 2: `FoodDraft` model
 
 **Files:**
+
 - Create: `lib/app/model/food_draft.dart`
 - Modify: `lib/app/model/model.dart` (barrel)
 - Test: `test/app/model/food_draft_test.dart`
 
 **Interfaces:**
+
 - Produces: `FoodDraft` freezed model: `String id`, `String name` (default `''`), `double quantity` (default `1`), `Nutrition nutrition` (default `Nutrition()`), `bool addToUsualMeals` (default `false`). In-memory only, not persisted, so no `fromJson`/migration.
 
 - [ ] **Step 1: Write the failing test**
@@ -220,6 +224,7 @@ Suggested message: `feat: add FoodDraft model for the meal-entry bloc`.
 ### Task 3: `MealEntryState`, `MealEntryStatus`, and `MealEntryEvent`
 
 **Files:**
+
 - Create: `lib/app/feature/meal_entry/bloc/meal_entry_bloc.dart` (declares the bloc class + `part` directives; the class body is filled in Tasks 4–5)
 - Create: `lib/app/feature/meal_entry/bloc/meal_entry_state.dart`
 - Create: `lib/app/feature/meal_entry/bloc/meal_entry_event.dart`
@@ -228,6 +233,7 @@ Suggested message: `feat: add FoodDraft model for the meal-entry bloc`.
 - Modify: `lib/app/app.dart` (add feature barrel export — match how other features are exported)
 
 **Interfaces:**
+
 - Produces:
   - `enum MealEntryStatus { idle, generating, failure }`
   - `MealEntryState`: `List<FoodDraft> foods` (default `[]`), `MealEntryMode mealEntryMode` (default `wholeMeal`), `MealOfTheDay mealOfTheDay` (default `breakfast`), `List<MealPhoto> photos` (default `[]`), `MealEntryStatus status` (default `idle`), `String? errorMessage`. Convenience getters `hasContent` and `isGenerating`.
@@ -384,10 +390,12 @@ Suggested message: `feat: scaffold FoodEntryBloc state and events`.
 ### Task 4: `FoodEntryBloc` non-AI handlers
 
 **Files:**
+
 - Modify: `lib/app/feature/meal_entry/bloc/meal_entry_bloc.dart`
 - Test: `test/app/feature/meal_entry/bloc/meal_entry_bloc_test.dart`
 
 **Interfaces:**
+
 - Consumes: `MealEntryState`, `MealEntryEvent`, `FoodDraft`, `MealAiRepository`, `UserSettingsBloc` (from Tasks 1–3 and existing code).
 - Produces: handlers for `started`, `foodAdded`, `foodRemoved`, `foodNameChanged`, `foodNutritionChanged`, `foodQuantityChanged`, `foodAddToUsualMealsToggled`, `entryModeToggled`, `mealOfTheDayChanged`, `photosAdded`, `photosCleared`. `entryModeToggled` persists to `UserSettingsBloc`. The AI handlers (`estimateRequested`, `photoEstimateRequested`, and `started` auto-estimate) are stubbed to no-op here and implemented in Task 5.
 
@@ -685,10 +693,12 @@ Suggested message: `feat: FoodEntryBloc row, mode, slot, and photo handlers`.
 Reproduce the form's exact estimation behavior: one named row → `suggestFromDescription` (mode may split it, keep the typed name in whole-meal mode); several named rows → estimate each on its own and fill in place keeping names; photos → `suggestFromPhoto` over all held photos.
 
 **Files:**
+
 - Modify: `lib/app/feature/meal_entry/bloc/meal_entry_bloc.dart`
 - Modify: `test/app/feature/meal_entry/bloc/meal_entry_bloc_test.dart`
 
 **Interfaces:**
+
 - Consumes: `MealAiRepository.suggestFromDescription(String, {required MealEntryMode mode})` and (Phase 1 single-photo) `MealAiRepository.suggestFromPhoto(Uint8List, {required MealEntryMode mode, String? description, String imageMediaType})`. **Phase 2 changes the photo signature; the call site is updated in Task 8.**
 - Produces: working `estimateRequested`, `photoEstimateRequested`, and `_runPhotoEstimate`.
 
@@ -939,10 +949,12 @@ Suggested message: `feat: FoodEntryBloc AI estimation handlers`.
 Keep the public surface (`FoodEntryFormState.results`, `hasContent`, `isGenerating`) so `BuildUsualsView` and `FoodEntrySheet` keep working through their `GlobalKey`s. The form creates and owns the bloc.
 
 **Files:**
+
 - Modify: `lib/app/widgets/inputs/food_entry_form.dart` (full rewrite of the State internals; keep `FoodEntryResult` typedef and the widget's constructor params)
 - Test: `test/app/widgets/food_entry_form_test.dart`
 
 **Interfaces:**
+
 - Consumes: `FoodEntryBloc`, `MealEntryState`, `MealEntryEvent`, `pickMealPhoto` (still single in Phase 1).
 - Produces (unchanged public API): `FoodEntryFormState.results` → `List<FoodEntryResult>`, `bool get hasContent`, `bool get isGenerating`, plus new `MealOfTheDay get mealOfTheDay` and `void changeMealOfTheDay(MealOfTheDay)` for the sheet's slot selector (Task 12 uses them). New optional widget params: `List<MealPhoto>? initialPhotos`, `bool autoEstimate = false`, `MealOfTheDay? initialMealOfTheDay`.
 
@@ -1152,12 +1164,14 @@ Suggested message: `refactor: drive FoodEntryForm from FoodEntryBloc`.
 The sheet reads generating/content state from the bloc via the form key (unchanged getters) and now pops `({List<FoodEntryResult> foods, MealOfTheDay mealOfTheDay})`. The meal-slot selector itself is added in Phase 3 (Task 12); here we only change the pop shape and update callers, so behavior is unchanged.
 
 **Files:**
+
 - Modify: `lib/app/widgets/inputs/food_entry_sheet.dart`
 - Modify: `lib/app/feature/today/widgets/meal_log_section.dart:158-191`
 - Modify: `lib/app/feature/onboarding/view/first_log_view.dart:104-126`
 - Test: `test/app/widgets/food_entry_sheet_test.dart`
 
 **Interfaces:**
+
 - Produces: `FoodEntrySheetResult = ({List<FoodEntryResult> foods, MealOfTheDay mealOfTheDay})` (typedef in `food_entry_sheet.dart`); `FoodEntrySheet` pops this. New optional params (used in Phase 3, default off now): `bool showMealSelector = false`, `List<MealPhoto>? initialPhotos`, `bool autoEstimate = false`, `MealOfTheDay? initialMealOfTheDay`.
 - Consumes: `FoodEntryFormState.results` / `mealOfTheDay`.
 
@@ -1273,7 +1287,7 @@ Add the new optional params to the constructor (`showMealSelector`, `initialPhot
 final result = await TheUsualBottomSheet.show<FoodEntrySheetResult>(
   context,
   builder: (context) => const FoodEntrySheet(
-    title: 'Log something else',
+    title: 'Log Something New',
     confirmLabel: 'Log',
     showAddToUsualMeals: true,
   ),
@@ -1291,7 +1305,7 @@ for (final foodResult in result.foods) {
 final result = await TheUsualBottomSheet.show<FoodEntrySheetResult>(
   context,
   builder: (context) => const FoodEntrySheet(
-    title: 'Log something else',
+    title: 'Log Something New',
     confirmLabel: 'Log',
   ),
 );
@@ -1327,6 +1341,7 @@ End state: one estimate pass over several photos; the normal sheet's Photo butto
 ### Task 8: Multi-image `MealAiClient` and `MealAiRepository`
 
 **Files:**
+
 - Modify: `lib/app/core/networking/ai/meal_ai_client.dart:64-98`
 - Modify: `lib/app/core/networking/repository/meal_ai_repository.dart:44-82`
 - Modify: `lib/app/feature/meal_entry/bloc/meal_entry_bloc.dart` (`_runPhotoEstimate` passes all photos)
@@ -1335,6 +1350,7 @@ End state: one estimate pass over several photos; the normal sheet's Photo butto
 - Test: `test/app/core/networking/repository/meal_ai_repository_test.dart` (add a multi-photo case)
 
 **Interfaces:**
+
 - Produces:
   - `MealAiClient.generateStructured<T>({required String prompt, required SchemanticType<T> outputSchema, List<MealPhoto> images = const <MealPhoto>[]})` — emits one `MediaPart` per image in a single user message; text-only when `images` is empty.
   - `MealAiRepository.suggestFromPhoto(List<MealPhoto> photos, {required MealEntryMode mode, String? description})` — drops the old `Uint8List`/`imageMediaType` params.
@@ -1487,6 +1503,7 @@ final suggestions = await repository.suggestFromPhoto(
   mode: MealEntryMode.wholeMeal,
 );
 ```
+
 (Adjust to however the dev tool currently obtains `photo`/bytes; it now passes a `List<MealPhoto>`.)
 
 - [ ] **Step 5: Run tests**
@@ -1504,10 +1521,12 @@ Suggested message: `feat: multi-image meal estimation`.
 ### Task 9: Multi-select in the photo picker
 
 **Files:**
+
 - Modify: `lib/app/widgets/inputs/meal_photo_picker.dart`
 - Modify: `lib/app/widgets/inputs/food_entry_form.dart` (`_photoWithAi` uses the list)
 
 **Interfaces:**
+
 - Produces: `Future<List<MealPhoto>> pickMealPhotos(BuildContext context)` — camera path returns one photo; library path uses `ImagePicker().pickMultiImage(...)`. Returns `[]` when cancelled. (Rename from `pickMealPhoto`; it is `coverage:ignore` platform glue, so no unit test — verified via the form widget test and a developer run.)
 
 - [ ] **Step 1: Update the picker**
@@ -1590,6 +1609,7 @@ Suggested message: `feat: attach multiple photos on the add-meal sheet`.
 ### Task 10: Add `receive_sharing_intent` and native share config
 
 **Files:**
+
 - Modify: `pubspec.yaml`
 - Modify: `android/app/src/main/AndroidManifest.xml`
 - iOS: new Share Extension target + app group (developer-confirmed in Xcode)
@@ -1601,7 +1621,7 @@ Suggested message: `feat: attach multiple photos on the add-meal sheet`.
 Add under `dependencies:` in `pubspec.yaml`:
 
 ```yaml
-  receive_sharing_intent: ^1.8.1
+receive_sharing_intent: ^1.8.1
 ```
 
 Run: `fvm flutter pub get`
@@ -1627,6 +1647,7 @@ In `android/app/src/main/AndroidManifest.xml`, on the main `<activity>`, add fil
 - [ ] **Step 3: iOS Share Extension (developer-confirmed)**
 
 Document for the developer (this plan cannot complete Xcode signing):
+
 1. In Xcode, add a new **Share Extension** target named `ShareExtension`.
 2. Add an **App Group** (e.g. `group.ventures.verygood.theUsual`) capability to **both** the Runner and the ShareExtension targets.
 3. Replace the extension's `Info.plist` `NSExtensionActivationRule` to accept images only (e.g. `NSExtensionActivationSupportsImageWithMaxCount` = a small number like 10, others 0).
@@ -1644,10 +1665,12 @@ Suggested message: `chore: add receive_sharing_intent and share intent filters`.
 ### Task 11: `ShareIngestService`
 
 **Files:**
+
 - Create: `lib/app/core/service/share_ingest_service.dart`
 - Modify: `lib/app/core/service/service.dart` (barrel — match existing service exports)
 
 **Interfaces:**
+
 - Produces: `@singleton ShareIngestService` with:
   - `Future<List<MealPhoto>> takeInitialPhotos()` — drains the cold-start media once, returns `[]` if none, calls `reset()`.
   - `Stream<List<MealPhoto>> get photoStream` — warm-start shares, normalized to `MealPhoto`s.
@@ -1722,10 +1745,12 @@ Suggested message: `feat: ShareIngestService over receive_sharing_intent`.
 ### Task 12: Meal-slot selector on the share sheet
 
 **Files:**
+
 - Modify: `lib/app/widgets/inputs/food_entry_sheet.dart`
 - Test: `test/app/widgets/food_entry_sheet_test.dart`
 
 **Interfaces:**
+
 - Consumes: `FoodEntryFormState.mealOfTheDay` / `changeMealOfTheDay` (Task 6), `showMealSelector` param (Task 7).
 - Produces: when `showMealSelector` is true the sheet renders a `SegmentedButton<MealOfTheDay>` above the form, bound to the form's slot.
 
@@ -1809,11 +1834,13 @@ Suggested message: `feat: meal-slot selector on the share entry sheet`.
 Wire `ShareIngestService` into `TheUsualsApp`: on cold-start media or a stream event, when onboarding is complete, open the seeded share sheet and log the result to the chosen slot. Hold shares that arrive before onboarding completes.
 
 **Files:**
+
 - Modify: `lib/app/the_usuals_app.dart`
 - Modify: `lib/app/navigation/app_router.dart` (expose a root `navigatorKey` for opening the sheet without a widget `context`)
 - Test: none automated (platform glue + navigation); verified by developer run. The slot-selector sheet and the bloc already have coverage.
 
 **Interfaces:**
+
 - Consumes: `ShareIngestService`, `AppRouter.router`, `OnboardingBloc.state.step`, `DailyLogBloc`, `UserSettingsBloc`, `FoodEntrySheet(showMealSelector: true, initialPhotos:, autoEstimate: true)`.
 
 - [ ] **Step 1: Expose a root navigator key**
@@ -1931,6 +1958,7 @@ Expected: clean + PASS.
 - [ ] **Step 5: Developer run (manual, both platforms)**
 
 Ask the developer to:
+
 1. Build to a device/simulator (iOS requires the Task 10 Xcode setup).
 2. From Photos, share one image to **The Usual → Log meal**; confirm the app opens, estimates, pre-fills the sheet at the current slot, and Confirm logs it.
 3. Repeat sharing **multiple** images; confirm one estimate over all.

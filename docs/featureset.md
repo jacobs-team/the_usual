@@ -13,7 +13,7 @@ The core loop is logging what you ate in as few taps as possible.
 - **Tap a usual.** Each meal slot (Breakfast, Lunch, Dinner, Snacks) shows quick-pick chips for your saved usuals. One tap logs it with its stored nutrition and quantity.
 - **Smart quick-pick order.** Chips are ordered by what you logged most recently at that meal time, then by how often you log it there. Anything already logged today for that slot is hidden so the list stays short.
 - **Log from another meal.** A "from another meal" picker lets you log a usual that belongs to a different slot, for the day you eat breakfast food at lunch. It logs into the slot you are viewing, not its home slot.
-- **Something else.** For anything not in your usuals, open the entry form to type a name and enter nutrition by hand, or let the AI estimate it.
+- **Something New.** For anything not in your usuals, open the entry form to type a name and enter nutrition by hand, or let the AI estimate it.
 - **Save as usual.** Any one-off entry can be saved into your usuals library from the entry form, so next time it is a single tap.
 - **Quantity.** Every entry carries a quantity multiplier. Log 1.5 or 0.5 servings and the calories and macros scale automatically.
 - **Itemize or combine.** When entering a multi-food meal you choose "one meal" (a single combined entry) or "itemize" (one row per food). The choice is remembered as your default and switchable per entry.
@@ -116,7 +116,7 @@ A short guided setup runs on first launch and is fully replayable from Settings.
 
 1. **Welcome.** Sign in with Google to back up and sync, or continue offline as a guest.
 2. **Build your usuals.** Add meals per slot with nutrition, using per-meal suggestion chips to cut typing. Skippable, leaving an empty library you backfill as you log.
-3. **First log.** Log what you ate today from the usuals you just built, with a quantity stepper, or add something else. Skippable.
+3. **First log.** Log what you ate today from the usuals you just built, with a quantity stepper, or add Something New. Skippable.
 4. **Reminders.** Choose a reminder style (notifications or none), then a meal schedule of per-meal times (with each meal toggleable, defaults of Breakfast 9:00am, Lunch 2:00pm, Dinner 7:30pm, Snacks off) or a single end-of-day prompt (default 8:00pm). Optionally skip reminders once a meal is logged.
 5. **Weight check-ins.** Pick a frequency, a time of day, your starting weight, and unit. Skippable to off.
 6. **Goals.** Set an optional daily calorie goal and goal weight, each with a unit toggle.
@@ -162,20 +162,20 @@ Edits save immediately with no save button.
 
 ## Capability status at a glance
 
-| Area | Capability | Status |
-|------|-----------|--------|
-| Meals | Tap-to-log usuals, smart quick-picks, cross-meal logging | Shipped |
-| Meals | AI nutrition from text and photo, itemize/combine | Shipped |
-| Meals | Share-to-log from other apps | Shipped |
-| Today | Calorie/macro bar, inline edit, date navigation, multi-day logging | Shipped |
-| History | Month browsing, trends chart, full retroactive editing | Shipped |
-| Weight | Inline weigh-ins, goal, net change, scheduled reminders | Shipped |
-| Workouts | Groups, strength/cardio logging, usuals, progress charts | Shipped |
-| Workouts | AI bodyweight load estimation | Shipped |
-| Workouts | Photo-to-exercise suggestions | Built, UI disabled |
-| Accounts | Google sign-in, cross-device cloud sync, offline-first | Shipped |
-| Settings | Full editing of all preferences, theme, day start, usuals | Shipped |
-| Reminders | Calorie-threshold notification suppression | Designed, on hold |
+| Area      | Capability                                                         | Status             |
+| --------- | ------------------------------------------------------------------ | ------------------ |
+| Meals     | Tap-to-log usuals, smart quick-picks, cross-meal logging           | Shipped            |
+| Meals     | AI nutrition from text and photo, itemize/combine                  | Shipped            |
+| Meals     | Share-to-log from other apps                                       | Shipped            |
+| Today     | Calorie/macro bar, inline edit, date navigation, multi-day logging | Shipped            |
+| History   | Month browsing, trends chart, full retroactive editing             | Shipped            |
+| Weight    | Inline weigh-ins, goal, net change, scheduled reminders            | Shipped            |
+| Workouts  | Groups, strength/cardio logging, usuals, progress charts           | Shipped            |
+| Workouts  | AI bodyweight load estimation                                      | Shipped            |
+| Workouts  | Photo-to-exercise suggestions                                      | Built, UI disabled |
+| Accounts  | Google sign-in, cross-device cloud sync, offline-first             | Shipped            |
+| Settings  | Full editing of all preferences, theme, day start, usuals          | Shipped            |
+| Reminders | Calorie-threshold notification suppression                         | Designed, on hold  |
 
 ---
 

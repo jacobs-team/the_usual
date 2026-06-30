@@ -13,7 +13,7 @@ For every day shown in history, show all four meals (Breakfast, Lunch, Dinner,
 Snacks) regardless of whether they have entries. Each meal label gets a `+`
 button. Tapping it opens the exact Today meal card (`MealLogSection`) in a bottom
 sheet, scoped to that historical day, so the user can add from quick-picks,
-"Something else" (manual/AI entry), or "From another meal" (the cross picker).
+"Something New" (manual/AI entry), or "From another meal" (the cross picker).
 
 ## Constraints discovered
 
@@ -43,7 +43,7 @@ sheet, scoped to that historical day, so the user can add from quick-picks,
 ### 2. Thread the target day through the add UI
 
 - `MealLogSection` gains `DateTime? day` and `TimeOfDay? dayStart` params. Each of
-  its three log paths (quick-pick chip, "Something else" results,
+  its three log paths (quick-pick chip, "Something New" results,
   `OtherMealUsualsSheet`) forwards them into `mealLogged`.
 - `OtherMealUsualsSheet` / `_UsualMealCard` gain `DateTime? day` and
   `TimeOfDay? dayStart` and forward them into `mealLogged`.

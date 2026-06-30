@@ -27,14 +27,14 @@ The flow is a list of active steps derived from state (`OnboardingState.activeSt
 
 Skip means "get me past this screen," but the implied intent differs per screen. Skipping never dead-ends a feature silently: it either keeps editable defaults or turns the feature off in a way Settings can undo.
 
-| Screen          | Intent when skipping                       | What happens                                                                  |
-| --------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
-| Welcome         | n/a                                        | No skip, single Get started CTA                                               |
-| Build usuals    | "I'll add foods later"                     | Empty library. Backfills at log time via "I ate something else" + save        |
-| Reminder style  | "Don't make me decide how to be nagged"    | Falls back to "when I open the app": least intrusive, no OS permission prompt, core loop stays alive |
-| Meal schedule   | "Defaults are fine"                        | Keeps prefilled times and toggles                                             |
-| Weight tracking | "I don't want to weigh in"                 | Weight check-ins set to off, starting weight cleared                          |
-| First log       | n/a                                        | No skip. Exits via "Log it" or "I didn't eat [meal]"                          |
+| Screen          | Intent when skipping                    | What happens                                                                                         |
+| --------------- | --------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Welcome         | n/a                                     | No skip, single Get started CTA                                                                      |
+| Build usuals    | "I'll add foods later"                  | Empty library. Backfills at log time via "I ate Something New" + save                                |
+| Reminder style  | "Don't make me decide how to be nagged" | Falls back to "when I open the app": least intrusive, no OS permission prompt, core loop stays alive |
+| Meal schedule   | "Defaults are fine"                     | Keeps prefilled times and toggles                                                                    |
+| Weight tracking | "I don't want to weigh in"              | Weight check-ins set to off, starting weight cleared                                                 |
+| First log       | n/a                                     | No skip. Exits via "Log it" or "I didn't eat [meal]"                                                 |
 
 Skipping reminder style intentionally does not mean "no reminders." The user declined a decision, not the feature. Opting out of reminders is an explicit choice ("Don't remind me") on the same screen.
 
@@ -54,7 +54,7 @@ Skipping reminder style intentionally does not mean "no reminders." The user dec
 - Suggestion chips per meal to reduce typing (e.g. "eggs", "cereal", "leftovers" under breakfast).
 - Each section skippable, no minimum item count.
 - Target outcome: 3 to 5 items in at least one meal.
-- Post-onboarding: items entered via "I ate something else" at log time offer "add to my usuals" so the library backfills itself.
+- Post-onboarding: items entered via "I ate Something New" at log time offer "add to my usuals" so the library backfills itself.
 
 ### 3. Reminder style
 
@@ -81,14 +81,14 @@ Skipping reminder style intentionally does not mean "no reminders." The user dec
 ### 6. First log
 
 - No "you're all set" dead end. Use the current time to ask the first real question, e.g. "Did you eat lunch today?"
-- Tappable options from the user's usuals for that meal, plus "I ate something else" leading to text or photo entry.
+- Tappable options from the user's usuals for that meal, plus "I ate Something New" leading to text or photo entry.
 - If it's before any meal time: lightweight confirmation, "You're set, we'll check in at 2:00pm."
 
 ## Core loop (for context, post-onboarding)
 
 1. Reminder fires at a meal time (notification or on app open).
 2. "Did you eat lunch today?" with that meal's usuals as quick picks.
-3. "I ate something else" opens text or photo entry, with an option to save it to usuals.
+3. "I ate Something New" opens text or photo entry, with an option to save it to usuals.
 4. Weight check-in prompts on the configured cadence and time of day.
 
 ## Design artifacts
