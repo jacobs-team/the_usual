@@ -25,10 +25,12 @@
 ### Task 1: Trim `orderedQuickPicks` and add `usualsFromOtherMeals`
 
 **Files:**
+
 - Modify: `lib/app/model/extensions/meal_log_entry_list_extensions.dart:38-133`
 - Test: `test/app/model/extensions/meal_log_entry_list_extensions_test.dart`
 
 **Interfaces:**
+
 - Produces:
   - `List<UsualMeal> orderedQuickPicks({required MealOfTheDay mealOfTheDay, required Map<MealOfTheDay, List<UsualMeal>> usuals, required DateTime day})` — now returns only the `mealOfTheDay` usuals (most recent at this timing, then by frequency at this timing), with those logged today for `mealOfTheDay` dropped.
   - `Map<MealOfTheDay, List<UsualMeal>> usualsFromOtherMeals({required MealOfTheDay mealOfTheDay, required Map<MealOfTheDay, List<UsualMeal>> usuals, required DateTime day})` — usuals from every meal except `mealOfTheDay`, grouped by meal in `MealOfTheDay` order, library order within each, dropping those logged today for `mealOfTheDay`, omitting empty meals.
@@ -370,10 +372,12 @@ feat: scope quick picks to their meal, add usualsFromOtherMeals
 ### Task 2: `OtherMealUsualsSheet` picker widget
 
 **Files:**
+
 - Create: `lib/app/feature/today/widgets/cross_meal_picker_sheet.dart`
 - Modify: `lib/app/feature/today/widgets/widgets.dart`
 
 **Interfaces:**
+
 - Consumes: `usualsFromOtherMeals`'s return type — `Map<MealOfTheDay, List<UsualMeal>>`.
 - Produces: `OtherMealUsualsSheet({required MealOfTheDay mealOfTheDay, required Map<MealOfTheDay, List<UsualMeal>> usualsByMeal})` — a bottom-sheet body that logs a tapped usual under `mealOfTheDay` and pops.
 
@@ -488,10 +492,12 @@ feat: add OtherMealUsualsSheet cross-meal picker
 ### Task 3: Wire the section and view
 
 **Files:**
+
 - Modify: `lib/app/feature/today/widgets/meal_log_section.dart`
 - Modify: `lib/app/feature/today/view/today_view.dart:150-161`
 
 **Interfaces:**
+
 - Consumes: `usualsFromOtherMeals` (Task 1) and `OtherMealUsualsSheet` (Task 2).
 - Produces: `MealLogSection` gains `required Map<MealOfTheDay, List<UsualMeal>> otherMealUsuals`.
 
@@ -539,7 +545,7 @@ with:
 
 - [ ] **Step 3: Add the "From another meal" button**
 
-In the same file, replace this block (the chips plus the spacing before "I ate something else"):
+In the same file, replace this block (the chips plus the spacing before "I ate Something New"):
 
 ```dart
                     if (quickPicks.isNotEmpty) ...[
@@ -595,7 +601,7 @@ with:
                               await showModalBottomSheet<List<FoodEntryResult>>(
 ```
 
-(The rest of the "I ate something else" button — its `showModalBottomSheet` body, `icon`, and `label` — is unchanged.)
+(The rest of the "I ate Something New" button — its `showModalBottomSheet` body, `icon`, and `label` — is unchanged.)
 
 - [ ] **Step 4: Pass `otherMealUsuals` from `today_view.dart`**
 
@@ -627,6 +633,7 @@ Expected: No new failures versus the baseline (the pre-existing `RenderFlex` ove
 - [ ] **Step 7: Manual verification (ask Jacob to run the app)**
 
 Ask Jacob to load sample history from Dev Tools, then on Today confirm:
+
 - Each meal section's chips are only that meal's usuals, ordered most-recent-here then by frequency, in the three-row horizontal scroll.
 - A "From another meal" button appears under the chips (when other meals have usuals); tapping it opens the "Log to {meal}" sheet grouped by meal.
 - Tapping a usual in the sheet logs it into the current section and closes the sheet.
@@ -645,6 +652,7 @@ feat: add "from another meal" button to Today meal sections
 ## Self-Review
 
 **Spec coverage:**
+
 - Chips this-meal only, recency→frequency, filter kept, layout unchanged → Task 1 (`orderedQuickPicks` trim) + Task 3 keeps `_QuickPickColumns`.
 - `usualsFromOtherMeals` grouping/order/filter/omit-empty → Task 1 + its tests.
 - "From another meal" button shown only when non-empty, opens sheet → Task 3 Step 3.

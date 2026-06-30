@@ -11,7 +11,7 @@ A prior change made each meal section's quick-pick chips include every usual acr
 ## Scope
 
 - **In scope:** Today view (`meal_log_section.dart`, `today_view.dart`), the `orderedQuickPicks` helper, a new `usualsFromOtherMeals` helper, and a new picker sheet widget.
-- **Out of scope:** Onboarding, settings, the "I ate something else" `FoodEntrySheet` flow (unchanged).
+- **Out of scope:** Onboarding, settings, the "I ate Something New" `FoodEntrySheet` flow (unchanged).
 
 ## Behavior
 
@@ -28,7 +28,7 @@ The three-row column-fill horizontal-scroll layout is unchanged.
 
 A new `usualsFromOtherMeals` helper returns the user's usuals from meals other than `M`, grouped by meal in `MealOfTheDay` order, in library order within each meal. Usuals already logged today for `M` (by name or `usualMealId`) are dropped, and meals with no remaining usuals are omitted.
 
-`MealLogSection` renders a "From another meal" button between the quick-pick chips and the existing "I ate something else" button, shown only when `usualsFromOtherMeals` is non-empty. Tapping it opens a bottom sheet, `OtherMealUsualsSheet`, titled "Log to {meal label}". The sheet lists each non-empty meal group (its label as a header) with its usuals as tappable rows. Tapping a row logs that usual into the current section via `DailyLogEvent.mealLogged` with `M` as the `mealOfTheDay`, then closes the sheet (log-and-close; reopen to add another).
+`MealLogSection` renders a "From another meal" button between the quick-pick chips and the existing "I ate Something New" button, shown only when `usualsFromOtherMeals` is non-empty. Tapping it opens a bottom sheet, `OtherMealUsualsSheet`, titled "Log to {meal label}". The sheet lists each non-empty meal group (its label as a header) with its usuals as tappable rows. Tapping a row logs that usual into the current section via `DailyLogEvent.mealLogged` with `M` as the `mealOfTheDay`, then closes the sheet (log-and-close; reopen to add another).
 
 ## Architecture
 
@@ -53,7 +53,7 @@ Inside the existing `BlocSelector` builders (where `mealEntries`, the `usuals` m
 
 ### Section (`meal_log_section.dart`)
 
-Add `required Map<MealOfTheDay, List<UsualMeal>> otherMealUsuals`. Render a "From another meal" `TextButton.icon` when `otherMealUsuals.isNotEmpty`, between the chips and "I ate something else". Its `onPressed` opens `OtherMealUsualsSheet` via `showModalBottomSheet`.
+Add `required Map<MealOfTheDay, List<UsualMeal>> otherMealUsuals`. Render a "From another meal" `TextButton.icon` when `otherMealUsuals.isNotEmpty`, between the chips and "I ate Something New". Its `onPressed` opens `OtherMealUsualsSheet` via `showModalBottomSheet`.
 
 ### Picker sheet (`cross_meal_picker_sheet.dart`, new)
 
