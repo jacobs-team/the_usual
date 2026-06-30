@@ -70,13 +70,13 @@ class WorkoutLogBloc extends HydratedBloc<WorkoutLogEvent, WorkoutLogState> {
   /// [DailyLogBloc.sampleUsuals] backs the seeded meal history.
   static Map<String, List<UsualWorkout>> get sampleUsualWorkouts {
     List<UsualWorkout> toUsuals(List<(String, double, double)> pool) => [
-      for (final exercise in pool)
+      for (final (name, weight, _) in pool)
         UsualWorkout(
-          id: exercise.$1,
-          name: exercise.$1,
+          id: name,
+          name: name,
           sets: [
             for (var setIndex = 0; setIndex < 3; setIndex++)
-              WorkoutSet(weight: exercise.$2, reps: 8),
+              WorkoutSet(weight: weight, reps: 8),
           ],
         ),
     ];

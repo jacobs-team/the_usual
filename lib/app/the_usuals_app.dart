@@ -193,10 +193,10 @@ class _TheUsualsAppState extends State<TheUsualsApp>
     unawaited(
       getIt<WidgetService>().updateCalories(
         goal: settings.calorieGoalHistory.goalOn(today),
-        consumed: nutrition.calories ?? 0,
-        protein: nutrition.protein ?? 0,
-        carbs: nutrition.carbs ?? 0,
-        fat: nutrition.fat ?? 0,
+        consumed: (nutrition.calories ?? 0.0).rounded,
+        protein: (nutrition.protein ?? 0.0).rounded,
+        carbs: (nutrition.carbs ?? 0.0).rounded,
+        fat: (nutrition.fat ?? 0.0).rounded,
         dayRollover: dayRollover,
       ),
     );

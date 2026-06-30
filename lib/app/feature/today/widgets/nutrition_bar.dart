@@ -47,7 +47,7 @@ class NutritionBar extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    final consumedCalories = nutrition.calories ?? 0;
+    final consumedCalories = nutrition.calories ?? 0.0;
     final calorieGoal = this.calorieGoal;
     final hasGoal = calorieGoal != null && calorieGoal > 0;
     final filledFraction = hasGoal
@@ -59,23 +59,23 @@ class NutritionBar extends StatelessWidget {
       (
         name: 'Protein',
         abbreviation: 'P',
-        grams: nutrition.protein ?? 0,
+        grams: nutrition.protein ?? 0.0,
         color: AppPalette.proteinMacro,
       ),
       (
         name: 'Carbs',
         abbreviation: 'C',
-        grams: nutrition.carbs ?? 0,
+        grams: nutrition.carbs ?? 0.0,
         color: AppPalette.carbsMacro,
       ),
       (
         name: 'Fat',
         abbreviation: 'F',
-        grams: nutrition.fat ?? 0,
+        grams: nutrition.fat ?? 0.0,
         color: AppPalette.fatMacro,
       ),
     ].where((macroSegment) => macroSegment.grams > 0).toList();
-    final totalGrams = macroSegments.fold(
+    final totalGrams = macroSegments.fold<double>(
       0,
       (sum, macroSegment) => sum + macroSegment.grams,
     );
@@ -91,7 +91,7 @@ class NutritionBar extends StatelessWidget {
         ),
     ];
     final emptyFlex = ((1 - filledFraction) * _flexScale).round();
-    final remainingCalories = hasGoal ? calorieGoal - consumedCalories : 0;
+    final remainingCalories = hasGoal ? calorieGoal - consumedCalories : 0.0;
 
     final labelStyle = theme.textTheme.labelMedium?.copyWith(
       color: AppPalette.onMacro,
@@ -108,8 +108,8 @@ class NutritionBar extends StatelessWidget {
 
     final tooltipLines = [
       for (final macroSegment in macroSegments)
-        '${macroSegment.grams}g ${macroSegment.name}',
-      if (emptyFlex > 0) '$remainingCalories cal left',
+        '${macroSegment.grams.rounded}g ${macroSegment.name}',
+      if (emptyFlex > 0) '${remainingCalories.rounded} cal left',
     ];
 
     final borderRadius = BorderRadius.circular(AppDesign.radius.sm);
@@ -154,9 +154,10 @@ class NutritionBar extends StatelessWidget {
                         builder: (context, constraints) {
                           final macroSegment = segmentFlex.macroSegment;
                           final fullLabel =
-                              '${macroSegment.grams}g ${macroSegment.name}';
+                              '${macroSegment.grams.rounded}g '
+                              '${macroSegment.name}';
                           final shortLabel =
-                              '${macroSegment.grams}g '
+                              '${macroSegment.grams.rounded}g '
                               '${macroSegment.abbreviation}';
                           final fullLabelPainter = TextPainter(
                             text: TextSpan(text: fullLabel, style: labelStyle),
@@ -186,7 +187,7 @@ class NutritionBar extends StatelessWidget {
                     horizontal: AppDesign.spacing.xs,
                   ),
                   child: Text(
-                    '$remainingCalories cal left',
+                    '${remainingCalories.rounded} cal left',
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: remainingStyle,
@@ -204,14 +205,17 @@ class NutritionBar extends StatelessWidget {
       children: [
         if (hasGoal)
           Text(
-            '$consumedCalories / $calorieGoal cal',
+            '${consumedCalories.rounded} / $calorieGoal cal',
             style: calorieSummaryStyle,
           )
         else
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text('$consumedCalories cal / ', style: calorieSummaryStyle),
+              Text(
+                '${consumedCalories.rounded} cal / ',
+                style: calorieSummaryStyle,
+              ),
               TextButton(
                 onPressed: onSetGoal,
                 style: TextButton.styleFrom(

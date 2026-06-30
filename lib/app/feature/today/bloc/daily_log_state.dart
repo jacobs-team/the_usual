@@ -154,10 +154,10 @@ abstract class DailyLogState with _$DailyLogState {
         monthTotal += day.nutrition;
       }
       final averageNutrition = Nutrition(
-        calories: ((monthTotal.calories ?? 0) / days.length).round(),
-        protein: ((monthTotal.protein ?? 0) / days.length).round(),
-        fat: ((monthTotal.fat ?? 0) / days.length).round(),
-        carbs: ((monthTotal.carbs ?? 0) / days.length).round(),
+        calories: (monthTotal.calories ?? 0) / days.length,
+        protein: (monthTotal.protein ?? 0) / days.length,
+        fat: (monthTotal.fat ?? 0) / days.length,
+        carbs: (monthTotal.carbs ?? 0) / days.length,
       );
       final weightEntries = [
         for (final historyDay in days.reversed)

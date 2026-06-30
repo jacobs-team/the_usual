@@ -31,16 +31,16 @@ class NutritionFields extends StatefulWidget {
 
 class _NutritionFieldsState extends State<NutritionFields> {
   late final _caloriesController = TextEditingController(
-    text: widget.initial.calories?.toString() ?? '',
+    text: widget.initial.calories?.rounded.toString() ?? '',
   );
   late final _proteinController = TextEditingController(
-    text: widget.initial.protein?.toString() ?? '',
+    text: widget.initial.protein?.rounded.toString() ?? '',
   );
   late final _carbsController = TextEditingController(
-    text: widget.initial.carbs?.toString() ?? '',
+    text: widget.initial.carbs?.rounded.toString() ?? '',
   );
   late final _fatController = TextEditingController(
-    text: widget.initial.fat?.toString() ?? '',
+    text: widget.initial.fat?.rounded.toString() ?? '',
   );
 
   @override
@@ -57,11 +57,15 @@ class _NutritionFieldsState extends State<NutritionFields> {
     _syncField(_fatController, widget.initial.fat);
   }
 
-  /// Sets [controller] to [value], unless it already shows that value — so the
-  /// echo of the user's own edit doesn't reset the field or its cursor.
-  void _syncField(TextEditingController controller, int? value) {
-    if (int.tryParse(controller.text) == value) return;
-    controller.text = value?.toString() ?? '';
+  /// Sets [controller] to [value] rounded to a whole number, unless the field
+  /// already shows that — so the echo of the user's own edit doesn't reset the
+  /// field or its cursor, and a precise per-unit estimate (e.g. 2.8) seeds the
+  /// field as the whole number shown elsewhere while the bloc keeps the precise
+  /// value the user hasn't touched.
+  void _syncField(TextEditingController controller, double? value) {
+    final shown = value?.rounded.toString() ?? '';
+    if (controller.text == shown) return;
+    controller.text = shown;
   }
 
   @override
@@ -76,10 +80,10 @@ class _NutritionFieldsState extends State<NutritionFields> {
   void _emit() {
     widget.onChanged(
       Nutrition(
-        calories: int.tryParse(_caloriesController.text),
-        protein: int.tryParse(_proteinController.text),
-        carbs: int.tryParse(_carbsController.text),
-        fat: int.tryParse(_fatController.text),
+        calories: double.tryParse(_caloriesController.text),
+        protein: double.tryParse(_proteinController.text),
+        carbs: double.tryParse(_carbsController.text),
+        fat: double.tryParse(_fatController.text),
       ),
     );
   }

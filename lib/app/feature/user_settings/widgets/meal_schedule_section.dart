@@ -35,14 +35,14 @@ class MealScheduleSection extends StatelessWidget {
         state.endOfDayReminder,
         state.skipLoggedMealReminders,
       ),
-      builder: (context, selected) {
+      builder: (context, record) {
         final (
           reminderStyle,
           mealCheckinScheduleMode,
           mealReminders,
           endOfDayReminder,
           skipLoggedMealReminders,
-        ) = selected;
+        ) = record;
 
         if (reminderStyle == ReminderStyle.none) {
           return const InfoBox(

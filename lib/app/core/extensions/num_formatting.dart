@@ -19,3 +19,14 @@ extension NumberFormatting on num {
         : oneDecimal;
   }
 }
+
+/// Rounding for calorie and macro values, which are stored as doubles so a
+/// small per-unit serving (a 1 oz food) keeps its precision but are always
+/// shown as whole numbers.
+extension MacroRounding on double {
+  /// This value as the whole number shown in the UI. Binary floating-point
+  /// dust is cleared first so a value that is mathematically 28.5 — arriving as
+  /// 28.4999999 after scaling by a quantity — still rounds to 29 rather than
+  /// being pulled down to 28.
+  int get rounded => double.parse(toStringAsFixed(4)).round();
+}

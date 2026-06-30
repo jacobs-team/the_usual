@@ -7,10 +7,10 @@ part of 'nutrition.dart';
 // **************************************************************************
 
 _Nutrition _$NutritionFromJson(Map<String, dynamic> json) => _Nutrition(
-  calories: (json['calories'] as num?)?.toInt(),
-  protein: (json['protein'] as num?)?.toInt(),
-  fat: (json['fat'] as num?)?.toInt(),
-  carbs: (json['carbs'] as num?)?.toInt(),
+  calories: (json['calories'] as num?)?.toDouble(),
+  protein: (json['protein'] as num?)?.toDouble(),
+  fat: (json['fat'] as num?)?.toDouble(),
+  carbs: (json['carbs'] as num?)?.toDouble(),
 );
 
 Map<String, dynamic> _$NutritionToJson(_Nutrition instance) =>

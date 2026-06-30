@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:the_usual/app/core/extensions/extensions.dart';
 
 part 'nutrition.freezed.dart';
 part 'nutrition.g.dart';
@@ -11,10 +12,10 @@ part 'nutrition.g.dart';
 abstract class Nutrition with _$Nutrition {
   /// {@macro nutrition}
   const factory Nutrition({
-    int? calories,
-    int? protein,
-    int? fat,
-    int? carbs,
+    double? calories,
+    double? protein,
+    double? fat,
+    double? carbs,
   }) = _Nutrition;
 
   const Nutrition._();
@@ -26,14 +27,15 @@ abstract class Nutrition with _$Nutrition {
   bool get isEmpty =>
       calories == null && protein == null && fat == null && carbs == null;
 
-  /// A one-line summary for display, e.g. "420 cal · 28P · 60C · 14F". Unset
-  /// values are dropped; an em dash is shown when none are set.
+  /// A one-line summary for display, e.g. "420 cal · 28P · 60C · 14F". Each
+  /// value is rounded to a whole number; unset values are dropped; an em dash
+  /// is shown when none are set.
   String get summary {
     final parts = [
-      if (calories != null) '$calories cal',
-      if (protein != null) '${protein}P',
-      if (carbs != null) '${carbs}C',
-      if (fat != null) '${fat}F',
+      if (calories != null) '${calories!.rounded} cal',
+      if (protein != null) '${protein!.rounded}P',
+      if (carbs != null) '${carbs!.rounded}C',
+      if (fat != null) '${fat!.rounded}F',
     ];
     return parts.isEmpty ? '—' : parts.join(' · ');
   }
@@ -41,20 +43,22 @@ abstract class Nutrition with _$Nutrition {
   /// Adds two sets of facts, counting an unset value as zero. Used to total a
   /// list of entries, so every summed value is non-null.
   Nutrition operator +(Nutrition other) => Nutrition(
-    calories: (calories ?? 0) + (other.calories ?? 0),
-    protein: (protein ?? 0) + (other.protein ?? 0),
-    fat: (fat ?? 0) + (other.fat ?? 0),
-    carbs: (carbs ?? 0) + (other.carbs ?? 0),
+    calories: (calories ?? 0.0) + (other.calories ?? 0.0),
+    protein: (protein ?? 0.0) + (other.protein ?? 0.0),
+    fat: (fat ?? 0.0) + (other.fat ?? 0.0),
+    carbs: (carbs ?? 0.0) + (other.carbs ?? 0.0),
   );
 
-  /// Scales each value by [factor], rounding back to a whole number and leaving
-  /// unset values unset so the summary still drops them. Used to apply a logged
-  /// entry's quantity, which may be fractional, to its per-unit facts.
+  /// Scales each value by [factor], leaving unset values unset so the summary
+  /// still drops them. The full-precision result is kept so a per-unit value
+  /// scaled by a quantity stays accurate; rounding happens only at display.
+  /// Used to apply a logged entry's quantity, which may be fractional, to its
+  /// per-unit facts.
   Nutrition operator *(double factor) => Nutrition(
-    calories: calories == null ? null : (calories! * factor).round(),
-    protein: protein == null ? null : (protein! * factor).round(),
-    fat: fat == null ? null : (fat! * factor).round(),
-    carbs: carbs == null ? null : (carbs! * factor).round(),
+    calories: calories == null ? null : calories! * factor,
+    protein: protein == null ? null : protein! * factor,
+    fat: fat == null ? null : fat! * factor,
+    carbs: carbs == null ? null : carbs! * factor,
   );
 
   /// Migrates a record's JSON from the legacy shape, where `calories` lived at

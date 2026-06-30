@@ -23,12 +23,14 @@ class NutritionSummary extends StatelessWidget {
     const boldStyle = TextStyle(fontWeight: FontWeight.w700);
 
     final parts = <(String, Color?)>[
-      if (nutrition.calories != null) ('${nutrition.calories} cal', null),
+      if (nutrition.calories != null)
+        ('${nutrition.calories!.rounded} cal', null),
       if (nutrition.protein != null)
-        ('${nutrition.protein}P', AppPalette.proteinMacro),
+        ('${nutrition.protein!.rounded}P', AppPalette.proteinMacro),
       if (nutrition.carbs != null)
-        ('${nutrition.carbs}C', AppPalette.carbsMacro),
-      if (nutrition.fat != null) ('${nutrition.fat}F', AppPalette.fatMacro),
+        ('${nutrition.carbs!.rounded}C', AppPalette.carbsMacro),
+      if (nutrition.fat != null)
+        ('${nutrition.fat!.rounded}F', AppPalette.fatMacro),
     ];
 
     if (parts.isEmpty) {

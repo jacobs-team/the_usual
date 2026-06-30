@@ -67,7 +67,7 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
   // temporary sample meals for seeding. Each is
   // (name, calories, protein, fat, carbs). Remove before ship along with the
   // SampleDataSeeded event.
-  static const _breakfasts = [
+  static const _breakfasts = <(String, double, double, double, double)>[
     ('Scrambled eggs & toast', 350, 20, 16, 28),
     ('Oatmeal with banana', 320, 9, 6, 60),
     ('Greek yogurt & granola', 300, 20, 8, 38),
@@ -76,7 +76,7 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
     ('Bagel & cream cheese', 420, 13, 16, 55),
     ('Pancakes & syrup', 480, 12, 14, 78),
   ];
-  static const _lunches = [
+  static const _lunches = <(String, double, double, double, double)>[
     ('Chicken & rice bowl', 620, 45, 16, 65),
     ('Turkey sandwich', 480, 28, 18, 50),
     ('Caesar salad w/ chicken', 430, 35, 24, 18),
@@ -85,7 +85,7 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
     ('Sushi rolls', 520, 24, 12, 78),
     ('Soup & sourdough', 400, 16, 12, 58),
   ];
-  static const _dinners = [
+  static const _dinners = <(String, double, double, double, double)>[
     ('Salmon & veggies', 560, 40, 28, 24),
     ('Spaghetti bolognese', 720, 34, 24, 92),
     ('Steak & potatoes', 780, 48, 38, 52),
@@ -94,7 +94,7 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
     ('Homemade pizza', 850, 34, 38, 92),
     ('Veggie curry & rice', 580, 16, 18, 88),
   ];
-  static const _snacks = [
+  static const _snacks = <(String, double, double, double, double)>[
     ('Protein bar', 210, 20, 7, 24),
     ('Apple & peanut butter', 270, 7, 16, 28),
     ('Handful of almonds', 180, 6, 16, 6),
@@ -108,16 +108,18 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
   /// (and the id it links via) matches a usual, letting the seeded history
   /// drive the quick-pick ordering.
   static Map<MealOfTheDay, List<UsualMeal>> get sampleUsuals {
-    List<UsualMeal> toUsuals(List<(String, int, int, int, int)> pool) => [
-      for (final sample in pool)
+    List<UsualMeal> toUsuals(
+      List<(String, double, double, double, double)> pool,
+    ) => [
+      for (final (name, calories, protein, fat, carbs) in pool)
         UsualMeal(
-          id: sample.$1,
-          name: sample.$1,
+          id: name,
+          name: name,
           nutrition: Nutrition(
-            calories: sample.$2,
-            protein: sample.$3,
-            fat: sample.$4,
-            carbs: sample.$5,
+            calories: calories,
+            protein: protein,
+            fat: fat,
+            carbs: carbs,
           ),
         ),
     ];
@@ -415,12 +417,13 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
     void maybeAddMeal(
       DateTime day,
       MealOfTheDay mealOfTheDay,
-      List<(String, int, int, int, int)> pool,
+      List<(String, double, double, double, double)> pool,
       int hour,
       double skipChance,
     ) {
       if (random.nextDouble() < skipChance) return;
-      final sample = pool[random.nextInt(pool.length)];
+      final (name, calories, protein, fat, carbs) =
+          pool[random.nextInt(pool.length)];
       // Mostly one, occasionally a fractional serving. Built by division so the
       // value is a double without a literal the formatter might rewrite to int.
       final quantity = (random.nextDouble() < 0.12 ? 3 : 2) / 2;
@@ -431,15 +434,15 @@ class DailyLogBloc extends HydratedBloc<DailyLogEvent, DailyLogState> {
           id: _uuid.v4(),
           loggedAt: day.add(Duration(hours: hour)),
           mealOfTheDay: mealOfTheDay,
-          name: sample.$1,
+          name: name,
           nutrition: Nutrition(
-            calories: sample.$2,
-            protein: macrosEntered ? sample.$3 : null,
-            fat: macrosEntered ? sample.$4 : null,
-            carbs: macrosEntered ? sample.$5 : null,
+            calories: calories,
+            protein: macrosEntered ? protein : null,
+            fat: macrosEntered ? fat : null,
+            carbs: macrosEntered ? carbs : null,
           ),
           quantity: quantity,
-          usualMealId: sample.$1,
+          usualMealId: name,
         ),
       );
     }

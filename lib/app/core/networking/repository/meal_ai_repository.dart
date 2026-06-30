@@ -108,9 +108,8 @@ class MealAiRepository {
       // Itemized foods must carry their base unit in the name, so the
       // short-name rule (which strips amounts) does not apply.
       MealEntryMode.itemized => _itemizedNameRule,
-      MealEntryMode.wholeMeal => fromPhoto
-          ? '$_shortNameRule $_photoPortionInName'
-          : _shortNameRule,
+      MealEntryMode.wholeMeal =>
+        fromPhoto ? '$_shortNameRule $_photoPortionInName' : _shortNameRule,
     };
     return '$grouping\n$naming\n$_valueRules';
   }
@@ -163,8 +162,15 @@ class MealAiRepository {
       '"200g grilled chicken" or "6 oz filet").';
 
   static const String _valueRules =
-      'Use whole-number calories and whole-number grams for protein, fat, and '
-      'carbs. Leave a value null only when it genuinely cannot be estimated.';
+      'Give calories and the protein, fat, and carb grams for one unit as '
+      'precisely as the unit size warrants. When the base unit is small '
+      '(around 1 oz, 1 strip, a single egg, or any unit a person eats '
+      'several of), return one decimal place: rounding a per-unit value to '
+      'a whole number throws the total off once it is multiplied by the '
+      'quantity, so a food at 1 oz might be 2.8 g protein and 7.6 '
+      'calories, not 3 and 8. For a larger unit (around 100 g or a whole '
+      'serving) whole numbers are fine. Leave a value null only when it '
+      'genuinely cannot be estimated.';
 
   /// JSON schema for a single estimated food: its name, quantity, and per-unit
   /// nutrition. Reused on its own for a whole-meal estimate and as the element
@@ -192,16 +198,16 @@ class MealAiRepository {
             'quantity to get the total eaten.',
         'properties': <String, Object?>{
           'calories': <String, Object?>{
-            'type': <String>['integer', 'null'],
+            'type': <String>['number', 'null'],
           },
           'protein': <String, Object?>{
-            'type': <String>['integer', 'null'],
+            'type': <String>['number', 'null'],
           },
           'fat': <String, Object?>{
-            'type': <String>['integer', 'null'],
+            'type': <String>['number', 'null'],
           },
           'carbs': <String, Object?>{
-            'type': <String>['integer', 'null'],
+            'type': <String>['number', 'null'],
           },
         },
       },

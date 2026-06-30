@@ -271,9 +271,9 @@ abstract class UserSettingsState with _$UserSettingsState {
       return MealOfTheDay.fromTime(TimeOfDay.fromDateTime(now));
     }
     final nowMinutes = now.hour * 60 + now.minute;
-    var currentMeal = boundaries.first.$1;
-    for (final (meal, minutes) in boundaries) {
-      if (nowMinutes >= minutes) currentMeal = meal;
+    var currentMeal = boundaries.first.meal;
+    for (final boundary in boundaries) {
+      if (nowMinutes >= boundary.minutes) currentMeal = boundary.meal;
     }
     return currentMeal;
   }
@@ -292,8 +292,10 @@ abstract class UserSettingsState with _$UserSettingsState {
     // The first reminder isn't a change point: before it the highlight already
     // rests on the first meal, and crossing it leaves the highlight there. Only
     // later reminders move it.
-    for (final (_, minutes) in boundaries.skip(1)) {
-      if (minutes > nowMinutes) return today.add(Duration(minutes: minutes));
+    for (final boundary in boundaries.skip(1)) {
+      if (boundary.minutes > nowMinutes) {
+        return today.add(Duration(minutes: boundary.minutes));
+      }
     }
     // Every later reminder has passed; the highlight next changes at midnight,
     // when the highlight returns to the first meal.
@@ -303,7 +305,7 @@ abstract class UserSettingsState with _$UserSettingsState {
   /// Enabled per-meal reminders as (meal, minutes-since-midnight), earliest
   /// first. Empty when per-meal reminders don't apply, which signals the
   /// time-of-day fallback.
-  List<(MealOfTheDay, int)> get _mealBoundaries {
+  List<({MealOfTheDay meal, int minutes})> get _mealBoundaries {
     if (mealCheckinScheduleMode != MealCheckinScheduleMode.perMeal) {
       return const [];
     }
@@ -311,9 +313,10 @@ abstract class UserSettingsState with _$UserSettingsState {
       for (final entry in mealReminders.entries)
         if (entry.value.enabled)
           (
-            entry.key,
-            entry.value.timeOfDay.hour * 60 + entry.value.timeOfDay.minute,
+            meal: entry.key,
+            minutes:
+                entry.value.timeOfDay.hour * 60 + entry.value.timeOfDay.minute,
           ),
-    ]..sort((a, b) => a.$2.compareTo(b.$2));
+    ]..sort((a, b) => a.minutes.compareTo(b.minutes));
   }
 }

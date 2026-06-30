@@ -9,6 +9,10 @@ analyzer:
       '**/**.freezed.dart',
       'lib/l10n/gen/*',
       'build/**',
+      # Testing is ignored on this project (see CLAUDE.md). The test code is
+      # kept for reference but excluded from analysis so stale tests never
+      # break the build.
+      'test/**',
     ]
 linter:
   rules:

@@ -10,7 +10,7 @@
 - Never run the app (`flutter run` or launching on any device). The developer runs it from VS Code so the debug windows and controls stay attached. Ask them to run it, then interact with their running instance if needed.
 - Do not fix linter warnings or info-level diagnostics — only fix errors.
 - The code generator for freezed, json_serializable, and injectable should be running in the background at all times, if it's not. please ask the user to start it.
-- Don't worry about writing tests until told to do so by the user.
+- Ignore testing entirely. Never write, run, update, or fix tests, and never factor test coverage into a decision. Existing tests that break from a change are out of scope — leave them and don't mention them unless the user asks.
 - Do not prematurely optimize. Do not add events, methods, or abstractions for cases an existing general one already covers. If a specific behavior is needed later, add it then. Example: a `getStartedPressed` event whose handler only advances to the next step is unnecessary when `continuePressed` already does that — use `continuePressed` until "get started" actually needs different behavior.
 - Do not extract a function/method that has only one caller. Inline it at the call site. The only exception is when the extraction genuinely increases clarity for a reader (e.g. a well-named helper like `_isSameDay` over an inline date comparison, or a BLoC `_on*` handler that keeps the event switch readable). Passing `BuildContext` into a private helper is a smell: such handlers (`_logWeight(context)`, `_pickTime(context)`, `_addUsual(context)`) should be inlined into the `onPressed`/builder closure where context is already in scope.
 - Favor clarity over conciseness. The code must be easily readable and understandable by a person who didn't write it. When an expression nests several operations (spread + lookup + filter + copyWith in one go), break it into named local variables or a private method that tells the story step by step, instead of one dense inline expression.
@@ -103,10 +103,4 @@
 
 ## Testing
 
-- Always use matchers: `equals()`, `isEmpty`, `isNull`, `isTrue`, etc. Never use raw assertions.
-- Use `blocTest` for BLoC tests.
-- Prefer using `isA<BlocState>().having` in tests over matching the entire state to reduce test fragility.
-- Use `mocktail` for mocking dependencies.
-- Call `initHydratedStorage()` in test setup when testing with `HydratedBloc`.
-- Always use random seed ordering for testing using the flag.
-- Don't assert on hardcoded UI strings (they change under localization), and locate widgets by type, key, or icon rather than `find.text(...)`. Exceptions exist, but prefer finding widgets over matching strings as the rule of thumb.
+- Testing is ignored on this project, now and going forward. Do not write, run, update, or fix tests. See the General section.

@@ -84,7 +84,7 @@ class MonthTrendsChart extends StatelessWidget {
             if (showCalories)
               _CalorieBars(
                 days: orderedDays,
-                averageCalories: monthHistory.averageNutrition.calories ?? 0,
+                averageCalories: monthHistory.averageNutrition.calories ?? 0.0,
                 calorieGoalHistory: calorieGoalHistory,
                 onDayTapped: onDayTapped,
               ),
@@ -248,7 +248,7 @@ class _CalorieBars extends StatelessWidget {
   final List<HistoryDay> days;
 
   /// The month's average daily calories, drawn as the average reference line.
-  final int averageCalories;
+  final double averageCalories;
 
   /// The dated history of the user's daily calorie target, oldest first.
   final List<CalorieGoalEntry> calorieGoalHistory;
@@ -328,7 +328,7 @@ class _CalorieBars extends StatelessWidget {
                   SizedBox(width: AppDesign.spacing.md),
                 ],
                 Text(
-                  'Avg $averageCalories',
+                  'Avg ${averageCalories.rounded}',
                   style: legendStyle?.copyWith(color: averageLineColor),
                 ),
               ],
@@ -649,7 +649,7 @@ class _CalorieBarsPainter extends CustomPainter {
 
   /// Each day's nutrition total, oldest first.
   final List<Nutrition> nutritions;
-  final int averageCalories;
+  final double averageCalories;
 
   /// The goal active on each day, aligned to [nutritions]. Null where no goal
   /// applies that day.
@@ -679,7 +679,7 @@ class _CalorieBarsPainter extends CustomPainter {
 
     // The axis tops out at the tallest of the bars and the reference lines so
     // no line is clipped when the goal or average exceeds every day.
-    var axisMax = max(maxCalories, averageCalories).toDouble();
+    var axisMax = max(maxCalories, averageCalories);
     for (final goal in goalValues) {
       axisMax = max(axisMax, goal.toDouble());
     }
@@ -700,7 +700,7 @@ class _CalorieBarsPainter extends CustomPainter {
       final calories = nutrition.calories ?? 0;
       if (calories == 0) continue;
 
-      final barTop = yFor(calories.toDouble());
+      final barTop = yFor(calories);
       final left = index * (barWidth + _barGap);
       final barHeight = plotBottom - barTop;
       final bar = RRect.fromRectAndCorners(
@@ -714,7 +714,7 @@ class _CalorieBarsPainter extends CustomPainter {
         (grams: nutrition.carbs ?? 0, color: carbsColor),
         (grams: nutrition.fat ?? 0, color: fatColor),
       ];
-      final totalGrams = macroSegments.fold(
+      final totalGrams = macroSegments.fold<double>(
         0,
         (sum, macroSegment) => sum + macroSegment.grams,
       );
@@ -755,7 +755,7 @@ class _CalorieBarsPainter extends CustomPainter {
       _paintSteppedGoal(canvas, goalPaint, goalYs, barCenters, size.width);
     }
 
-    final averageY = yFor(averageCalories.toDouble());
+    final averageY = yFor(averageCalories);
     canvas.drawLine(
       Offset(0, averageY),
       Offset(size.width, averageY),

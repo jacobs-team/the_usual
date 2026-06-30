@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Nutrition {
 
- int? get calories; int? get protein; int? get fat; int? get carbs;
+ double? get calories; double? get protein; double? get fat; double? get carbs;
 /// Create a copy of Nutrition
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $NutritionCopyWith<$Res>  {
   factory $NutritionCopyWith(Nutrition value, $Res Function(Nutrition) _then) = _$NutritionCopyWithImpl;
 @useResult
 $Res call({
- int? calories, int? protein, int? fat, int? carbs
+ double? calories, double? protein, double? fat, double? carbs
 });
 
 
@@ -68,10 +68,10 @@ class _$NutritionCopyWithImpl<$Res>
 @pragma('vm:prefer-inline') @override $Res call({Object? calories = freezed,Object? protein = freezed,Object? fat = freezed,Object? carbs = freezed,}) {
   return _then(_self.copyWith(
 calories: freezed == calories ? _self.calories : calories // ignore: cast_nullable_to_non_nullable
-as int?,protein: freezed == protein ? _self.protein : protein // ignore: cast_nullable_to_non_nullable
-as int?,fat: freezed == fat ? _self.fat : fat // ignore: cast_nullable_to_non_nullable
-as int?,carbs: freezed == carbs ? _self.carbs : carbs // ignore: cast_nullable_to_non_nullable
-as int?,
+as double?,protein: freezed == protein ? _self.protein : protein // ignore: cast_nullable_to_non_nullable
+as double?,fat: freezed == fat ? _self.fat : fat // ignore: cast_nullable_to_non_nullable
+as double?,carbs: freezed == carbs ? _self.carbs : carbs // ignore: cast_nullable_to_non_nullable
+as double?,
   ));
 }
 
@@ -156,7 +156,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? calories,  int? protein,  int? fat,  int? carbs)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( double? calories,  double? protein,  double? fat,  double? carbs)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Nutrition() when $default != null:
 return $default(_that.calories,_that.protein,_that.fat,_that.carbs);case _:
@@ -177,7 +177,7 @@ return $default(_that.calories,_that.protein,_that.fat,_that.carbs);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? calories,  int? protein,  int? fat,  int? carbs)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( double? calories,  double? protein,  double? fat,  double? carbs)  $default,) {final _that = this;
 switch (_that) {
 case _Nutrition():
 return $default(_that.calories,_that.protein,_that.fat,_that.carbs);case _:
@@ -197,7 +197,7 @@ return $default(_that.calories,_that.protein,_that.fat,_that.carbs);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? calories,  int? protein,  int? fat,  int? carbs)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( double? calories,  double? protein,  double? fat,  double? carbs)?  $default,) {final _that = this;
 switch (_that) {
 case _Nutrition() when $default != null:
 return $default(_that.calories,_that.protein,_that.fat,_that.carbs);case _:
@@ -215,10 +215,10 @@ class _Nutrition extends Nutrition {
   const _Nutrition({this.calories, this.protein, this.fat, this.carbs}): super._();
   factory _Nutrition.fromJson(Map<String, dynamic> json) => _$NutritionFromJson(json);
 
-@override final  int? calories;
-@override final  int? protein;
-@override final  int? fat;
-@override final  int? carbs;
+@override final  double? calories;
+@override final  double? protein;
+@override final  double? fat;
+@override final  double? carbs;
 
 /// Create a copy of Nutrition
 /// with the given fields replaced by the non-null parameter values.
@@ -253,7 +253,7 @@ abstract mixin class _$NutritionCopyWith<$Res> implements $NutritionCopyWith<$Re
   factory _$NutritionCopyWith(_Nutrition value, $Res Function(_Nutrition) _then) = __$NutritionCopyWithImpl;
 @override @useResult
 $Res call({
- int? calories, int? protein, int? fat, int? carbs
+ double? calories, double? protein, double? fat, double? carbs
 });
 
 
@@ -273,10 +273,10 @@ class __$NutritionCopyWithImpl<$Res>
 @override @pragma('vm:prefer-inline') $Res call({Object? calories = freezed,Object? protein = freezed,Object? fat = freezed,Object? carbs = freezed,}) {
   return _then(_Nutrition(
 calories: freezed == calories ? _self.calories : calories // ignore: cast_nullable_to_non_nullable
-as int?,protein: freezed == protein ? _self.protein : protein // ignore: cast_nullable_to_non_nullable
-as int?,fat: freezed == fat ? _self.fat : fat // ignore: cast_nullable_to_non_nullable
-as int?,carbs: freezed == carbs ? _self.carbs : carbs // ignore: cast_nullable_to_non_nullable
-as int?,
+as double?,protein: freezed == protein ? _self.protein : protein // ignore: cast_nullable_to_non_nullable
+as double?,fat: freezed == fat ? _self.fat : fat // ignore: cast_nullable_to_non_nullable
+as double?,carbs: freezed == carbs ? _self.carbs : carbs // ignore: cast_nullable_to_non_nullable
+as double?,
   ));
 }
 
