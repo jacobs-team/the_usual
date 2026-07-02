@@ -123,6 +123,7 @@ class _QuantityStepperState extends State<QuantityStepper> {
                 onDoubleTap: _toggleStepSize,
                 child: Container(
                   constraints: BoxConstraints(minWidth: buttonSize),
+                  height: buttonSize,
                   alignment: Alignment.center,
                   child: Text(valueLabel, style: valueStyle),
                 ),

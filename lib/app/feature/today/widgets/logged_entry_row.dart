@@ -119,8 +119,9 @@ UsualMeal? _findLinkedUsualMeal(
   return null;
 }
 
-/// An [ExpansionTile] showing a composed meal's name and total nutrition when
-/// collapsed, and its components when expanded: one [_ComposedComponentRow] per
+/// An [ExpansionTile] showing a composed meal's name, its total nutrition
+/// scaled by how many servings were eaten, and a servings stepper in the
+/// header, and its components when expanded: one [_ComposedComponentRow] per
 /// component inside a tinted, rail-marked group that reads as nested under the
 /// meal, followed by an action to add another food from the usual foods
 /// library. Component nutrition is read-only here and edited in that library.
@@ -206,15 +207,31 @@ class _ComposedLoggedEntry extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.bodyLarge,
                   ),
-                  NutritionSummary(mealLogEntry.nutrition),
+                  NutritionSummary(mealLogEntry.scaledNutrition),
                 ],
               ),
             ),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete_forever_outlined),
-              onPressed: () => getIt<DailyLogBloc>().add(
-                DailyLogEvent.mealEntryRemoved(mealLogEntry.id),
-              ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                QuantityStepper(
+                  dense: true,
+                  showStepSizeToggle: false,
+                  quantity: mealLogEntry.quantity,
+                  onChanged: (quantity) => getIt<DailyLogBloc>().add(
+                    DailyLogEvent.mealEntryQuantityChanged(
+                      mealLogEntry.id,
+                      quantity,
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.delete_forever_outlined),
+                  onPressed: () => getIt<DailyLogBloc>().add(
+                    DailyLogEvent.mealEntryRemoved(mealLogEntry.id),
+                  ),
+                ),
+              ],
             ),
             children: [
               Container(

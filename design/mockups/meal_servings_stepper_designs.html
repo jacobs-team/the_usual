@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&family=Hanken+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<title>Whole-meal servings stepper — placement options</title>
+<style>
+  :root{
+    --surface:#F8F9FF;
+    --card:#FFFFFF;
+    --field:#EFF4FF;
+    --container:#E6EEFF;
+    --on:#0D1C2E;
+    --onVar:#45464D;
+    --primary:#131B2E;
+    --secondary:#00668A;
+    --secondaryContainer:#40C2FD;
+    --onSecondaryContainer:#004D6A;
+    --protein:#2E8B7F;
+    --carbs:#3E78B2;
+    --fat:#C68A2E;
+    --goal:#C2410C;
+    --outline:#76777D;
+    --outlineVar:#C6C6CD;
+    --r-sm:12px; --r-md:16px; --r-lg:24px;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:#1f2533; padding:28px;
+    font-family:'Hanken Grotesk',sans-serif; color:var(--on);
+  }
+  h1{font-family:'Plus Jakarta Sans';color:#fff;font-size:20px;margin:0 0 4px}
+  .sub{color:#aab3c5;font-size:13px;margin:0 0 24px}
+  .row{display:flex;gap:22px;align-items:flex-start}
+  .col{width:344px;flex:0 0 344px}
+  .col-head{margin:0 4px 10px}
+  .col-head .name{font-family:'Plus Jakarta Sans';font-weight:700;color:#fff;font-size:15px}
+  .col-head .desc{color:#aab3c5;font-size:12px;line-height:1.45;margin-top:3px}
+
+  .phone{
+    background:var(--surface);
+    border-radius:40px;
+    padding:16px 12px;
+    border:6px solid #0a0d14;
+    box-shadow:0 10px 30px rgba(0,0,0,.4);
+  }
+
+  .meal-card{
+    background:var(--card);
+    border:1px solid var(--outline);
+    border-radius:var(--r-md);
+    padding:14px;
+    box-shadow:0 4px 12px rgba(0,0,0,.08);
+  }
+  .lunch-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .lunch-name{font-family:'Plus Jakarta Sans';font-weight:700;font-size:18px}
+  .meal-top{display:flex;align-items:center;justify-content:space-between}
+  .meal-top .lead{display:flex;align-items:center;gap:8px;min-width:0;flex:1}
+  .meal-title{font-family:'Plus Jakarta Sans';font-weight:600;font-size:15px;white-space:nowrap}
+  .icon{color:var(--onVar);font-size:18px;line-height:1}
+  .chev{color:var(--on);font-size:13px;width:14px;display:inline-block;flex:0 0 auto}
+  .mult{font-weight:700;font-size:13px;color:var(--secondary)}
+
+  .sum{font-weight:700;font-size:13px;white-space:nowrap}
+  .sum .p{color:var(--protein)} .sum .c{color:var(--carbs)} .sum .f{color:var(--fat)}
+  .sum .dot{color:var(--onVar);font-weight:600}
+  .sum-sm{font-size:12px}
+
+  .qty{display:inline-flex;align-items:center;border:1px solid var(--outlineVar);
+    border-radius:var(--r-sm);background:#fff;overflow:hidden;flex:0 0 auto}
+  .qty button{width:26px;height:26px;border:none;background:#fff;color:var(--on);
+    font-size:15px;line-height:1;cursor:default}
+  .qty .val{min-width:26px;text-align:center;font-family:'Plus Jakarta Sans';font-weight:700;font-size:14px;
+    text-decoration:underline dotted var(--onVar);text-underline-offset:3px}
+  .toggle{margin-left:6px;width:30px;height:28px;border:1px solid var(--outlineVar);
+    border-radius:var(--r-sm);background:#fff;color:var(--secondary);
+    font-weight:700;font-size:13px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
+
+  /* tinted ingredient group with connector rail (matches shipped UI) */
+  .group{background:var(--field);border-radius:var(--r-sm);padding:2px 12px 2px 0;margin:6px 0 0 16px}
+  .rail{position:relative;padding-left:22px}
+  .rail:before{content:"";position:absolute;left:8px;top:8px;bottom:8px;width:2px;
+    background:var(--outlineVar);border-radius:2px}
+
+  .ing{display:flex;align-items:center;gap:8px;padding:9px 0}
+  .ing .grow{flex:1;min-width:0}
+  .ing .nm{font-size:14px;font-weight:600}
+  .divider{height:1px;background:var(--outlineVar);opacity:.6;margin:0}
+
+  .addfood{display:flex;align-items:center;gap:6px;padding:8px 0;color:var(--on);
+    font-size:13.5px;font-weight:600}
+  .addfood .plus{font-size:15px}
+
+  /* servings bar (options A and C) */
+  .servings{display:flex;align-items:center;gap:10px;padding:8px 0 6px 16px}
+  .servings .lab{font-size:10px;letter-spacing:.8px;color:var(--onVar);font-weight:700}
+  .servings .math{font-size:12px;color:var(--onVar);font-weight:600}
+
+  .qp{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .qp .pick{border:1px dashed var(--outline);border-radius:999px;padding:7px 12px;
+    font-size:12.5px;color:var(--on);background:transparent}
+  .actions{display:flex;gap:8px;margin-top:10px}
+  .btn-primary{background:var(--secondaryContainer);color:var(--onSecondaryContainer);
+    border:none;border-radius:999px;padding:8px 13px;font-size:12.5px;font-weight:600;font-family:'Hanken Grotesk'}
+
+  .note{color:#e8b4b4;font-size:11.5px;margin-top:8px;font-style:italic}
+</style>
+</head>
+<body>
+  <h1>Whole-meal servings — where does the stepper go?</h1>
+  <p class="sub">“Meal 12345” eaten twice (×2 servings). One serving = 386 cal · 9P · 1C · 34F, so the meal and Lunch totals read 772 cal · 18P · 2C · 68F. Ingredient rows always describe ONE serving.</p>
+
+  <div class="row">
+
+    <!-- ============ CURRENT ============ -->
+    <div class="col">
+      <div class="col-head">
+        <div class="name">Current (the bug)</div>
+        <div class="desc">Ingredients each have a stepper but the whole meal has none — no way to say “I had two of these”. Meal quantity is stuck at 1.</div>
+      </div>
+      <div class="phone">
+        <div class="meal-card">
+          <div class="lunch-head">
+            <span class="lunch-name">Lunch</span>
+            <span class="sum"><span>386 cal</span> <span class="dot">·</span> <span class="p">9P</span> <span class="dot">·</span> <span class="c">1C</span> <span class="dot">·</span> <span class="f">34F</span></span>
+          </div>
+          <div class="meal-top">
+            <span class="lead"><span class="chev">⌃</span> <span class="meal-title">Meal 12345</span>
+              <span class="sum sum-sm"><span>386 cal</span> <span class="dot">·</span> <span class="p">9P</span> <span class="dot">·</span> <span class="c">1C</span> <span class="dot">·</span> <span class="f">34F</span></span></span>
+            <span class="icon">🗑</span>
+          </div>
+
+          <div class="group rail">
+            <div class="ing">
+              <div class="grow"><div class="nm">test 2 meal</div>
+                <div class="sum sum-sm" style="margin-top:2px"><span>333 cal</span> <span class="dot">·</span> <span class="f">33F</span></div></div>
+              <div class="qty"><button>−</button><span class="val">3</span><button>+</button></div>
+              <span class="icon">🗑</span>
+            </div>
+            <div class="divider"></div>
+            <div class="ing">
+              <div class="grow"><div class="nm">chicken 1 oz</div>
+                <div class="sum sum-sm" style="margin-top:2px"><span>47 cal</span> <span class="dot">·</span> <span class="p">9P</span> <span class="dot">·</span> <span class="c">0C</span> <span class="dot">·</span> <span class="f">1F</span></div></div>
+              <div class="qty"><button>−</button><span class="val">1</span><button>+</button></div>
+              <span class="icon">🗑</span>
+            </div>
+            <div class="divider"></div>
+            <div class="ing">
+              <div class="grow"><div class="nm">Red pepper, 1 oz</div>
+                <div class="sum sum-sm" style="margin-top:2px"><span>6 cal</span> <span class="dot">·</span> <span class="p">0P</span> <span class="dot">·</span> <span class="c">1C</span> <span class="dot">·</span> <span class="f">0F</span></div></div>
+              <div class="qty"><button>−</button><span class="val">1</span><button>+</button></div>
+              <span class="icon">🗑</span>
+            </div>
+            <div class="divider"></div>
+            <div class="addfood"><span class="plus">＋</span> Add a food</div>
+          </div>
+
+          <div class="qp">
+            <span class="pick">+ Chick rice bowl</span><span class="pick">+ Beef Stir Fry</span>
+          </div>
+          <div class="actions">
+            <span class="btn-primary">＋ Something New</span><span class="btn-primary">🍴 Other usuals</span>
+          </div>
+        </div>
+      </div>
+      <div class="note">Only fix here is eating the meal twice as two log entries, or ×2-ing every ingredient (which rewrites the recipe).</div>
+    </div>
+
+    <!-- ============ A ============ -->
+    <div class="col">
+      <div class="col-head">
+        <div class="name">A · Servings row on top (recommended)</div>
+        <div class="desc">A SERVINGS stepper sits between the header and the ingredient group — same spot the simple-meal card puts QUANTITY. Ingredients below read as “what’s in one serving”. Collapsed header gains a ×2 marker.</div>
+      </div>
+      <div class="phone">
+        <div class="meal-card">
+          <div class="lunch-head">
+            <span class="lunch-name">Lunch</span>
+            <span class="sum"><span>772 cal</span> <span class="dot">·</span> <span class="p">18P</span> <span class="dot">·</span> <span class="c">2C</span> <span class="dot">·</span> <span class="f">68F</span></span>
+          </div>
+          <div class="meal-top">
+            <span class="lead"><span class="chev">⌃</span> <span class="meal-title">Meal 12345</span> <span class="mult">×2</span>
+              <span class="sum sum-sm"><span>772 cal</span> <span class="dot">·</span> <span class="p">18P</span> <span class="dot">·</span> <span class="c">2C</span> <span class="dot">·</span> <span class="f">68F</span></span></span>
+            <span class="icon">🗑</span>
+          </div>
+
+          <div class="servings">
+            <span class="lab">SERVINGS</span>
+            <span class="qty"><button>−</button><span class="val" style="text-decoration:none">2</span><button>+</button></span><span class="toggle">.1</span>
+            <span class="math">× 386 cal</span>
+          </div>
+
+          <div class="group rail">
+            <div class="ing">
+              <div class="grow"><div class="nm">test 2 meal</div>
+                <div class="sum sum-sm" style="margin-top:2px"><span>333 cal</span> <span class="dot">·</span> <span class="f">33F</span></div></div>
+              <div class="qty"><button>−</button><span class="val">3</span><button>+</button></div>
+              <span class="icon">🗑</span>
+            </div>
+            <div class="divider"></div>
+            <div class="ing">
+              <div class="grow"><div class="nm">chicken 1 oz</div>
+                <div class="sum sum-sm" style="margin-top:2px"><span>47 cal</span> <span class="dot">·</span> <span class="p">9P</span> <span class="dot">·</span> <span class="c">0C</span> <span class="dot">·</span> <span class="f">1F</span></div></div>
+              <div class="qty"><button>−</button><span class="val">1</span><button>+</button></div>
+              <span class="icon">🗑</span>
+            </div>
+            <div class="divider"></div>
+            <div class="ing">
+              <div class="grow"><div class="nm">Red pepper, 1 oz</div>
+                <div class="sum sum-sm" style="margin-top:2px"><span>6 cal</span> <span class="dot">·</span> <span class="p">0P</span> <span class="dot">·</span> <span class="c">1C</span> <span class="dot">·</span> <span class="f">0F</span></div></div>
+              <div class="qty"><button>−</button><span class="val">1</span><button>+</button></div>
+              <span class="icon">🗑</span>
+            </div>
+            <div class="divider"></div>
+            <div class="addfood"><span class="plus">＋</span> Add a food</div>
+          </div>
+
+          <div style="margin-top:12px" class="meal-top">
+            <span class="lead"><span class="chev">⌄</span> <span class="meal-title">Beef Stir Fry</span> <span class="mult">×2</span>
+              <span class="sum sum-sm"><span>1240 cal</span> <span class="dot">·</span> <span class="p">84P</span></span></span>
+            <span class="icon">🗑</span>
+          </div>
+
+          <div class="qp">
+            <span class="pick">+ Chick rice bowl</span><span class="pick">+ Test 12</span>
+          </div>
+          <div class="actions">
+            <span class="btn-primary">＋ Something New</span><span class="btn-primary">🍴 Other usuals</span>
+          </div>
+        </div>
+      </div>
+      <div class="note" style="color:#a8d5b2">Collapsed rows stay clean — the ×2 marker is the only addition (see Beef Stir Fry).</div>
+    </div>
+
+    <!-- ============ B ============ -->
+    <div class="col">
+      <div class="col-head">
+        <div class="name">B · Stepper always in the header</div>
+        <div class="desc">The servings stepper lives on the header row, usable without expanding. Fastest to reach, but every collapsed row carries a stepper and the header must drop the inline macro summary to fit.</div>
+      </div>
+      <div class="phone">
+        <div class="meal-card">
+          <div class="lunch-head">
+            <span class="lunch-name">Lunch</span>
+            <span class="sum"><span>772 cal</span> <span class="dot">·</span> <span class="p">18P</span> <span class="dot">·</span> <span class="c">2C</span> <span class="dot">·</span> <span class="f">68F</span></span>
+          </div>
+          <div class="meal-top">
+            <span class="lead"><span class="chev">⌃</span> <span class="meal-title">Meal 12345</span></span>
+            <span style="display:flex;gap:8px;align-items:center">
+              <span class="qty"><button>−</button><span class="val" style="text-decoration:none">2</span><button>+</button></span>
+              <span class="icon">🗑</span>
+            </span>
+          </div>
+          <div class="sum sum-sm" style="margin:2px 0 0 22px"><span>772 cal</span> <span class="dot">·</span> <span class="p">18P</span> <span class="dot">·</span> <span class="c">2C</span> <span class="dot">·</span> <span class="f">68F</span></div>
+
+          <div class="group rail">
+            <div class="ing">
+              <div class="grow"><div class="nm">test 2 meal</div>
+                <div class="sum sum-sm" style="margin-top:2px"><span>333 cal</span> <span class="dot">·</span> <span class="f">33F</span></div></div>
+              <div class="qty"><button>−</button><span class="val">3</span><button>+</button></div>
+              <span class="icon">🗑</span>
+            </div>
+            <div class="divider"></div>
+            <div class="ing">
+              <div class="grow"><div class="nm">chicken 1 oz</div>
+                <div class="sum sum-sm" style="margin-top:2px"><span>47 cal</span> <span class="dot">·</span> <span class="p">9P</span> <span class="dot">·</span> <span class="c">0C</span> <span class="dot">·</span> <span class="f">1F</span></div></div>
+              <div class="qty"><button>−</button><span class="val">1</span><button>+</button></div>
+              <span class="icon">🗑</span>
+            </div>
+            <div class="divider"></div>
+            <div class="ing">
+              <div class="grow"><div class="nm">Red pepper, 1 oz</div>
+                <div class="sum sum-sm" style="margin-top:2px"><span>6 cal</span> <span class="dot">·</span> <span class="p">0P</span> <span class="dot">·</span> <span class="c">1C</span> <span class="dot">·</span> <span class="f">0F</span></div></div>
+              <div class="qty"><button>−</button><span class="val">1</span><button>+</button></div>
+              <span class="icon">🗑</span>
+            </div>
+            <div class="divider"></div>
+            <div class="addfood"><span class="plus">＋</span> Add a food</div>
+          </div>
+
+          <div style="margin-top:12px" class="meal-top">
+            <span class="lead"><span class="chev">⌄</span> <span class="meal-title">Beef Stir Fry</span></span>
+            <span style="display:flex;gap:8px;align-items:center">
+              <span class="qty"><button>−</button><span class="val" style="text-decoration:none">2</span><button>+</button></span>
+              <span class="icon">🗑</span>
+            </span>
+          </div>
+          <div class="sum sum-sm" style="margin:2px 0 0 22px"><span>1240 cal</span> <span class="dot">·</span> <span class="p">84P</span></div>
+
+          <div class="qp">
+            <span class="pick">+ Chick rice bowl</span><span class="pick">+ Test 12</span>
+          </div>
+          <div class="actions">
+            <span class="btn-primary">＋ Something New</span><span class="btn-primary">🍴 Other usuals</span>
+          </div>
+        </div>
+      </div>
+      <div class="note">Every logged meal row now carries a stepper — busier log, and the header stepper is easy to confuse with the ingredient steppers right below it.</div>
+    </div>
+
+    <!-- ============ C ============ -->
+    <div class="col">
+      <div class="col-head">
+        <div class="name">C · Servings row at the bottom</div>
+        <div class="desc">The stepper sits below “Add a food” as the last row: sum the ingredients, then multiply. Reads like a receipt total, but hides after long ingredient lists and crowds the add-food action.</div>
+      </div>
+      <div class="phone">
+        <div class="meal-card">
+          <div class="lunch-head">
+            <span class="lunch-name">Lunch</span>
+            <span class="sum"><span>772 cal</span> <span class="dot">·</span> <span class="p">18P</span> <span class="dot">·</span> <span class="c">2C</span> <span class="dot">·</span> <span class="f">68F</span></span>
+          </div>
+          <div class="meal-top">
+            <span class="lead"><span class="chev">⌃</span> <span class="meal-title">Meal 12345</span> <span class="mult">×2</span>
+              <span class="sum sum-sm"><span>772 cal</span> <span class="dot">·</span> <span class="p">18P</span> <span class="dot">·</span> <span class="c">2C</span> <span class="dot">·</span> <span class="f">68F</span></span></span>
+            <span class="icon">🗑</span>
+          </div>
+
+          <div class="group rail">
+            <div class="ing">
+              <div class="grow"><div class="nm">test 2 meal</div>
+                <div class="sum sum-sm" style="margin-top:2px"><span>333 cal</span> <span class="dot">·</span> <span class="f">33F</span></div></div>
+              <div class="qty"><button>−</button><span class="val">3</span><button>+</button></div>
+              <span class="icon">🗑</span>
+            </div>
+            <div class="divider"></div>
+            <div class="ing">
+              <div class="grow"><div class="nm">chicken 1 oz</div>
+                <div class="sum sum-sm" style="margin-top:2px"><span>47 cal</span> <span class="dot">·</span> <span class="p">9P</span> <span class="dot">·</span> <span class="c">0C</span> <span class="dot">·</span> <span class="f">1F</span></div></div>
+              <div class="qty"><button>−</button><span class="val">1</span><button>+</button></div>
+              <span class="icon">🗑</span>
+            </div>
+            <div class="divider"></div>
+            <div class="ing">
+              <div class="grow"><div class="nm">Red pepper, 1 oz</div>
+                <div class="sum sum-sm" style="margin-top:2px"><span>6 cal</span> <span class="dot">·</span> <span class="p">0P</span> <span class="dot">·</span> <span class="c">1C</span> <span class="dot">·</span> <span class="f">0F</span></div></div>
+              <div class="qty"><button>−</button><span class="val">1</span><button>+</button></div>
+              <span class="icon">🗑</span>
+            </div>
+            <div class="divider"></div>
+            <div class="addfood"><span class="plus">＋</span> Add a food</div>
+          </div>
+
+          <div class="servings" style="justify-content:flex-end;padding-right:2px">
+            <span class="lab">SERVINGS</span>
+            <span class="qty"><button>−</button><span class="val" style="text-decoration:none">2</span><button>+</button></span><span class="toggle">.1</span>
+            <span class="math">= 772 cal</span>
+          </div>
+
+          <div class="qp">
+            <span class="pick">+ Chick rice bowl</span><span class="pick">+ Test 12</span>
+          </div>
+          <div class="actions">
+            <span class="btn-primary">＋ Something New</span><span class="btn-primary">🍴 Other usuals</span>
+          </div>
+        </div>
+      </div>
+      <div class="note">Multiplier is the last thing you see, after the recipe — but it visually competes with “Add a food” and the quick-pick chips right below.</div>
+    </div>
+
+  </div>
+</body>
+</html>
