@@ -246,34 +246,29 @@ class WorkoutEntrySheetState extends State<WorkoutEntrySheet> {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TheUsualTextField(
-                          controller: _nameController,
-                          autofocus: true,
-                          hintText: _type == WorkoutType.cardio
-                              ? 'e.g. Running'
-                              : 'e.g. Bench Press',
-                          textCapitalization: TextCapitalization.sentences,
-                          onChanged: (_) => setState(() {}),
+                  TheUsualTextField(
+                    controller: _nameController,
+                    autofocus: true,
+                    hintText: _type == WorkoutType.cardio
+                        ? 'e.g. Running'
+                        : 'e.g. Bench Press',
+                    textCapitalization: TextCapitalization.sentences,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                  SizedBox(height: AppDesign.spacing.md),
+                  SegmentedButton<WorkoutType>(
+                    key: const Key('workout-type-selector'),
+                    showSelectedIcon: false,
+                    segments: [
+                      for (final workoutType in WorkoutType.values)
+                        ButtonSegment(
+                          value: workoutType,
+                          label: Text(workoutType.label),
                         ),
-                      ),
-                      SizedBox(width: AppDesign.spacing.sm),
-                      Text(
-                        _type.label,
-                        style: Theme.of(context).textTheme.labelLarge,
-                      ),
-                      Switch(
-                        key: const Key('workout-type-switch'),
-                        value: _type == WorkoutType.cardio,
-                        onChanged: (isCardio) => setState(
-                          () => _type = isCardio
-                              ? WorkoutType.cardio
-                              : WorkoutType.strength,
-                        ),
-                      ),
                     ],
+                    selected: {_type},
+                    onSelectionChanged: (selection) =>
+                        setState(() => _type = selection.first),
                   ),
                   // Photo name-suggestion flow disabled — kept commented for
                   // easy restore.

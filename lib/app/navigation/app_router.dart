@@ -109,6 +109,12 @@ class AppRouter {
             return const NoTransitionPage(child: UsualFoodsView());
           },
         ),
+        GoRoute(
+          path: Routes.usualWorkoutsSegment,
+          pageBuilder: (context, state) {
+            return const NoTransitionPage(child: UsualWorkoutsView());
+          },
+        ),
       ],
     ),
     if (kDebugMode)

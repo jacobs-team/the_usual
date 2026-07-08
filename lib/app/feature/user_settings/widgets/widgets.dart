@@ -11,5 +11,7 @@ export 'usual_food_list.dart';
 export 'usual_foods_tile.dart';
 export 'usual_meal_list.dart';
 export 'usual_meals_tile.dart';
+export 'usual_workout_list.dart';
+export 'usual_workouts_tile.dart';
 export 'weight_section.dart';
 export 'workout_section.dart';

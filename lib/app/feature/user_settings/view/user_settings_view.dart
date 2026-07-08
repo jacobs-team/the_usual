@@ -72,6 +72,8 @@ class _UserSettingsViewState extends State<UserSettingsView> {
             const SectionLabel('WORKOUTS'),
             SizedBox(height: AppDesign.spacing.sm),
             const WorkoutSection(),
+            SizedBox(height: AppDesign.spacing.sm),
+            const UsualWorkoutsTile(),
             SizedBox(height: AppDesign.spacing.xl),
             SectionLabel('GOALS', key: _goalsKey),
             SizedBox(height: AppDesign.spacing.sm),

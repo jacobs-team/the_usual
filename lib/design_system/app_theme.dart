@@ -244,12 +244,19 @@ class AppTheme {
 /// (e.g. "Add", "Other meal", "New workout"). Sized to match
 /// the app bar's date pill: the secondary-container fill, compact label, and
 /// tight padding of the [ChipThemeData] above.
-ButtonStyle pillButtonStyle(BuildContext context) {
+///
+/// When [highlighted] is set the pill takes the primary fill instead, used by
+/// the date pill to signal that a day other than today is being shown.
+ButtonStyle pillButtonStyle(BuildContext context, {bool highlighted = false}) {
   final theme = Theme.of(context);
   final colorScheme = theme.colorScheme;
   return FilledButton.styleFrom(
-    backgroundColor: colorScheme.secondaryContainer,
-    foregroundColor: colorScheme.onSecondaryContainer,
+    backgroundColor: highlighted
+        ? colorScheme.primary
+        : colorScheme.secondaryContainer,
+    foregroundColor: highlighted
+        ? colorScheme.onPrimary
+        : colorScheme.onSecondaryContainer,
     shape: const StadiumBorder(),
     textStyle: theme.textTheme.labelMedium,
     iconSize: 16,

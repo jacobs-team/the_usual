@@ -4,7 +4,6 @@ import 'package:clock/clock.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:the_usual/app/app.dart';
 import 'package:the_usual/app/core/dependencies/dependencies.dart';
 import 'package:the_usual/design_system/design_system.dart';
@@ -72,206 +71,144 @@ class _TodayViewState extends State<TodayView> with WidgetsBindingObserver {
     final now = clock.now();
     final currentMeal = getIt<UserSettingsBloc>().state.currentMeal(now);
 
-    final selectedRange = _selectedRange;
-    final today = now.logicalDay(getIt<UserSettingsBloc>().state.dayStartTime);
-    final pillLabel = _pillLabel(selectedRange);
-
     return Scaffold(
       appBar: TheUsualAppBar(
         title: 'Today',
         historyRoute: Routes.history,
-        titleWidget: FilledButton(
-          key: const Key('today-date-pill'),
-          style: pillButtonStyle(context),
-          onPressed: () async {
-            final picked = await showDatePicker(
-              context: context,
-              firstDate: DateTime(2000),
-              lastDate: DateTime(2100),
-              initialDate: selectedRange?.start ?? today,
-            );
-            if (picked == null) return;
-            final pickedDay = DateUtils.dateOnly(picked);
-            setState(() {
-              _selectedRange = DateUtils.isSameDay(pickedDay, today)
-                  ? null
-                  : DateTimeRange(start: pickedDay, end: pickedDay);
-            });
-          },
-          child: Text(pillLabel),
+        titleWidget: DateNavigator(
+          selectedRange: _selectedRange,
+          onRangeChanged: (range) => setState(() => _selectedRange = range),
         ),
       ),
-      body: GestureDetector(
-        onHorizontalDragEnd: _onHorizontalDragEnd,
-        child: SafeArea(
-          bottom: false,
-          child:
-              BlocSelector<
-                UserSettingsBloc,
-                UserSettingsState,
-                (
-                  Map<MealOfTheDay, List<UsualMeal>>,
-                  bool,
-                  List<CalorieGoalEntry>,
-                  TimeOfDay,
-                )
-              >(
-                bloc: getIt<UserSettingsBloc>(),
-                selector: (state) => (
-                  state.usuals,
-                  state.expandNutritionByDefault,
-                  state.calorieGoalHistory,
-                  state.dayStartTime,
-                ),
-                builder: (context, selected) {
-                  final (
-                    usualMeals,
-                    expandNutritionByDefault,
-                    calorieGoalHistory,
-                    dayStartTime,
-                  ) = selected;
-                  final today = now.logicalDay(dayStartTime);
-                  final selectedRange = _selectedRange;
-                  final isToday = selectedRange == null;
-                  final displayDay = selectedRange == null
-                      ? today
-                      : DateUtils.dateOnly(selectedRange.start);
-                  // The bar shows the goal active on the day being viewed, not
-                  // today's, so a past day keeps the goal it had then.
-                  final calorieGoal = calorieGoalHistory.goalOn(displayDay);
-                  final logDays = selectedRange?.logicalDays;
-                  final logDayStart = selectedRange == null
-                      ? null
-                      : dayStartTime;
-                  return BlocSelector<
-                    DailyLogBloc,
-                    DailyLogState,
-                    List<MealLogEntry>
-                  >(
-                    bloc: getIt<DailyLogBloc>(),
-                    selector: (state) => state.mealEntries,
-                    builder: (context, mealEntries) {
-                      final breakdown = mealEntries.breakdownOn(
-                        displayDay,
-                        dayStartTime,
-                      );
-                      return CustomScrollView(
-                        slivers: [
-                          SliverPadding(
-                            padding: EdgeInsets.fromLTRB(
-                              AppDesign.spacing.lg,
-                              AppDesign.spacing.lg,
-                              AppDesign.spacing.lg,
-                              AppDesign.spacing.md,
-                            ),
-                            sliver: SliverToBoxAdapter(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  _WeightTracker(days: logDays ?? [today]),
-                                  SizedBox(height: AppDesign.spacing.lg),
-                                  Row(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Expanded(
-                                        child: NutritionBar(
-                                          nutrition: breakdown.nutrition,
-                                          calorieGoal: calorieGoal,
-                                          onSetGoal: () => context.push(
-                                            '${Routes.settings}?focus=goals',
-                                          ),
+      body: SafeArea(
+        bottom: false,
+        child:
+            BlocSelector<
+              UserSettingsBloc,
+              UserSettingsState,
+              (
+                Map<MealOfTheDay, List<UsualMeal>>,
+                bool,
+                List<CalorieGoalEntry>,
+                TimeOfDay,
+              )
+            >(
+              bloc: getIt<UserSettingsBloc>(),
+              selector: (state) => (
+                state.usuals,
+                state.expandNutritionByDefault,
+                state.calorieGoalHistory,
+                state.dayStartTime,
+              ),
+              builder: (context, selected) {
+                final (
+                  usualMeals,
+                  expandNutritionByDefault,
+                  calorieGoalHistory,
+                  dayStartTime,
+                ) = selected;
+                final today = now.logicalDay(dayStartTime);
+                final selectedRange = _selectedRange;
+                final isToday = selectedRange == null;
+                final displayDay = selectedRange == null
+                    ? today
+                    : DateUtils.dateOnly(selectedRange.start);
+                // The bar shows the goal active on the day being viewed, not
+                // today's, so a past day keeps the goal it had then.
+                final calorieGoal = calorieGoalHistory.goalOn(displayDay);
+                final logDays = selectedRange?.logicalDays;
+                final logDayStart = selectedRange == null ? null : dayStartTime;
+                return BlocSelector<
+                  DailyLogBloc,
+                  DailyLogState,
+                  List<MealLogEntry>
+                >(
+                  bloc: getIt<DailyLogBloc>(),
+                  selector: (state) => state.mealEntries,
+                  builder: (context, mealEntries) {
+                    final breakdown = mealEntries.breakdownOn(
+                      displayDay,
+                      dayStartTime,
+                    );
+                    return CustomScrollView(
+                      slivers: [
+                        SliverPadding(
+                          padding: EdgeInsets.fromLTRB(
+                            AppDesign.spacing.lg,
+                            AppDesign.spacing.lg,
+                            AppDesign.spacing.lg,
+                            AppDesign.spacing.md,
+                          ),
+                          sliver: SliverToBoxAdapter(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                _WeightTracker(days: logDays ?? [today]),
+                                SizedBox(height: AppDesign.spacing.lg),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Expanded(
+                                      child: NutritionBar(
+                                        nutrition: breakdown.nutrition,
+                                        calorieGoal: calorieGoal,
+                                        onSetGoal: () => context.push(
+                                          '${Routes.settings}?focus=goals',
                                         ),
                                       ),
-                                      SizedBox(width: AppDesign.spacing.sm),
-                                      _NutritionExpansionToggle(
-                                        expanded: expandNutritionByDefault,
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
+                                    ),
+                                    SizedBox(width: AppDesign.spacing.sm),
+                                    _NutritionExpansionToggle(
+                                      expanded: expandNutritionByDefault,
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
                           ),
-                          for (final mealOfTheDay in MealOfTheDay.values)
-                            MealLogSection(
+                        ),
+                        for (final mealOfTheDay in MealOfTheDay.values)
+                          MealLogSection(
+                            mealOfTheDay: mealOfTheDay,
+                            mealLogEntries:
+                                breakdown.entriesByMeal[mealOfTheDay] ??
+                                const <MealLogEntry>[],
+                            quickPicks: mealEntries.orderedQuickPicks(
                               mealOfTheDay: mealOfTheDay,
-                              mealLogEntries:
-                                  breakdown.entriesByMeal[mealOfTheDay] ??
-                                  const <MealLogEntry>[],
-                              quickPicks: mealEntries.orderedQuickPicks(
-                                mealOfTheDay: mealOfTheDay,
-                                usuals: usualMeals,
-                                day: displayDay,
-                                dayStart: dayStartTime,
-                              ),
-                              otherMealUsuals: mealEntries.usualsFromOtherMeals(
-                                mealOfTheDay: mealOfTheDay,
-                                usuals: usualMeals,
-                                day: displayDay,
-                                dayStart: dayStartTime,
-                              ),
-                              sameAsYesterday: mealEntries.previousDayMeal(
-                                mealOfTheDay: mealOfTheDay,
-                                day: displayDay,
-                                dayStart: dayStartTime,
-                              ),
-                              isCurrent: isToday && mealOfTheDay == currentMeal,
-                              nutritionExpandedByDefault:
-                                  expandNutritionByDefault,
-                              logDays: logDays,
-                              dayStart: logDayStart,
+                              usuals: usualMeals,
+                              day: displayDay,
+                              dayStart: dayStartTime,
                             ),
-                          SliverToBoxAdapter(
-                            child: SizedBox(
-                              height: MediaQuery.paddingOf(context).bottom,
+                            otherMealUsuals: mealEntries.usualsFromOtherMeals(
+                              mealOfTheDay: mealOfTheDay,
+                              usuals: usualMeals,
+                              day: displayDay,
+                              dayStart: dayStartTime,
                             ),
+                            sameAsYesterday: mealEntries.previousDayMeal(
+                              mealOfTheDay: mealOfTheDay,
+                              day: displayDay,
+                              dayStart: dayStartTime,
+                            ),
+                            isCurrent: isToday && mealOfTheDay == currentMeal,
+                            nutritionExpandedByDefault:
+                                expandNutritionByDefault,
+                            logDays: logDays,
+                            dayStart: logDayStart,
                           ),
-                        ],
-                      );
-                    },
-                  );
-                },
-              ),
-        ),
+                        SliverToBoxAdapter(
+                          child: SizedBox(
+                            height: MediaQuery.paddingOf(context).bottom,
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
       ),
     );
-  }
-
-  /// Swipes the shown day back (drag left→right) or forward (right→left), with
-  /// today's live view in between. Unbounded, so past and future days are both
-  /// reachable.
-  void _onHorizontalDragEnd(DragEndDetails details) {
-    final velocity = details.primaryVelocity;
-    if (velocity == null || velocity == 0) return;
-    final deltaDays = velocity > 0 ? -1 : 1;
-    final today = clock.now().logicalDay(
-      getIt<UserSettingsBloc>().state.dayStartTime,
-    );
-    setState(() {
-      _selectedRange = selectedDayShifted(_selectedRange, deltaDays, today);
-    });
-  }
-
-  /// The pill's label: "Today" for the live view, a single formatted date for
-  /// one selected day, or a "start – end" span for a range.
-  String _pillLabel(DateTimeRange? selectedRange) {
-    if (selectedRange == null) return 'Today';
-    final currentYear = clock.now().year;
-    // Drop the year for dates in the current year to keep the pill compact,
-    // but show it for other years so an off-year date isn't ambiguous.
-    String formatDate(DateTime date) =>
-        (date.year == currentYear ? DateFormat.MMMd() : DateFormat.yMMMd())
-            .format(date);
-    final startLabel = formatDate(selectedRange.start);
-    if (DateUtils.isSameDay(selectedRange.start, selectedRange.end)) {
-      return startLabel;
-    }
-    // The day picker only ever selects a single day (start == end), so the
-    // span label is unreachable today; kept for when range selection lands.
-    // coverage:ignore-start
-    final rangeLabel = '$startLabel – ${formatDate(selectedRange.end)}';
-    return rangeLabel;
-    // coverage:ignore-end
   }
 }
 
